@@ -1,0 +1,62 @@
+# Build outputs
+
+bin/
+obj/
+
+# User-specific files
+
+*.user
+*.userprefs
+*.suo
+*.tmp
+
+# VS Code
+
+.vscode/
+
+# Visual Studio
+
+.vs/
+
+# Rider
+
+.idea/
+
+# OS files
+
+.DS_Store
+Thumbs.db
+
+# Logs
+
+*.log
+
+# Android
+
+*.apk
+*.ap_
+
+# MAUI / Xamarin build artifacts
+
+*.mdb
+*.pdb
+*.cache
+
+# NuGet
+
+*.nupkg
+packages/
+
+# Temporary files
+
+*.tmp
+*.temp
+
+# Emulator / device files
+
+*.keystore
+*.jks
+
+# Local config
+
+appsettings.Development.json
