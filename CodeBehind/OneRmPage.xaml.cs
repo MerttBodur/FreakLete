@@ -9,26 +9,27 @@ public partial class OneRmPage : ContentPage
 		InitializeComponent();
 	}
 
-	private async void OnCalculateClicked(object? sender, EventArgs e)
+	private void OnCalculateClicked(object? sender, EventArgs e)
 	{
 		ResultsLabel.Text = string.Empty;
+		ClearError();
 
 		if (!int.TryParse(WeightEntry.Text, out int weightKg) ||
 			!int.TryParse(RepsEntry.Text, out int reps))
 		{
-			await DisplayAlertAsync("Invalid Input", "Please enter numbers only.", "OK");
+			ShowError("Please enter numbers only.");
 			return;
 		}
 
 		if (weightKg < 40 || weightKg > 250)
 		{
-			await DisplayAlertAsync("Out of Range", "Weight must be between 40 kg - 250 kg.", "OK");
+			ShowError("Weight must be between 40 kg - 250 kg.");
 			return;
 		}
 
 		if (reps < 1 || reps > 8)
 		{
-			await DisplayAlertAsync("Out of Range", "Reps must be between 1 - 8 rep.", "OK");
+			ShowError("Reps must be between 1 - 8 rep.");
 			return;
 		}
 
@@ -42,6 +43,18 @@ public partial class OneRmPage : ContentPage
 		}
 
 		ResultsLabel.Text = output.ToString();
+	}
+
+	private void ShowError(string message)
+	{
+		ErrorLabel.Text = message;
+		ErrorLabel.IsVisible = true;
+	}
+
+	private void ClearError()
+	{
+		ErrorLabel.Text = string.Empty;
+		ErrorLabel.IsVisible = false;
 	}
 
 	private static double CalculateOneRm(int weightKg, int reps)

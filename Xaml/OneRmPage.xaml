@@ -22,6 +22,11 @@
             <Button Text="Calculate"
                     Clicked="OnCalculateClicked" />
 
+            <Label x:Name="ErrorLabel"
+                   TextColor="Red"
+                   IsVisible="False"
+                   FontSize="13" />
+
             <Label x:Name="ResultsLabel"
                    Text=""
                    LineBreakMode="WordWrap" />
