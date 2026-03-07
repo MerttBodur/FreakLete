@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GymTracker.CalendarPage"
+             Title="Calendar">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,16" Spacing="12">
+            <Label Text="Calendar"
+                   Style="{StaticResource Headline}" />
+
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Grid.Column="0"
+                        Text="&lt;"
+                        Clicked="OnPreviousMonthClicked"
+                        WidthRequest="48" />
+                <Label Grid.Column="1"
+                       x:Name="MonthLabel"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       FontSize="18"
+                       FontFamily="OpenSansSemibold" />
+                <Button Grid.Column="2"
+                        Text="&gt;"
+                        Clicked="OnNextMonthClicked"
+                        WidthRequest="48" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="4">
+                <Label Grid.Column="0" Text="Mon" HorizontalTextAlignment="Center" />
+                <Label Grid.Column="1" Text="Tue" HorizontalTextAlignment="Center" />
+                <Label Grid.Column="2" Text="Wed" HorizontalTextAlignment="Center" />
+                <Label Grid.Column="3" Text="Thu" HorizontalTextAlignment="Center" />
+                <Label Grid.Column="4" Text="Fri" HorizontalTextAlignment="Center" />
+                <Label Grid.Column="5" Text="Sat" HorizontalTextAlignment="Center" />
+                <Label Grid.Column="6" Text="Sun" HorizontalTextAlignment="Center" />
+            </Grid>
+
+            <CollectionView x:Name="CalendarDaysView"
+                            ItemsSource="{Binding CalendarDays}"
+                            SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="7" HorizontalItemSpacing="4" VerticalItemSpacing="4" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="6"
+                                StrokeThickness="1"
+                                BackgroundColor="{Binding CellBackgroundColor}"
+                                Opacity="{Binding CellOpacity}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnDayTapped" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
+                                <Label Text="{Binding DayText}"
+                                       TextColor="{Binding DayTextColor}"
+                                       HorizontalTextAlignment="Center" />
+                                <BoxView HeightRequest="5"
+                                         WidthRequest="5"
+                                         CornerRadius="2.5"
+                                         Color="{Binding MarkerColor}"
+                                         IsVisible="{Binding HasWorkout}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label x:Name="SelectedDateLabel"
+                   FontFamily="OpenSansSemibold"
+                   Opacity="0.85" />
+
+            <Label Text="Saved Workouts For Selected Date"
+                   FontSize="16"
+                   FontFamily="OpenSansSemibold" />
+
+            <CollectionView x:Name="SavedWorkoutsView">
+                <CollectionView.EmptyView>
+                    <Label Text="No workout saved for this date."
+                           HorizontalOptions="Center"
+                           Margin="0,8,0,0" />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="10" Margin="0,4,0,4">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding WorkoutName}"
+                                       FontFamily="OpenSansSemibold" />
+                                <Label Text="{Binding ExercisesText}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

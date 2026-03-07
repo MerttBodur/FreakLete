@@ -4,21 +4,30 @@
              x:Class="GymTracker.HomePage"
              Title="Home">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24,16" Spacing="16">
+    <Grid RowDefinitions="*,Auto">
+        <VerticalStackLayout Grid.Row="0" Padding="24,16" Spacing="16">
             <Label Text="Gym Tracker"
                    Style="{StaticResource Headline}" />
 
             <Label Text="What would you like to do?"
                    FontSize="18"
                    HorizontalOptions="Center" />
-
-            <Button Text="Add New Workout"
-                    Clicked="OnAddNewWorkoutClicked" />
-
-            <Button Text="1RM Calculator"
-                    Clicked="OnOneRmCalculatorClicked" />
         </VerticalStackLayout>
-    </ScrollView>
+
+        <Border Grid.Row="1"
+                StrokeThickness="0"
+                BackgroundColor="#1f1f1f"
+                Padding="10,8">
+            <Grid ColumnDefinitions="*,*">
+                <Button Grid.Column="0"
+                        Text="1RM"
+                        Clicked="OnOneRmCalculatorClicked" />
+
+                <Button Grid.Column="1"
+                        Text="Workout"
+                        Clicked="OnAddNewWorkoutClicked" />
+            </Grid>
+        </Border>
+    </Grid>
 
 </ContentPage>

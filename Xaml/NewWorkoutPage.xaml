@@ -4,11 +4,96 @@
              x:Class="GymTracker.NewWorkoutPage"
              Title="Add New Workout">
 
-    <VerticalStackLayout Padding="24,16" Spacing="12">
-        <Label Text="Add New Workout"
-               Style="{StaticResource Headline}" />
+    <ScrollView>
+        <VerticalStackLayout Padding="24,16" Spacing="12">
+            <Label Text="Add New Workout"
+                   Style="{StaticResource Headline}" />
 
-        <Label Text="This page will be used to add exercises, sets and reps." />
-    </VerticalStackLayout>
+            <Label Text="Date" />
+            <DatePicker x:Name="WorkoutDatePicker" />
+
+            <Label Text="Workout Name" />
+            <Entry x:Name="WorkoutNameEntry"
+                   Placeholder="Example: Push Day" />
+
+            <Button Text="Add Exercises"
+                    Clicked="OnAddExercisesClicked" />
+
+            <VerticalStackLayout x:Name="ExercisesSection"
+                                 IsVisible="False"
+                                 Spacing="12">
+                <Label Text="Select Exercise" />
+                <CollectionView x:Name="ExerciseOptionsView"
+                                SelectionMode="Single"
+                                SelectionChanged="OnExerciseSelectionChanged"
+                                HeightRequest="56">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal"
+                                           ItemSpacing="8" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="10,8"
+                                    Margin="0,0,4,0">
+                                <Label Text="{Binding Name}" />
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Label x:Name="SelectedExerciseLabel"
+                       Text="Selected: -"
+                       Opacity="0.8" />
+
+                <Label Text="Set Count (Required)" />
+                <Entry x:Name="SetCountEntry"
+                       Keyboard="Numeric"
+                       Placeholder="Example: 3" />
+
+                <Label Text="Rep Count (Required)" />
+                <Entry x:Name="RepCountEntry"
+                       Keyboard="Numeric"
+                       Placeholder="Example: 8" />
+
+                <Label Text="Rest Seconds (Optional)" />
+                <Entry x:Name="RestSecondsEntry"
+                       Keyboard="Numeric"
+                       Placeholder="Example: 90" />
+
+                <Button Text="Add Exercise"
+                        Clicked="OnAddExerciseClicked" />
+            </VerticalStackLayout>
+
+            <Label x:Name="ErrorLabel"
+                   TextColor="Red"
+                   IsVisible="False"
+                   FontSize="13" />
+
+            <Label Text="Added Exercises"
+                   FontSize="16"
+                   FontFamily="OpenSansSemibold" />
+
+            <CollectionView x:Name="ExercisesCollectionView">
+                <CollectionView.EmptyView>
+                    <Label Text="No exercise added yet."
+                           HorizontalOptions="Center" />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="10" Margin="0,4,0,4">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding ExerciseName}" />
+                                <Label Text="{Binding SetRepText}" />
+                                <Label Text="{Binding RestText}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button Text="Confirm Add New Workout"
+                    Clicked="OnConfirmWorkoutClicked" />
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>

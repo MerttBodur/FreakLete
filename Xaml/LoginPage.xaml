@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GymTracker.LoginPage">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,80,30,30"
+            Spacing="20">
+
+            <Label
+                Text="Gym Tracker"
+                FontSize="36"
+                HorizontalOptions="Center"
+                FontAttributes="Bold" />
+
+            <Label
+                Text="Login to continue"
+                FontSize="18"
+                HorizontalOptions="Center"
+                Opacity="0.7" />
+
+            <VerticalStackLayout Spacing="10">
+
+                <Label
+                    Text="Email"
+                    FontSize="16" />
+
+                <Entry
+                    x:Name="EmailEntry"
+                    Placeholder="Enter your email"
+                    Keyboard="Email" />
+
+                <Label
+                    Text="Password"
+                    FontSize="16" />
+
+                <Entry
+                    x:Name="PasswordEntry"
+                    Placeholder="Enter your password"
+                    IsPassword="True" />
+
+            </VerticalStackLayout>
+
+            <Button
+                x:Name="LoginBtn"
+                Text="Login"
+                Clicked="OnLoginClicked"
+                HorizontalOptions="Fill" />
+
+            <Button
+                x:Name="RegisterBtn"
+                Text="Register"
+                Clicked="OnRegisterClicked"
+                HorizontalOptions="Fill" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

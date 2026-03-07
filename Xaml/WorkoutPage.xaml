@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GymTracker.WorkoutPage"
+             Title="Workout">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="calendar_icon.svg"
+                     Priority="0"
+                     Order="Primary"
+                     Clicked="OnOpenCalendarPageClicked" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,16" Spacing="12">
+            <Label Text="Workout"
+                   Style="{StaticResource Headline}" />
+
+            <Button Text="Add New Workout"
+                    Clicked="OnOpenNewWorkoutClicked" />
+
+            <Label Text="Saved workouts are shown on Calendar page."
+                   HorizontalOptions="Center"
+                   Opacity="0.8" />
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

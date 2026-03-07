@@ -9,11 +9,11 @@ public partial class HomePage : ContentPage
 
 	private async void OnAddNewWorkoutClicked(object? sender, EventArgs e)
 	{
-		await Shell.Current.GoToAsync(nameof(NewWorkoutPage));
+		await Shell.Current.GoToAsync(nameof(WorkoutPage), false);
 	}
 
 	private async void OnOneRmCalculatorClicked(object? sender, EventArgs e)
 	{
-		await Shell.Current.GoToAsync(nameof(OneRmPage));
+		await Shell.Current.GoToAsync(nameof(OneRmPage), false);
 	}
 }
