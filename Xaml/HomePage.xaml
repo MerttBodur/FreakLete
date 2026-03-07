@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GymTracker.HomePage"
+             Title="Home">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,16" Spacing="16">
+            <Label Text="Gym Tracker"
+                   Style="{StaticResource Headline}" />
+
+            <Label Text="What would you like to do?"
+                   FontSize="18"
+                   HorizontalOptions="Center" />
+
+            <Button Text="Add New Workout"
+                    Clicked="OnAddNewWorkoutClicked" />
+
+            <Button Text="1RM Calculator"
+                    Clicked="OnOneRmCalculatorClicked" />
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

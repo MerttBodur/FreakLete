@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GymTracker.OneRmPage"
+             Title="1RM Calculator">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,16" Spacing="12">
+            <Label Text="1RM Calculator"
+                   Style="{StaticResource Headline}" />
+
+            <Label Text="Weight (kg): 40 - 250" />
+            <Entry x:Name="WeightEntry"
+                   Keyboard="Numeric"
+                   Placeholder="Example: 100" />
+
+            <Label Text="Reps: 1 - 8" />
+            <Entry x:Name="RepsEntry"
+                   Keyboard="Numeric"
+                   Placeholder="Example: 5" />
+
+            <Button Text="Calculate"
+                    Clicked="OnCalculateClicked" />
+
+            <Label x:Name="ResultsLabel"
+                   Text=""
+                   LineBreakMode="WordWrap" />
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
