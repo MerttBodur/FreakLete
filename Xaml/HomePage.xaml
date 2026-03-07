@@ -2,16 +2,27 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GymTracker.HomePage"
-             Title="Home">
+             Title="">
 
     <Grid RowDefinitions="*,Auto">
         <VerticalStackLayout Grid.Row="0" Padding="24,16" Spacing="16">
             <Label Text="Gym Tracker"
-                   Style="{StaticResource Headline}" />
+                   Style="{StaticResource Headline}"
+                   HorizontalOptions="Start"
+                   HorizontalTextAlignment="Start" />
 
-            <Label Text="What would you like to do?"
-                   FontSize="18"
-                   HorizontalOptions="Center" />
+            <ImageButton Source="rotate_icon.svg"
+                         HorizontalOptions="End"
+                         WidthRequest="36"
+                         HeightRequest="36"
+                         Padding="6"
+                         BackgroundColor="Transparent"
+                         Clicked="OnRotateModelClicked" />
+
+            <Image x:Name="MuscleModelImage"
+                   Source="frontview.PNG"
+                   HeightRequest="380"
+                   Aspect="AspectFit" />
         </VerticalStackLayout>
 
         <Border Grid.Row="1"

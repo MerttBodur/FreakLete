@@ -45,7 +45,7 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border Padding="6"
-                                StrokeThickness="1"
+                                StrokeThickness="0"
                                 BackgroundColor="{Binding CellBackgroundColor}"
                                 Opacity="{Binding CellOpacity}">
                             <Border.GestureRecognizers>

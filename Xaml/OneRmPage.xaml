@@ -19,8 +19,16 @@
                    Keyboard="Numeric"
                    Placeholder="Example: 5" />
 
+            <Label Text="RIR: 0 - 5" />
+            <Entry x:Name="RirEntry"
+                   Keyboard="Numeric"
+                   Placeholder="Example: 1" />
+
             <Button Text="Calculate"
                     Clicked="OnCalculateClicked" />
+
+            <Button Text="Save Exercise"
+                    Clicked="OnSaveExerciseClicked" />
 
             <Label x:Name="ErrorLabel"
                    TextColor="Red"
@@ -30,6 +38,17 @@
             <Label x:Name="ResultsLabel"
                    Text=""
                    LineBreakMode="WordWrap" />
+
+            <Label Text="Saved PR Entries"
+                   FontSize="16"
+                   FontFamily="OpenSansSemibold" />
+
+            <CollectionView x:Name="SavedPrView">
+                <CollectionView.EmptyView>
+                    <Label Text="No saved PR yet."
+                           HorizontalOptions="Center" />
+                </CollectionView.EmptyView>
+            </CollectionView>
         </VerticalStackLayout>
     </ScrollView>
 

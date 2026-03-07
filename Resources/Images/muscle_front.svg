@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="760" viewBox="0 0 420 760" fill="none">
+  <rect width="420" height="760" fill="#111111"/>
+  <ellipse cx="210" cy="76" rx="46" ry="54" fill="#d8a08d"/>
+  <rect x="186" y="126" width="48" height="52" rx="16" fill="#cf8a75"/>
+  <path d="M130 190c22-32 52-50 80-50s58 18 80 50v74c0 58-34 102-80 102s-80-44-80-102v-74z" fill="#cc7f6a"/>
+  <ellipse cx="110" cy="238" rx="26" ry="58" fill="#c87561"/>
+  <ellipse cx="310" cy="238" rx="26" ry="58" fill="#c87561"/>
+  <rect x="88" y="286" width="40" height="138" rx="20" fill="#c46f5b"/>
+  <rect x="292" y="286" width="40" height="138" rx="20" fill="#c46f5b"/>
+  <path d="M144 362h132v132H144z" fill="#bf6652"/>
+  <rect x="160" y="492" width="42" height="186" rx="21" fill="#ba5f4b"/>
+  <rect x="218" y="492" width="42" height="186" rx="21" fill="#ba5f4b"/>
+  <text x="210" y="730" fill="#ffffff" font-size="30" text-anchor="middle" font-family="Arial">FRONT</text>
+</svg>

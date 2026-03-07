@@ -133,9 +133,15 @@ public partial class CalendarPage : ContentPage
 	private static string BuildExerciseText(List<ExerciseRecord> exercises)
 	{
 		return string.Join(" | ", exercises.Select(x =>
-			x.RestSeconds.HasValue
-				? $"{x.ExerciseName} ({x.SetCount}x{x.RepCount}, Rest {x.RestSeconds.Value}s)"
-				: $"{x.ExerciseName} ({x.SetCount}x{x.RepCount})"));
+		{
+			string baseText = x.Rir.HasValue
+				? $"{x.ExerciseName} ({x.SetCount}x{x.RepCount}, RIR{x.Rir.Value})"
+				: $"{x.ExerciseName} ({x.SetCount}x{x.RepCount})";
+
+			return x.RestSeconds.HasValue
+				? $"{baseText}, Rest {x.RestSeconds.Value}s"
+				: baseText;
+		}));
 	}
 
 	public sealed class CalendarDayCell

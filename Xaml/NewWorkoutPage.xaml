@@ -55,6 +55,11 @@
                        Keyboard="Numeric"
                        Placeholder="Example: 8" />
 
+                <Label Text="RIR (Optional)" />
+                <Entry x:Name="RirEntry"
+                       Keyboard="Numeric"
+                       Placeholder="Example: 1" />
+
                 <Label Text="Rest Seconds (Optional)" />
                 <Entry x:Name="RestSecondsEntry"
                        Keyboard="Numeric"

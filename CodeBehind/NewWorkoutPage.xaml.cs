@@ -62,6 +62,19 @@ public partial class NewWorkoutPage : ContentPage
 		}
 
 		int? restSeconds = null;
+		int? rir = null;
+
+		if (!string.IsNullOrWhiteSpace(RirEntry.Text))
+		{
+			if (!int.TryParse(RirEntry.Text, out int parsedRir) || parsedRir < 0 || parsedRir > 5)
+			{
+				ShowError("RIR must be between 0 - 5.");
+				return;
+			}
+
+			rir = parsedRir;
+		}
+
 		if (!string.IsNullOrWhiteSpace(RestSecondsEntry.Text))
 		{
 			if (!int.TryParse(RestSecondsEntry.Text, out int parsedRest) || parsedRest <= 0)
@@ -78,6 +91,7 @@ public partial class NewWorkoutPage : ContentPage
 			ExerciseName = _selectedExerciseName,
 			SetCount = setCount,
 			RepCount = repCount,
+			Rir = rir,
 			RestSeconds = restSeconds
 		});
 
@@ -119,7 +133,9 @@ public partial class NewWorkoutPage : ContentPage
 			.Select(x => new ExerciseListItem
 			{
 				ExerciseName = x.ExerciseName,
-				SetRepText = $"Set x Rep: {x.SetCount} x {x.RepCount}",
+				SetRepText = x.Rir.HasValue
+					? $"Set x Rep: {x.SetCount} x {x.RepCount} (RIR{x.Rir.Value})"
+					: $"Set x Rep: {x.SetCount} x {x.RepCount}",
 				RestText = x.RestSeconds.HasValue ? $"Rest: {x.RestSeconds.Value} sec" : "Rest: -"
 			})
 			.ToList();
@@ -138,6 +154,7 @@ public partial class NewWorkoutPage : ContentPage
 	{
 		SetCountEntry.Text = string.Empty;
 		RepCountEntry.Text = string.Empty;
+		RirEntry.Text = string.Empty;
 		RestSecondsEntry.Text = string.Empty;
 	}
 

@@ -43,5 +43,6 @@ public sealed class ExerciseRecord
 	public string ExerciseName { get; set; } = string.Empty;
 	public int SetCount { get; set; }
 	public int RepCount { get; set; }
+	public int? Rir { get; set; }
 	public int? RestSeconds { get; set; }
 }
