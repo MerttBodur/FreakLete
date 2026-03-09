@@ -8,21 +8,8 @@
         <VerticalStackLayout Grid.Row="0" Padding="24,16" Spacing="16">
             <Label Text="Gym Tracker"
                    Style="{StaticResource Headline}"
-                   HorizontalOptions="Start"
-                   HorizontalTextAlignment="Start" />
-
-            <ImageButton Source="rotate_icon.svg"
-                         HorizontalOptions="End"
-                         WidthRequest="36"
-                         HeightRequest="36"
-                         Padding="6"
-                         BackgroundColor="Transparent"
-                         Clicked="OnRotateModelClicked" />
-
-            <Image x:Name="MuscleModelImage"
-                   Source="frontview.PNG"
-                   HeightRequest="380"
-                   Aspect="AspectFit" />
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center" />
         </VerticalStackLayout>
 
         <Border Grid.Row="1"

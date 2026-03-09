@@ -9,6 +9,7 @@
     <ShellContent
         Title=""
         ContentTemplate="{DataTemplate local:HomePage}"
-        Route="HomePage" />
+        Route="HomePage"
+        Shell.TabBarIsVisible="False" />
 
 </Shell>
