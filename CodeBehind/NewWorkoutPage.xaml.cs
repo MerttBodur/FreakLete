@@ -124,7 +124,7 @@ public partial class NewWorkoutPage : ContentPage
 		});
 
 		WorkoutStorage.Save(allWorkouts);
-		await Shell.Current.GoToAsync("..", false);
+		await Navigation.PopAsync(false);
 	}
 
 	private void RefreshExercisesList()

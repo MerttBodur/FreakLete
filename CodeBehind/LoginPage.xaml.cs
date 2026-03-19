@@ -9,7 +9,11 @@ public partial class LoginPage : ContentPage
 
 	private async void OnLoginClicked(object? sender, EventArgs e)
 	{
-		await Shell.Current.GoToAsync("//HomePage", false);
+		var window = Application.Current?.Windows.FirstOrDefault();
+		if (window is not null)
+		{
+			window.Page = new NavigationPage(new HomePage());
+		}
 	}
 
 	private async void OnRegisterClicked(object? sender, EventArgs e)

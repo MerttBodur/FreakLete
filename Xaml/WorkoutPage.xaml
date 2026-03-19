@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:GymTracker"
              x:Class="GymTracker.WorkoutPage"
              Title="Workout">
     <ContentPage.ToolbarItems>
@@ -10,18 +11,23 @@
                      Clicked="OnOpenCalendarPageClicked" />
     </ContentPage.ToolbarItems>
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24,16" Spacing="12">
-            <Label Text="Workout"
-                   Style="{StaticResource Headline}" />
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="24,16" Spacing="12">
+                <Label Text="Workout"
+                       Style="{StaticResource Headline}" />
 
-            <Button Text="Add New Workout"
-                    Clicked="OnOpenNewWorkoutClicked" />
+                <Button Text="Add New Workout"
+                        Clicked="OnOpenNewWorkoutClicked" />
 
-            <Label Text="Saved workouts are shown on Calendar page."
-                   HorizontalOptions="Center"
-                   Opacity="0.8" />
-        </VerticalStackLayout>
-    </ScrollView>
+                <Label Text="Saved workouts are shown on Calendar page."
+                       HorizontalOptions="Center"
+                       Opacity="0.8" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <local:BottomNavBar Grid.Row="1"
+                            ActiveTab="workout" />
+    </Grid>
 
 </ContentPage>

@@ -6,14 +6,4 @@ public partial class HomePage : ContentPage
 	{
 		InitializeComponent();
 	}
-
-	private async void OnAddNewWorkoutClicked(object? sender, EventArgs e)
-	{
-		await Shell.Current.GoToAsync(nameof(WorkoutPage), false);
-	}
-
-	private async void OnOneRmCalculatorClicked(object? sender, EventArgs e)
-	{
-		await Shell.Current.GoToAsync(nameof(OneRmPage), false);
-	}
 }

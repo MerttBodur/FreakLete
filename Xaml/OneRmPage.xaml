@@ -1,55 +1,61 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:GymTracker"
              x:Class="GymTracker.OneRmPage"
              Title="1RM Calculator">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24,16" Spacing="12">
-            <Label Text="1RM Calculator"
-                   Style="{StaticResource Headline}" />
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="24,16" Spacing="12">
+                <Label Text="1RM Calculator"
+                       Style="{StaticResource Headline}" />
 
-            <Label Text="Weight (kg): 40 - 250" />
-            <Entry x:Name="WeightEntry"
-                   Keyboard="Numeric"
-                   Placeholder="Example: 100" />
+                <Label Text="Weight (kg): 40 - 250" />
+                <Entry x:Name="WeightEntry"
+                       Keyboard="Numeric"
+                       Placeholder="Example: 100" />
 
-            <Label Text="Reps: 1 - 8" />
-            <Entry x:Name="RepsEntry"
-                   Keyboard="Numeric"
-                   Placeholder="Example: 5" />
+                <Label Text="Reps: 1 - 8" />
+                <Entry x:Name="RepsEntry"
+                       Keyboard="Numeric"
+                       Placeholder="Example: 5" />
 
-            <Label Text="RIR: 0 - 5" />
-            <Entry x:Name="RirEntry"
-                   Keyboard="Numeric"
-                   Placeholder="Example: 1" />
+                <Label Text="RIR: 0 - 5" />
+                <Entry x:Name="RirEntry"
+                       Keyboard="Numeric"
+                       Placeholder="Example: 1" />
 
-            <Button Text="Calculate"
-                    Clicked="OnCalculateClicked" />
+                <Button Text="Calculate"
+                        Clicked="OnCalculateClicked" />
 
-            <Button Text="Save Exercise"
-                    Clicked="OnSaveExerciseClicked" />
+                <Button Text="Save Exercise"
+                        Clicked="OnSaveExerciseClicked" />
 
-            <Label x:Name="ErrorLabel"
-                   TextColor="Red"
-                   IsVisible="False"
-                   FontSize="13" />
+                <Label x:Name="ErrorLabel"
+                       TextColor="Red"
+                       IsVisible="False"
+                       FontSize="13" />
 
-            <Label x:Name="ResultsLabel"
-                   Text=""
-                   LineBreakMode="WordWrap" />
+                <Label x:Name="ResultsLabel"
+                       Text=""
+                       LineBreakMode="WordWrap" />
 
-            <Label Text="Saved PR Entries"
-                   FontSize="16"
-                   FontFamily="OpenSansSemibold" />
+                <Label Text="Saved PR Entries"
+                       FontSize="16"
+                       FontFamily="OpenSansSemibold" />
 
-            <CollectionView x:Name="SavedPrView">
-                <CollectionView.EmptyView>
-                    <Label Text="No saved PR yet."
-                           HorizontalOptions="Center" />
-                </CollectionView.EmptyView>
-            </CollectionView>
-        </VerticalStackLayout>
-    </ScrollView>
+                <CollectionView x:Name="SavedPrView">
+                    <CollectionView.EmptyView>
+                        <Label Text="No saved PR yet."
+                               HorizontalOptions="Center" />
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <local:BottomNavBar Grid.Row="1"
+                            ActiveTab="onerm" />
+    </Grid>
 
 </ContentPage>
