@@ -77,7 +77,7 @@
                            FontSize="13"
                            IsVisible="False" />
 
-                    <Button Text="Create Account"
+                    <Button Text="Sign Up"
                             Clicked="OnCreateAccountClicked"
                             HorizontalOptions="Fill" />
                 </VerticalStackLayout>

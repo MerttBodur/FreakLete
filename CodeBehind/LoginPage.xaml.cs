@@ -50,7 +50,7 @@ public partial class LoginPage : ContentPage
 	private async void OnRegisterClicked(object? sender, EventArgs e)
 	{
 		ClearError();
-		await Navigation.PushAsync(new RegisterPage(), false);
+		await Navigation.PushAsync(new RegisterPage(), true);
 	}
 
 	private void ShowError(string message)

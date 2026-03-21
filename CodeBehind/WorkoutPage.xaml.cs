@@ -9,12 +9,12 @@ public partial class WorkoutPage : ContentPage
 
 	private async void OnOpenNewWorkoutClicked(object? sender, EventArgs e)
 	{
-		await Navigation.PushAsync(new NewWorkoutPage(), false);
+		await Navigation.PushAsync(new NewWorkoutPage(), true);
 	}
 
 	private async void OnOpenCalendarPageClicked(object? sender, EventArgs e)
 	{
-		await Navigation.PushAsync(new CalendarPage(), false);
+		await Navigation.PushAsync(new CalendarPage(), true);
 	}
 
 	private void OnHeaderCalendarClicked(object? sender, EventArgs e)

@@ -83,7 +83,7 @@ public partial class RegisterPage : ContentPage
 
 		await _database.CreateUserAsync(user);
 		await DisplayAlertAsync("Success", "Account created. You can now log in.", "OK");
-		await Navigation.PopAsync(false);
+		await Navigation.PopAsync(true);
 	}
 
 	private void ShowError(string message)
@@ -100,6 +100,6 @@ public partial class RegisterPage : ContentPage
 
 	private async void OnHeaderBackClicked(object? sender, EventArgs e)
 	{
-		await Navigation.PopAsync(false);
+		await Navigation.PopAsync(true);
 	}
 }

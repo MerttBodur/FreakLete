@@ -33,6 +33,27 @@ public class AppDatabase
 		await _database.CreateTableAsync<AthleticPerformanceEntry>();
 		await _database.CreateTableAsync<MovementGoal>();
 		await _database.CreateTableAsync<ProfilePrEntry>();
+
+		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.ExerciseCategory), "TEXT NOT NULL DEFAULT ''");
+		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.TrackingMode), $"TEXT NOT NULL DEFAULT '{nameof(ExerciseTrackingMode.Strength)}'");
+		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.Metric1Value), "REAL NULL");
+		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.Metric1Unit), "TEXT NOT NULL DEFAULT ''");
+		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.Metric2Value), "REAL NULL");
+		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.Metric2Unit), "TEXT NOT NULL DEFAULT ''");
+
+		await EnsureColumnAsync(nameof(AthleticPerformanceEntry), nameof(AthleticPerformanceEntry.MovementCategory), "TEXT NOT NULL DEFAULT ''");
+		await EnsureColumnAsync(nameof(AthleticPerformanceEntry), nameof(AthleticPerformanceEntry.SecondaryValue), "REAL NULL");
+		await EnsureColumnAsync(nameof(AthleticPerformanceEntry), nameof(AthleticPerformanceEntry.SecondaryUnit), "TEXT NOT NULL DEFAULT ''");
+	}
+
+	private async Task EnsureColumnAsync(string tableName, string columnName, string columnDefinition)
+	{
+		var columns = await _database!.GetTableInfoAsync(tableName);
+		bool exists = columns.Any(column => string.Equals(column.Name, columnName, StringComparison.OrdinalIgnoreCase));
+		if (!exists)
+		{
+			await _database.ExecuteAsync($"ALTER TABLE [{tableName}] ADD COLUMN [{columnName}] {columnDefinition}");
+		}
 	}
 
 	public async Task<int> CreateUserAsync(User user)

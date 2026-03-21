@@ -37,7 +37,7 @@
                                    HorizontalTextAlignment="Start" />
                             <Label Text="Build a new workout with date, name, exercise list, and set details."
                                    Style="{StaticResource BodyMuted}" />
-                            <Button Text="Add New Workout"
+                            <Button Text="New Workout"
                                     Clicked="OnOpenNewWorkoutClicked" />
                         </VerticalStackLayout>
                     </Border>
@@ -51,7 +51,7 @@
                             <Label Text="Open the calendar to view, edit, or remove saved sessions by day."
                                    Style="{StaticResource BodyMuted}" />
                             <Button Style="{StaticResource SecondaryButton}"
-                                    Text="Open Calendar"
+                                    Text="Calendar"
                                     Clicked="OnOpenCalendarPageClicked" />
                         </VerticalStackLayout>
                     </Border>

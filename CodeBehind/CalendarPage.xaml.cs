@@ -159,7 +159,7 @@ public partial class CalendarPage : ContentPage
 
 	private async void OnDeleteWorkoutInvoked(object? sender, EventArgs e)
 	{
-		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not CalendarWorkoutItem item)
+		if (GetBindingContext<CalendarWorkoutItem>(sender) is not CalendarWorkoutItem item)
 		{
 			return;
 		}
@@ -177,18 +177,33 @@ public partial class CalendarPage : ContentPage
 
 	private async void OnEditWorkoutInvoked(object? sender, EventArgs e)
 	{
-		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not CalendarWorkoutItem item)
+		if (GetBindingContext<CalendarWorkoutItem>(sender) is not CalendarWorkoutItem item)
 		{
 			return;
 		}
 
-		await Navigation.PushAsync(new NewWorkoutPage(item.WorkoutId), false);
+		await Navigation.PushAsync(new NewWorkoutPage(item.WorkoutId), true);
 	}
 
 	private static string BuildExerciseText(List<ExerciseEntry> exercises)
 	{
 		return string.Join(" | ", exercises.Select(x =>
 		{
+			if (x.TrackingMode == nameof(ExerciseTrackingMode.Custom))
+			{
+				ExerciseCatalogItem? item = ExerciseCatalog.GetByName(x.ExerciseName);
+				if (item is not null)
+				{
+					string primary = $"{item.PrimaryLabel} {x.Metric1Value:0.##}{x.Metric1Unit}";
+					if (item.HasSecondaryMetric && x.Metric2Value.HasValue)
+					{
+						return $"{x.ExerciseName} ({primary}, {item.SecondaryLabel} {x.Metric2Value:0.##}{x.Metric2Unit})";
+					}
+
+					return $"{x.ExerciseName} ({primary})";
+				}
+			}
+
 			string baseText = x.RIR.HasValue
 				? $"{x.ExerciseName} ({x.Sets}x{x.Reps}, RIR{x.RIR.Value})"
 				: $"{x.ExerciseName} ({x.Sets}x{x.Reps})";
@@ -201,7 +216,16 @@ public partial class CalendarPage : ContentPage
 
 	private async void OnHeaderBackClicked(object? sender, EventArgs e)
 	{
-		await Navigation.PopAsync(false);
+		await Navigation.PopAsync(true);
+	}
+
+	private static TItem? GetBindingContext<TItem>(object? sender) where TItem : class
+	{
+		return sender switch
+		{
+			BindableObject bindable when bindable.BindingContext is TItem item => item,
+			_ => null
+		};
 	}
 
 	public sealed class CalendarDayCell

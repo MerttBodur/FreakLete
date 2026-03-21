@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:GymTracker"
+             x:Class="GymTracker.ExercisePickerPage"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto,*">
+        <VerticalStackLayout Grid.Row="0"
+                             Padding="24,18,24,12"
+                             Spacing="18">
+
+            <local:TopHeader x:Name="HeaderView"
+                             ShowBackButton="True"
+                             BackClicked="OnHeaderBackClicked" />
+
+            <Border Style="{StaticResource AccentCardBorder}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="EXERCISE BROWSER"
+                           Style="{StaticResource Eyebrow}" />
+                    <Label x:Name="PageTitleLabel"
+                           Text="Choose Exercise"
+                           Style="{StaticResource Headline}"
+                           HorizontalTextAlignment="Start" />
+                    <Label Text="Recommended movements only. Pick a category, then tap the exercise you want to use."
+                           Style="{StaticResource BodyMuted}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <ScrollView Orientation="Horizontal">
+                <HorizontalStackLayout x:Name="CategoriesLayout"
+                                       Spacing="10"
+                                       BindableLayout.ItemsSource="{Binding Categories}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Button Text="{Binding Name}"
+                                    Clicked="OnCategoryClicked"
+                                    BackgroundColor="{Binding BackgroundColor}"
+                                    TextColor="{Binding TextColor}"
+                                    BorderColor="{Binding BorderColor}"
+                                    BorderWidth="1"
+                                    CornerRadius="18"
+                                    Padding="16,10"
+                                    MinimumHeightRequest="40" />
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </HorizontalStackLayout>
+            </ScrollView>
+        </VerticalStackLayout>
+
+        <CollectionView Grid.Row="1"
+                        Margin="24,0,24,24"
+                        ItemsSource="{Binding VisibleExercises}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Style="{StaticResource CardBorder}"
+                            BackgroundColor="{StaticResource SurfaceRaised}"
+                            Margin="0,0,0,12"
+                            Padding="16">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnExerciseTapped" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="*,Auto"
+                              ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0"
+                                                 Spacing="6">
+                                <Label Text="{Binding Name}"
+                                       FontSize="18" />
+                                <Label Text="{Binding HintText}"
+                                       Style="{StaticResource BodyMuted}" />
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="1"
+                                   Text="›"
+                                   FontSize="26"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>

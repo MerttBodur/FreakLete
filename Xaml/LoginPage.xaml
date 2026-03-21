@@ -45,7 +45,7 @@
                             HorizontalOptions="Fill" />
 
                     <Button x:Name="RegisterBtn"
-                            Text="Create Account"
+                            Text="Sign Up"
                             Style="{StaticResource SecondaryButton}"
                             Clicked="OnRegisterClicked"
                             HorizontalOptions="Fill" />

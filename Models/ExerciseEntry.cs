@@ -12,6 +12,10 @@ public class ExerciseEntry
 
 	public string ExerciseName { get; set; } = string.Empty;
 
+	public string ExerciseCategory { get; set; } = string.Empty;
+
+	public string TrackingMode { get; set; } = nameof(ExerciseTrackingMode.Strength);
+
 	public int Sets { get; set; }
 
 	public int Reps { get; set; }
@@ -19,4 +23,12 @@ public class ExerciseEntry
 	public int? RIR { get; set; }
 
 	public int? RestSeconds { get; set; }
+
+	public double? Metric1Value { get; set; }
+
+	public string Metric1Unit { get; set; } = string.Empty;
+
+	public double? Metric2Value { get; set; }
+
+	public string Metric2Unit { get; set; } = string.Empty;
 }

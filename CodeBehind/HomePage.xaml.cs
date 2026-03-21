@@ -54,11 +54,11 @@ public partial class HomePage : ContentPage
 
 	private async void OnStartWorkoutClicked(object? sender, EventArgs e)
 	{
-		await Navigation.PushAsync(new WorkoutPage(), false);
+		await Navigation.PushAsync(new WorkoutPage(), true);
 	}
 
 	private async void OnOpenOneRmClicked(object? sender, EventArgs e)
 	{
-		await Navigation.PushAsync(new OneRmPage(), false);
+		await Navigation.PushAsync(new OneRmPage(), true);
 	}
 }

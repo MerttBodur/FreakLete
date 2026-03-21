@@ -8,24 +8,10 @@ namespace GymTracker;
 public partial class NewWorkoutPage : ContentPage
 {
 	private readonly List<ExerciseEntry> _exercises = new();
-	private readonly List<ExerciseOption> _exerciseOptions = new()
-	{
-		new() { Name = "Bench Press" },
-		new() { Name = "Incline Dumbbell Press" },
-		new() { Name = "Squat" },
-		new() { Name = "Deadlift" },
-		new() { Name = "Overhead Press" },
-		new() { Name = "Barbell Row" },
-		new() { Name = "Pull Up" },
-		new() { Name = "Lat Pulldown" },
-		new() { Name = "Biceps Curl" },
-		new() { Name = "Triceps Pushdown" }
-	};
-
 	private readonly AppDatabase _database;
 	private readonly UserSession _session;
 	private readonly int? _editingWorkoutId;
-	private string? _selectedExerciseName;
+	private ExerciseCatalogItem? _selectedExerciseItem;
 
 	public NewWorkoutPage() : this(null)
 	{
@@ -37,8 +23,8 @@ public partial class NewWorkoutPage : ContentPage
 		_database = MauiProgram.Services.GetRequiredService<AppDatabase>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 		_editingWorkoutId = workoutId;
-		ExerciseOptionsView.ItemsSource = _exerciseOptions;
 		ConfigurePageMode();
+		UpdateExerciseSelectionUI();
 		RefreshExercisesList();
 	}
 
@@ -59,7 +45,7 @@ public partial class NewWorkoutPage : ContentPage
 			? "Update the workout details, adjust exercises, and save the new session version."
 			: "Set the date, name your workout, then add exercises to the session.";
 		Title = isEditing ? "Edit Workout" : "Add New Workout";
-		ConfirmWorkoutButton.Text = isEditing ? "Save Workout Changes" : "Confirm Add New Workout";
+		ConfirmWorkoutButton.Text = isEditing ? "Save Changes" : "Save Workout";
 	}
 
 	private async Task LoadWorkoutForEditAsync()
@@ -83,10 +69,16 @@ public partial class NewWorkoutPage : ContentPage
 			_exercises.Add(new ExerciseEntry
 			{
 				ExerciseName = exercise.ExerciseName,
+				ExerciseCategory = exercise.ExerciseCategory,
+				TrackingMode = exercise.TrackingMode,
 				Sets = exercise.Sets,
 				Reps = exercise.Reps,
 				RIR = exercise.RIR,
-				RestSeconds = exercise.RestSeconds
+				RestSeconds = exercise.RestSeconds,
+				Metric1Value = exercise.Metric1Value,
+				Metric1Unit = exercise.Metric1Unit,
+				Metric2Value = exercise.Metric2Value,
+				Metric2Unit = exercise.Metric2Unit
 			});
 		}
 
@@ -110,57 +102,19 @@ public partial class NewWorkoutPage : ContentPage
 	{
 		ClearError();
 
-		if (string.IsNullOrWhiteSpace(_selectedExerciseName))
+		if (_selectedExerciseItem is null)
 		{
-			ShowError("Please select an exercise from the list.");
+			ShowError("Please choose an exercise first.");
 			return;
 		}
 
-		if (!int.TryParse(SetCountEntry.Text, out int setCount) || setCount <= 0)
+		ExerciseEntry? entry = BuildExerciseEntryFromInputs();
+		if (entry is null)
 		{
-			ShowError("Set count is required and must be a positive number.");
 			return;
 		}
 
-		if (!int.TryParse(RepCountEntry.Text, out int repCount) || repCount <= 0)
-		{
-			ShowError("Rep count is required and must be a positive number.");
-			return;
-		}
-
-		int? restSeconds = null;
-		int? rir = null;
-
-		if (!string.IsNullOrWhiteSpace(RirEntry.Text))
-		{
-			if (!int.TryParse(RirEntry.Text, out int parsedRir) || parsedRir < 0 || parsedRir > 5)
-			{
-				ShowError("RIR must be between 0 - 5.");
-				return;
-			}
-
-			rir = parsedRir;
-		}
-
-		if (!string.IsNullOrWhiteSpace(RestSecondsEntry.Text))
-		{
-			if (!int.TryParse(RestSecondsEntry.Text, out int parsedRest) || parsedRest <= 0)
-			{
-				ShowError("Rest seconds must be a positive number.");
-				return;
-			}
-
-			restSeconds = parsedRest;
-		}
-
-		_exercises.Add(new ExerciseEntry
-		{
-			ExerciseName = _selectedExerciseName,
-			Sets = setCount,
-			Reps = repCount,
-			RIR = rir,
-			RestSeconds = restSeconds
-		});
+		_exercises.Add(entry);
 
 		ClearExerciseInputs();
 		RefreshExercisesList();
@@ -200,10 +154,16 @@ public partial class NewWorkoutPage : ContentPage
 		List<ExerciseEntry> exerciseCopies = _exercises.Select(exercise => new ExerciseEntry
 		{
 			ExerciseName = exercise.ExerciseName,
+			ExerciseCategory = exercise.ExerciseCategory,
+			TrackingMode = exercise.TrackingMode,
 			Sets = exercise.Sets,
 			Reps = exercise.Reps,
 			RIR = exercise.RIR,
-			RestSeconds = exercise.RestSeconds
+			RestSeconds = exercise.RestSeconds,
+			Metric1Value = exercise.Metric1Value,
+			Metric1Unit = exercise.Metric1Unit,
+			Metric2Value = exercise.Metric2Value,
+			Metric2Unit = exercise.Metric2Unit
 		}).ToList();
 
 		if (_editingWorkoutId.HasValue)
@@ -215,7 +175,7 @@ public partial class NewWorkoutPage : ContentPage
 			await _database.SaveWorkoutAsync(workout, exerciseCopies);
 		}
 
-		await Navigation.PopAsync(false);
+		await Navigation.PopAsync(true);
 	}
 
 	private void RefreshExercisesList()
@@ -225,10 +185,8 @@ public partial class NewWorkoutPage : ContentPage
 			{
 				Index = index,
 				ExerciseName = x.ExerciseName,
-				SetRepText = x.RIR.HasValue
-					? $"Set x Rep: {x.Sets} x {x.Reps} (RIR{x.RIR.Value})"
-					: $"Set x Rep: {x.Sets} x {x.Reps}",
-				RestText = x.RestSeconds.HasValue ? $"Rest: {x.RestSeconds.Value} sec" : "Rest: -"
+				SetRepText = FormatPrimarySummary(x),
+				RestText = FormatSecondarySummary(x)
 			})
 			.ToList();
 
@@ -236,16 +194,9 @@ public partial class NewWorkoutPage : ContentPage
 		ExerciseCountLabel.Text = _exercises.Count == 1 ? "1 item" : $"{_exercises.Count} items";
 	}
 
-	private void OnExerciseSelectionChanged(object? sender, SelectionChangedEventArgs e)
-	{
-		var selected = e.CurrentSelection.FirstOrDefault() as ExerciseOption;
-		_selectedExerciseName = selected?.Name;
-		SelectedExerciseLabel.Text = $"Selected: {_selectedExerciseName ?? "-"}";
-	}
-
 	private void OnDeleteExerciseInvoked(object? sender, EventArgs e)
 	{
-		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not ExerciseListItem item)
+		if (GetBindingContext<ExerciseListItem>(sender) is not ExerciseListItem item)
 		{
 			return;
 		}
@@ -265,9 +216,10 @@ public partial class NewWorkoutPage : ContentPage
 		RepCountEntry.Text = string.Empty;
 		RirEntry.Text = string.Empty;
 		RestSecondsEntry.Text = string.Empty;
-		_selectedExerciseName = null;
-		ExerciseOptionsView.SelectedItem = null;
-		SelectedExerciseLabel.Text = "Selected: -";
+		Metric1Entry.Text = string.Empty;
+		Metric2Entry.Text = string.Empty;
+		_selectedExerciseItem = null;
+		UpdateExerciseSelectionUI();
 	}
 
 	private void ShowError(string message)
@@ -284,7 +236,16 @@ public partial class NewWorkoutPage : ContentPage
 
 	private async void OnHeaderBackClicked(object? sender, EventArgs e)
 	{
-		await Navigation.PopAsync(false);
+		await Navigation.PopAsync(true);
+	}
+
+	private static TItem? GetBindingContext<TItem>(object? sender) where TItem : class
+	{
+		return sender switch
+		{
+			BindableObject bindable when bindable.BindingContext is TItem item => item,
+			_ => null
+		};
 	}
 
 	private sealed class ExerciseListItem
@@ -295,8 +256,169 @@ public partial class NewWorkoutPage : ContentPage
 		public string RestText { get; set; } = string.Empty;
 	}
 
-	private sealed class ExerciseOption
+	private async void OnChooseExerciseClicked(object? sender, EventArgs e)
 	{
-		public string Name { get; set; } = string.Empty;
+		await Navigation.PushAsync(
+			new ExercisePickerPage(
+				"Choose Exercise",
+				ExerciseCatalog.Categories,
+				OnExerciseSelected),
+			true);
+	}
+
+	private void OnExerciseSelected(ExerciseCatalogItem item)
+	{
+		_selectedExerciseItem = item;
+		UpdateExerciseSelectionUI();
+	}
+
+	private void UpdateExerciseSelectionUI()
+	{
+		if (_selectedExerciseItem is null)
+		{
+			SelectedExerciseLabel.Text = "No exercise selected";
+			SelectedExerciseHintLabel.Text = "Tap browse to open your recommended movement library.";
+			StrengthInputsSection.IsVisible = false;
+			CustomInputsSection.IsVisible = false;
+			Metric2Container.IsVisible = false;
+			return;
+		}
+
+		SelectedExerciseLabel.Text = _selectedExerciseItem.Name;
+		SelectedExerciseHintLabel.Text = $"{_selectedExerciseItem.Category} | {_selectedExerciseItem.HintText}";
+
+		bool isStrength = _selectedExerciseItem.TrackingMode == ExerciseTrackingMode.Strength;
+		StrengthInputsSection.IsVisible = isStrength;
+		CustomInputsSection.IsVisible = !isStrength;
+
+		if (!isStrength)
+		{
+			Metric1Label.Text = $"{_selectedExerciseItem.PrimaryLabel} ({_selectedExerciseItem.PrimaryUnit})";
+			Metric1Entry.Placeholder = $"Enter {_selectedExerciseItem.PrimaryLabel.ToLowerInvariant()}";
+			Metric2Container.IsVisible = _selectedExerciseItem.HasSecondaryMetric;
+			Metric2Label.Text = $"{_selectedExerciseItem.SecondaryLabel} ({_selectedExerciseItem.SecondaryUnit})";
+			Metric2Entry.Placeholder = $"Enter {_selectedExerciseItem.SecondaryLabel.ToLowerInvariant()}";
+		}
+	}
+
+	private ExerciseEntry? BuildExerciseEntryFromInputs()
+	{
+		if (_selectedExerciseItem is null)
+		{
+			ShowError("Please choose an exercise first.");
+			return null;
+		}
+
+		if (_selectedExerciseItem.TrackingMode == ExerciseTrackingMode.Strength)
+		{
+			if (!int.TryParse(SetCountEntry.Text, out int setCount) || setCount <= 0)
+			{
+				ShowError("Set count is required and must be a positive number.");
+				return null;
+			}
+
+			if (!int.TryParse(RepCountEntry.Text, out int repCount) || repCount <= 0)
+			{
+				ShowError("Rep count is required and must be a positive number.");
+				return null;
+			}
+
+			int? restSeconds = null;
+			int? rir = null;
+
+			if (!string.IsNullOrWhiteSpace(RirEntry.Text))
+			{
+				if (!int.TryParse(RirEntry.Text, out int parsedRir) || parsedRir < 0 || parsedRir > 5)
+				{
+					ShowError("RIR must be between 0 - 5.");
+					return null;
+				}
+
+				rir = parsedRir;
+			}
+
+			if (!string.IsNullOrWhiteSpace(RestSecondsEntry.Text))
+			{
+				if (!int.TryParse(RestSecondsEntry.Text, out int parsedRest) || parsedRest <= 0)
+				{
+					ShowError("Rest seconds must be a positive number.");
+					return null;
+				}
+
+				restSeconds = parsedRest;
+			}
+
+			return new ExerciseEntry
+			{
+				ExerciseName = _selectedExerciseItem.Name,
+				ExerciseCategory = _selectedExerciseItem.Category,
+				TrackingMode = nameof(ExerciseTrackingMode.Strength),
+				Sets = setCount,
+				Reps = repCount,
+				RIR = rir,
+				RestSeconds = restSeconds
+			};
+		}
+
+		if (!double.TryParse(Metric1Entry.Text, out double metric1))
+		{
+			ShowError($"{_selectedExerciseItem.PrimaryLabel} is required.");
+			return null;
+		}
+
+		double? metric2 = null;
+		if (_selectedExerciseItem.HasSecondaryMetric)
+		{
+			if (!double.TryParse(Metric2Entry.Text, out double parsedMetric2))
+			{
+				ShowError($"{_selectedExerciseItem.SecondaryLabel} is required.");
+				return null;
+			}
+
+			metric2 = parsedMetric2;
+		}
+
+		return new ExerciseEntry
+		{
+			ExerciseName = _selectedExerciseItem.Name,
+			ExerciseCategory = _selectedExerciseItem.Category,
+			TrackingMode = nameof(ExerciseTrackingMode.Custom),
+			Metric1Value = metric1,
+			Metric1Unit = _selectedExerciseItem.PrimaryUnit,
+			Metric2Value = metric2,
+			Metric2Unit = _selectedExerciseItem.SecondaryUnit
+		};
+	}
+
+	private static string FormatPrimarySummary(ExerciseEntry entry)
+	{
+		if (entry.TrackingMode == nameof(ExerciseTrackingMode.Custom))
+		{
+			ExerciseCatalogItem? item = ExerciseCatalog.GetByName(entry.ExerciseName);
+			if (item is not null)
+			{
+				return $"{item.PrimaryLabel}: {entry.Metric1Value:0.##} {entry.Metric1Unit}";
+			}
+		}
+
+		return entry.RIR.HasValue
+			? $"Sets x Reps: {entry.Sets} x {entry.Reps} (RIR{entry.RIR.Value})"
+			: $"Sets x Reps: {entry.Sets} x {entry.Reps}";
+	}
+
+	private static string FormatSecondarySummary(ExerciseEntry entry)
+	{
+		if (entry.TrackingMode == nameof(ExerciseTrackingMode.Custom))
+		{
+			ExerciseCatalogItem? item = ExerciseCatalog.GetByName(entry.ExerciseName);
+			if (item is not null && item.HasSecondaryMetric && entry.Metric2Value.HasValue)
+			{
+				return $"{item.SecondaryLabel}: {entry.Metric2Value:0.##} {entry.Metric2Unit}";
+			}
+
+			return $"Category: {entry.ExerciseCategory}";
+		}
+
+		return entry.RestSeconds.HasValue ? $"Rest: {entry.RestSeconds.Value} sec" : $"Category: {entry.ExerciseCategory}";
 	}
 }

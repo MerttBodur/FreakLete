@@ -50,27 +50,47 @@ public partial class BottomNavBar : ContentView
 
 	private async void OnHomeClicked(object? sender, EventArgs e)
 	{
+		if (sender is VisualElement element)
+		{
+			await AnimatePressAsync(element);
+		}
+
 		var navigation = GetNavigation();
 		if (navigation is null)
 		{
 			return;
 		}
 
-		await navigation.PopToRootAsync(false);
+		await navigation.PopToRootAsync(true);
 	}
 
 	private async void OnWorkoutClicked(object? sender, EventArgs e)
 	{
+		if (sender is VisualElement element)
+		{
+			await AnimatePressAsync(element);
+		}
+
 		await NavigateFromRootAsync(() => new WorkoutPage());
 	}
 
 	private async void OnOneRmClicked(object? sender, EventArgs e)
 	{
+		if (sender is VisualElement element)
+		{
+			await AnimatePressAsync(element);
+		}
+
 		await NavigateFromRootAsync(() => new OneRmPage());
 	}
 
 	private async void OnProfileClicked(object? sender, EventArgs e)
 	{
+		if (sender is VisualElement element)
+		{
+			await AnimatePressAsync(element);
+		}
+
 		await NavigateFromRootAsync(() => new ProfilePage());
 	}
 
@@ -96,6 +116,12 @@ public partial class BottomNavBar : ContentView
 			return;
 		}
 
-		await navigation.PushAsync(nextPage, false);
+		await navigation.PushAsync(nextPage, true);
+	}
+
+	private static async Task AnimatePressAsync(VisualElement element)
+	{
+		await element.ScaleToAsync(0.88, 70, Easing.CubicOut);
+		await element.ScaleToAsync(1, 110, Easing.CubicIn);
 	}
 }

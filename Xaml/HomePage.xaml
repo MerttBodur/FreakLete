@@ -36,7 +36,7 @@
                                    HorizontalTextAlignment="Start" />
                             <Label Text="Build a session, log exercises, and keep progress moving."
                                    Style="{StaticResource BodyMuted}" />
-                            <Button Text="Start Workout"
+                            <Button Text="Start"
                                     Clicked="OnStartWorkoutClicked" />
                         </VerticalStackLayout>
                     </Border>
@@ -50,7 +50,7 @@
                             <Label Text="Estimate max strength and save important PR sets."
                                    Style="{StaticResource BodyMuted}" />
                             <Button Style="{StaticResource SecondaryButton}"
-                                    Text="Open Calculator"
+                                    Text="Calculator"
                                     Clicked="OnOpenOneRmClicked" />
                         </VerticalStackLayout>
                     </Border>

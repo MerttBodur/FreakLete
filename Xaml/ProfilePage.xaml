@@ -73,7 +73,7 @@
                         <Picker x:Name="GymExperiencePicker"
                                 Title="Select experience level" />
 
-                        <Button Text="Save Profile"
+                        <Button Text="Save"
                                 Clicked="OnSaveProfileClicked" />
                     </VerticalStackLayout>
                 </Border>
@@ -134,18 +134,57 @@
                                Style="{StaticResource SubHeadline}"
                                HorizontalTextAlignment="Start" />
 
-                        <Picker x:Name="PerformanceMovementPicker"
-                                Title="Select movement" />
-                        <Entry x:Name="PerformanceValueEntry"
-                               Placeholder="Enter result"
-                               Keyboard="Numeric" />
+                        <Label Text="Movement"
+                               Style="{StaticResource BodyMuted}" />
+                        <Border Style="{StaticResource CardBorder}"
+                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                Padding="14">
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="10">
+                                <VerticalStackLayout Grid.Column="0"
+                                                     Spacing="4">
+                                    <Label x:Name="SelectedPerformanceLabel"
+                                           Text="No movement selected"
+                                           FontSize="18" />
+                                    <Label x:Name="SelectedPerformanceHintLabel"
+                                           Text="Browse sprint, jump, plyo, and Olympic lift movements."
+                                           Style="{StaticResource BodyMuted}" />
+                                </VerticalStackLayout>
+
+                                <Button Grid.Column="1"
+                                        Text="Browse"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Clicked="OnChoosePerformanceMovementClicked"
+                                        VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <VerticalStackLayout Spacing="8">
+                            <Label x:Name="PerformanceMetric1Label"
+                                   Text="Result"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Entry x:Name="PerformanceValueEntry"
+                                   Placeholder="Enter result"
+                                   Keyboard="Numeric" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout x:Name="PerformanceMetric2Container"
+                                             Spacing="8"
+                                             IsVisible="False">
+                            <Label x:Name="PerformanceMetric2Label"
+                                   Text="Second Result"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Entry x:Name="PerformanceSecondaryValueEntry"
+                                   Placeholder="Enter second result"
+                                   Keyboard="Numeric" />
+                        </VerticalStackLayout>
 
                         <Button x:Name="PerformanceActionButton"
-                                Text="Add Athletic Performance"
+                                Text="Save"
                                 Clicked="OnAddPerformanceClicked" />
 
                         <Button x:Name="PerformanceCancelButton"
-                                Text="Cancel Edit"
+                                Text="Cancel"
                                 Style="{StaticResource SecondaryButton}"
                                 IsVisible="False"
                                 Clicked="OnCancelPerformanceEditClicked" />
@@ -169,24 +208,22 @@
                                             <Label Grid.Column="0"
                                                    Text="{Binding Text}"
                                                    VerticalOptions="Center" />
-                                            <Button Grid.Column="1"
-                                                    Text="Edit"
-                                                    Clicked="OnEditPerformanceInvoked"
-                                                    BackgroundColor="#24203A"
-                                                    Padding="12,8"
-                                                    FontSize="13"
-                                                    CornerRadius="14"
-                                                    MinimumHeightRequest="36"
-                                                    MinimumWidthRequest="68" />
-                                            <Button Grid.Column="2"
-                                                    Text="Delete"
-                                                    Clicked="OnDeletePerformanceInvoked"
-                                                    BackgroundColor="#3A1623"
-                                                    Padding="12,8"
-                                                    FontSize="13"
-                                                    CornerRadius="14"
-                                                    MinimumHeightRequest="36"
-                                                    MinimumWidthRequest="78" />
+                                            <ImageButton Grid.Column="1"
+                                                         Source="icon_edit.svg"
+                                                         Clicked="OnEditPerformanceInvoked"
+                                                         BackgroundColor="#24203A"
+                                                         Padding="8"
+                                                         WidthRequest="36"
+                                                         HeightRequest="36"
+                                                         CornerRadius="12" />
+                                            <ImageButton Grid.Column="2"
+                                                         Source="icon_delete.svg"
+                                                         Clicked="OnDeletePerformanceInvoked"
+                                                         BackgroundColor="#3A1623"
+                                                         Padding="8"
+                                                         WidthRequest="36"
+                                                         HeightRequest="36"
+                                                         CornerRadius="12" />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -215,11 +252,11 @@
                         </Grid>
 
                         <Button x:Name="GoalActionButton"
-                                Text="Save Goal"
+                                Text="Save"
                                 Clicked="OnSaveGoalClicked" />
 
                         <Button x:Name="GoalCancelButton"
-                                Text="Cancel Edit"
+                                Text="Cancel"
                                 Style="{StaticResource SecondaryButton}"
                                 IsVisible="False"
                                 Clicked="OnCancelGoalEditClicked" />
@@ -243,24 +280,22 @@
                                             <Label Grid.Column="0"
                                                    Text="{Binding Text}"
                                                    VerticalOptions="Center" />
-                                            <Button Grid.Column="1"
-                                                    Text="Edit"
-                                                    Clicked="OnEditGoalInvoked"
-                                                    BackgroundColor="#24203A"
-                                                    Padding="12,8"
-                                                    FontSize="13"
-                                                    CornerRadius="14"
-                                                    MinimumHeightRequest="36"
-                                                    MinimumWidthRequest="68" />
-                                            <Button Grid.Column="2"
-                                                    Text="Delete"
-                                                    Clicked="OnDeleteGoalInvoked"
-                                                    BackgroundColor="#3A1623"
-                                                    Padding="12,8"
-                                                    FontSize="13"
-                                                    CornerRadius="14"
-                                                    MinimumHeightRequest="36"
-                                                    MinimumWidthRequest="78" />
+                                            <ImageButton Grid.Column="1"
+                                                         Source="icon_edit.svg"
+                                                         Clicked="OnEditGoalInvoked"
+                                                         BackgroundColor="#24203A"
+                                                         Padding="8"
+                                                         WidthRequest="36"
+                                                         HeightRequest="36"
+                                                         CornerRadius="12" />
+                                            <ImageButton Grid.Column="2"
+                                                         Source="icon_delete.svg"
+                                                         Clicked="OnDeleteGoalInvoked"
+                                                         BackgroundColor="#3A1623"
+                                                         Padding="8"
+                                                         WidthRequest="36"
+                                                         HeightRequest="36"
+                                                         CornerRadius="12" />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -289,11 +324,11 @@
                         </Grid>
 
                         <Button x:Name="ProfilePrActionButton"
-                                Text="Add Profile PR"
+                                Text="Save PR"
                                 Clicked="OnAddProfilePrClicked" />
 
                         <Button x:Name="ProfilePrCancelButton"
-                                Text="Cancel Edit"
+                                Text="Cancel"
                                 Style="{StaticResource SecondaryButton}"
                                 IsVisible="False"
                                 Clicked="OnCancelProfilePrEditClicked" />
@@ -317,24 +352,22 @@
                                             <Label Grid.Column="0"
                                                    Text="{Binding Text}"
                                                    VerticalOptions="Center" />
-                                            <Button Grid.Column="1"
-                                                    Text="Edit"
-                                                    Clicked="OnEditProfilePrInvoked"
-                                                    BackgroundColor="#24203A"
-                                                    Padding="12,8"
-                                                    FontSize="13"
-                                                    CornerRadius="14"
-                                                    MinimumHeightRequest="36"
-                                                    MinimumWidthRequest="68" />
-                                            <Button Grid.Column="2"
-                                                    Text="Delete"
-                                                    Clicked="OnDeleteProfilePrInvoked"
-                                                    BackgroundColor="#3A1623"
-                                                    Padding="12,8"
-                                                    FontSize="13"
-                                                    CornerRadius="14"
-                                                    MinimumHeightRequest="36"
-                                                    MinimumWidthRequest="78" />
+                                            <ImageButton Grid.Column="1"
+                                                         Source="icon_edit.svg"
+                                                         Clicked="OnEditProfilePrInvoked"
+                                                         BackgroundColor="#24203A"
+                                                         Padding="8"
+                                                         WidthRequest="36"
+                                                         HeightRequest="36"
+                                                         CornerRadius="12" />
+                                            <ImageButton Grid.Column="2"
+                                                         Source="icon_delete.svg"
+                                                         Clicked="OnDeleteProfilePrInvoked"
+                                                         BackgroundColor="#3A1623"
+                                                         Padding="8"
+                                                         WidthRequest="36"
+                                                         HeightRequest="36"
+                                                         CornerRadius="12" />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -351,7 +384,7 @@
                             Clicked="OnLogoutClicked" />
 
                     <Button Grid.Column="1"
-                            Text="Delete Account"
+                            Text="Delete"
                             BackgroundColor="{StaticResource DangerSoft}"
                             Clicked="OnDeleteAccountClicked" />
                 </Grid>

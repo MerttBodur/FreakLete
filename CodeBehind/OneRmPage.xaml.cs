@@ -164,7 +164,7 @@ public partial class OneRmPage : ContentPage
 
 	private async void OnDeleteSavedPrInvoked(object? sender, EventArgs e)
 	{
-		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not SavedPrItem item)
+		if (GetBindingContext<SavedPrItem>(sender) is not SavedPrItem item)
 		{
 			return;
 		}
@@ -187,7 +187,7 @@ public partial class OneRmPage : ContentPage
 
 	private void OnEditSavedPrInvoked(object? sender, EventArgs e)
 	{
-		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not SavedPrItem item)
+		if (GetBindingContext<SavedPrItem>(sender) is not SavedPrItem item)
 		{
 			return;
 		}
@@ -196,7 +196,7 @@ public partial class OneRmPage : ContentPage
 		WeightEntry.Text = item.Weight.ToString();
 		RepsEntry.Text = item.Reps.ToString();
 		RirEntry.Text = item.Rir.ToString();
-		SaveExerciseButton.Text = "Update Exercise";
+		SaveExerciseButton.Text = "Update";
 		CancelEditButton.IsVisible = true;
 		ErrorLabel.TextColor = Colors.LightGreen;
 		ErrorLabel.Text = $"Editing: {item.Text}";
@@ -235,8 +235,17 @@ public partial class OneRmPage : ContentPage
 		WeightEntry.Text = string.Empty;
 		RepsEntry.Text = string.Empty;
 		RirEntry.Text = string.Empty;
-		SaveExerciseButton.Text = "Save Exercise";
+		SaveExerciseButton.Text = "Save PR";
 		CancelEditButton.IsVisible = false;
+	}
+
+	private static TItem? GetBindingContext<TItem>(object? sender) where TItem : class
+	{
+		return sender switch
+		{
+			BindableObject bindable when bindable.BindingContext is TItem item => item,
+			_ => null
+		};
 	}
 
 	private static double CalculateOneRm(int weightKg, int estimatedMaxReps)

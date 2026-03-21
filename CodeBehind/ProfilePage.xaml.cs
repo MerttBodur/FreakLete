@@ -15,11 +15,12 @@ public partial class ProfilePage : ContentPage
 		"5+ years"
 	];
 
-	private static readonly string[] AthleticMovements =
+	private static readonly string[] AthleticCategories =
 	[
-		"Single Broad Jump",
-		"Vertical Jump",
-		"40y Sprint Dash"
+		ExerciseCatalog.Sprint,
+		ExerciseCatalog.Jumps,
+		ExerciseCatalog.Plyometrics,
+		ExerciseCatalog.OlympicLifts
 	];
 
 	private readonly AppDatabase _database;
@@ -28,6 +29,7 @@ public partial class ProfilePage : ContentPage
 	private int? _editingPerformanceId;
 	private int? _editingGoalId;
 	private int? _editingProfilePrId;
+	private ExerciseCatalogItem? _selectedPerformanceItem;
 
 	public ProfilePage()
 	{
@@ -36,7 +38,7 @@ public partial class ProfilePage : ContentPage
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 
 		GymExperiencePicker.ItemsSource = ExperienceLevels;
-		PerformanceMovementPicker.ItemsSource = AthleticMovements;
+		UpdatePerformanceSelectionUI();
 	}
 
 	protected override async void OnAppearing()
@@ -106,10 +108,13 @@ public partial class ProfilePage : ContentPage
 		{
 			Id = entry.Id,
 			MovementName = entry.MovementName,
+			MovementCategory = entry.MovementCategory,
 			Value = entry.Value,
 			Unit = entry.Unit,
+			SecondaryValue = entry.SecondaryValue,
+			SecondaryUnit = entry.SecondaryUnit,
 			RecordedAt = entry.RecordedAt,
-			Text = $"{entry.MovementName}: {entry.Value:0.##} {entry.Unit} ({entry.RecordedAt:dd.MM.yyyy})"
+			Text = FormatAthleticPerformanceText(entry)
 		}).ToList();
 
 		BindableLayout.SetItemsSource(AthleticPerformanceList, items);
@@ -199,22 +204,41 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		string movement = PerformanceMovementPicker.SelectedItem?.ToString() ?? string.Empty;
-		bool parsed = double.TryParse(PerformanceValueEntry.Text, out double value);
-
-		if (string.IsNullOrWhiteSpace(movement) || !parsed)
+		if (_selectedPerformanceItem is null)
 		{
-			ShowError("Select a movement and enter a valid result.");
+			ShowError("Choose a movement and enter a valid result.");
 			return;
+		}
+
+		bool parsed = double.TryParse(PerformanceValueEntry.Text, out double value);
+		if (!parsed)
+		{
+			ShowError($"{_selectedPerformanceItem.PrimaryLabel} is required.");
+			return;
+		}
+
+		double? secondaryValue = null;
+		if (_selectedPerformanceItem.HasSecondaryMetric)
+		{
+			if (!double.TryParse(PerformanceSecondaryValueEntry.Text, out double parsedSecondary))
+			{
+				ShowError($"{_selectedPerformanceItem.SecondaryLabel} is required.");
+				return;
+			}
+
+			secondaryValue = parsedSecondary;
 		}
 
 		AthleticPerformanceEntry entry = new()
 		{
 			Id = _editingPerformanceId.GetValueOrDefault(),
 			UserId = _currentUser.Id,
-			MovementName = movement,
+			MovementName = _selectedPerformanceItem.Name,
+			MovementCategory = _selectedPerformanceItem.Category,
 			Value = value,
-			Unit = GetAthleticUnit(movement)
+			Unit = _selectedPerformanceItem.PrimaryUnit,
+			SecondaryValue = secondaryValue,
+			SecondaryUnit = _selectedPerformanceItem.SecondaryUnit
 		};
 
 		if (_editingPerformanceId.HasValue)
@@ -262,9 +286,11 @@ public partial class ProfilePage : ContentPage
 		}
 
 		_editingPerformanceId = item.Id;
-		PerformanceMovementPicker.SelectedItem = item.MovementName;
+		_selectedPerformanceItem = ExerciseCatalog.GetByName(item.MovementName);
+		UpdatePerformanceSelectionUI();
 		PerformanceValueEntry.Text = item.Value.ToString("0.##");
-		PerformanceActionButton.Text = "Update Athletic Performance";
+		PerformanceSecondaryValueEntry.Text = item.SecondaryValue?.ToString("0.##") ?? string.Empty;
+		PerformanceActionButton.Text = "Update";
 		PerformanceCancelButton.IsVisible = true;
 		ShowSuccess($"Editing: {item.Text}");
 	}
@@ -345,7 +371,7 @@ public partial class ProfilePage : ContentPage
 		GoalMovementEntry.Text = item.MovementName;
 		GoalTargetValueEntry.Text = item.TargetValue.ToString("0.##");
 		GoalUnitEntry.Text = item.Unit;
-		GoalActionButton.Text = "Update Goal";
+		GoalActionButton.Text = "Update";
 		GoalCancelButton.IsVisible = true;
 		ShowSuccess($"Editing: {item.Text}");
 	}
@@ -428,7 +454,7 @@ public partial class ProfilePage : ContentPage
 		ProfilePrMovementEntry.Text = item.MovementName;
 		ProfilePrValueEntry.Text = item.Value.ToString("0.##");
 		ProfilePrUnitEntry.Text = item.Unit;
-		ProfilePrActionButton.Text = "Update Profile PR";
+		ProfilePrActionButton.Text = "Update";
 		ProfilePrCancelButton.IsVisible = true;
 		ShowSuccess($"Editing: {item.Text}");
 	}
@@ -504,17 +530,6 @@ public partial class ProfilePage : ContentPage
 		return double.TryParse(text, out double value) ? value : null;
 	}
 
-	private static string GetAthleticUnit(string movementName)
-	{
-		return movementName switch
-		{
-			"Single Broad Jump" => "cm",
-			"Vertical Jump" => "cm",
-			"40y Sprint Dash" => "s",
-			_ => string.Empty
-		};
-	}
-
 	private static TItem? GetBindingContext<TItem>(object? sender) where TItem : class
 	{
 		return sender switch
@@ -565,10 +580,64 @@ public partial class ProfilePage : ContentPage
 	private void ResetPerformanceForm()
 	{
 		_editingPerformanceId = null;
-		PerformanceMovementPicker.SelectedIndex = -1;
+		_selectedPerformanceItem = null;
+		UpdatePerformanceSelectionUI();
 		PerformanceValueEntry.Text = string.Empty;
-		PerformanceActionButton.Text = "Add Athletic Performance";
+		PerformanceSecondaryValueEntry.Text = string.Empty;
+		PerformanceActionButton.Text = "Save";
 		PerformanceCancelButton.IsVisible = false;
+	}
+
+	private async void OnChoosePerformanceMovementClicked(object? sender, EventArgs e)
+	{
+		await Navigation.PushAsync(
+			new ExercisePickerPage(
+				"Choose Movement",
+				AthleticCategories,
+				OnPerformanceMovementSelected),
+			true);
+	}
+
+	private void OnPerformanceMovementSelected(ExerciseCatalogItem item)
+	{
+		_selectedPerformanceItem = item;
+		UpdatePerformanceSelectionUI();
+	}
+
+	private void UpdatePerformanceSelectionUI()
+	{
+		if (_selectedPerformanceItem is null)
+		{
+			SelectedPerformanceLabel.Text = "No movement selected";
+			SelectedPerformanceHintLabel.Text = "Browse sprint, jump, plyo, and Olympic lift movements.";
+			PerformanceMetric1Label.Text = "Result";
+			PerformanceValueEntry.Placeholder = "Enter result";
+			PerformanceMetric2Container.IsVisible = false;
+			return;
+		}
+
+		SelectedPerformanceLabel.Text = _selectedPerformanceItem.Name;
+		SelectedPerformanceHintLabel.Text = $"{_selectedPerformanceItem.Category} | {_selectedPerformanceItem.HintText}";
+		PerformanceMetric1Label.Text = $"{_selectedPerformanceItem.PrimaryLabel} ({_selectedPerformanceItem.PrimaryUnit})";
+		PerformanceValueEntry.Placeholder = $"Enter {_selectedPerformanceItem.PrimaryLabel.ToLowerInvariant()}";
+		PerformanceMetric2Container.IsVisible = _selectedPerformanceItem.HasSecondaryMetric;
+		PerformanceMetric2Label.Text = $"{_selectedPerformanceItem.SecondaryLabel} ({_selectedPerformanceItem.SecondaryUnit})";
+		PerformanceSecondaryValueEntry.Placeholder = $"Enter {_selectedPerformanceItem.SecondaryLabel.ToLowerInvariant()}";
+	}
+
+	private static string FormatAthleticPerformanceText(AthleticPerformanceEntry entry)
+	{
+		ExerciseCatalogItem? item = ExerciseCatalog.GetByName(entry.MovementName);
+		string primary = item is not null
+			? $"{item.PrimaryLabel}: {entry.Value:0.##} {entry.Unit}"
+			: $"{entry.Value:0.##} {entry.Unit}";
+
+		if (item is not null && item.HasSecondaryMetric && entry.SecondaryValue.HasValue)
+		{
+			return $"{entry.MovementName}: {primary} | {item.SecondaryLabel}: {entry.SecondaryValue:0.##} {entry.SecondaryUnit} ({entry.RecordedAt:dd.MM.yyyy})";
+		}
+
+		return $"{entry.MovementName}: {primary} ({entry.RecordedAt:dd.MM.yyyy})";
 	}
 
 	private void ResetGoalForm()
@@ -577,7 +646,7 @@ public partial class ProfilePage : ContentPage
 		GoalMovementEntry.Text = string.Empty;
 		GoalTargetValueEntry.Text = string.Empty;
 		GoalUnitEntry.Text = string.Empty;
-		GoalActionButton.Text = "Save Goal";
+		GoalActionButton.Text = "Save";
 		GoalCancelButton.IsVisible = false;
 	}
 
@@ -587,7 +656,7 @@ public partial class ProfilePage : ContentPage
 		ProfilePrMovementEntry.Text = string.Empty;
 		ProfilePrValueEntry.Text = string.Empty;
 		ProfilePrUnitEntry.Text = string.Empty;
-		ProfilePrActionButton.Text = "Add Profile PR";
+		ProfilePrActionButton.Text = "Save PR";
 		ProfilePrCancelButton.IsVisible = false;
 	}
 
@@ -600,8 +669,11 @@ public partial class ProfilePage : ContentPage
 	private sealed class AthleticPerformanceListItem : TextListItem
 	{
 		public string MovementName { get; set; } = string.Empty;
+		public string MovementCategory { get; set; } = string.Empty;
 		public double Value { get; set; }
 		public string Unit { get; set; } = string.Empty;
+		public double? SecondaryValue { get; set; }
+		public string SecondaryUnit { get; set; } = string.Empty;
 		public DateTime RecordedAt { get; set; }
 	}
 
