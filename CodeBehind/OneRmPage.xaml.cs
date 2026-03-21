@@ -1,17 +1,28 @@
 using System.Text;
-using System.Text.Json;
+using GymTracker.Data;
+using GymTracker.Models;
+using GymTracker.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GymTracker;
 
 public partial class OneRmPage : ContentPage
 {
-	private const string SavedPrKey = "saved_pr_entries_v1";
+	private readonly AppDatabase _database;
+	private readonly UserSession _session;
 	private readonly List<string> _savedPrEntries = new();
 
 	public OneRmPage()
 	{
 		InitializeComponent();
-		LoadSavedPrEntries();
+		_database = MauiProgram.Services.GetRequiredService<AppDatabase>();
+		_session = MauiProgram.Services.GetRequiredService<UserSession>();
+	}
+
+	protected override async void OnAppearing()
+	{
+		base.OnAppearing();
+		await LoadSavedPrEntriesAsync();
 		RefreshSavedPrList();
 	}
 
@@ -38,18 +49,33 @@ public partial class OneRmPage : ContentPage
 		ResultsLabel.Text = output.ToString();
 	}
 
-	private void OnSaveExerciseClicked(object? sender, EventArgs e)
+	private async void OnSaveExerciseClicked(object? sender, EventArgs e)
 	{
 		ClearError();
+
+		int? currentUserId = _session.GetCurrentUserId();
+		if (!currentUserId.HasValue)
+		{
+			ShowError("Please log in again.");
+			return;
+		}
 
 		if (!TryGetInputs(out int weightKg, out int reps, out int rir))
 		{
 			return;
 		}
 
-		string entry = $"{weightKg} x {reps} RIR{rir}";
-		_savedPrEntries.Insert(0, entry);
-		SavePrEntries();
+		PrEntry entry = new()
+		{
+			UserId = currentUserId.Value,
+			ExerciseName = "1RM Saved Entry",
+			Weight = weightKg,
+			Reps = reps,
+			RIR = rir
+		};
+
+		await _database.SavePrEntryAsync(entry);
+		await LoadSavedPrEntriesAsync();
 		RefreshSavedPrList();
 	}
 
@@ -88,33 +114,19 @@ public partial class OneRmPage : ContentPage
 		return true;
 	}
 
-	private void LoadSavedPrEntries()
+	private async Task LoadSavedPrEntriesAsync()
 	{
-		string? json = Preferences.Default.Get(SavedPrKey, string.Empty);
-		if (string.IsNullOrWhiteSpace(json))
+		_savedPrEntries.Clear();
+
+		int? currentUserId = _session.GetCurrentUserId();
+		if (!currentUserId.HasValue)
 		{
 			return;
 		}
 
-		try
-		{
-			var items = JsonSerializer.Deserialize<List<string>>(json);
-			if (items is not null)
-			{
-				_savedPrEntries.Clear();
-				_savedPrEntries.AddRange(items);
-			}
-		}
-		catch
-		{
-			_savedPrEntries.Clear();
-		}
-	}
-
-	private void SavePrEntries()
-	{
-		string json = JsonSerializer.Serialize(_savedPrEntries);
-		Preferences.Default.Set(SavedPrKey, json);
+		List<PrEntry> entries = await _database.GetPrEntriesByUserAsync(currentUserId.Value);
+		_savedPrEntries.AddRange(entries.Select(entry =>
+			$"{entry.Weight} x {entry.Reps} RIR{entry.RIR.GetValueOrDefault()}"));
 	}
 
 	private void RefreshSavedPrList()

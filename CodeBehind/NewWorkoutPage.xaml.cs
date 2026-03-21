@@ -1,8 +1,13 @@
+using GymTracker.Data;
+using GymTracker.Models;
+using GymTracker.Services;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace GymTracker;
 
 public partial class NewWorkoutPage : ContentPage
 {
-	private readonly List<ExerciseRecord> _exercises = new();
+	private readonly List<ExerciseEntry> _exercises = new();
 	private readonly List<ExerciseOption> _exerciseOptions = new()
 	{
 		new() { Name = "Bench Press" },
@@ -17,11 +22,15 @@ public partial class NewWorkoutPage : ContentPage
 		new() { Name = "Triceps Pushdown" }
 	};
 
+	private readonly AppDatabase _database;
+	private readonly UserSession _session;
 	private string? _selectedExerciseName;
 
 	public NewWorkoutPage()
 	{
 		InitializeComponent();
+		_database = MauiProgram.Services.GetRequiredService<AppDatabase>();
+		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 		ExerciseOptionsView.ItemsSource = _exerciseOptions;
 		RefreshExercisesList();
 	}
@@ -86,12 +95,12 @@ public partial class NewWorkoutPage : ContentPage
 			restSeconds = parsedRest;
 		}
 
-		_exercises.Add(new ExerciseRecord
+		_exercises.Add(new ExerciseEntry
 		{
 			ExerciseName = _selectedExerciseName,
-			SetCount = setCount,
-			RepCount = repCount,
-			Rir = rir,
+			Sets = setCount,
+			Reps = repCount,
+			RIR = rir,
 			RestSeconds = restSeconds
 		});
 
@@ -102,6 +111,13 @@ public partial class NewWorkoutPage : ContentPage
 	private async void OnConfirmWorkoutClicked(object? sender, EventArgs e)
 	{
 		ClearError();
+
+		int? currentUserId = _session.GetCurrentUserId();
+		if (!currentUserId.HasValue)
+		{
+			ShowError("Please log in again.");
+			return;
+		}
 
 		if (string.IsNullOrWhiteSpace(WorkoutNameEntry.Text))
 		{
@@ -115,15 +131,14 @@ public partial class NewWorkoutPage : ContentPage
 			return;
 		}
 
-		var allWorkouts = WorkoutStorage.Load();
-		allWorkouts.Add(new WorkoutRecord
+		Workout workout = new()
 		{
-			Date = WorkoutDatePicker.Date ?? DateTime.Today,
-			WorkoutName = WorkoutNameEntry.Text.Trim(),
-			Exercises = _exercises.ToList()
-		});
+			UserId = currentUserId.Value,
+			WorkoutDate = WorkoutDatePicker.Date.GetValueOrDefault().Date,
+			WorkoutName = WorkoutNameEntry.Text.Trim()
+		};
 
-		WorkoutStorage.Save(allWorkouts);
+		await _database.SaveWorkoutAsync(workout, _exercises);
 		await Navigation.PopAsync(false);
 	}
 
@@ -133,9 +148,9 @@ public partial class NewWorkoutPage : ContentPage
 			.Select(x => new ExerciseListItem
 			{
 				ExerciseName = x.ExerciseName,
-				SetRepText = x.Rir.HasValue
-					? $"Set x Rep: {x.SetCount} x {x.RepCount} (RIR{x.Rir.Value})"
-					: $"Set x Rep: {x.SetCount} x {x.RepCount}",
+				SetRepText = x.RIR.HasValue
+					? $"Set x Rep: {x.Sets} x {x.Reps} (RIR{x.RIR.Value})"
+					: $"Set x Rep: {x.Sets} x {x.Reps}",
 				RestText = x.RestSeconds.HasValue ? $"Rest: {x.RestSeconds.Value} sec" : "Rest: -"
 			})
 			.ToList();

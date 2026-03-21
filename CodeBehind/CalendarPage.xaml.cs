@@ -1,10 +1,16 @@
 using System.Collections.ObjectModel;
+using GymTracker.Data;
+using GymTracker.Models;
+using GymTracker.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GymTracker;
 
 public partial class CalendarPage : ContentPage
 {
-	private readonly List<WorkoutRecord> _allWorkouts = new();
+	private readonly AppDatabase _database;
+	private readonly UserSession _session;
+	private readonly List<Workout> _allWorkouts = new();
 	private DateTime _currentMonth;
 	private DateTime _selectedDate;
 
@@ -13,22 +19,31 @@ public partial class CalendarPage : ContentPage
 	public CalendarPage()
 	{
 		InitializeComponent();
+		_database = MauiProgram.Services.GetRequiredService<AppDatabase>();
+		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 		BindingContext = this;
 		_selectedDate = DateTime.Today;
 		_currentMonth = new DateTime(_selectedDate.Year, _selectedDate.Month, 1);
 	}
 
-	protected override void OnAppearing()
+	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
-		ReloadWorkouts();
+		await ReloadWorkoutsAsync();
 		BuildCalendar();
 	}
 
-	private void ReloadWorkouts()
+	private async Task ReloadWorkoutsAsync()
 	{
 		_allWorkouts.Clear();
-		_allWorkouts.AddRange(WorkoutStorage.Load());
+		int? currentUserId = _session.GetCurrentUserId();
+		if (!currentUserId.HasValue)
+		{
+			return;
+		}
+
+		List<Workout> workouts = await _database.GetWorkoutsByUserAsync(currentUserId.Value);
+		_allWorkouts.AddRange(workouts);
 	}
 
 	private void OnPreviousMonthClicked(object? sender, EventArgs e)
@@ -70,7 +85,7 @@ public partial class CalendarPage : ContentPage
 		for (int day = 1; day <= daysInMonth; day++)
 		{
 			DateTime date = new(_currentMonth.Year, _currentMonth.Month, day);
-			bool hasWorkout = _allWorkouts.Any(x => x.Date.Date == date.Date);
+			bool hasWorkout = _allWorkouts.Any(x => x.WorkoutDate.Date == date.Date);
 			bool isSelected = date.Date == _selectedDate.Date;
 
 			CalendarDays.Add(new CalendarDayCell
@@ -91,7 +106,7 @@ public partial class CalendarPage : ContentPage
 			CalendarDays.Add(CalendarDayCell.Empty());
 		}
 
-		RefreshWorkoutsForDate(_selectedDate);
+		_ = RefreshWorkoutsForDateAsync(_selectedDate);
 	}
 
 	private static int GetMondayBasedOffset(DayOfWeek dayOfWeek)
@@ -116,27 +131,38 @@ public partial class CalendarPage : ContentPage
 		BuildCalendar();
 	}
 
-	private void RefreshWorkoutsForDate(DateTime selectedDate)
+	private async Task RefreshWorkoutsForDateAsync(DateTime selectedDate)
 	{
-		var items = _allWorkouts
-			.Where(x => x.Date.Date == selectedDate.Date)
-			.Select(x => new CalendarWorkoutItem
+		int? currentUserId = _session.GetCurrentUserId();
+		if (!currentUserId.HasValue)
+		{
+			SavedWorkoutsView.ItemsSource = new List<CalendarWorkoutItem>();
+			return;
+		}
+
+		List<Workout> workouts = await _database.GetWorkoutsByUserAndDateAsync(currentUserId.Value, selectedDate);
+		List<CalendarWorkoutItem> items = new();
+
+		foreach (Workout workout in workouts)
+		{
+			List<ExerciseEntry> exercises = await _database.GetExercisesByWorkoutIdAsync(workout.Id);
+			items.Add(new CalendarWorkoutItem
 			{
-				WorkoutName = x.WorkoutName,
-				ExercisesText = BuildExerciseText(x.Exercises)
-			})
-			.ToList();
+				WorkoutName = workout.WorkoutName,
+				ExercisesText = BuildExerciseText(exercises)
+			});
+		}
 
 		SavedWorkoutsView.ItemsSource = items;
 	}
 
-	private static string BuildExerciseText(List<ExerciseRecord> exercises)
+	private static string BuildExerciseText(List<ExerciseEntry> exercises)
 	{
 		return string.Join(" | ", exercises.Select(x =>
 		{
-			string baseText = x.Rir.HasValue
-				? $"{x.ExerciseName} ({x.SetCount}x{x.RepCount}, RIR{x.Rir.Value})"
-				: $"{x.ExerciseName} ({x.SetCount}x{x.RepCount})";
+			string baseText = x.RIR.HasValue
+				? $"{x.ExerciseName} ({x.Sets}x{x.Reps}, RIR{x.RIR.Value})"
+				: $"{x.ExerciseName} ({x.Sets}x{x.Reps})";
 
 			return x.RestSeconds.HasValue
 				? $"{baseText}, Rest {x.RestSeconds.Value}s"
