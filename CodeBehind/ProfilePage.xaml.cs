@@ -613,16 +613,20 @@ public partial class ProfilePage : ContentPage
 
 	private static string ResolveGoalLabel(ExerciseCatalogItem item)
 	{
-		return item.Category == ExerciseCatalog.Sprint && item.HasSecondaryMetric
-			? item.SecondaryLabel
-			: item.PrimaryLabel;
+		return MovementGoalRules.ResolveGoalLabel(
+			item.Category,
+			item.HasSecondaryMetric,
+			item.PrimaryLabel,
+			item.SecondaryLabel);
 	}
 
 	private static string ResolveGoalUnit(ExerciseCatalogItem item)
 	{
-		return item.Category == ExerciseCatalog.Sprint && item.HasSecondaryMetric
-			? item.SecondaryUnit
-			: item.PrimaryUnit;
+		return MovementGoalRules.ResolveGoalUnit(
+			item.Category,
+			item.HasSecondaryMetric,
+			item.PrimaryUnit,
+			item.SecondaryUnit);
 	}
 
 	private static string FormatAthleticPerformanceText(AthleticPerformanceEntry entry)

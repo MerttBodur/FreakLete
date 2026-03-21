@@ -101,8 +101,7 @@ public partial class CalculationsPage : ContentPage
 			return;
 		}
 
-		int estimatedMaxRep = reps + rir;
-		double oneRm = CalculateOneRm(weightKg, estimatedMaxRep);
+		double oneRm = CalculationService.CalculateOneRm(weightKg, reps, rir);
 		var output = new StringBuilder();
 
 		if (_selectedStrengthExerciseItem is not null)
@@ -110,9 +109,10 @@ public partial class CalculationsPage : ContentPage
 			output.AppendLine($"Movement: {_selectedStrengthExerciseItem.Name}");
 		}
 
-		for (int rm = 1; rm <= 8; rm++)
+		IReadOnlyList<double> rmValues = CalculationService.BuildRmTable(oneRm, 8);
+		for (int rm = 1; rm <= rmValues.Count; rm++)
 		{
-			double rmWeight = oneRm / (1 + (rm / 30.0));
+			double rmWeight = rmValues[rm - 1];
 			output.AppendLine($"{rm}RM: {Math.Round(rmWeight, 1)} kg");
 		}
 
@@ -534,13 +534,8 @@ public partial class CalculationsPage : ContentPage
 			return;
 		}
 
-		double rsi = (jumpHeightCm / 100.0) / gctSeconds;
+		double rsi = CalculationService.CalculateRsi(jumpHeightCm, gctSeconds);
 		RsiResultLabel.Text = $"RSI: {rsi:0.00} | Height {jumpHeightCm:0.##} cm | GCT {gctSeconds:0.##} s";
-	}
-
-	private static double CalculateOneRm(int weightKg, int estimatedMaxReps)
-	{
-		return weightKg * (1 + (estimatedMaxReps / 30.0));
 	}
 
 	private static void ShowError(Label label, string message)

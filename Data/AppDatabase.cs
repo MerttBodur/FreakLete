@@ -7,10 +7,31 @@ namespace GymTracker.Data;
 public class AppDatabase
 {
 	private SQLiteAsyncConnection? _database;
+	private readonly string? _databasePathOverride;
+
+	public AppDatabase()
+	{
+	}
+
+	public AppDatabase(string databasePath)
+	{
+		_databasePathOverride = databasePath;
+	}
 
 	public async Task EnsureCreatedAsync()
 	{
 		await InitAsync();
+	}
+
+	public async Task CloseAsync()
+	{
+		if (_database is null)
+		{
+			return;
+		}
+
+		await _database.CloseAsync();
+		_database = null;
 	}
 
 	private async Task InitAsync()
@@ -20,7 +41,7 @@ public class AppDatabase
 			return;
 		}
 
-		string databasePath = Path.Combine(FileSystem.AppDataDirectory, "gymtracker.db3");
+		string databasePath = _databasePathOverride ?? AppDataDirectoryProvider.GetDatabasePath("gymtracker.db3");
 		_database = new SQLiteAsyncConnection(
 			databasePath,
 			SQLiteOpenFlags.ReadWrite |
@@ -426,8 +447,7 @@ public class AppDatabase
 			.ToListAsync();
 
 		MovementGoal? existingGoal = matchingGoals.FirstOrDefault(item =>
-			string.Equals(item.MovementCategory, goal.MovementCategory, StringComparison.OrdinalIgnoreCase) ||
-			string.IsNullOrWhiteSpace(item.MovementCategory));
+			MovementGoalRules.MatchesCategory(item.MovementCategory, goal.MovementCategory));
 
 		if (existingGoal is null)
 		{

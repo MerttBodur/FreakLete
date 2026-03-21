@@ -71,6 +71,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\GymTracker.Core\GymTracker.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<EmbeddedResource Include="Resources\Raw\exercise_catalog.json"
 		                  LogicalName="GymTracker.Resources.Raw.exercise_catalog.json" />
 	</ItemGroup>
