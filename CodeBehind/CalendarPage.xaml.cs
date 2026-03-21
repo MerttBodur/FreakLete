@@ -148,12 +148,41 @@ public partial class CalendarPage : ContentPage
 			List<ExerciseEntry> exercises = await _database.GetExercisesByWorkoutIdAsync(workout.Id);
 			items.Add(new CalendarWorkoutItem
 			{
+				WorkoutId = workout.Id,
 				WorkoutName = workout.WorkoutName,
 				ExercisesText = BuildExerciseText(exercises)
 			});
 		}
 
 		SavedWorkoutsView.ItemsSource = items;
+	}
+
+	private async void OnDeleteWorkoutInvoked(object? sender, EventArgs e)
+	{
+		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not CalendarWorkoutItem item)
+		{
+			return;
+		}
+
+		bool confirmed = await DisplayAlertAsync("Delete Workout", $"Delete '{item.WorkoutName}'?", "Delete", "Cancel");
+		if (!confirmed)
+		{
+			return;
+		}
+
+		await _database.DeleteWorkoutAsync(item.WorkoutId);
+		await ReloadWorkoutsAsync();
+		BuildCalendar();
+	}
+
+	private async void OnEditWorkoutInvoked(object? sender, EventArgs e)
+	{
+		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not CalendarWorkoutItem item)
+		{
+			return;
+		}
+
+		await Navigation.PushAsync(new NewWorkoutPage(item.WorkoutId), false);
 	}
 
 	private static string BuildExerciseText(List<ExerciseEntry> exercises)
@@ -198,6 +227,7 @@ public partial class CalendarPage : ContentPage
 
 	private sealed class CalendarWorkoutItem
 	{
+		public int WorkoutId { get; set; }
 		public string WorkoutName { get; set; } = string.Empty;
 		public string ExercisesText { get; set; } = string.Empty;
 	}

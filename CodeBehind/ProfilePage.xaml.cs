@@ -25,6 +25,9 @@ public partial class ProfilePage : ContentPage
 	private readonly AppDatabase _database;
 	private readonly UserSession _session;
 	private User? _currentUser;
+	private int? _editingPerformanceId;
+	private int? _editingGoalId;
+	private int? _editingProfilePrId;
 
 	public ProfilePage()
 	{
@@ -99,43 +102,42 @@ public partial class ProfilePage : ContentPage
 	private async Task LoadAthleticPerformancesAsync(int userId)
 	{
 		List<AthleticPerformanceEntry> entries = await _database.GetAthleticPerformanceEntriesByUserAsync(userId);
-		if (entries.Count == 0)
+		AthleticPerformanceView.ItemsSource = entries.Select(entry => new AthleticPerformanceListItem
 		{
-			AthleticPerformanceLabel.Text = "No athletic performance records yet.";
-			return;
-		}
-
-		AthleticPerformanceLabel.Text = string.Join(
-			Environment.NewLine,
-			entries.Select(entry => $"{entry.MovementName}: {entry.Value:0.##} {entry.Unit} ({entry.RecordedAt:dd.MM.yyyy})"));
+			Id = entry.Id,
+			MovementName = entry.MovementName,
+			Value = entry.Value,
+			Unit = entry.Unit,
+			RecordedAt = entry.RecordedAt,
+			Text = $"{entry.MovementName}: {entry.Value:0.##} {entry.Unit} ({entry.RecordedAt:dd.MM.yyyy})"
+		}).ToList();
 	}
 
 	private async Task LoadMovementGoalsAsync(int userId)
 	{
 		List<MovementGoal> goals = await _database.GetMovementGoalsByUserAsync(userId);
-		if (goals.Count == 0)
+		MovementGoalsView.ItemsSource = goals.Select(goal => new MovementGoalListItem
 		{
-			MovementGoalsLabel.Text = "No movement goals set yet.";
-			return;
-		}
-
-		MovementGoalsLabel.Text = string.Join(
-			Environment.NewLine,
-			goals.Select(goal => $"{goal.MovementName}: {goal.TargetValue:0.##} {goal.Unit}"));
+			Id = goal.Id,
+			MovementName = goal.MovementName,
+			TargetValue = goal.TargetValue,
+			Unit = goal.Unit,
+			Text = $"{goal.MovementName}: {goal.TargetValue:0.##} {goal.Unit}"
+		}).ToList();
 	}
 
 	private async Task LoadProfilePrsAsync(int userId)
 	{
 		List<ProfilePrEntry> entries = await _database.GetProfilePrEntriesByUserAsync(userId);
-		if (entries.Count == 0)
+		ProfilePrView.ItemsSource = entries.Select(entry => new ProfilePrListItem
 		{
-			ProfilePrLabel.Text = "No profile PR records yet.";
-			return;
-		}
-
-		ProfilePrLabel.Text = string.Join(
-			Environment.NewLine,
-			entries.Select(entry => $"{entry.MovementName}: {entry.Value:0.##} {entry.Unit} ({entry.RecordedAt:dd.MM.yyyy})"));
+			Id = entry.Id,
+			MovementName = entry.MovementName,
+			Value = entry.Value,
+			Unit = entry.Unit,
+			RecordedAt = entry.RecordedAt,
+			Text = $"{entry.MovementName}: {entry.Value:0.##} {entry.Unit} ({entry.RecordedAt:dd.MM.yyyy})"
+		}).ToList();
 	}
 
 	private async void OnSaveProfileClicked(object? sender, EventArgs e)
@@ -199,16 +201,62 @@ public partial class ProfilePage : ContentPage
 
 		AthleticPerformanceEntry entry = new()
 		{
+			Id = _editingPerformanceId.GetValueOrDefault(),
 			UserId = _currentUser.Id,
 			MovementName = movement,
 			Value = value,
 			Unit = GetAthleticUnit(movement)
 		};
 
-		await _database.SaveAthleticPerformanceEntryAsync(entry);
-		PerformanceValueEntry.Text = string.Empty;
+		if (_editingPerformanceId.HasValue)
+		{
+			await _database.UpdateAthleticPerformanceEntryAsync(entry);
+			ShowSuccess("Athletic performance updated.");
+		}
+		else
+		{
+			await _database.SaveAthleticPerformanceEntryAsync(entry);
+			ShowSuccess("Athletic performance added.");
+		}
+
+		ResetPerformanceForm();
 		await LoadAthleticPerformancesAsync(_currentUser.Id);
-		ShowSuccess("Athletic performance added.");
+	}
+
+	private async void OnDeletePerformanceInvoked(object? sender, EventArgs e)
+	{
+		if (_currentUser is null || sender is not SwipeItem swipeItem || swipeItem.BindingContext is not AthleticPerformanceListItem item)
+		{
+			return;
+		}
+
+		bool confirmed = await DisplayAlertAsync("Delete Entry", $"Delete '{item.Text}'?", "Delete", "Cancel");
+		if (!confirmed)
+		{
+			return;
+		}
+
+		await _database.DeleteAthleticPerformanceEntryAsync(item.Id);
+		if (_editingPerformanceId == item.Id)
+		{
+			ResetPerformanceForm();
+		}
+		await LoadAthleticPerformancesAsync(_currentUser.Id);
+		ShowSuccess("Athletic performance deleted.");
+	}
+
+	private void OnEditPerformanceInvoked(object? sender, EventArgs e)
+	{
+		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not AthleticPerformanceListItem item)
+		{
+			return;
+		}
+
+		_editingPerformanceId = item.Id;
+		PerformanceMovementPicker.SelectedItem = item.MovementName;
+		PerformanceValueEntry.Text = item.Value.ToString("0.##");
+		PerformanceActionButton.Text = "Update Athletic Performance";
+		ShowSuccess($"Editing: {item.Text}");
 	}
 
 	private async void OnSaveGoalClicked(object? sender, EventArgs e)
@@ -232,18 +280,63 @@ public partial class ProfilePage : ContentPage
 
 		MovementGoal goal = new()
 		{
+			Id = _editingGoalId.GetValueOrDefault(),
 			UserId = _currentUser.Id,
 			MovementName = movementName,
 			TargetValue = targetValue,
 			Unit = unit
 		};
 
-		await _database.SaveMovementGoalAsync(goal);
-		GoalMovementEntry.Text = string.Empty;
-		GoalTargetValueEntry.Text = string.Empty;
-		GoalUnitEntry.Text = string.Empty;
+		if (_editingGoalId.HasValue)
+		{
+			await _database.UpdateMovementGoalAsync(goal);
+			ShowSuccess("Movement goal updated.");
+		}
+		else
+		{
+			await _database.SaveMovementGoalAsync(goal);
+			ShowSuccess("Movement goal saved.");
+		}
+
+		ResetGoalForm();
 		await LoadMovementGoalsAsync(_currentUser.Id);
-		ShowSuccess("Movement goal saved.");
+	}
+
+	private async void OnDeleteGoalInvoked(object? sender, EventArgs e)
+	{
+		if (_currentUser is null || sender is not SwipeItem swipeItem || swipeItem.BindingContext is not MovementGoalListItem item)
+		{
+			return;
+		}
+
+		bool confirmed = await DisplayAlertAsync("Delete Goal", $"Delete '{item.Text}'?", "Delete", "Cancel");
+		if (!confirmed)
+		{
+			return;
+		}
+
+		await _database.DeleteMovementGoalAsync(item.Id);
+		if (_editingGoalId == item.Id)
+		{
+			ResetGoalForm();
+		}
+		await LoadMovementGoalsAsync(_currentUser.Id);
+		ShowSuccess("Movement goal deleted.");
+	}
+
+	private void OnEditGoalInvoked(object? sender, EventArgs e)
+	{
+		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not MovementGoalListItem item)
+		{
+			return;
+		}
+
+		_editingGoalId = item.Id;
+		GoalMovementEntry.Text = item.MovementName;
+		GoalTargetValueEntry.Text = item.TargetValue.ToString("0.##");
+		GoalUnitEntry.Text = item.Unit;
+		GoalActionButton.Text = "Update Goal";
+		ShowSuccess($"Editing: {item.Text}");
 	}
 
 	private async void OnAddProfilePrClicked(object? sender, EventArgs e)
@@ -267,19 +360,65 @@ public partial class ProfilePage : ContentPage
 
 		ProfilePrEntry entry = new()
 		{
+			Id = _editingProfilePrId.GetValueOrDefault(),
 			UserId = _currentUser.Id,
 			MovementName = movementName,
 			Value = value,
 			Unit = unit
 		};
 
-		await _database.SaveProfilePrEntryAsync(entry);
-		ProfilePrMovementEntry.Text = string.Empty;
-		ProfilePrValueEntry.Text = string.Empty;
-		ProfilePrUnitEntry.Text = string.Empty;
+		if (_editingProfilePrId.HasValue)
+		{
+			await _database.UpdateProfilePrEntryAsync(entry);
+			ShowSuccess("Profile PR updated.");
+		}
+		else
+		{
+			await _database.SaveProfilePrEntryAsync(entry);
+			ShowSuccess("Profile PR added.");
+		}
+
+		ResetProfilePrForm();
 		await LoadProfilePrsAsync(_currentUser.Id);
 		await LoadStatsAsync(_currentUser.Id);
-		ShowSuccess("Profile PR added.");
+	}
+
+	private async void OnDeleteProfilePrInvoked(object? sender, EventArgs e)
+	{
+		if (_currentUser is null || sender is not SwipeItem swipeItem || swipeItem.BindingContext is not ProfilePrListItem item)
+		{
+			return;
+		}
+
+		bool confirmed = await DisplayAlertAsync("Delete PR", $"Delete '{item.Text}'?", "Delete", "Cancel");
+		if (!confirmed)
+		{
+			return;
+		}
+
+		await _database.DeleteProfilePrEntryAsync(item.Id);
+		if (_editingProfilePrId == item.Id)
+		{
+			ResetProfilePrForm();
+		}
+		await LoadProfilePrsAsync(_currentUser.Id);
+		await LoadStatsAsync(_currentUser.Id);
+		ShowSuccess("Profile PR deleted.");
+	}
+
+	private void OnEditProfilePrInvoked(object? sender, EventArgs e)
+	{
+		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not ProfilePrListItem item)
+		{
+			return;
+		}
+
+		_editingProfilePrId = item.Id;
+		ProfilePrMovementEntry.Text = item.MovementName;
+		ProfilePrValueEntry.Text = item.Value.ToString("0.##");
+		ProfilePrUnitEntry.Text = item.Unit;
+		ProfilePrActionButton.Text = "Update Profile PR";
+		ShowSuccess($"Editing: {item.Text}");
 	}
 
 	private void OnDateOfBirthChanged(object? sender, DateChangedEventArgs e)
@@ -289,6 +428,29 @@ public partial class ProfilePage : ContentPage
 
 	private void OnLogoutClicked(object? sender, EventArgs e)
 	{
+		_session.SignOut();
+		GoToLogin();
+	}
+
+	private async void OnDeleteAccountClicked(object? sender, EventArgs e)
+	{
+		if (_currentUser is null)
+		{
+			return;
+		}
+
+		bool confirmed = await DisplayAlertAsync(
+			"Delete Account",
+			"This will permanently delete your profile, workouts, PRs, and athletic performance records.",
+			"Delete",
+			"Cancel");
+
+		if (!confirmed)
+		{
+			return;
+		}
+
+		await _database.DeleteUserAsync(_currentUser.Id);
 		_session.SignOut();
 		GoToLogin();
 	}
@@ -359,5 +521,60 @@ public partial class ProfilePage : ContentPage
 	{
 		StatusLabel.Text = string.Empty;
 		StatusLabel.IsVisible = false;
+	}
+
+	private void ResetPerformanceForm()
+	{
+		_editingPerformanceId = null;
+		PerformanceMovementPicker.SelectedIndex = -1;
+		PerformanceValueEntry.Text = string.Empty;
+		PerformanceActionButton.Text = "Add Athletic Performance";
+	}
+
+	private void ResetGoalForm()
+	{
+		_editingGoalId = null;
+		GoalMovementEntry.Text = string.Empty;
+		GoalTargetValueEntry.Text = string.Empty;
+		GoalUnitEntry.Text = string.Empty;
+		GoalActionButton.Text = "Save Goal";
+	}
+
+	private void ResetProfilePrForm()
+	{
+		_editingProfilePrId = null;
+		ProfilePrMovementEntry.Text = string.Empty;
+		ProfilePrValueEntry.Text = string.Empty;
+		ProfilePrUnitEntry.Text = string.Empty;
+		ProfilePrActionButton.Text = "Add Profile PR";
+	}
+
+	private class TextListItem
+	{
+		public int Id { get; set; }
+		public string Text { get; set; } = string.Empty;
+	}
+
+	private sealed class AthleticPerformanceListItem : TextListItem
+	{
+		public string MovementName { get; set; } = string.Empty;
+		public double Value { get; set; }
+		public string Unit { get; set; } = string.Empty;
+		public DateTime RecordedAt { get; set; }
+	}
+
+	private sealed class MovementGoalListItem : TextListItem
+	{
+		public string MovementName { get; set; } = string.Empty;
+		public double TargetValue { get; set; }
+		public string Unit { get; set; } = string.Empty;
+	}
+
+	private sealed class ProfilePrListItem : TextListItem
+	{
+		public string MovementName { get; set; } = string.Empty;
+		public double Value { get; set; }
+		public string Unit { get; set; } = string.Empty;
+		public DateTime RecordedAt { get; set; }
 	}
 }

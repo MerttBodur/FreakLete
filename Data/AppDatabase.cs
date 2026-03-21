@@ -71,6 +71,49 @@ public class AppDatabase
 		return await _database!.UpdateAsync(user);
 	}
 
+	public async Task<int> DeleteUserAsync(int userId)
+	{
+		await InitAsync();
+
+		List<Workout> workouts = await GetWorkoutsByUserAsync(userId);
+		foreach (Workout workout in workouts)
+		{
+			await DeleteWorkoutAsync(workout.Id);
+		}
+
+		List<PrEntry> prEntries = await GetPrEntriesByUserAsync(userId);
+		foreach (PrEntry entry in prEntries)
+		{
+			await _database!.DeleteAsync(entry);
+		}
+
+		List<AthleticPerformanceEntry> performanceEntries = await GetAthleticPerformanceEntriesByUserAsync(userId);
+		foreach (AthleticPerformanceEntry entry in performanceEntries)
+		{
+			await _database!.DeleteAsync(entry);
+		}
+
+		List<MovementGoal> goals = await GetMovementGoalsByUserAsync(userId);
+		foreach (MovementGoal goal in goals)
+		{
+			await _database!.DeleteAsync(goal);
+		}
+
+		List<ProfilePrEntry> profilePrEntries = await GetProfilePrEntriesByUserAsync(userId);
+		foreach (ProfilePrEntry entry in profilePrEntries)
+		{
+			await _database!.DeleteAsync(entry);
+		}
+
+		User? user = await GetUserByIdAsync(userId);
+		if (user is null)
+		{
+			return 0;
+		}
+
+		return await _database!.DeleteAsync(user);
+	}
+
 	public async Task<int> SaveWorkoutAsync(Workout workout, List<ExerciseEntry> exercises)
 	{
 		await InitAsync();
@@ -79,6 +122,28 @@ public class AppDatabase
 
 		foreach (ExerciseEntry exercise in exercises)
 		{
+			exercise.WorkoutId = workout.Id;
+			await _database.InsertAsync(exercise);
+		}
+
+		return workout.Id;
+	}
+
+	public async Task<int> UpdateWorkoutAsync(Workout workout, List<ExerciseEntry> exercises)
+	{
+		await InitAsync();
+		workout.WorkoutDate = workout.WorkoutDate.Date;
+		await _database!.UpdateAsync(workout);
+
+		List<ExerciseEntry> existingExercises = await GetExercisesByWorkoutIdAsync(workout.Id);
+		foreach (ExerciseEntry exercise in existingExercises)
+		{
+			await _database.DeleteAsync(exercise);
+		}
+
+		foreach (ExerciseEntry exercise in exercises)
+		{
+			exercise.Id = 0;
 			exercise.WorkoutId = workout.Id;
 			await _database.InsertAsync(exercise);
 		}
@@ -189,6 +254,12 @@ public class AppDatabase
 		return await _database.DeleteAsync(entry);
 	}
 
+	public async Task<int> UpdatePrEntryAsync(PrEntry prEntry)
+	{
+		await InitAsync();
+		return await _database!.UpdateAsync(prEntry);
+	}
+
 	public async Task<int> SaveAthleticPerformanceEntryAsync(AthleticPerformanceEntry entry)
 	{
 		await InitAsync();
@@ -226,6 +297,12 @@ public class AppDatabase
 		}
 
 		return await _database.DeleteAsync(entry);
+	}
+
+	public async Task<int> UpdateAthleticPerformanceEntryAsync(AthleticPerformanceEntry entry)
+	{
+		await InitAsync();
+		return await _database!.UpdateAsync(entry);
 	}
 
 	public async Task<int> SaveMovementGoalAsync(MovementGoal goal)
@@ -276,6 +353,12 @@ public class AppDatabase
 		return await _database.DeleteAsync(goal);
 	}
 
+	public async Task<int> UpdateMovementGoalAsync(MovementGoal goal)
+	{
+		await InitAsync();
+		return await _database!.UpdateAsync(goal);
+	}
+
 	public async Task<int> SaveProfilePrEntryAsync(ProfilePrEntry entry)
 	{
 		await InitAsync();
@@ -312,5 +395,11 @@ public class AppDatabase
 		}
 
 		return await _database.DeleteAsync(entry);
+	}
+
+	public async Task<int> UpdateProfilePrEntryAsync(ProfilePrEntry entry)
+	{
+		await InitAsync();
+		return await _database!.UpdateAsync(entry);
 	}
 }

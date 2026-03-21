@@ -6,7 +6,8 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="24,16" Spacing="12">
-            <Label Text="Add New Workout"
+            <Label x:Name="PageTitleLabel"
+                   Text="Add New Workout"
                    Style="{StaticResource Headline}" />
 
             <Label Text="Date" />
@@ -16,7 +17,8 @@
             <Entry x:Name="WorkoutNameEntry"
                    Placeholder="Example: Push Day" />
 
-            <Button Text="Add Exercises"
+            <Button x:Name="AddExercisesButton"
+                    Text="Add Exercises"
                     Clicked="OnAddExercisesClicked" />
 
             <VerticalStackLayout x:Name="ExercisesSection"
@@ -85,18 +87,28 @@
                 </CollectionView.EmptyView>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Padding="10" Margin="0,4,0,4">
-                            <VerticalStackLayout Spacing="4">
-                                <Label Text="{Binding ExerciseName}" />
-                                <Label Text="{Binding SetRepText}" />
-                                <Label Text="{Binding RestText}" />
-                            </VerticalStackLayout>
-                        </Border>
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Delete"
+                                               BackgroundColor="#8B0000"
+                                               Invoked="OnDeleteExerciseInvoked" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <Border Padding="10" Margin="0,4,0,4">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding ExerciseName}" />
+                                    <Label Text="{Binding SetRepText}" />
+                                    <Label Text="{Binding RestText}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </SwipeView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <Button Text="Confirm Add New Workout"
+            <Button x:Name="ConfirmWorkoutButton"
+                    Text="Confirm Add New Workout"
                     Clicked="OnConfirmWorkoutClicked" />
         </VerticalStackLayout>
     </ScrollView>

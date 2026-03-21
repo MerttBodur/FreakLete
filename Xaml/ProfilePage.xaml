@@ -80,11 +80,40 @@
                            Placeholder="Enter result"
                            Keyboard="Numeric" />
 
-                    <Button Text="Add Athletic Performance"
+                    <Button x:Name="PerformanceActionButton"
+                            Text="Add Athletic Performance"
                             Clicked="OnAddPerformanceClicked" />
 
-                    <Label x:Name="AthleticPerformanceLabel"
-                           LineBreakMode="WordWrap" />
+                    <CollectionView x:Name="AthleticPerformanceView">
+                        <CollectionView.EmptyView>
+                            <Label Text="No athletic performance records yet."
+                                   HorizontalOptions="Center" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <SwipeView>
+                                    <SwipeView.LeftItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Edit"
+                                                       BackgroundColor="#1F6FEB"
+                                                       Invoked="OnEditPerformanceInvoked" />
+                                        </SwipeItems>
+                                    </SwipeView.LeftItems>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Delete"
+                                                       BackgroundColor="#8B0000"
+                                                       Invoked="OnDeletePerformanceInvoked" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+                                    <Border Padding="10"
+                                            Margin="0,4,0,4">
+                                        <Label Text="{Binding Text}" />
+                                    </Border>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="8">
@@ -102,11 +131,40 @@
                     <Entry x:Name="GoalUnitEntry"
                            Placeholder="Unit (kg, cm, s)" />
 
-                    <Button Text="Save Goal"
+                    <Button x:Name="GoalActionButton"
+                            Text="Save Goal"
                             Clicked="OnSaveGoalClicked" />
 
-                    <Label x:Name="MovementGoalsLabel"
-                           LineBreakMode="WordWrap" />
+                    <CollectionView x:Name="MovementGoalsView">
+                        <CollectionView.EmptyView>
+                            <Label Text="No movement goals set yet."
+                                   HorizontalOptions="Center" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <SwipeView>
+                                    <SwipeView.LeftItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Edit"
+                                                       BackgroundColor="#1F6FEB"
+                                                       Invoked="OnEditGoalInvoked" />
+                                        </SwipeItems>
+                                    </SwipeView.LeftItems>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Delete"
+                                                       BackgroundColor="#8B0000"
+                                                       Invoked="OnDeleteGoalInvoked" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+                                    <Border Padding="10"
+                                            Margin="0,4,0,4">
+                                        <Label Text="{Binding Text}" />
+                                    </Border>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="8">
@@ -124,16 +182,49 @@
                     <Entry x:Name="ProfilePrUnitEntry"
                            Placeholder="Unit" />
 
-                    <Button Text="Add Profile PR"
+                    <Button x:Name="ProfilePrActionButton"
+                            Text="Add Profile PR"
                             Clicked="OnAddProfilePrClicked" />
 
-                    <Label x:Name="ProfilePrLabel"
-                           LineBreakMode="WordWrap" />
+                    <CollectionView x:Name="ProfilePrView">
+                        <CollectionView.EmptyView>
+                            <Label Text="No profile PR records yet."
+                                   HorizontalOptions="Center" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <SwipeView>
+                                    <SwipeView.LeftItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Edit"
+                                                       BackgroundColor="#1F6FEB"
+                                                       Invoked="OnEditProfilePrInvoked" />
+                                        </SwipeItems>
+                                    </SwipeView.LeftItems>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Delete"
+                                                       BackgroundColor="#8B0000"
+                                                       Invoked="OnDeleteProfilePrInvoked" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+                                    <Border Padding="10"
+                                            Margin="0,4,0,4">
+                                        <Label Text="{Binding Text}" />
+                                    </Border>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </VerticalStackLayout>
 
                 <Button Text="Logout"
                         BackgroundColor="#8B0000"
                         Clicked="OnLogoutClicked" />
+
+                <Button Text="Delete Account"
+                        BackgroundColor="#5A0F0F"
+                        Clicked="OnDeleteAccountClicked" />
 
             </VerticalStackLayout>
         </ScrollView>

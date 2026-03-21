@@ -10,7 +10,8 @@ public partial class OneRmPage : ContentPage
 {
 	private readonly AppDatabase _database;
 	private readonly UserSession _session;
-	private readonly List<string> _savedPrEntries = new();
+	private readonly List<SavedPrItem> _savedPrEntries = new();
+	private int? _editingPrEntryId;
 
 	public OneRmPage()
 	{
@@ -65,16 +66,37 @@ public partial class OneRmPage : ContentPage
 			return;
 		}
 
-		PrEntry entry = new()
+		if (_editingPrEntryId.HasValue)
 		{
-			UserId = currentUserId.Value,
-			ExerciseName = "1RM Saved Entry",
-			Weight = weightKg,
-			Reps = reps,
-			RIR = rir
-		};
+			PrEntry entry = new()
+			{
+				Id = _editingPrEntryId.Value,
+				UserId = currentUserId.Value,
+				ExerciseName = "1RM Saved Entry",
+				Weight = weightKg,
+				Reps = reps,
+				RIR = rir
+			};
 
-		await _database.SavePrEntryAsync(entry);
+			await _database.UpdatePrEntryAsync(entry);
+			ShowSuccess("Saved PR updated.");
+		}
+		else
+		{
+			PrEntry entry = new()
+			{
+				UserId = currentUserId.Value,
+				ExerciseName = "1RM Saved Entry",
+				Weight = weightKg,
+				Reps = reps,
+				RIR = rir
+			};
+
+			await _database.SavePrEntryAsync(entry);
+			ShowSuccess("Saved PR added.");
+		}
+
+		ResetSaveMode();
 		await LoadSavedPrEntriesAsync();
 		RefreshSavedPrList();
 	}
@@ -125,8 +147,14 @@ public partial class OneRmPage : ContentPage
 		}
 
 		List<PrEntry> entries = await _database.GetPrEntriesByUserAsync(currentUserId.Value);
-		_savedPrEntries.AddRange(entries.Select(entry =>
-			$"{entry.Weight} x {entry.Reps} RIR{entry.RIR.GetValueOrDefault()}"));
+		_savedPrEntries.AddRange(entries.Select(entry => new SavedPrItem
+		{
+			Id = entry.Id,
+			Weight = entry.Weight,
+			Reps = entry.Reps,
+			Rir = entry.RIR.GetValueOrDefault(),
+			Text = $"{entry.Weight} x {entry.Reps} RIR{entry.RIR.GetValueOrDefault()}"
+		}));
 	}
 
 	private void RefreshSavedPrList()
@@ -134,9 +162,57 @@ public partial class OneRmPage : ContentPage
 		SavedPrView.ItemsSource = _savedPrEntries.ToList();
 	}
 
+	private async void OnDeleteSavedPrInvoked(object? sender, EventArgs e)
+	{
+		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not SavedPrItem item)
+		{
+			return;
+		}
+
+		bool confirmed = await DisplayAlertAsync("Delete PR", $"Delete '{item.Text}'?", "Delete", "Cancel");
+		if (!confirmed)
+		{
+			return;
+		}
+
+		await _database.DeletePrEntryAsync(item.Id);
+		if (_editingPrEntryId == item.Id)
+		{
+			ResetSaveMode();
+		}
+		await LoadSavedPrEntriesAsync();
+		RefreshSavedPrList();
+		ShowSuccess("Saved PR deleted.");
+	}
+
+	private void OnEditSavedPrInvoked(object? sender, EventArgs e)
+	{
+		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not SavedPrItem item)
+		{
+			return;
+		}
+
+		_editingPrEntryId = item.Id;
+		WeightEntry.Text = item.Weight.ToString();
+		RepsEntry.Text = item.Reps.ToString();
+		RirEntry.Text = item.Rir.ToString();
+		SaveExerciseButton.Text = "Update Exercise";
+		ErrorLabel.TextColor = Colors.LightGreen;
+		ErrorLabel.Text = $"Editing: {item.Text}";
+		ErrorLabel.IsVisible = true;
+	}
+
 	private void ShowError(string message)
 	{
 		ErrorLabel.Text = message;
+		ErrorLabel.TextColor = Colors.Red;
+		ErrorLabel.IsVisible = true;
+	}
+
+	private void ShowSuccess(string message)
+	{
+		ErrorLabel.Text = message;
+		ErrorLabel.TextColor = Colors.LightGreen;
 		ErrorLabel.IsVisible = true;
 	}
 
@@ -146,8 +222,26 @@ public partial class OneRmPage : ContentPage
 		ErrorLabel.IsVisible = false;
 	}
 
+	private void ResetSaveMode()
+	{
+		_editingPrEntryId = null;
+		WeightEntry.Text = string.Empty;
+		RepsEntry.Text = string.Empty;
+		RirEntry.Text = string.Empty;
+		SaveExerciseButton.Text = "Save Exercise";
+	}
+
 	private static double CalculateOneRm(int weightKg, int estimatedMaxReps)
 	{
 		return weightKg * (1 + (estimatedMaxReps / 30.0));
+	}
+
+	private sealed class SavedPrItem
+	{
+		public int Id { get; set; }
+		public int Weight { get; set; }
+		public int Reps { get; set; }
+		public int Rir { get; set; }
+		public string Text { get; set; } = string.Empty;
 	}
 }

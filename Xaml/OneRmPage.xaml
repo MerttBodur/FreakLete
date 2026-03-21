@@ -29,7 +29,8 @@
                 <Button Text="Calculate"
                         Clicked="OnCalculateClicked" />
 
-                <Button Text="Save Exercise"
+                <Button x:Name="SaveExerciseButton"
+                        Text="Save Exercise"
                         Clicked="OnSaveExerciseClicked" />
 
                 <Label x:Name="ErrorLabel"
@@ -50,6 +51,30 @@
                         <Label Text="No saved PR yet."
                                HorizontalOptions="Center" />
                     </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <SwipeView>
+                                <SwipeView.LeftItems>
+                                    <SwipeItems>
+                                        <SwipeItem Text="Edit"
+                                                   BackgroundColor="#1F6FEB"
+                                                   Invoked="OnEditSavedPrInvoked" />
+                                    </SwipeItems>
+                                </SwipeView.LeftItems>
+                                <SwipeView.RightItems>
+                                    <SwipeItems>
+                                        <SwipeItem Text="Delete"
+                                                   BackgroundColor="#8B0000"
+                                                   Invoked="OnDeleteSavedPrInvoked" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+                                <Border Padding="10"
+                                        Margin="0,4,0,4">
+                                    <Label Text="{Binding Text}" />
+                                </Border>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
                 </CollectionView>
             </VerticalStackLayout>
         </ScrollView>

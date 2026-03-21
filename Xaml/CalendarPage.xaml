@@ -82,13 +82,29 @@
                 </CollectionView.EmptyView>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Padding="10" Margin="0,4,0,4">
-                            <VerticalStackLayout Spacing="4">
-                                <Label Text="{Binding WorkoutName}"
-                                       FontFamily="OpenSansSemibold" />
-                                <Label Text="{Binding ExercisesText}" />
-                            </VerticalStackLayout>
-                        </Border>
+                        <SwipeView>
+                            <SwipeView.LeftItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Edit"
+                                               BackgroundColor="#1F6FEB"
+                                               Invoked="OnEditWorkoutInvoked" />
+                                </SwipeItems>
+                            </SwipeView.LeftItems>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Delete"
+                                               BackgroundColor="#8B0000"
+                                               Invoked="OnDeleteWorkoutInvoked" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <Border Padding="10" Margin="0,4,0,4">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding WorkoutName}"
+                                           FontFamily="OpenSansSemibold" />
+                                    <Label Text="{Binding ExercisesText}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </SwipeView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

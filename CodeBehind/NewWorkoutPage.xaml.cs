@@ -24,14 +24,69 @@ public partial class NewWorkoutPage : ContentPage
 
 	private readonly AppDatabase _database;
 	private readonly UserSession _session;
+	private readonly int? _editingWorkoutId;
 	private string? _selectedExerciseName;
 
-	public NewWorkoutPage()
+	public NewWorkoutPage() : this(null)
+	{
+	}
+
+	public NewWorkoutPage(int? workoutId)
 	{
 		InitializeComponent();
 		_database = MauiProgram.Services.GetRequiredService<AppDatabase>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
+		_editingWorkoutId = workoutId;
 		ExerciseOptionsView.ItemsSource = _exerciseOptions;
+		ConfigurePageMode();
+		RefreshExercisesList();
+	}
+
+	protected override async void OnAppearing()
+	{
+		base.OnAppearing();
+		if (_editingWorkoutId.HasValue)
+		{
+			await LoadWorkoutForEditAsync();
+		}
+	}
+
+	private void ConfigurePageMode()
+	{
+		bool isEditing = _editingWorkoutId.HasValue;
+		PageTitleLabel.Text = isEditing ? "Edit Workout" : "Add New Workout";
+		Title = isEditing ? "Edit Workout" : "Add New Workout";
+		ConfirmWorkoutButton.Text = isEditing ? "Save Workout Changes" : "Confirm Add New Workout";
+	}
+
+	private async Task LoadWorkoutForEditAsync()
+	{
+		Workout? workout = await _database.GetWorkoutByIdAsync(_editingWorkoutId!.Value);
+		if (workout is null)
+		{
+			ShowError("Workout could not be loaded.");
+			return;
+		}
+
+		List<ExerciseEntry> exercises = await _database.GetExercisesByWorkoutIdAsync(workout.Id);
+
+		WorkoutNameEntry.Text = workout.WorkoutName;
+		WorkoutDatePicker.Date = workout.WorkoutDate;
+		ExercisesSection.IsVisible = true;
+
+		_exercises.Clear();
+		foreach (ExerciseEntry exercise in exercises)
+		{
+			_exercises.Add(new ExerciseEntry
+			{
+				ExerciseName = exercise.ExerciseName,
+				Sets = exercise.Sets,
+				Reps = exercise.Reps,
+				RIR = exercise.RIR,
+				RestSeconds = exercise.RestSeconds
+			});
+		}
+
 		RefreshExercisesList();
 	}
 
@@ -133,20 +188,39 @@ public partial class NewWorkoutPage : ContentPage
 
 		Workout workout = new()
 		{
+			Id = _editingWorkoutId.GetValueOrDefault(),
 			UserId = currentUserId.Value,
 			WorkoutDate = WorkoutDatePicker.Date.GetValueOrDefault().Date,
 			WorkoutName = WorkoutNameEntry.Text.Trim()
 		};
 
-		await _database.SaveWorkoutAsync(workout, _exercises);
+		List<ExerciseEntry> exerciseCopies = _exercises.Select(exercise => new ExerciseEntry
+		{
+			ExerciseName = exercise.ExerciseName,
+			Sets = exercise.Sets,
+			Reps = exercise.Reps,
+			RIR = exercise.RIR,
+			RestSeconds = exercise.RestSeconds
+		}).ToList();
+
+		if (_editingWorkoutId.HasValue)
+		{
+			await _database.UpdateWorkoutAsync(workout, exerciseCopies);
+		}
+		else
+		{
+			await _database.SaveWorkoutAsync(workout, exerciseCopies);
+		}
+
 		await Navigation.PopAsync(false);
 	}
 
 	private void RefreshExercisesList()
 	{
 		var items = _exercises
-			.Select(x => new ExerciseListItem
+			.Select((x, index) => new ExerciseListItem
 			{
+				Index = index,
 				ExerciseName = x.ExerciseName,
 				SetRepText = x.RIR.HasValue
 					? $"Set x Rep: {x.Sets} x {x.Reps} (RIR{x.RIR.Value})"
@@ -163,6 +237,22 @@ public partial class NewWorkoutPage : ContentPage
 		var selected = e.CurrentSelection.FirstOrDefault() as ExerciseOption;
 		_selectedExerciseName = selected?.Name;
 		SelectedExerciseLabel.Text = $"Selected: {_selectedExerciseName ?? "-"}";
+	}
+
+	private void OnDeleteExerciseInvoked(object? sender, EventArgs e)
+	{
+		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not ExerciseListItem item)
+		{
+			return;
+		}
+
+		if (item.Index < 0 || item.Index >= _exercises.Count)
+		{
+			return;
+		}
+
+		_exercises.RemoveAt(item.Index);
+		RefreshExercisesList();
 	}
 
 	private void ClearExerciseInputs()
@@ -187,6 +277,7 @@ public partial class NewWorkoutPage : ContentPage
 
 	private sealed class ExerciseListItem
 	{
+		public int Index { get; set; }
 		public string ExerciseName { get; set; } = string.Empty;
 		public string SetRepText { get; set; } = string.Empty;
 		public string RestText { get; set; } = string.Empty;
