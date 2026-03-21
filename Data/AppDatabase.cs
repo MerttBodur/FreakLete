@@ -51,6 +51,9 @@ public class AppDatabase
 		await EnsureColumnAsync(nameof(AthleticPerformanceEntry), nameof(AthleticPerformanceEntry.GroundContactTimeMs), "REAL NULL");
 		await EnsureColumnAsync(nameof(AthleticPerformanceEntry), nameof(AthleticPerformanceEntry.ConcentricTimeSeconds), "REAL NULL");
 
+		await EnsureColumnAsync(nameof(MovementGoal), nameof(MovementGoal.MovementCategory), "TEXT NOT NULL DEFAULT ''");
+		await EnsureColumnAsync(nameof(MovementGoal), nameof(MovementGoal.GoalMetricLabel), "TEXT NOT NULL DEFAULT ''");
+
 		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.ExerciseCategory), "TEXT NOT NULL DEFAULT ''");
 		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.TrackingMode), $"TEXT NOT NULL DEFAULT '{nameof(ExerciseTrackingMode.Strength)}'");
 		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.Metric1Value), "REAL NULL");
@@ -409,14 +412,21 @@ public class AppDatabase
 	{
 		await InitAsync();
 
-		MovementGoal? existingGoal = await _database!.Table<MovementGoal>()
-			.FirstOrDefaultAsync(item => item.UserId == goal.UserId && item.MovementName == goal.MovementName);
+		List<MovementGoal> matchingGoals = await _database!.Table<MovementGoal>()
+			.Where(item => item.UserId == goal.UserId && item.MovementName == goal.MovementName)
+			.ToListAsync();
+
+		MovementGoal? existingGoal = matchingGoals.FirstOrDefault(item =>
+			string.Equals(item.MovementCategory, goal.MovementCategory, StringComparison.OrdinalIgnoreCase) ||
+			string.IsNullOrWhiteSpace(item.MovementCategory));
 
 		if (existingGoal is null)
 		{
 			return await _database.InsertAsync(goal);
 		}
 
+		existingGoal.MovementCategory = goal.MovementCategory;
+		existingGoal.GoalMetricLabel = goal.GoalMetricLabel;
 		existingGoal.TargetValue = goal.TargetValue;
 		existingGoal.Unit = goal.Unit;
 		return await _database.UpdateAsync(existingGoal);

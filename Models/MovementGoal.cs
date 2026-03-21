@@ -12,6 +12,10 @@ public class MovementGoal
 
 	public string MovementName { get; set; } = string.Empty;
 
+	public string MovementCategory { get; set; } = string.Empty;
+
+	public string GoalMetricLabel { get; set; } = string.Empty;
+
 	public double TargetValue { get; set; }
 
 	public string Unit { get; set; } = string.Empty;

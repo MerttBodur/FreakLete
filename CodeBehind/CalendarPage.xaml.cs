@@ -164,7 +164,12 @@ public partial class CalendarPage : ContentPage
 			return;
 		}
 
-		bool confirmed = await DisplayAlertAsync("Delete Workout", $"Delete '{item.WorkoutName}'?", "Delete", "Cancel");
+		bool confirmed = await ConfirmDialogPage.ShowAsync(
+			Navigation,
+			"Delete Workout",
+			$"Delete '{item.WorkoutName}'?",
+			"Delete",
+			"Cancel");
 		if (!confirmed)
 		{
 			return;

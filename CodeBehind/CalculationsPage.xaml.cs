@@ -442,7 +442,12 @@ public partial class CalculationsPage : ContentPage
 			return;
 		}
 
-		bool confirmed = await DisplayAlertAsync("Delete PR", $"Delete '{item.Text}'?", "Delete", "Cancel");
+		bool confirmed = await ConfirmDialogPage.ShowAsync(
+			Navigation,
+			"Delete PR",
+			$"Delete '{item.Text}'?",
+			"Delete",
+			"Cancel");
 		if (!confirmed)
 		{
 			return;

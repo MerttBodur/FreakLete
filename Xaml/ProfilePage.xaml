@@ -84,7 +84,7 @@
                                Style="{StaticResource SubHeadline}"
                                HorizontalTextAlignment="Start" />
 
-                        <Grid ColumnDefinitions="*,*,*"
+                        <Grid ColumnDefinitions="*,*"
                               ColumnSpacing="10">
                             <Border Grid.Column="0"
                                     Style="{StaticResource CardBorder}"
@@ -107,19 +107,6 @@
                                     <Label Text="Saved PRs"
                                            Style="{StaticResource BodyMuted}" />
                                     <Label x:Name="OneRmPrCountLabel"
-                                           Text="0"
-                                           FontSize="22" />
-                                </VerticalStackLayout>
-                            </Border>
-
-                            <Border Grid.Column="2"
-                                    Style="{StaticResource CardBorder}"
-                                    BackgroundColor="{StaticResource SurfaceRaised}"
-                                    Padding="12">
-                                <VerticalStackLayout Spacing="4">
-                                    <Label Text="Profile PRs"
-                                           Style="{StaticResource BodyMuted}" />
-                                    <Label x:Name="ProfilePrCountLabel"
                                            Text="0"
                                            FontSize="22" />
                                 </VerticalStackLayout>
@@ -249,17 +236,45 @@
                                Style="{StaticResource SubHeadline}"
                                HorizontalTextAlignment="Start" />
 
-                        <Entry x:Name="GoalMovementEntry"
-                               Placeholder="Movement name" />
-                        <Grid ColumnDefinitions="*,*"
+                        <Label Text="Goal movement"
+                               Style="{StaticResource BodyMuted}" />
+                        <Border Style="{StaticResource CardBorder}"
+                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                Padding="14">
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="10">
+                                <VerticalStackLayout Grid.Column="0"
+                                                     Spacing="4">
+                                    <Label x:Name="SelectedGoalLabel"
+                                           Text="No movement selected"
+                                           FontSize="18" />
+                                    <Label x:Name="SelectedGoalHintLabel"
+                                           Text="Browse the exercise catalog and set a target on the movement's main metric."
+                                           Style="{StaticResource BodyMuted}" />
+                                </VerticalStackLayout>
+
+                                <Button Grid.Column="1"
+                                        Text="Browse"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Clicked="OnChooseGoalMovementClicked"
+                                        VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,Auto"
                               ColumnSpacing="12">
                             <Entry Grid.Column="0"
                                    x:Name="GoalTargetValueEntry"
                                    Placeholder="Target value"
                                    Keyboard="Numeric" />
-                            <Entry Grid.Column="1"
-                                   x:Name="GoalUnitEntry"
-                                   Placeholder="Unit (kg, cm, s)" />
+                            <Border Grid.Column="1"
+                                    Style="{StaticResource CardBorder}"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Padding="14,12">
+                                <Label x:Name="GoalUnitLabel"
+                                       Text="-"
+                                       VerticalOptions="Center" />
+                            </Border>
                         </Grid>
 
                         <Button x:Name="GoalActionButton"
@@ -302,78 +317,6 @@
                                             <ImageButton Grid.Column="2"
                                                          Source="icon_delete.svg"
                                                          Clicked="OnDeleteGoalInvoked"
-                                                         BackgroundColor="#3A1623"
-                                                         Padding="8"
-                                                         WidthRequest="36"
-                                                         HeightRequest="36"
-                                                         CornerRadius="12" />
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
-                    </VerticalStackLayout>
-                </Border>
-
-                <Border Style="{StaticResource CardBorder}">
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="Profile PRs"
-                               Style="{StaticResource SubHeadline}"
-                               HorizontalTextAlignment="Start" />
-
-                        <Entry x:Name="ProfilePrMovementEntry"
-                               Placeholder="Movement name" />
-                        <Grid ColumnDefinitions="*,*"
-                              ColumnSpacing="12">
-                            <Entry Grid.Column="0"
-                                   x:Name="ProfilePrValueEntry"
-                                   Placeholder="Value"
-                                   Keyboard="Numeric" />
-                            <Entry Grid.Column="1"
-                                   x:Name="ProfilePrUnitEntry"
-                                   Placeholder="Unit" />
-                        </Grid>
-
-                        <Button x:Name="ProfilePrActionButton"
-                                Text="Save PR"
-                                Clicked="OnAddProfilePrClicked" />
-
-                        <Button x:Name="ProfilePrCancelButton"
-                                Text="Cancel"
-                                Style="{StaticResource SecondaryButton}"
-                                IsVisible="False"
-                                Clicked="OnCancelProfilePrEditClicked" />
-
-                        <Label x:Name="ProfilePrEmptyLabel"
-                               Text="No profile PR records yet."
-                               HorizontalOptions="Center"
-                               Style="{StaticResource BodyMuted}" />
-
-                        <VerticalStackLayout x:Name="ProfilePrList"
-                                             Spacing="0"
-                                             BindableLayout.ItemsSource="{x:Null}">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource CardBorder}"
-                                            BackgroundColor="{StaticResource SurfaceRaised}"
-                                            Padding="14"
-                                            Margin="0,0,0,10">
-                                        <Grid ColumnDefinitions="*,Auto,Auto"
-                                              ColumnSpacing="8">
-                                            <Label Grid.Column="0"
-                                                   Text="{Binding Text}"
-                                                   VerticalOptions="Center" />
-                                            <ImageButton Grid.Column="1"
-                                                         Source="icon_edit.svg"
-                                                         Clicked="OnEditProfilePrInvoked"
-                                                         BackgroundColor="#24203A"
-                                                         Padding="8"
-                                                         WidthRequest="36"
-                                                         HeightRequest="36"
-                                                         CornerRadius="12" />
-                                            <ImageButton Grid.Column="2"
-                                                         Source="icon_delete.svg"
-                                                         Clicked="OnDeleteProfilePrInvoked"
                                                          BackgroundColor="#3A1623"
                                                          Padding="8"
                                                          WidthRequest="36"

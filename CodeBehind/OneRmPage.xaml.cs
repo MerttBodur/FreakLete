@@ -169,7 +169,12 @@ public partial class OneRmPage : ContentPage
 			return;
 		}
 
-		bool confirmed = await DisplayAlertAsync("Delete PR", $"Delete '{item.Text}'?", "Delete", "Cancel");
+		bool confirmed = await ConfirmDialogPage.ShowAsync(
+			Navigation,
+			"Delete PR",
+			$"Delete '{item.Text}'?",
+			"Delete",
+			"Cancel");
 		if (!confirmed)
 		{
 			return;

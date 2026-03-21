@@ -28,8 +28,8 @@ public partial class ProfilePage : ContentPage
 	private User? _currentUser;
 	private int? _editingPerformanceId;
 	private int? _editingGoalId;
-	private int? _editingProfilePrId;
 	private ExerciseCatalogItem? _selectedPerformanceItem;
+	private ExerciseCatalogItem? _selectedGoalItem;
 
 	public ProfilePage()
 	{
@@ -39,6 +39,7 @@ public partial class ProfilePage : ContentPage
 
 		GymExperiencePicker.ItemsSource = ExperienceLevels;
 		UpdatePerformanceSelectionUI();
+		UpdateGoalSelectionUI();
 	}
 
 	protected override async void OnAppearing()
@@ -87,18 +88,15 @@ public partial class ProfilePage : ContentPage
 		await LoadStatsAsync(_currentUser.Id);
 		await LoadAthleticPerformancesAsync(_currentUser.Id);
 		await LoadMovementGoalsAsync(_currentUser.Id);
-		await LoadProfilePrsAsync(_currentUser.Id);
 	}
 
 	private async Task LoadStatsAsync(int userId)
 	{
 		int workoutCount = await _database.GetWorkoutCountByUserAsync(userId);
 		int oneRmPrCount = await _database.GetPrCountByUserAsync(userId);
-		int profilePrCount = await _database.GetProfilePrCountByUserAsync(userId);
 
 		WorkoutCountLabel.Text = workoutCount.ToString();
 		OneRmPrCountLabel.Text = oneRmPrCount.ToString();
-		ProfilePrCountLabel.Text = profilePrCount.ToString();
 	}
 
 	private async Task LoadAthleticPerformancesAsync(int userId)
@@ -130,30 +128,17 @@ public partial class ProfilePage : ContentPage
 		{
 			Id = goal.Id,
 			MovementName = goal.MovementName,
+			MovementCategory = goal.MovementCategory,
+			GoalMetricLabel = goal.GoalMetricLabel,
 			TargetValue = goal.TargetValue,
 			Unit = goal.Unit,
-			Text = $"{goal.MovementName}: {goal.TargetValue:0.##} {goal.Unit}"
+			Text = string.IsNullOrWhiteSpace(goal.GoalMetricLabel)
+				? $"{goal.MovementName}: {goal.TargetValue:0.##} {goal.Unit}"
+				: $"{goal.MovementName}: {goal.GoalMetricLabel} {goal.TargetValue:0.##} {goal.Unit}"
 		}).ToList();
 
 		BindableLayout.SetItemsSource(MovementGoalsList, items);
 		MovementGoalsEmptyLabel.IsVisible = items.Count == 0;
-	}
-
-	private async Task LoadProfilePrsAsync(int userId)
-	{
-		List<ProfilePrEntry> entries = await _database.GetProfilePrEntriesByUserAsync(userId);
-		List<ProfilePrListItem> items = entries.Select(entry => new ProfilePrListItem
-		{
-			Id = entry.Id,
-			MovementName = entry.MovementName,
-			Value = entry.Value,
-			Unit = entry.Unit,
-			RecordedAt = entry.RecordedAt,
-			Text = $"{entry.MovementName}: {entry.Value:0.##} {entry.Unit} ({entry.RecordedAt:dd.MM.yyyy})"
-		}).ToList();
-
-		BindableLayout.SetItemsSource(ProfilePrList, items);
-		ProfilePrEmptyLabel.IsVisible = items.Count == 0;
 	}
 
 	private async void OnSaveProfileClicked(object? sender, EventArgs e)
@@ -291,7 +276,12 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		bool confirmed = await DisplayAlertAsync("Delete Entry", $"Delete '{item.Text}'?", "Delete", "Cancel");
+		bool confirmed = await ConfirmDialogPage.ShowAsync(
+			Navigation,
+			"Delete Entry",
+			$"Delete '{item.Text}'?",
+			"Delete",
+			"Cancel");
 		if (!confirmed)
 		{
 			return;
@@ -335,13 +325,19 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		string movementName = GoalMovementEntry.Text?.Trim() ?? string.Empty;
-		string unit = GoalUnitEntry.Text?.Trim() ?? string.Empty;
+		if (_selectedGoalItem is null)
+		{
+			ShowError("Choose a movement before saving a goal.");
+			return;
+		}
+
+		string movementName = _selectedGoalItem.Name;
+		string unit = ResolveGoalUnit(_selectedGoalItem);
 		bool parsed = MetricInput.TryParseFlexibleDouble(GoalTargetValueEntry.Text, out double targetValue);
 
 		if (string.IsNullOrWhiteSpace(movementName) || string.IsNullOrWhiteSpace(unit) || !parsed)
 		{
-			ShowError("Goal movement, target value, and unit are required.");
+			ShowError("Goal movement and target value are required.");
 			return;
 		}
 
@@ -350,6 +346,8 @@ public partial class ProfilePage : ContentPage
 			Id = _editingGoalId.GetValueOrDefault(),
 			UserId = _currentUser.Id,
 			MovementName = movementName,
+			MovementCategory = _selectedGoalItem.Category,
+			GoalMetricLabel = ResolveGoalLabel(_selectedGoalItem),
 			TargetValue = targetValue,
 			Unit = unit
 		};
@@ -376,7 +374,12 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		bool confirmed = await DisplayAlertAsync("Delete Goal", $"Delete '{item.Text}'?", "Delete", "Cancel");
+		bool confirmed = await ConfirmDialogPage.ShowAsync(
+			Navigation,
+			"Delete Goal",
+			$"Delete '{item.Text}'?",
+			"Delete",
+			"Cancel");
 		if (!confirmed)
 		{
 			return;
@@ -399,94 +402,11 @@ public partial class ProfilePage : ContentPage
 		}
 
 		_editingGoalId = item.Id;
-		GoalMovementEntry.Text = item.MovementName;
+		_selectedGoalItem = ExerciseCatalog.GetByNameAndCategory(item.MovementName, item.MovementCategory);
+		UpdateGoalSelectionUI();
 		GoalTargetValueEntry.Text = item.TargetValue.ToString("0.##");
-		GoalUnitEntry.Text = item.Unit;
 		GoalActionButton.Text = "Update";
 		GoalCancelButton.IsVisible = true;
-		ShowSuccess($"Editing: {item.Text}");
-	}
-
-	private async void OnAddProfilePrClicked(object? sender, EventArgs e)
-	{
-		ClearStatus();
-
-		if (_currentUser is null)
-		{
-			return;
-		}
-
-		string movementName = ProfilePrMovementEntry.Text?.Trim() ?? string.Empty;
-		string unit = ProfilePrUnitEntry.Text?.Trim() ?? string.Empty;
-		bool parsed = MetricInput.TryParseFlexibleDouble(ProfilePrValueEntry.Text, out double value);
-
-		if (string.IsNullOrWhiteSpace(movementName) || string.IsNullOrWhiteSpace(unit) || !parsed)
-		{
-			ShowError("PR movement, value, and unit are required.");
-			return;
-		}
-
-		ProfilePrEntry entry = new()
-		{
-			Id = _editingProfilePrId.GetValueOrDefault(),
-			UserId = _currentUser.Id,
-			MovementName = movementName,
-			Value = value,
-			Unit = unit
-		};
-
-		if (_editingProfilePrId.HasValue)
-		{
-			await _database.UpdateProfilePrEntryAsync(entry);
-			ShowSuccess("Profile PR updated.");
-		}
-		else
-		{
-			await _database.SaveProfilePrEntryAsync(entry);
-			ShowSuccess("Profile PR added.");
-		}
-
-		ResetProfilePrForm();
-		await LoadProfilePrsAsync(_currentUser.Id);
-		await LoadStatsAsync(_currentUser.Id);
-	}
-
-	private async void OnDeleteProfilePrInvoked(object? sender, EventArgs e)
-	{
-		if (_currentUser is null || GetBindingContext<ProfilePrListItem>(sender) is not ProfilePrListItem item)
-		{
-			return;
-		}
-
-		bool confirmed = await DisplayAlertAsync("Delete PR", $"Delete '{item.Text}'?", "Delete", "Cancel");
-		if (!confirmed)
-		{
-			return;
-		}
-
-		await _database.DeleteProfilePrEntryAsync(item.Id);
-		if (_editingProfilePrId == item.Id)
-		{
-			ResetProfilePrForm();
-		}
-		await LoadProfilePrsAsync(_currentUser.Id);
-		await LoadStatsAsync(_currentUser.Id);
-		ShowSuccess("Profile PR deleted.");
-	}
-
-	private void OnEditProfilePrInvoked(object? sender, EventArgs e)
-	{
-		if (GetBindingContext<ProfilePrListItem>(sender) is not ProfilePrListItem item)
-		{
-			return;
-		}
-
-		_editingProfilePrId = item.Id;
-		ProfilePrMovementEntry.Text = item.MovementName;
-		ProfilePrValueEntry.Text = item.Value.ToString("0.##");
-		ProfilePrUnitEntry.Text = item.Unit;
-		ProfilePrActionButton.Text = "Update";
-		ProfilePrCancelButton.IsVisible = true;
 		ShowSuccess($"Editing: {item.Text}");
 	}
 
@@ -499,12 +419,6 @@ public partial class ProfilePage : ContentPage
 	private void OnCancelGoalEditClicked(object? sender, EventArgs e)
 	{
 		ResetGoalForm();
-		ClearStatus();
-	}
-
-	private void OnCancelProfilePrEditClicked(object? sender, EventArgs e)
-	{
-		ResetProfilePrForm();
 		ClearStatus();
 	}
 
@@ -526,9 +440,10 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		bool confirmed = await DisplayAlertAsync(
+		bool confirmed = await ConfirmDialogPage.ShowAsync(
+			Navigation,
 			"Delete Account",
-			"This will permanently delete your profile, workouts, PRs, and athletic performance records.",
+			"This will permanently delete your profile, workouts, PRs, goals, and athletic performance records.",
 			"Delete",
 			"Cancel");
 
@@ -636,6 +551,22 @@ public partial class ProfilePage : ContentPage
 		UpdatePerformanceSelectionUI();
 	}
 
+	private async void OnChooseGoalMovementClicked(object? sender, EventArgs e)
+	{
+		await Navigation.PushAsync(
+			new ExercisePickerPage(
+				"Choose Goal Movement",
+				ExerciseCatalog.Categories,
+				OnGoalMovementSelected),
+			true);
+	}
+
+	private void OnGoalMovementSelected(ExerciseCatalogItem item)
+	{
+		_selectedGoalItem = item;
+		UpdateGoalSelectionUI();
+	}
+
 	private void UpdatePerformanceSelectionUI()
 	{
 		if (_selectedPerformanceItem is null)
@@ -661,6 +592,37 @@ public partial class ProfilePage : ContentPage
 			? "Ground Contact Time (s)"
 			: "Concentric Time (s)";
 		PerformanceTimingEntry.Placeholder = "Optional";
+	}
+
+	private void UpdateGoalSelectionUI()
+	{
+		if (_selectedGoalItem is null)
+		{
+			SelectedGoalLabel.Text = "No movement selected";
+			SelectedGoalHintLabel.Text = "Browse the exercise catalog and set a target on the movement's main metric.";
+			GoalUnitLabel.Text = "-";
+			GoalTargetValueEntry.Placeholder = "Target value";
+			return;
+		}
+
+		SelectedGoalLabel.Text = _selectedGoalItem.Name;
+		SelectedGoalHintLabel.Text = $"{_selectedGoalItem.SelectionHintText} | Goal metric: {ResolveGoalLabel(_selectedGoalItem)}";
+		GoalUnitLabel.Text = ResolveGoalUnit(_selectedGoalItem);
+		GoalTargetValueEntry.Placeholder = $"Target {ResolveGoalLabel(_selectedGoalItem).ToLowerInvariant()}";
+	}
+
+	private static string ResolveGoalLabel(ExerciseCatalogItem item)
+	{
+		return item.Category == ExerciseCatalog.Sprint && item.HasSecondaryMetric
+			? item.SecondaryLabel
+			: item.PrimaryLabel;
+	}
+
+	private static string ResolveGoalUnit(ExerciseCatalogItem item)
+	{
+		return item.Category == ExerciseCatalog.Sprint && item.HasSecondaryMetric
+			? item.SecondaryUnit
+			: item.PrimaryUnit;
 	}
 
 	private static string FormatAthleticPerformanceText(AthleticPerformanceEntry entry)
@@ -703,21 +665,11 @@ public partial class ProfilePage : ContentPage
 	private void ResetGoalForm()
 	{
 		_editingGoalId = null;
-		GoalMovementEntry.Text = string.Empty;
+		_selectedGoalItem = null;
+		UpdateGoalSelectionUI();
 		GoalTargetValueEntry.Text = string.Empty;
-		GoalUnitEntry.Text = string.Empty;
 		GoalActionButton.Text = "Save";
 		GoalCancelButton.IsVisible = false;
-	}
-
-	private void ResetProfilePrForm()
-	{
-		_editingProfilePrId = null;
-		ProfilePrMovementEntry.Text = string.Empty;
-		ProfilePrValueEntry.Text = string.Empty;
-		ProfilePrUnitEntry.Text = string.Empty;
-		ProfilePrActionButton.Text = "Save PR";
-		ProfilePrCancelButton.IsVisible = false;
 	}
 
 	private class TextListItem
@@ -742,15 +694,9 @@ public partial class ProfilePage : ContentPage
 	private sealed class MovementGoalListItem : TextListItem
 	{
 		public string MovementName { get; set; } = string.Empty;
+		public string MovementCategory { get; set; } = string.Empty;
+		public string GoalMetricLabel { get; set; } = string.Empty;
 		public double TargetValue { get; set; }
 		public string Unit { get; set; } = string.Empty;
-	}
-
-	private sealed class ProfilePrListItem : TextListItem
-	{
-		public string MovementName { get; set; } = string.Empty;
-		public double Value { get; set; }
-		public string Unit { get; set; } = string.Empty;
-		public DateTime RecordedAt { get; set; }
 	}
 }
