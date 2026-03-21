@@ -198,18 +198,18 @@ public partial class ProfilePage : ContentPage
 		}
 
 		bool parsed = MetricInput.TryParseFlexibleDouble(PerformanceValueEntry.Text, out double value);
-		if (!parsed)
+		if (!parsed || value <= 0)
 		{
-			ShowError($"{_selectedPerformanceItem.PrimaryLabel} is required.");
+			ShowError($"{_selectedPerformanceItem.PrimaryLabel} must be a positive number.");
 			return;
 		}
 
 		double? secondaryValue = null;
 		if (_selectedPerformanceItem.HasSecondaryMetric)
 		{
-			if (!MetricInput.TryParseFlexibleDouble(PerformanceSecondaryValueEntry.Text, out double parsedSecondary))
+			if (!MetricInput.TryParseFlexibleDouble(PerformanceSecondaryValueEntry.Text, out double parsedSecondary) || parsedSecondary <= 0)
 			{
-				ShowError($"{_selectedPerformanceItem.SecondaryLabel} is required.");
+				ShowError($"{_selectedPerformanceItem.SecondaryLabel} must be a positive number.");
 				return;
 			}
 
@@ -335,9 +335,9 @@ public partial class ProfilePage : ContentPage
 		string unit = ResolveGoalUnit(_selectedGoalItem);
 		bool parsed = MetricInput.TryParseFlexibleDouble(GoalTargetValueEntry.Text, out double targetValue);
 
-		if (string.IsNullOrWhiteSpace(movementName) || string.IsNullOrWhiteSpace(unit) || !parsed)
+		if (string.IsNullOrWhiteSpace(movementName) || string.IsNullOrWhiteSpace(unit) || !parsed || targetValue <= 0)
 		{
-			ShowError("Goal movement and target value are required.");
+			ShowError("Goal movement and target value are required, and target must be positive.");
 			return;
 		}
 

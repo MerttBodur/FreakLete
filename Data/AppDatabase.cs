@@ -33,8 +33,8 @@ public class AppDatabase
 		await _database.CreateTableAsync<PrEntry>();
 		await _database.CreateTableAsync<AthleticPerformanceEntry>();
 		await _database.CreateTableAsync<MovementGoal>();
-		await _database.CreateTableAsync<ProfilePrEntry>();
 		await _database.CreateTableAsync<ExerciseDefinition>();
+		await _database.CreateTableAsync<CatalogSeedState>();
 
 		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.ExerciseCategory), "TEXT NOT NULL DEFAULT ''");
 		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.TrackingMode), $"TEXT NOT NULL DEFAULT '{nameof(ExerciseTrackingMode.Strength)}'");
@@ -63,6 +63,7 @@ public class AppDatabase
 		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.GroundContactTimeMs), "REAL NULL");
 		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.ConcentricTimeSeconds), "REAL NULL");
 
+		await _database.ExecuteAsync("DROP TABLE IF EXISTS ProfilePrEntry");
 		await SeedExerciseDefinitionsAsync();
 	}
 
@@ -78,6 +79,14 @@ public class AppDatabase
 
 	private async Task SeedExerciseDefinitionsAsync()
 	{
+		CatalogSeedState? seedState = await _database!.Table<CatalogSeedState>()
+			.FirstOrDefaultAsync(item => item.Key == ExerciseCatalog.CatalogStateKey);
+
+		if (seedState?.Version == ExerciseCatalog.Version)
+		{
+			return;
+		}
+
 		List<ExerciseDefinition> definitions = ExerciseCatalog.GetAllItems()
 			.Select(item => new ExerciseDefinition
 			{
@@ -115,10 +124,16 @@ public class AppDatabase
 			})
 			.ToList();
 
-		foreach (ExerciseDefinition definition in definitions)
+		await _database!.RunInTransactionAsync(connection =>
 		{
-			await _database!.InsertOrReplaceAsync(definition);
-		}
+			connection.DeleteAll<ExerciseDefinition>();
+			connection.InsertAll(definitions);
+			connection.InsertOrReplace(new CatalogSeedState
+			{
+				Key = ExerciseCatalog.CatalogStateKey,
+				Version = ExerciseCatalog.Version
+			});
+		});
 	}
 
 	public async Task<List<ExerciseDefinition>> GetExerciseDefinitionsByCategoryAsync(string category, int take = 20)
@@ -200,12 +215,6 @@ public class AppDatabase
 		foreach (MovementGoal goal in goals)
 		{
 			await _database!.DeleteAsync(goal);
-		}
-
-		List<ProfilePrEntry> profilePrEntries = await GetProfilePrEntriesByUserAsync(userId);
-		foreach (ProfilePrEntry entry in profilePrEntries)
-		{
-			await _database!.DeleteAsync(entry);
 		}
 
 		User? user = await GetUserByIdAsync(userId);
@@ -469,47 +478,4 @@ public class AppDatabase
 		return await _database!.UpdateAsync(goal);
 	}
 
-	public async Task<int> SaveProfilePrEntryAsync(ProfilePrEntry entry)
-	{
-		await InitAsync();
-		return await _database!.InsertAsync(entry);
-	}
-
-	public async Task<List<ProfilePrEntry>> GetProfilePrEntriesByUserAsync(int userId)
-	{
-		await InitAsync();
-		return await _database!.Table<ProfilePrEntry>()
-			.Where(entry => entry.UserId == userId)
-			.OrderByDescending(entry => entry.RecordedAt)
-			.ToListAsync();
-	}
-
-	public async Task<int> GetProfilePrCountByUserAsync(int userId)
-	{
-		await InitAsync();
-		return await _database!.Table<ProfilePrEntry>()
-			.Where(entry => entry.UserId == userId)
-			.CountAsync();
-	}
-
-	public async Task<int> DeleteProfilePrEntryAsync(int entryId)
-	{
-		await InitAsync();
-
-		ProfilePrEntry? entry = await _database!.Table<ProfilePrEntry>()
-			.FirstOrDefaultAsync(item => item.Id == entryId);
-
-		if (entry is null)
-		{
-			return 0;
-		}
-
-		return await _database.DeleteAsync(entry);
-	}
-
-	public async Task<int> UpdateProfilePrEntryAsync(ProfilePrEntry entry)
-	{
-		await InitAsync();
-		return await _database!.UpdateAsync(entry);
-	}
 }

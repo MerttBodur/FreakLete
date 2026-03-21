@@ -22,9 +22,18 @@
                            Text="Choose Exercise"
                            Style="{StaticResource Headline}"
                            HorizontalTextAlignment="Start" />
-                    <Label Text="Recommended movements only. Pick a category, then tap the exercise you want to use."
+                    <Label Text="Top 20 recommended movements show by default. Search inside a category to reach the full list."
                            Style="{StaticResource BodyMuted}" />
                 </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardBorder}"
+                    BackgroundColor="{StaticResource SurfaceRaised}">
+                <Entry x:Name="SearchEntry"
+                       Placeholder="Search inside this category"
+                       PlaceholderColor="{StaticResource TextMuted}"
+                       TextColor="{StaticResource TextPrimary}"
+                       TextChanged="OnSearchTextChanged" />
             </Border>
 
             <ScrollView Orientation="Horizontal">
@@ -75,11 +84,15 @@
                                        MaxLines="2" />
                             </VerticalStackLayout>
 
-                            <Label Grid.Column="1"
-                                   Text=">"
-                                   FontSize="26"
-                                   TextColor="{StaticResource TextSecondary}"
-                                   VerticalOptions="Center" />
+                            <Border Grid.Column="1"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Stroke="{StaticResource BorderSubtle}"
+                                    StrokeShape="RoundRectangle 18"
+                                    Padding="10,6"
+                                    VerticalOptions="Center">
+                                <Label Text="View"
+                                       Style="{StaticResource BodyMuted}" />
+                            </Border>
                         </Grid>
                     </Border>
                 </DataTemplate>

@@ -9,6 +9,7 @@ public partial class ExercisePickerPage : ContentPage
 	private readonly Action<ExerciseCatalogItem> _onSelected;
 	private readonly List<string> _allowedCategories;
 	private string _selectedCategory = string.Empty;
+	private string _searchText = string.Empty;
 
 	public ObservableCollection<CategoryChipItem> Categories { get; } = [];
 	public ObservableCollection<ExerciseCatalogItem> VisibleExercises { get; } = [];
@@ -63,10 +64,20 @@ public partial class ExercisePickerPage : ContentPage
 	{
 		VisibleExercises.Clear();
 
-		foreach (ExerciseCatalogItem item in ExerciseCatalog.GetRecommendedItemsByCategory(_selectedCategory))
+		IReadOnlyList<ExerciseCatalogItem> source = string.IsNullOrWhiteSpace(_searchText)
+			? ExerciseCatalog.GetRecommendedItemsByCategory(_selectedCategory)
+			: ExerciseCatalog.SearchItemsByCategory(_selectedCategory, _searchText);
+
+		foreach (ExerciseCatalogItem item in source)
 		{
 			VisibleExercises.Add(item);
 		}
+	}
+
+	private void OnSearchTextChanged(object? sender, TextChangedEventArgs e)
+	{
+		_searchText = e.NewTextValue?.Trim() ?? string.Empty;
+		RefreshExerciseList();
 	}
 
 	private void OnCategoryClicked(object? sender, EventArgs e)
