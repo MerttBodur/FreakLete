@@ -1,6 +1,6 @@
 using SQLite;
 
-namespace GymTracker.Models;
+namespace FreakLete.Models;
 
 public class Workout
 {

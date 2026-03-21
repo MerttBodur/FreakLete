@@ -1,4 +1,4 @@
-namespace GymTracker.Services;
+namespace FreakLete.Services;
 
 public static class CalculationService
 {

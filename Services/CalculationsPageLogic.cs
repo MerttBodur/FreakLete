@@ -1,6 +1,6 @@
-using GymTracker.Models;
+using FreakLete.Models;
 
-namespace GymTracker.Services;
+namespace FreakLete.Services;
 
 public static class CalculationsPageLogic
 {

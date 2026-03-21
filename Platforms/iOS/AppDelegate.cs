@@ -1,6 +1,6 @@
-﻿using Foundation;
+using Foundation;
 
-namespace GymTracker;
+namespace FreakLete;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate

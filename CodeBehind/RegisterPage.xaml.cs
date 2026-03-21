@@ -1,10 +1,10 @@
-using GymTracker.Data;
-using GymTracker.Models;
-using GymTracker.Security;
+using FreakLete.Data;
+using FreakLete.Models;
+using FreakLete.Security;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.RegularExpressions;
 
-namespace GymTracker;
+namespace FreakLete;
 
 public partial class RegisterPage : ContentPage
 {

@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
-    <style name="Theme.GymTracker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.FreakLete" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">#161125</item>
         <item name="colorPrimaryVariant">#100D1A</item>
         <item name="colorSecondary">#8B5CF6</item>
         <item name="android:statusBarColor">#161125</item>
         <item name="android:navigationBarColor">#100D1A</item>
         <item name="android:windowBackground">#100D1A</item>
+    </style>
+
+    <style name="Theme.FreakLete.Splash" parent="Maui.SplashTheme">
+        <item name="colorPrimary">#161125</item>
+        <item name="colorPrimaryDark">#100D1A</item>
+        <item name="colorAccent">#8B5CF6</item>
+        <item name="android:windowBackground">@drawable/maui_splash</item>
+        <item name="android:windowSplashScreenBackground">@color/maui_splash_color</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/maui_splash</item>
     </style>
 </resources>

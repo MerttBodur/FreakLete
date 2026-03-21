@@ -1,13 +1,13 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using GymTracker.Models;
+using FreakLete.Models;
 
-namespace GymTracker.Services;
+namespace FreakLete.Services;
 
 public static class ExerciseCatalog
 {
-	private const string CatalogResourceName = "GymTracker.Resources.Raw.exercise_catalog.json";
+	private const string CatalogResourceName = "FreakLete.Resources.Raw.exercise_catalog.json";
 	public const string CatalogStateKey = "exercise_catalog";
 
 	public const string Push = "Push";

@@ -1,6 +1,6 @@
-using GymTracker.Services;
+using FreakLete.Services;
 
-namespace GymTracker;
+namespace FreakLete;
 
 public partial class BottomNavBar : ContentView
 {

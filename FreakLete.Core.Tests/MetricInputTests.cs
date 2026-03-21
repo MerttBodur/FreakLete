@@ -1,6 +1,6 @@
-using GymTracker.Services;
+using FreakLete.Services;
 
-namespace GymTracker.Core.Tests;
+namespace FreakLete.Core.Tests;
 
 public class MetricInputTests
 {

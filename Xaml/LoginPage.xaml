@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              NavigationPage.HasNavigationBar="False"
-             x:Class="GymTracker.LoginPage">
+             x:Class="FreakLete.LoginPage">
 
     <ScrollView>
         <VerticalStackLayout Padding="24,36,24,30"

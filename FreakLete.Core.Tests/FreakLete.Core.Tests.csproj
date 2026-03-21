@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\\GymTracker.Core\\GymTracker.Core.csproj" />
+    <ProjectReference Include="..\\FreakLete.Core\\FreakLete.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,7 +40,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="..\\Resources\\Raw\\exercise_catalog.json"
-                      LogicalName="GymTracker.Resources.Raw.exercise_catalog.json" />
+                      LogicalName="FreakLete.Resources.Raw.exercise_catalog.json" />
   </ItemGroup>
 
 </Project>

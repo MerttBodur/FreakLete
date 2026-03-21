@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace GymTracker.Models;
+namespace FreakLete.Models;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ExerciseTrackingMode

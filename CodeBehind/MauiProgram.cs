@@ -1,8 +1,8 @@
-using GymTracker.Data;
-using GymTracker.Services;
+using FreakLete.Data;
+using FreakLete.Services;
 using Microsoft.Extensions.Logging;
 
-namespace GymTracker;
+namespace FreakLete;
 
 public static class MauiProgram
 {

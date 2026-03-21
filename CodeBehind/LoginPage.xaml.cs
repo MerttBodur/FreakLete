@@ -1,10 +1,10 @@
-using GymTracker.Data;
-using GymTracker.Models;
-using GymTracker.Security;
-using GymTracker.Services;
+using FreakLete.Data;
+using FreakLete.Models;
+using FreakLete.Security;
+using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GymTracker;
+namespace FreakLete;
 
 public partial class LoginPage : ContentPage
 {

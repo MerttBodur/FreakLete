@@ -1,13 +1,13 @@
-using GymTracker.Data;
-using GymTracker.Models;
+using FreakLete.Data;
+using FreakLete.Models;
 
-namespace GymTracker.Core.Tests;
+namespace FreakLete.Core.Tests;
 
 public class AppDatabaseTests
 {
 	private static string CreateDatabasePath()
 	{
-		return Path.Combine(Path.GetTempPath(), $"gymtracker-tests-{Guid.NewGuid():N}.db3");
+		return Path.Combine(Path.GetTempPath(), $"freaklete-tests-{Guid.NewGuid():N}.db3");
 	}
 
 	[Fact]

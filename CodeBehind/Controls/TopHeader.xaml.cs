@@ -1,4 +1,4 @@
-namespace GymTracker;
+namespace FreakLete;
 
 public partial class TopHeader : ContentView
 {

@@ -1,8 +1,8 @@
-using GymTracker.Models;
-using GymTracker.Services;
+using FreakLete.Models;
+using FreakLete.Services;
 using SQLite;
 
-namespace GymTracker.Data;
+namespace FreakLete.Data;
 
 public class AppDatabase
 {
@@ -41,7 +41,7 @@ public class AppDatabase
 			return;
 		}
 
-		string databasePath = _databasePathOverride ?? AppDataDirectoryProvider.GetDatabasePath("gymtracker.db3");
+		string databasePath = _databasePathOverride ?? AppDataDirectoryProvider.GetDatabasePath("freaklete.db3");
 		_database = new SQLiteAsyncConnection(
 			databasePath,
 			SQLiteOpenFlags.ReadWrite |

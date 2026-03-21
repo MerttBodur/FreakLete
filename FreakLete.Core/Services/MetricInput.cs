@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace GymTracker.Services;
+namespace FreakLete.Services;
 
 public static class MetricInput
 {

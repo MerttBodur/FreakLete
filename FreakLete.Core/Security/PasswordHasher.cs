@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace GymTracker.Security;
+namespace FreakLete.Security;
 
 public static class PasswordHasher
 {

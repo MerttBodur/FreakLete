@@ -1,8 +1,8 @@
-using GymTracker.Data;
-using GymTracker.Services;
+using FreakLete.Data;
+using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GymTracker;
+namespace FreakLete;
 
 public partial class App : Application
 {

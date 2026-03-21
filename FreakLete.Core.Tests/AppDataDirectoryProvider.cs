@@ -1,4 +1,4 @@
-namespace GymTracker.Data;
+namespace FreakLete.Data;
 
 internal static class AppDataDirectoryProvider
 {

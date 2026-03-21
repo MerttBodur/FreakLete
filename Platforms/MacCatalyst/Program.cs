@@ -1,7 +1,7 @@
-﻿using ObjCRuntime;
+using ObjCRuntime;
 using UIKit;
 
-namespace GymTracker;
+namespace FreakLete;
 
 public class Program
 {

@@ -1,6 +1,6 @@
-using GymTracker.Security;
+using FreakLete.Security;
 
-namespace GymTracker.Core.Tests;
+namespace FreakLete.Core.Tests;
 
 public class PasswordHasherTests
 {

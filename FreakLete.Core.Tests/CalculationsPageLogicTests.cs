@@ -1,7 +1,7 @@
-using GymTracker.Models;
-using GymTracker.Services;
+using FreakLete.Models;
+using FreakLete.Services;
 
-namespace GymTracker.Core.Tests;
+namespace FreakLete.Core.Tests;
 
 public class CalculationsPageLogicTests
 {

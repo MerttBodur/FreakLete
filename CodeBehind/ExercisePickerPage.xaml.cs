@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
-using GymTracker.Models;
-using GymTracker.Services;
+using FreakLete.Models;
+using FreakLete.Services;
 
-namespace GymTracker;
+namespace FreakLete;
 
 public partial class ExercisePickerPage : ContentPage
 {

@@ -6,14 +6,14 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
 
-  <Identity Name="maui-package-name-placeholder" Publisher="CN=User Name" Version="0.0.0.0" />
+  <Identity Name="FreakLete" Publisher="CN=Mert Bodur" Version="1.0.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="A7841DF0-CBEB-499B-BB4E-982D98CB07C5" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>$placeholder$</DisplayName>
-    <PublisherDisplayName>User Name</PublisherDisplayName>
-    <Logo>$placeholder$.png</Logo>
+    <DisplayName>FreakLete</DisplayName>
+    <PublisherDisplayName>Mert Bodur</PublisherDisplayName>
+    <Logo>FreakLete.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -28,13 +28,13 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="$placeholder$"
-        Description="$placeholder$"
-        Square150x150Logo="$placeholder$.png"
-        Square44x44Logo="$placeholder$.png"
+        DisplayName="FreakLete"
+        Description="Athlete workout tracking and calculations"
+        Square150x150Logo="FreakLete.png"
+        Square44x44Logo="FreakLete.png"
         BackgroundColor="transparent">
-        <uap:DefaultTile Square71x71Logo="$placeholder$.png" Wide310x150Logo="$placeholder$.png" Square310x310Logo="$placeholder$.png" />
-        <uap:SplashScreen Image="$placeholder$.png" />
+        <uap:DefaultTile Square71x71Logo="FreakLete.png" Wide310x150Logo="FreakLete.png" Square310x310Logo="FreakLete.png" />
+        <uap:SplashScreen Image="FreakLete.png" />
       </uap:VisualElements>
     </Application>
   </Applications>

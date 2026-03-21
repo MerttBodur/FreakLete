@@ -1,10 +1,10 @@
 using System.Collections.ObjectModel;
-using GymTracker.Data;
-using GymTracker.Models;
-using GymTracker.Services;
+using FreakLete.Data;
+using FreakLete.Models;
+using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GymTracker;
+namespace FreakLete;
 
 public partial class CalendarPage : ContentPage
 {
