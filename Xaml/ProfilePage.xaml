@@ -2,16 +2,141 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GymTracker.ProfilePage"
-             Title="Profile">
+             Title="Profile"
+             xmlns:local="clr-namespace:GymTracker">
 
-    <Grid RowDefinitions="*,Auto"
-          xmlns:local="clr-namespace:GymTracker">
-        <VerticalStackLayout Grid.Row="0" Padding="24,16" Spacing="12">
-            <Label Text="Profile"
-                   Style="{StaticResource Headline}" />
-            <Label Text="Profile page is coming soon."
-                   HorizontalOptions="Center" />
-        </VerticalStackLayout>
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="24,16,24,24"
+                                 Spacing="18">
+
+                <Label Text="Profile"
+                       Style="{StaticResource Headline}" />
+
+                <Label x:Name="FullNameLabel"
+                       FontSize="24"
+                       HorizontalOptions="Center" />
+
+                <Label x:Name="EmailLabel"
+                       FontSize="14"
+                       HorizontalOptions="Center"
+                       Opacity="0.75" />
+
+                <Label x:Name="StatusLabel"
+                       FontSize="13"
+                       IsVisible="False" />
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Date of Birth" />
+                    <DatePicker x:Name="DateOfBirthPicker"
+                                DateSelected="OnDateOfBirthChanged" />
+
+                    <Label x:Name="AgeLabel"
+                           Text="Age: -" />
+
+                    <Label Text="Weight (kg)" />
+                    <Entry x:Name="WeightEntry"
+                           Placeholder="Example: 82.5"
+                           Keyboard="Numeric" />
+
+                    <Label Text="Body Fat (%)" />
+                    <Entry x:Name="BodyFatEntry"
+                           Placeholder="Example: 12.5"
+                           Keyboard="Numeric" />
+
+                    <Label Text="Sport" />
+                    <Entry x:Name="SportEntry"
+                           Placeholder="Example: Basketball" />
+
+                    <Label Text="Gym Experience" />
+                    <Picker x:Name="GymExperiencePicker"
+                            Title="Select experience level" />
+
+                    <Button Text="Save Profile"
+                            Clicked="OnSaveProfileClicked" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Quick Stats"
+                           FontSize="22"
+                           HorizontalOptions="Start" />
+                    <Label x:Name="WorkoutCountLabel"
+                           Text="Total Workouts: 0" />
+                    <Label x:Name="OneRmPrCountLabel"
+                           Text="1RM Saved Entries: 0" />
+                    <Label x:Name="ProfilePrCountLabel"
+                           Text="Profile PR Entries: 0" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Athletic Performance"
+                           FontSize="22"
+                           HorizontalOptions="Start" />
+
+                    <Picker x:Name="PerformanceMovementPicker"
+                            Title="Select movement" />
+
+                    <Entry x:Name="PerformanceValueEntry"
+                           Placeholder="Enter result"
+                           Keyboard="Numeric" />
+
+                    <Button Text="Add Athletic Performance"
+                            Clicked="OnAddPerformanceClicked" />
+
+                    <Label x:Name="AthleticPerformanceLabel"
+                           LineBreakMode="WordWrap" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Movement Goals"
+                           FontSize="22"
+                           HorizontalOptions="Start" />
+
+                    <Entry x:Name="GoalMovementEntry"
+                           Placeholder="Movement name" />
+
+                    <Entry x:Name="GoalTargetValueEntry"
+                           Placeholder="Target value"
+                           Keyboard="Numeric" />
+
+                    <Entry x:Name="GoalUnitEntry"
+                           Placeholder="Unit (kg, cm, s)" />
+
+                    <Button Text="Save Goal"
+                            Clicked="OnSaveGoalClicked" />
+
+                    <Label x:Name="MovementGoalsLabel"
+                           LineBreakMode="WordWrap" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Profile PRs"
+                           FontSize="22"
+                           HorizontalOptions="Start" />
+
+                    <Entry x:Name="ProfilePrMovementEntry"
+                           Placeholder="Movement name" />
+
+                    <Entry x:Name="ProfilePrValueEntry"
+                           Placeholder="Value"
+                           Keyboard="Numeric" />
+
+                    <Entry x:Name="ProfilePrUnitEntry"
+                           Placeholder="Unit" />
+
+                    <Button Text="Add Profile PR"
+                            Clicked="OnAddProfilePrClicked" />
+
+                    <Label x:Name="ProfilePrLabel"
+                           LineBreakMode="WordWrap" />
+                </VerticalStackLayout>
+
+                <Button Text="Logout"
+                        BackgroundColor="#8B0000"
+                        Clicked="OnLogoutClicked" />
+
+            </VerticalStackLayout>
+        </ScrollView>
 
         <local:BottomNavBar Grid.Row="1"
                             ActiveTab="profile" />

@@ -2,6 +2,7 @@ using GymTracker.Data;
 using GymTracker.Models;
 using GymTracker.Security;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.RegularExpressions;
 
 namespace GymTracker;
 
@@ -41,9 +42,21 @@ public partial class RegisterPage : ContentPage
 			return;
 		}
 
-		if (password.Length < 6)
+		if (password.Length < 8)
 		{
-			ShowError("Password must be at least 6 characters.");
+			ShowError("Password must be at least 8 characters.");
+			return;
+		}
+
+		if (!password.Any(char.IsUpper))
+		{
+			ShowError("Password must include at least 1 uppercase letter.");
+			return;
+		}
+
+		if (!Regex.IsMatch(password, @"[^a-zA-Z0-9]"))
+		{
+			ShowError("Password must include at least 1 special character.");
 			return;
 		}
 

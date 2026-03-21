@@ -13,9 +13,7 @@ public partial class App : Application
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		AppDatabase database = MauiProgram.Services.GetRequiredService<AppDatabase>();
 		UserSession session = MauiProgram.Services.GetRequiredService<UserSession>();
-		database.EnsureCreatedAsync().GetAwaiter().GetResult();
 
 		Page startPage = session.IsLoggedIn()
 			? new HomePage()

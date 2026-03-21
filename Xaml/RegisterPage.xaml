@@ -48,6 +48,10 @@
                        IsPassword="True" />
             </VerticalStackLayout>
 
+            <Label Text="Password rules: 8+ chars, 1 uppercase, 1 special character."
+                   FontSize="13"
+                   Opacity="0.7" />
+
             <Label x:Name="ErrorLabel"
                    TextColor="Red"
                    FontSize="13"
