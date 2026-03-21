@@ -41,6 +41,11 @@ public partial class BottomNavBar : ContentView
 		WorkoutIndicator.IsVisible = ActiveTab == WorkoutTab;
 		OneRmIndicator.IsVisible = ActiveTab == OneRmTab;
 		ProfileIndicator.IsVisible = ActiveTab == ProfileTab;
+
+		HomeButton.Opacity = ActiveTab == HomeTab ? 1 : 0.55;
+		WorkoutButton.Opacity = ActiveTab == WorkoutTab ? 1 : 0.55;
+		OneRmButton.Opacity = ActiveTab == OneRmTab ? 1 : 0.55;
+		ProfileButton.Opacity = ActiveTab == ProfileTab ? 1 : 0.55;
 	}
 
 	private async void OnHomeClicked(object? sender, EventArgs e)

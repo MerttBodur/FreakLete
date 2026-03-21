@@ -3,67 +3,73 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GymTracker.BottomNavBar">
 
-    <Border StrokeThickness="0"
-            BackgroundColor="#121318"
-            Padding="16,10"
-            StrokeShape="RoundRectangle 0,0,22,22">
+    <Border Style="{StaticResource CardBorder}"
+            BackgroundColor="{StaticResource SurfaceRaised}"
+            Stroke="{StaticResource SurfaceBorder}"
+            Padding="18,12"
+            Margin="14,0,14,10"
+            StrokeShape="RoundRectangle 26">
         <Grid ColumnDefinitions="*,*,*,*">
             <VerticalStackLayout Grid.Column="0" Spacing="4" HorizontalOptions="Center">
-                <ImageButton Source="nav_home.svg"
+                <ImageButton x:Name="HomeButton"
+                             Source="nav_home.svg"
                              BackgroundColor="Transparent"
                              WidthRequest="22"
                              HeightRequest="22"
                              Clicked="OnHomeClicked" />
                 <BoxView x:Name="HomeIndicator"
-                         WidthRequest="4"
+                         WidthRequest="16"
                          HeightRequest="4"
                          CornerRadius="2"
-                         Color="#FF8A00"
+                         Color="{StaticResource Accent}"
                          IsVisible="False"
                          HorizontalOptions="Center" />
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="1" Spacing="4" HorizontalOptions="Center">
-                <ImageButton Source="nav_dumbbell.svg"
+                <ImageButton x:Name="WorkoutButton"
+                             Source="nav_dumbbell.svg"
                              BackgroundColor="Transparent"
                              WidthRequest="22"
                              HeightRequest="22"
                              Clicked="OnWorkoutClicked" />
                 <BoxView x:Name="WorkoutIndicator"
-                         WidthRequest="4"
+                         WidthRequest="16"
                          HeightRequest="4"
                          CornerRadius="2"
-                         Color="#FF8A00"
+                         Color="{StaticResource Accent}"
                          IsVisible="False"
                          HorizontalOptions="Center" />
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="2" Spacing="4" HorizontalOptions="Center">
-                <ImageButton Source="nav_plates.svg"
+                <ImageButton x:Name="OneRmButton"
+                             Source="nav_plates.svg"
                              BackgroundColor="Transparent"
                              WidthRequest="22"
                              HeightRequest="22"
                              Clicked="OnOneRmClicked" />
                 <BoxView x:Name="OneRmIndicator"
-                         WidthRequest="4"
+                         WidthRequest="16"
                          HeightRequest="4"
                          CornerRadius="2"
-                         Color="#FF8A00"
+                         Color="{StaticResource Accent}"
                          IsVisible="False"
                          HorizontalOptions="Center" />
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="3" Spacing="4" HorizontalOptions="Center">
-                <ImageButton Source="nav_profile.svg"
+                <ImageButton x:Name="ProfileButton"
+                             Source="nav_profile.svg"
                              BackgroundColor="Transparent"
                              WidthRequest="22"
                              HeightRequest="22"
                              Clicked="OnProfileClicked" />
                 <BoxView x:Name="ProfileIndicator"
-                         WidthRequest="4"
+                         WidthRequest="16"
                          HeightRequest="4"
                          CornerRadius="2"
-                         Color="#FF8A00"
+                         Color="{StaticResource Accent}"
                          IsVisible="False"
                          HorizontalOptions="Center" />
             </VerticalStackLayout>

@@ -6,12 +6,102 @@
              Title="">
 
     <Grid RowDefinitions="*,Auto">
-        <VerticalStackLayout Grid.Row="0" Padding="24,16" Spacing="16">
-            <Label Text="Gym Tracker"
-                   Style="{StaticResource Headline}"
-                   HorizontalOptions="Center"
-                   HorizontalTextAlignment="Center" />
-        </VerticalStackLayout>
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="24,18,24,20"
+                                 Spacing="18">
+
+                <Border Style="{StaticResource AccentCardBorder}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label x:Name="WelcomeLabel"
+                               Text="WELCOME BACK"
+                               Style="{StaticResource Eyebrow}" />
+
+                        <Label Text="Train with focus. Track with clarity."
+                               Style="{StaticResource Headline}"
+                               HorizontalTextAlignment="Start" />
+
+                        <Label Text="Your workouts, PRs, and performance stats in one place."
+                               Style="{StaticResource BodyMuted}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Grid ColumnDefinitions="*,*"
+                      ColumnSpacing="12">
+                    <Border Grid.Column="0"
+                            Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Workout"
+                                   Style="{StaticResource SubHeadline}"
+                                   HorizontalTextAlignment="Start" />
+                            <Label Text="Build a session, log exercises, and keep progress moving."
+                                   Style="{StaticResource BodyMuted}" />
+                            <Button Text="Start Workout"
+                                    Clicked="OnStartWorkoutClicked" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="1RM"
+                                   Style="{StaticResource SubHeadline}"
+                                   HorizontalTextAlignment="Start" />
+                            <Label Text="Estimate max strength and save important PR sets."
+                                   Style="{StaticResource BodyMuted}" />
+                            <Button Style="{StaticResource SecondaryButton}"
+                                    Text="Open Calculator"
+                                    Clicked="OnOpenOneRmClicked" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <Label Text="Quick View"
+                       Style="{StaticResource SubHeadline}"
+                       HorizontalTextAlignment="Start" />
+
+                <Grid ColumnDefinitions="*,*"
+                      ColumnSpacing="12"
+                      RowDefinitions="Auto,Auto"
+                      RowSpacing="12">
+                    <Border Grid.Row="0"
+                            Grid.Column="0"
+                            Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Total Workouts"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Label x:Name="WorkoutTotalLabel"
+                                   Text="0"
+                                   FontSize="28" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Row="0"
+                            Grid.Column="1"
+                            Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Athletic Entries"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Label x:Name="AthleticCountLabel"
+                                   Text="0"
+                                   FontSize="28" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Row="1"
+                            Grid.ColumnSpan="2"
+                            Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Latest Saved PR"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Label x:Name="LatestPrLabel"
+                                   Text="No PR saved yet."
+                                   FontSize="20"
+                                   LineBreakMode="WordWrap" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+        </ScrollView>
 
         <local:BottomNavBar Grid.Row="1"
                             ActiveTab="home" />
