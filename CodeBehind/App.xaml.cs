@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using GymTracker.Data;
+using GymTracker.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GymTracker;
 
@@ -11,6 +13,14 @@ public partial class App : Application
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		return new Window(new NavigationPage(new HomePage()));
+		AppDatabase database = MauiProgram.Services.GetRequiredService<AppDatabase>();
+		UserSession session = MauiProgram.Services.GetRequiredService<UserSession>();
+		database.EnsureCreatedAsync().GetAwaiter().GetResult();
+
+		Page startPage = session.IsLoggedIn()
+			? new HomePage()
+			: new LoginPage();
+
+		return new Window(new NavigationPage(startPage));
 	}
 }

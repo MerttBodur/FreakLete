@@ -42,6 +42,12 @@
 
             </VerticalStackLayout>
 
+            <Label
+                x:Name="ErrorLabel"
+                TextColor="Red"
+                FontSize="13"
+                IsVisible="False" />
+
             <Button
                 x:Name="LoginBtn"
                 Text="Login"

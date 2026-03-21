@@ -1,10 +1,13 @@
 using GymTracker.Data;
+using GymTracker.Services;
 using Microsoft.Extensions.Logging;
 
 namespace GymTracker;
 
 public static class MauiProgram
 {
+	public static IServiceProvider Services { get; private set; } = null!;
+
 	public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
@@ -17,11 +20,14 @@ public static class MauiProgram
 			});
 
 		builder.Services.AddSingleton<AppDatabase>();
+		builder.Services.AddSingleton<UserSession>();
 
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif
 
-		return builder.Build();
+		MauiApp app = builder.Build();
+		Services = app.Services;
+		return app;
 	}
 }
