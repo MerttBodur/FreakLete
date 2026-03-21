@@ -96,12 +96,19 @@ public partial class CalculationsPage : ContentPage
 		ResultsLabel.Text = string.Empty;
 		ClearLabel(OneRmStatusLabel);
 
-		if (!TryGetOneRmInputs(out int weightKg, out int reps, out int rir, out double? concentricTime))
+		OneRmInputParseResult inputResult = CalculationsPageLogic.ParseOneRmInputs(
+			WeightEntry.Text,
+			RepsEntry.Text,
+			RirEntry.Text,
+			ConcentricTimeEntry.Text);
+
+		if (!inputResult.IsValid)
 		{
+			ShowError(OneRmStatusLabel, inputResult.ErrorMessage);
 			return;
 		}
 
-		double oneRm = CalculationService.CalculateOneRm(weightKg, reps, rir);
+		double oneRm = CalculationService.CalculateOneRm(inputResult.WeightKg, inputResult.Reps, inputResult.Rir);
 		var output = new StringBuilder();
 
 		if (_selectedStrengthExerciseItem is not null)
@@ -116,60 +123,13 @@ public partial class CalculationsPage : ContentPage
 			output.AppendLine($"{rm}RM: {Math.Round(rmWeight, 1)} kg");
 		}
 
-		if (concentricTime.HasValue)
+		if (inputResult.ConcentricTimeSeconds.HasValue)
 		{
 			output.AppendLine();
-			output.AppendLine($"Concentric Time: {concentricTime.Value:0.##} s");
+			output.AppendLine($"Concentric Time: {inputResult.ConcentricTimeSeconds.Value:0.##} s");
 		}
 
 		ResultsLabel.Text = output.ToString().TrimEnd();
-	}
-
-	private bool TryGetOneRmInputs(out int weightKg, out int reps, out int rir, out double? concentricTime)
-	{
-		weightKg = 0;
-		reps = 0;
-		rir = 0;
-		concentricTime = null;
-
-		if (!int.TryParse(WeightEntry.Text, out weightKg) ||
-			!int.TryParse(RepsEntry.Text, out reps) ||
-			!int.TryParse(RirEntry.Text, out rir))
-		{
-			ShowError(OneRmStatusLabel, "Please enter numbers only.");
-			return false;
-		}
-
-		if (weightKg < 40 || weightKg > 250)
-		{
-			ShowError(OneRmStatusLabel, "Weight must be between 40 kg - 250 kg.");
-			return false;
-		}
-
-		if (reps < 1 || reps > 8)
-		{
-			ShowError(OneRmStatusLabel, "Reps must be between 1 - 8.");
-			return false;
-		}
-
-		if (rir < 0 || rir > 5)
-		{
-			ShowError(OneRmStatusLabel, "RIR must be between 0 - 5.");
-			return false;
-		}
-
-		if (!string.IsNullOrWhiteSpace(ConcentricTimeEntry.Text))
-		{
-			if (!MetricInput.TryParseFlexibleDouble(ConcentricTimeEntry.Text, out double parsedTime) || parsedTime <= 0)
-			{
-				ShowError(OneRmStatusLabel, "Concentric time must be a positive number.");
-				return false;
-			}
-
-			concentricTime = parsedTime;
-		}
-
-		return true;
 	}
 
 	private async void OnChoosePrExerciseClicked(object? sender, EventArgs e)
@@ -241,21 +201,22 @@ public partial class CalculationsPage : ContentPage
 			return;
 		}
 
-		PrEntry? entry = BuildPrEntry(currentUserId.Value);
-		if (entry is null)
+		PrEntryBuildResult buildResult = BuildPrEntry(currentUserId.Value);
+		if (!buildResult.IsValid || buildResult.Entry is null)
 		{
+			ShowError(PrStatusLabel, buildResult.ErrorMessage);
 			return;
 		}
 
 		if (_editingPrEntryId.HasValue)
 		{
-			entry.Id = _editingPrEntryId.Value;
-			await _database.UpdatePrEntryAsync(entry);
+			buildResult.Entry.Id = _editingPrEntryId.Value;
+			await _database.UpdatePrEntryAsync(buildResult.Entry);
 			ShowSuccess(PrStatusLabel, "Saved PR updated.");
 		}
 		else
 		{
-			await _database.SavePrEntryAsync(entry);
+			await _database.SavePrEntryAsync(buildResult.Entry);
 			ShowSuccess(PrStatusLabel, "Saved PR added.");
 		}
 
@@ -264,107 +225,33 @@ public partial class CalculationsPage : ContentPage
 		RefreshSavedPrList();
 	}
 
-	private PrEntry? BuildPrEntry(int userId)
+	private PrEntryBuildResult BuildPrEntry(int userId)
 	{
 		if (_selectedPrExerciseItem is null)
 		{
-			ShowError(PrStatusLabel, "Choose a movement before saving.");
-			return null;
+			return PrEntryBuildResult.Failure("Choose a movement before saving.");
 		}
 
-		if (_selectedPrExerciseItem.TrackingMode == ExerciseTrackingMode.Strength)
-		{
-			if (!int.TryParse(PrWeightEntry.Text, out int weightKg) || weightKg <= 0)
-			{
-				ShowError(PrStatusLabel, "Weight must be a positive number.");
-				return null;
-			}
-
-			if (!int.TryParse(PrRepsEntry.Text, out int reps) || reps <= 0)
-			{
-				ShowError(PrStatusLabel, "Reps must be a positive number.");
-				return null;
-			}
-
-			int? rir = null;
-			if (!string.IsNullOrWhiteSpace(PrRirEntry.Text))
-			{
-				if (!int.TryParse(PrRirEntry.Text, out int parsedRir) || parsedRir < 0 || parsedRir > 5)
-				{
-					ShowError(PrStatusLabel, "RIR must be between 0 - 5.");
-					return null;
-				}
-
-				rir = parsedRir;
-			}
-
-			double? concentricTime = null;
-			if (!string.IsNullOrWhiteSpace(PrConcentricTimeEntry.Text))
-			{
-				if (!MetricInput.TryParseFlexibleDouble(PrConcentricTimeEntry.Text, out double parsedTime) || parsedTime <= 0)
-				{
-					ShowError(PrStatusLabel, "Concentric time must be a positive number.");
-					return null;
-				}
-
-				concentricTime = parsedTime;
-			}
-
-			return new PrEntry
-			{
-				UserId = userId,
-				ExerciseName = _selectedPrExerciseItem.Name,
-				ExerciseCategory = _selectedPrExerciseItem.Category,
-				TrackingMode = nameof(ExerciseTrackingMode.Strength),
-				Weight = weightKg,
-				Reps = reps,
-				RIR = rir,
-				ConcentricTimeSeconds = concentricTime
-			};
-		}
-
-		if (!MetricInput.TryParseFlexibleDouble(PrMetric1Entry.Text, out double metric1) || metric1 <= 0)
-		{
-			ShowError(PrStatusLabel, $"{_selectedPrExerciseItem.PrimaryLabel} is required.");
-			return null;
-		}
-
-		double? metric2 = null;
-		if (_selectedPrExerciseItem.HasSecondaryMetric)
-		{
-			if (!MetricInput.TryParseFlexibleDouble(PrMetric2Entry.Text, out double parsedMetric2) || parsedMetric2 <= 0)
-			{
-				ShowError(PrStatusLabel, $"{_selectedPrExerciseItem.SecondaryLabel} is required.");
-				return null;
-			}
-
-			metric2 = parsedMetric2;
-		}
-
-		double? gct = null;
-		if (_selectedPrExerciseItem.SupportsGroundContactTime && !string.IsNullOrWhiteSpace(PrGroundContactTimeEntry.Text))
-		{
-			if (!MetricInput.TryParseFlexibleDouble(PrGroundContactTimeEntry.Text, out double parsedGctSeconds) || parsedGctSeconds <= 0)
-			{
-				ShowError(PrStatusLabel, "Ground contact time must be a positive number.");
-				return null;
-			}
-
-			gct = MetricInput.SecondsToMilliseconds(parsedGctSeconds);
-		}
-
-		return new PrEntry
+		return CalculationsPageLogic.BuildPrEntry(new PrEntryBuildRequest
 		{
 			UserId = userId,
 			ExerciseName = _selectedPrExerciseItem.Name,
 			ExerciseCategory = _selectedPrExerciseItem.Category,
-			TrackingMode = nameof(ExerciseTrackingMode.Custom),
-			Metric1Value = metric1,
-			Metric1Unit = _selectedPrExerciseItem.PrimaryUnit,
-			Metric2Value = metric2,
-			Metric2Unit = _selectedPrExerciseItem.SecondaryUnit,
-			GroundContactTimeMs = gct
-		};
+			TrackingMode = _selectedPrExerciseItem.TrackingMode,
+			PrimaryLabel = _selectedPrExerciseItem.PrimaryLabel,
+			PrimaryUnit = _selectedPrExerciseItem.PrimaryUnit,
+			SecondaryLabel = _selectedPrExerciseItem.SecondaryLabel,
+			SecondaryUnit = _selectedPrExerciseItem.SecondaryUnit,
+			HasSecondaryMetric = _selectedPrExerciseItem.HasSecondaryMetric,
+			SupportsGroundContactTime = _selectedPrExerciseItem.SupportsGroundContactTime,
+			WeightText = PrWeightEntry.Text,
+			RepsText = PrRepsEntry.Text,
+			RirText = PrRirEntry.Text,
+			ConcentricTimeText = PrConcentricTimeEntry.Text,
+			Metric1Text = PrMetric1Entry.Text,
+			Metric2Text = PrMetric2Entry.Text,
+			GroundContactTimeText = PrGroundContactTimeEntry.Text
+		});
 	}
 
 	private async Task LoadSavedPrEntriesAsync()
