@@ -197,9 +197,16 @@ public partial class OneRmPage : ContentPage
 		RepsEntry.Text = item.Reps.ToString();
 		RirEntry.Text = item.Rir.ToString();
 		SaveExerciseButton.Text = "Update Exercise";
+		CancelEditButton.IsVisible = true;
 		ErrorLabel.TextColor = Colors.LightGreen;
 		ErrorLabel.Text = $"Editing: {item.Text}";
 		ErrorLabel.IsVisible = true;
+	}
+
+	private void OnCancelEditClicked(object? sender, EventArgs e)
+	{
+		ResetSaveMode();
+		ClearError();
 	}
 
 	private void ShowError(string message)
@@ -229,6 +236,7 @@ public partial class OneRmPage : ContentPage
 		RepsEntry.Text = string.Empty;
 		RirEntry.Text = string.Empty;
 		SaveExerciseButton.Text = "Save Exercise";
+		CancelEditButton.IsVisible = false;
 	}
 
 	private static double CalculateOneRm(int weightKg, int estimatedMaxReps)

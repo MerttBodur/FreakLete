@@ -84,6 +84,11 @@
                             Text="Add Athletic Performance"
                             Clicked="OnAddPerformanceClicked" />
 
+                    <Button x:Name="PerformanceCancelButton"
+                            Text="Cancel Edit"
+                            IsVisible="False"
+                            Clicked="OnCancelPerformanceEditClicked" />
+
                     <CollectionView x:Name="AthleticPerformanceView">
                         <CollectionView.EmptyView>
                             <Label Text="No athletic performance records yet."
@@ -135,6 +140,11 @@
                             Text="Save Goal"
                             Clicked="OnSaveGoalClicked" />
 
+                    <Button x:Name="GoalCancelButton"
+                            Text="Cancel Edit"
+                            IsVisible="False"
+                            Clicked="OnCancelGoalEditClicked" />
+
                     <CollectionView x:Name="MovementGoalsView">
                         <CollectionView.EmptyView>
                             <Label Text="No movement goals set yet."
@@ -185,6 +195,11 @@
                     <Button x:Name="ProfilePrActionButton"
                             Text="Add Profile PR"
                             Clicked="OnAddProfilePrClicked" />
+
+                    <Button x:Name="ProfilePrCancelButton"
+                            Text="Cancel Edit"
+                            IsVisible="False"
+                            Clicked="OnCancelProfilePrEditClicked" />
 
                     <CollectionView x:Name="ProfilePrView">
                         <CollectionView.EmptyView>

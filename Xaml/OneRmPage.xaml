@@ -33,6 +33,11 @@
                         Text="Save Exercise"
                         Clicked="OnSaveExerciseClicked" />
 
+                <Button x:Name="CancelEditButton"
+                        Text="Cancel Edit"
+                        IsVisible="False"
+                        Clicked="OnCancelEditClicked" />
+
                 <Label x:Name="ErrorLabel"
                        TextColor="Red"
                        IsVisible="False"

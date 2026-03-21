@@ -256,6 +256,7 @@ public partial class ProfilePage : ContentPage
 		PerformanceMovementPicker.SelectedItem = item.MovementName;
 		PerformanceValueEntry.Text = item.Value.ToString("0.##");
 		PerformanceActionButton.Text = "Update Athletic Performance";
+		PerformanceCancelButton.IsVisible = true;
 		ShowSuccess($"Editing: {item.Text}");
 	}
 
@@ -336,6 +337,7 @@ public partial class ProfilePage : ContentPage
 		GoalTargetValueEntry.Text = item.TargetValue.ToString("0.##");
 		GoalUnitEntry.Text = item.Unit;
 		GoalActionButton.Text = "Update Goal";
+		GoalCancelButton.IsVisible = true;
 		ShowSuccess($"Editing: {item.Text}");
 	}
 
@@ -418,7 +420,26 @@ public partial class ProfilePage : ContentPage
 		ProfilePrValueEntry.Text = item.Value.ToString("0.##");
 		ProfilePrUnitEntry.Text = item.Unit;
 		ProfilePrActionButton.Text = "Update Profile PR";
+		ProfilePrCancelButton.IsVisible = true;
 		ShowSuccess($"Editing: {item.Text}");
+	}
+
+	private void OnCancelPerformanceEditClicked(object? sender, EventArgs e)
+	{
+		ResetPerformanceForm();
+		ClearStatus();
+	}
+
+	private void OnCancelGoalEditClicked(object? sender, EventArgs e)
+	{
+		ResetGoalForm();
+		ClearStatus();
+	}
+
+	private void OnCancelProfilePrEditClicked(object? sender, EventArgs e)
+	{
+		ResetProfilePrForm();
+		ClearStatus();
 	}
 
 	private void OnDateOfBirthChanged(object? sender, DateChangedEventArgs e)
@@ -529,6 +550,7 @@ public partial class ProfilePage : ContentPage
 		PerformanceMovementPicker.SelectedIndex = -1;
 		PerformanceValueEntry.Text = string.Empty;
 		PerformanceActionButton.Text = "Add Athletic Performance";
+		PerformanceCancelButton.IsVisible = false;
 	}
 
 	private void ResetGoalForm()
@@ -538,6 +560,7 @@ public partial class ProfilePage : ContentPage
 		GoalTargetValueEntry.Text = string.Empty;
 		GoalUnitEntry.Text = string.Empty;
 		GoalActionButton.Text = "Save Goal";
+		GoalCancelButton.IsVisible = false;
 	}
 
 	private void ResetProfilePrForm()
@@ -547,6 +570,7 @@ public partial class ProfilePage : ContentPage
 		ProfilePrValueEntry.Text = string.Empty;
 		ProfilePrUnitEntry.Text = string.Empty;
 		ProfilePrActionButton.Text = "Add Profile PR";
+		ProfilePrCancelButton.IsVisible = false;
 	}
 
 	private class TextListItem
