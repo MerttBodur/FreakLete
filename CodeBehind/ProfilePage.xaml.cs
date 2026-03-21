@@ -94,15 +94,15 @@ public partial class ProfilePage : ContentPage
 		int oneRmPrCount = await _database.GetPrCountByUserAsync(userId);
 		int profilePrCount = await _database.GetProfilePrCountByUserAsync(userId);
 
-		WorkoutCountLabel.Text = $"Total Workouts: {workoutCount}";
-		OneRmPrCountLabel.Text = $"1RM Saved Entries: {oneRmPrCount}";
-		ProfilePrCountLabel.Text = $"Profile PR Entries: {profilePrCount}";
+		WorkoutCountLabel.Text = workoutCount.ToString();
+		OneRmPrCountLabel.Text = oneRmPrCount.ToString();
+		ProfilePrCountLabel.Text = profilePrCount.ToString();
 	}
 
 	private async Task LoadAthleticPerformancesAsync(int userId)
 	{
 		List<AthleticPerformanceEntry> entries = await _database.GetAthleticPerformanceEntriesByUserAsync(userId);
-		AthleticPerformanceView.ItemsSource = entries.Select(entry => new AthleticPerformanceListItem
+		List<AthleticPerformanceListItem> items = entries.Select(entry => new AthleticPerformanceListItem
 		{
 			Id = entry.Id,
 			MovementName = entry.MovementName,
@@ -111,12 +111,15 @@ public partial class ProfilePage : ContentPage
 			RecordedAt = entry.RecordedAt,
 			Text = $"{entry.MovementName}: {entry.Value:0.##} {entry.Unit} ({entry.RecordedAt:dd.MM.yyyy})"
 		}).ToList();
+
+		BindableLayout.SetItemsSource(AthleticPerformanceList, items);
+		AthleticPerformanceEmptyLabel.IsVisible = items.Count == 0;
 	}
 
 	private async Task LoadMovementGoalsAsync(int userId)
 	{
 		List<MovementGoal> goals = await _database.GetMovementGoalsByUserAsync(userId);
-		MovementGoalsView.ItemsSource = goals.Select(goal => new MovementGoalListItem
+		List<MovementGoalListItem> items = goals.Select(goal => new MovementGoalListItem
 		{
 			Id = goal.Id,
 			MovementName = goal.MovementName,
@@ -124,12 +127,15 @@ public partial class ProfilePage : ContentPage
 			Unit = goal.Unit,
 			Text = $"{goal.MovementName}: {goal.TargetValue:0.##} {goal.Unit}"
 		}).ToList();
+
+		BindableLayout.SetItemsSource(MovementGoalsList, items);
+		MovementGoalsEmptyLabel.IsVisible = items.Count == 0;
 	}
 
 	private async Task LoadProfilePrsAsync(int userId)
 	{
 		List<ProfilePrEntry> entries = await _database.GetProfilePrEntriesByUserAsync(userId);
-		ProfilePrView.ItemsSource = entries.Select(entry => new ProfilePrListItem
+		List<ProfilePrListItem> items = entries.Select(entry => new ProfilePrListItem
 		{
 			Id = entry.Id,
 			MovementName = entry.MovementName,
@@ -138,6 +144,9 @@ public partial class ProfilePage : ContentPage
 			RecordedAt = entry.RecordedAt,
 			Text = $"{entry.MovementName}: {entry.Value:0.##} {entry.Unit} ({entry.RecordedAt:dd.MM.yyyy})"
 		}).ToList();
+
+		BindableLayout.SetItemsSource(ProfilePrList, items);
+		ProfilePrEmptyLabel.IsVisible = items.Count == 0;
 	}
 
 	private async void OnSaveProfileClicked(object? sender, EventArgs e)
@@ -225,7 +234,7 @@ public partial class ProfilePage : ContentPage
 
 	private async void OnDeletePerformanceInvoked(object? sender, EventArgs e)
 	{
-		if (_currentUser is null || sender is not SwipeItem swipeItem || swipeItem.BindingContext is not AthleticPerformanceListItem item)
+		if (_currentUser is null || GetBindingContext<AthleticPerformanceListItem>(sender) is not AthleticPerformanceListItem item)
 		{
 			return;
 		}
@@ -247,7 +256,7 @@ public partial class ProfilePage : ContentPage
 
 	private void OnEditPerformanceInvoked(object? sender, EventArgs e)
 	{
-		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not AthleticPerformanceListItem item)
+		if (GetBindingContext<AthleticPerformanceListItem>(sender) is not AthleticPerformanceListItem item)
 		{
 			return;
 		}
@@ -305,7 +314,7 @@ public partial class ProfilePage : ContentPage
 
 	private async void OnDeleteGoalInvoked(object? sender, EventArgs e)
 	{
-		if (_currentUser is null || sender is not SwipeItem swipeItem || swipeItem.BindingContext is not MovementGoalListItem item)
+		if (_currentUser is null || GetBindingContext<MovementGoalListItem>(sender) is not MovementGoalListItem item)
 		{
 			return;
 		}
@@ -327,7 +336,7 @@ public partial class ProfilePage : ContentPage
 
 	private void OnEditGoalInvoked(object? sender, EventArgs e)
 	{
-		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not MovementGoalListItem item)
+		if (GetBindingContext<MovementGoalListItem>(sender) is not MovementGoalListItem item)
 		{
 			return;
 		}
@@ -387,7 +396,7 @@ public partial class ProfilePage : ContentPage
 
 	private async void OnDeleteProfilePrInvoked(object? sender, EventArgs e)
 	{
-		if (_currentUser is null || sender is not SwipeItem swipeItem || swipeItem.BindingContext is not ProfilePrListItem item)
+		if (_currentUser is null || GetBindingContext<ProfilePrListItem>(sender) is not ProfilePrListItem item)
 		{
 			return;
 		}
@@ -410,7 +419,7 @@ public partial class ProfilePage : ContentPage
 
 	private void OnEditProfilePrInvoked(object? sender, EventArgs e)
 	{
-		if (sender is not SwipeItem swipeItem || swipeItem.BindingContext is not ProfilePrListItem item)
+		if (GetBindingContext<ProfilePrListItem>(sender) is not ProfilePrListItem item)
 		{
 			return;
 		}
@@ -503,6 +512,15 @@ public partial class ProfilePage : ContentPage
 			"Vertical Jump" => "cm",
 			"40y Sprint Dash" => "s",
 			_ => string.Empty
+		};
+	}
+
+	private static TItem? GetBindingContext<TItem>(object? sender) where TItem : class
+	{
+		return sender switch
+		{
+			BindableObject bindable when bindable.BindingContext is TItem item => item,
+			_ => null
 		};
 	}
 

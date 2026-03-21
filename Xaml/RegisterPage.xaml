@@ -2,65 +2,86 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GymTracker.RegisterPage"
+             xmlns:local="clr-namespace:GymTracker"
+             NavigationPage.HasNavigationBar="False"
              Title="Register">
 
     <ScrollView>
-        <VerticalStackLayout Padding="30,24,30,30"
-                             Spacing="16">
+        <VerticalStackLayout Padding="24,30,24,30"
+                             Spacing="18">
 
-            <Label Text="Create Account"
-                   FontSize="32"
-                   HorizontalOptions="Center"
-                   FontAttributes="Bold" />
+            <local:TopHeader Title="Register"
+                             ShowBackButton="True"
+                             BackClicked="OnHeaderBackClicked" />
 
-            <Label Text="Register to start using GymTracker"
-                   FontSize="16"
-                   HorizontalOptions="Center"
-                   Opacity="0.7" />
+            <Border Style="{StaticResource AccentCardBorder}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="CREATE ACCOUNT"
+                           Style="{StaticResource Eyebrow}" />
+                    <Label Text="Start your training profile."
+                           Style="{StaticResource Headline}"
+                           HorizontalTextAlignment="Start" />
+                    <Label Text="Create your account to save workouts, PRs, and athletic performance data."
+                           Style="{StaticResource BodyMuted}" />
+                </VerticalStackLayout>
+            </Border>
 
-            <VerticalStackLayout Spacing="10">
-                <Label Text="First Name"
-                       FontSize="16" />
-                <Entry x:Name="FirstNameEntry"
-                       Placeholder="Enter your first name" />
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,*"
+                          ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0"
+                                             Spacing="8">
+                            <Label Text="First Name"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Entry x:Name="FirstNameEntry"
+                                   Placeholder="Enter your first name" />
+                        </VerticalStackLayout>
 
-                <Label Text="Last Name"
-                       FontSize="16" />
-                <Entry x:Name="LastNameEntry"
-                       Placeholder="Enter your last name" />
+                        <VerticalStackLayout Grid.Column="1"
+                                             Spacing="8">
+                            <Label Text="Last Name"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Entry x:Name="LastNameEntry"
+                                   Placeholder="Enter your last name" />
+                        </VerticalStackLayout>
+                    </Grid>
 
-                <Label Text="Email"
-                       FontSize="16" />
-                <Entry x:Name="EmailEntry"
-                       Placeholder="Enter your email"
-                       Keyboard="Email" />
+                    <Label Text="Email"
+                           Style="{StaticResource BodyMuted}" />
+                    <Entry x:Name="EmailEntry"
+                           Placeholder="Enter your email"
+                           Keyboard="Email" />
 
-                <Label Text="Password"
-                       FontSize="16" />
-                <Entry x:Name="PasswordEntry"
-                       Placeholder="Create a password"
-                       IsPassword="True" />
+                    <Label Text="Password"
+                           Style="{StaticResource BodyMuted}" />
+                    <Entry x:Name="PasswordEntry"
+                           Placeholder="Create a password"
+                           IsPassword="True" />
 
-                <Label Text="Confirm Password"
-                       FontSize="16" />
-                <Entry x:Name="ConfirmPasswordEntry"
-                       Placeholder="Confirm your password"
-                       IsPassword="True" />
-            </VerticalStackLayout>
+                    <Label Text="Confirm Password"
+                           Style="{StaticResource BodyMuted}" />
+                    <Entry x:Name="ConfirmPasswordEntry"
+                           Placeholder="Confirm your password"
+                           IsPassword="True" />
 
-            <Label Text="Password rules: 8+ chars, 1 uppercase, 1 special character."
-                   FontSize="13"
-                   Opacity="0.7" />
+                    <Border Style="{StaticResource CardBorder}"
+                            BackgroundColor="{StaticResource SurfaceRaised}"
+                            Padding="14">
+                        <Label Text="Password rules: at least 8 characters, 1 uppercase letter, and 1 special character."
+                               Style="{StaticResource BodyMuted}" />
+                    </Border>
 
-            <Label x:Name="ErrorLabel"
-                   TextColor="Red"
-                   FontSize="13"
-                   IsVisible="False" />
+                    <Label x:Name="ErrorLabel"
+                           TextColor="{StaticResource Danger}"
+                           FontSize="13"
+                           IsVisible="False" />
 
-            <Button Text="Create Account"
-                    Clicked="OnCreateAccountClicked"
-                    HorizontalOptions="Fill" />
-
+                    <Button Text="Create Account"
+                            Clicked="OnCreateAccountClicked"
+                            HorizontalOptions="Fill" />
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 

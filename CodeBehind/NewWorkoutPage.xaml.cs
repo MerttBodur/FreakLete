@@ -55,6 +55,9 @@ public partial class NewWorkoutPage : ContentPage
 	{
 		bool isEditing = _editingWorkoutId.HasValue;
 		PageTitleLabel.Text = isEditing ? "Edit Workout" : "Add New Workout";
+		PageHelperLabel.Text = isEditing
+			? "Update the workout details, adjust exercises, and save the new session version."
+			: "Set the date, name your workout, then add exercises to the session.";
 		Title = isEditing ? "Edit Workout" : "Add New Workout";
 		ConfirmWorkoutButton.Text = isEditing ? "Save Workout Changes" : "Confirm Add New Workout";
 	}
@@ -230,6 +233,7 @@ public partial class NewWorkoutPage : ContentPage
 			.ToList();
 
 		ExercisesCollectionView.ItemsSource = items;
+		ExerciseCountLabel.Text = _exercises.Count == 1 ? "1 item" : $"{_exercises.Count} items";
 	}
 
 	private void OnExerciseSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -261,6 +265,9 @@ public partial class NewWorkoutPage : ContentPage
 		RepCountEntry.Text = string.Empty;
 		RirEntry.Text = string.Empty;
 		RestSecondsEntry.Text = string.Empty;
+		_selectedExerciseName = null;
+		ExerciseOptionsView.SelectedItem = null;
+		SelectedExerciseLabel.Text = "Selected: -";
 	}
 
 	private void ShowError(string message)
@@ -273,6 +280,11 @@ public partial class NewWorkoutPage : ContentPage
 	{
 		ErrorLabel.Text = string.Empty;
 		ErrorLabel.IsVisible = false;
+	}
+
+	private async void OnHeaderBackClicked(object? sender, EventArgs e)
+	{
+		await Navigation.PopAsync(false);
 	}
 
 	private sealed class ExerciseListItem

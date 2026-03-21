@@ -97,4 +97,9 @@ public partial class RegisterPage : ContentPage
 		ErrorLabel.Text = string.Empty;
 		ErrorLabel.IsVisible = false;
 	}
+
+	private async void OnHeaderBackClicked(object? sender, EventArgs e)
+	{
+		await Navigation.PopAsync(false);
+	}
 }

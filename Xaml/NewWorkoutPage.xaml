@@ -1,111 +1,189 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:GymTracker"
              x:Class="GymTracker.NewWorkoutPage"
+             NavigationPage.HasNavigationBar="False"
              Title="Add New Workout">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24,16" Spacing="12">
-            <Label x:Name="PageTitleLabel"
-                   Text="Add New Workout"
-                   Style="{StaticResource Headline}" />
+        <VerticalStackLayout Padding="24,18,24,28"
+                             Spacing="18">
 
-            <Label Text="Date" />
-            <DatePicker x:Name="WorkoutDatePicker" />
+            <local:TopHeader Title="Add New Workout"
+                             ShowBackButton="True"
+                             BackClicked="OnHeaderBackClicked" />
 
-            <Label Text="Workout Name" />
-            <Entry x:Name="WorkoutNameEntry"
-                   Placeholder="Example: Push Day" />
+            <Border Style="{StaticResource AccentCardBorder}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="SESSION SETUP"
+                           Style="{StaticResource Eyebrow}" />
+                    <Label x:Name="PageTitleLabel"
+                           Text="Add New Workout"
+                           Style="{StaticResource Headline}"
+                           HorizontalTextAlignment="Start" />
+                    <Label x:Name="PageHelperLabel"
+                           Text="Set the date, name your workout, then add exercises to the session."
+                           Style="{StaticResource BodyMuted}" />
+                </VerticalStackLayout>
+            </Border>
 
-            <Button x:Name="AddExercisesButton"
-                    Text="Add Exercises"
-                    Clicked="OnAddExercisesClicked" />
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Workout Details"
+                           Style="{StaticResource SubHeadline}"
+                           HorizontalTextAlignment="Start" />
 
-            <VerticalStackLayout x:Name="ExercisesSection"
-                                 IsVisible="False"
-                                 Spacing="12">
-                <Label Text="Select Exercise" />
-                <CollectionView x:Name="ExerciseOptionsView"
-                                SelectionMode="Single"
-                                SelectionChanged="OnExerciseSelectionChanged"
-                                HeightRequest="56">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Horizontal"
-                                           ItemSpacing="8" />
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Padding="10,8"
-                                    Margin="0,0,4,0">
-                                <Label Text="{Binding Name}" />
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                    <Label Text="Date"
+                           Style="{StaticResource BodyMuted}" />
+                    <DatePicker x:Name="WorkoutDatePicker" />
 
-                <Label x:Name="SelectedExerciseLabel"
-                       Text="Selected: -"
-                       Opacity="0.8" />
+                    <Label Text="Workout Name"
+                           Style="{StaticResource BodyMuted}" />
+                    <Entry x:Name="WorkoutNameEntry"
+                           Placeholder="Example: Push Day" />
 
-                <Label Text="Set Count (Required)" />
-                <Entry x:Name="SetCountEntry"
-                       Keyboard="Numeric"
-                       Placeholder="Example: 3" />
+                    <Button x:Name="AddExercisesButton"
+                            Text="Add Exercises"
+                            Clicked="OnAddExercisesClicked" />
+                </VerticalStackLayout>
+            </Border>
 
-                <Label Text="Rep Count (Required)" />
-                <Entry x:Name="RepCountEntry"
-                       Keyboard="Numeric"
-                       Placeholder="Example: 8" />
+            <Border x:Name="ExercisesSection"
+                    Style="{StaticResource CardBorder}"
+                    IsVisible="False">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Exercise Builder"
+                           Style="{StaticResource SubHeadline}"
+                           HorizontalTextAlignment="Start" />
 
-                <Label Text="RIR (Optional)" />
-                <Entry x:Name="RirEntry"
-                       Keyboard="Numeric"
-                       Placeholder="Example: 1" />
+                    <Label Text="Choose an exercise"
+                           Style="{StaticResource BodyMuted}" />
+                    <CollectionView x:Name="ExerciseOptionsView"
+                                    SelectionMode="Single"
+                                    SelectionChanged="OnExerciseSelectionChanged"
+                                    HeightRequest="70">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Horizontal"
+                                               ItemSpacing="10" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CardBorder}"
+                                        BackgroundColor="{StaticResource SurfaceRaised}"
+                                        Padding="14,10">
+                                    <Label Text="{Binding Name}"
+                                           FontSize="14" />
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
-                <Label Text="Rest Seconds (Optional)" />
-                <Entry x:Name="RestSecondsEntry"
-                       Keyboard="Numeric"
-                       Placeholder="Example: 90" />
+                    <Label x:Name="SelectedExerciseLabel"
+                           Text="Selected: -"
+                           Style="{StaticResource BodyMuted}" />
 
-                <Button Text="Add Exercise"
-                        Clicked="OnAddExerciseClicked" />
-            </VerticalStackLayout>
+                    <Grid ColumnDefinitions="*,*"
+                          ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0"
+                                             Spacing="8">
+                            <Label Text="Set Count"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Entry x:Name="SetCountEntry"
+                                   Keyboard="Numeric"
+                                   Placeholder="Example: 3" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1"
+                                             Spacing="8">
+                            <Label Text="Rep Count"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Entry x:Name="RepCountEntry"
+                                   Keyboard="Numeric"
+                                   Placeholder="Example: 8" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*"
+                          ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0"
+                                             Spacing="8">
+                            <Label Text="RIR"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Entry x:Name="RirEntry"
+                                   Keyboard="Numeric"
+                                   Placeholder="Optional" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1"
+                                             Spacing="8">
+                            <Label Text="Rest Seconds"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Entry x:Name="RestSecondsEntry"
+                                   Keyboard="Numeric"
+                                   Placeholder="Optional" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Button Text="Add Exercise"
+                            Style="{StaticResource SecondaryButton}"
+                            Clicked="OnAddExerciseClicked" />
+                </VerticalStackLayout>
+            </Border>
 
             <Label x:Name="ErrorLabel"
-                   TextColor="Red"
+                   TextColor="{StaticResource Danger}"
                    IsVisible="False"
                    FontSize="13" />
 
-            <Label Text="Added Exercises"
-                   FontSize="16"
-                   FontFamily="OpenSansSemibold" />
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto"
+                          ColumnSpacing="12">
+                        <Label Text="Session Exercises"
+                               Style="{StaticResource SubHeadline}"
+                               HorizontalTextAlignment="Start" />
+                        <Label x:Name="ExerciseCountLabel"
+                               Text="0 items"
+                               Style="{StaticResource BodyMuted}"
+                               VerticalOptions="Center" />
+                    </Grid>
 
-            <CollectionView x:Name="ExercisesCollectionView">
-                <CollectionView.EmptyView>
-                    <Label Text="No exercise added yet."
-                           HorizontalOptions="Center" />
-                </CollectionView.EmptyView>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <SwipeView>
-                            <SwipeView.RightItems>
-                                <SwipeItems>
-                                    <SwipeItem Text="Delete"
-                                               BackgroundColor="#8B0000"
-                                               Invoked="OnDeleteExerciseInvoked" />
-                                </SwipeItems>
-                            </SwipeView.RightItems>
-                            <Border Padding="10" Margin="0,4,0,4">
-                                <VerticalStackLayout Spacing="4">
-                                    <Label Text="{Binding ExerciseName}" />
-                                    <Label Text="{Binding SetRepText}" />
-                                    <Label Text="{Binding RestText}" />
-                                </VerticalStackLayout>
-                            </Border>
-                        </SwipeView>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                    <CollectionView x:Name="ExercisesCollectionView">
+                        <CollectionView.EmptyView>
+                            <Label Text="No exercise added yet."
+                                   HorizontalOptions="Center"
+                                   Style="{StaticResource BodyMuted}" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <SwipeView>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Delete"
+                                                       BackgroundColor="#3A1623"
+                                                       Invoked="OnDeleteExerciseInvoked" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+                                    <Border Style="{StaticResource CardBorder}"
+                                            BackgroundColor="{StaticResource SurfaceRaised}"
+                                            Padding="14"
+                                            Margin="0,0,0,10">
+                                        <VerticalStackLayout Spacing="4">
+                                            <Label Text="{Binding ExerciseName}"
+                                                   FontSize="18" />
+                                            <Label Text="{Binding SetRepText}"
+                                                   Style="{StaticResource BodyMuted}" />
+                                            <Label Text="{Binding RestText}"
+                                                   Style="{StaticResource BodyMuted}" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
 
             <Button x:Name="ConfirmWorkoutButton"
                     Text="Confirm Add New Workout"

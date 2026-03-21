@@ -1,246 +1,360 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:GymTracker"
              x:Class="GymTracker.ProfilePage"
-             Title="Profile"
-             xmlns:local="clr-namespace:GymTracker">
+             NavigationPage.HasNavigationBar="False"
+             Title="Profile">
 
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
-            <VerticalStackLayout Padding="24,16,24,24"
+            <VerticalStackLayout Padding="24,18,24,24"
                                  Spacing="18">
 
-                <Label Text="Profile"
-                       Style="{StaticResource Headline}" />
+                <local:TopHeader Title="Profile" />
 
-                <Label x:Name="FullNameLabel"
-                       FontSize="24"
-                       HorizontalOptions="Center" />
+                <Border Style="{StaticResource AccentCardBorder}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="ATHLETE PROFILE"
+                               Style="{StaticResource Eyebrow}" />
+                        <Label x:Name="FullNameLabel"
+                               Text="Your Name"
+                               Style="{StaticResource Headline}"
+                               HorizontalTextAlignment="Start" />
+                        <Label x:Name="EmailLabel"
+                               Style="{StaticResource BodyMuted}" />
+                        <Label x:Name="StatusLabel"
+                               FontSize="13"
+                               IsVisible="False" />
+                    </VerticalStackLayout>
+                </Border>
 
-                <Label x:Name="EmailLabel"
-                       FontSize="14"
-                       HorizontalOptions="Center"
-                       Opacity="0.75" />
+                <Border Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Profile Details"
+                               Style="{StaticResource SubHeadline}"
+                               HorizontalTextAlignment="Start" />
 
-                <Label x:Name="StatusLabel"
-                       FontSize="13"
-                       IsVisible="False" />
+                        <Label Text="Date of Birth"
+                               Style="{StaticResource BodyMuted}" />
+                        <DatePicker x:Name="DateOfBirthPicker"
+                                    DateSelected="OnDateOfBirthChanged" />
 
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Date of Birth" />
-                    <DatePicker x:Name="DateOfBirthPicker"
-                                DateSelected="OnDateOfBirthChanged" />
+                        <Label x:Name="AgeLabel"
+                               Text="Age: -" />
 
-                    <Label x:Name="AgeLabel"
-                           Text="Age: -" />
+                        <Grid ColumnDefinitions="*,*"
+                              ColumnSpacing="12">
+                            <VerticalStackLayout Grid.Column="0"
+                                                 Spacing="8">
+                                <Label Text="Weight (kg)"
+                                       Style="{StaticResource BodyMuted}" />
+                                <Entry x:Name="WeightEntry"
+                                       Placeholder="Example: 82.5"
+                                       Keyboard="Numeric" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1"
+                                                 Spacing="8">
+                                <Label Text="Body Fat (%)"
+                                       Style="{StaticResource BodyMuted}" />
+                                <Entry x:Name="BodyFatEntry"
+                                       Placeholder="Example: 12.5"
+                                       Keyboard="Numeric" />
+                            </VerticalStackLayout>
+                        </Grid>
 
-                    <Label Text="Weight (kg)" />
-                    <Entry x:Name="WeightEntry"
-                           Placeholder="Example: 82.5"
-                           Keyboard="Numeric" />
+                        <Label Text="Sport"
+                               Style="{StaticResource BodyMuted}" />
+                        <Entry x:Name="SportEntry"
+                               Placeholder="Example: Basketball" />
 
-                    <Label Text="Body Fat (%)" />
-                    <Entry x:Name="BodyFatEntry"
-                           Placeholder="Example: 12.5"
-                           Keyboard="Numeric" />
+                        <Label Text="Gym Experience"
+                               Style="{StaticResource BodyMuted}" />
+                        <Picker x:Name="GymExperiencePicker"
+                                Title="Select experience level" />
 
-                    <Label Text="Sport" />
-                    <Entry x:Name="SportEntry"
-                           Placeholder="Example: Basketball" />
+                        <Button Text="Save Profile"
+                                Clicked="OnSaveProfileClicked" />
+                    </VerticalStackLayout>
+                </Border>
 
-                    <Label Text="Gym Experience" />
-                    <Picker x:Name="GymExperiencePicker"
-                            Title="Select experience level" />
+                <Border Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Quick Stats"
+                               Style="{StaticResource SubHeadline}"
+                               HorizontalTextAlignment="Start" />
 
-                    <Button Text="Save Profile"
-                            Clicked="OnSaveProfileClicked" />
-                </VerticalStackLayout>
+                        <Grid ColumnDefinitions="*,*,*"
+                              ColumnSpacing="10">
+                            <Border Grid.Column="0"
+                                    Style="{StaticResource CardBorder}"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Padding="12">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="Workouts"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Label x:Name="WorkoutCountLabel"
+                                           Text="0"
+                                           FontSize="22" />
+                                </VerticalStackLayout>
+                            </Border>
 
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Quick Stats"
-                           FontSize="22"
-                           HorizontalOptions="Start" />
-                    <Label x:Name="WorkoutCountLabel"
-                           Text="Total Workouts: 0" />
-                    <Label x:Name="OneRmPrCountLabel"
-                           Text="1RM Saved Entries: 0" />
-                    <Label x:Name="ProfilePrCountLabel"
-                           Text="Profile PR Entries: 0" />
-                </VerticalStackLayout>
+                            <Border Grid.Column="1"
+                                    Style="{StaticResource CardBorder}"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Padding="12">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="1RM Saves"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Label x:Name="OneRmPrCountLabel"
+                                           Text="0"
+                                           FontSize="22" />
+                                </VerticalStackLayout>
+                            </Border>
 
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Athletic Performance"
-                           FontSize="22"
-                           HorizontalOptions="Start" />
+                            <Border Grid.Column="2"
+                                    Style="{StaticResource CardBorder}"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Padding="12">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="Profile PRs"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Label x:Name="ProfilePrCountLabel"
+                                           Text="0"
+                                           FontSize="22" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
 
-                    <Picker x:Name="PerformanceMovementPicker"
-                            Title="Select movement" />
+                <Border Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Athletic Performance"
+                               Style="{StaticResource SubHeadline}"
+                               HorizontalTextAlignment="Start" />
 
-                    <Entry x:Name="PerformanceValueEntry"
-                           Placeholder="Enter result"
-                           Keyboard="Numeric" />
+                        <Picker x:Name="PerformanceMovementPicker"
+                                Title="Select movement" />
+                        <Entry x:Name="PerformanceValueEntry"
+                               Placeholder="Enter result"
+                               Keyboard="Numeric" />
 
-                    <Button x:Name="PerformanceActionButton"
-                            Text="Add Athletic Performance"
-                            Clicked="OnAddPerformanceClicked" />
+                        <Button x:Name="PerformanceActionButton"
+                                Text="Add Athletic Performance"
+                                Clicked="OnAddPerformanceClicked" />
 
-                    <Button x:Name="PerformanceCancelButton"
-                            Text="Cancel Edit"
-                            IsVisible="False"
-                            Clicked="OnCancelPerformanceEditClicked" />
+                        <Button x:Name="PerformanceCancelButton"
+                                Text="Cancel Edit"
+                                Style="{StaticResource SecondaryButton}"
+                                IsVisible="False"
+                                Clicked="OnCancelPerformanceEditClicked" />
 
-                    <CollectionView x:Name="AthleticPerformanceView">
-                        <CollectionView.EmptyView>
-                            <Label Text="No athletic performance records yet."
-                                   HorizontalOptions="Center" />
-                        </CollectionView.EmptyView>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <SwipeView>
-                                    <SwipeView.LeftItems>
-                                        <SwipeItems>
-                                            <SwipeItem Text="Edit"
-                                                       BackgroundColor="#1F6FEB"
-                                                       Invoked="OnEditPerformanceInvoked" />
-                                        </SwipeItems>
-                                    </SwipeView.LeftItems>
-                                    <SwipeView.RightItems>
-                                        <SwipeItems>
-                                            <SwipeItem Text="Delete"
-                                                       BackgroundColor="#8B0000"
-                                                       Invoked="OnDeletePerformanceInvoked" />
-                                        </SwipeItems>
-                                    </SwipeView.RightItems>
-                                    <Border Padding="10"
-                                            Margin="0,4,0,4">
-                                        <Label Text="{Binding Text}" />
+                        <Label x:Name="AthleticPerformanceEmptyLabel"
+                               Text="No athletic performance records yet."
+                               HorizontalOptions="Center"
+                               Style="{StaticResource BodyMuted}" />
+
+                        <VerticalStackLayout x:Name="AthleticPerformanceList"
+                                             Spacing="0"
+                                             BindableLayout.ItemsSource="{x:Null}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource CardBorder}"
+                                            BackgroundColor="{StaticResource SurfaceRaised}"
+                                            Padding="14"
+                                            Margin="0,0,0,10">
+                                        <Grid ColumnDefinitions="*,Auto,Auto"
+                                              ColumnSpacing="8">
+                                            <Label Grid.Column="0"
+                                                   Text="{Binding Text}"
+                                                   VerticalOptions="Center" />
+                                            <Button Grid.Column="1"
+                                                    Text="Edit"
+                                                    Clicked="OnEditPerformanceInvoked"
+                                                    BackgroundColor="#24203A"
+                                                    Padding="12,8"
+                                                    FontSize="13"
+                                                    CornerRadius="14"
+                                                    MinimumHeightRequest="36"
+                                                    MinimumWidthRequest="68" />
+                                            <Button Grid.Column="2"
+                                                    Text="Delete"
+                                                    Clicked="OnDeletePerformanceInvoked"
+                                                    BackgroundColor="#3A1623"
+                                                    Padding="12,8"
+                                                    FontSize="13"
+                                                    CornerRadius="14"
+                                                    MinimumHeightRequest="36"
+                                                    MinimumWidthRequest="78" />
+                                        </Grid>
                                     </Border>
-                                </SwipeView>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
 
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Movement Goals"
-                           FontSize="22"
-                           HorizontalOptions="Start" />
+                <Border Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Movement Goals"
+                               Style="{StaticResource SubHeadline}"
+                               HorizontalTextAlignment="Start" />
 
-                    <Entry x:Name="GoalMovementEntry"
-                           Placeholder="Movement name" />
+                        <Entry x:Name="GoalMovementEntry"
+                               Placeholder="Movement name" />
+                        <Grid ColumnDefinitions="*,*"
+                              ColumnSpacing="12">
+                            <Entry Grid.Column="0"
+                                   x:Name="GoalTargetValueEntry"
+                                   Placeholder="Target value"
+                                   Keyboard="Numeric" />
+                            <Entry Grid.Column="1"
+                                   x:Name="GoalUnitEntry"
+                                   Placeholder="Unit (kg, cm, s)" />
+                        </Grid>
 
-                    <Entry x:Name="GoalTargetValueEntry"
-                           Placeholder="Target value"
-                           Keyboard="Numeric" />
+                        <Button x:Name="GoalActionButton"
+                                Text="Save Goal"
+                                Clicked="OnSaveGoalClicked" />
 
-                    <Entry x:Name="GoalUnitEntry"
-                           Placeholder="Unit (kg, cm, s)" />
+                        <Button x:Name="GoalCancelButton"
+                                Text="Cancel Edit"
+                                Style="{StaticResource SecondaryButton}"
+                                IsVisible="False"
+                                Clicked="OnCancelGoalEditClicked" />
 
-                    <Button x:Name="GoalActionButton"
-                            Text="Save Goal"
-                            Clicked="OnSaveGoalClicked" />
+                        <Label x:Name="MovementGoalsEmptyLabel"
+                               Text="No movement goals set yet."
+                               HorizontalOptions="Center"
+                               Style="{StaticResource BodyMuted}" />
 
-                    <Button x:Name="GoalCancelButton"
-                            Text="Cancel Edit"
-                            IsVisible="False"
-                            Clicked="OnCancelGoalEditClicked" />
-
-                    <CollectionView x:Name="MovementGoalsView">
-                        <CollectionView.EmptyView>
-                            <Label Text="No movement goals set yet."
-                                   HorizontalOptions="Center" />
-                        </CollectionView.EmptyView>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <SwipeView>
-                                    <SwipeView.LeftItems>
-                                        <SwipeItems>
-                                            <SwipeItem Text="Edit"
-                                                       BackgroundColor="#1F6FEB"
-                                                       Invoked="OnEditGoalInvoked" />
-                                        </SwipeItems>
-                                    </SwipeView.LeftItems>
-                                    <SwipeView.RightItems>
-                                        <SwipeItems>
-                                            <SwipeItem Text="Delete"
-                                                       BackgroundColor="#8B0000"
-                                                       Invoked="OnDeleteGoalInvoked" />
-                                        </SwipeItems>
-                                    </SwipeView.RightItems>
-                                    <Border Padding="10"
-                                            Margin="0,4,0,4">
-                                        <Label Text="{Binding Text}" />
+                        <VerticalStackLayout x:Name="MovementGoalsList"
+                                             Spacing="0"
+                                             BindableLayout.ItemsSource="{x:Null}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource CardBorder}"
+                                            BackgroundColor="{StaticResource SurfaceRaised}"
+                                            Padding="14"
+                                            Margin="0,0,0,10">
+                                        <Grid ColumnDefinitions="*,Auto,Auto"
+                                              ColumnSpacing="8">
+                                            <Label Grid.Column="0"
+                                                   Text="{Binding Text}"
+                                                   VerticalOptions="Center" />
+                                            <Button Grid.Column="1"
+                                                    Text="Edit"
+                                                    Clicked="OnEditGoalInvoked"
+                                                    BackgroundColor="#24203A"
+                                                    Padding="12,8"
+                                                    FontSize="13"
+                                                    CornerRadius="14"
+                                                    MinimumHeightRequest="36"
+                                                    MinimumWidthRequest="68" />
+                                            <Button Grid.Column="2"
+                                                    Text="Delete"
+                                                    Clicked="OnDeleteGoalInvoked"
+                                                    BackgroundColor="#3A1623"
+                                                    Padding="12,8"
+                                                    FontSize="13"
+                                                    CornerRadius="14"
+                                                    MinimumHeightRequest="36"
+                                                    MinimumWidthRequest="78" />
+                                        </Grid>
                                     </Border>
-                                </SwipeView>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
 
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Profile PRs"
-                           FontSize="22"
-                           HorizontalOptions="Start" />
+                <Border Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Profile PRs"
+                               Style="{StaticResource SubHeadline}"
+                               HorizontalTextAlignment="Start" />
 
-                    <Entry x:Name="ProfilePrMovementEntry"
-                           Placeholder="Movement name" />
+                        <Entry x:Name="ProfilePrMovementEntry"
+                               Placeholder="Movement name" />
+                        <Grid ColumnDefinitions="*,*"
+                              ColumnSpacing="12">
+                            <Entry Grid.Column="0"
+                                   x:Name="ProfilePrValueEntry"
+                                   Placeholder="Value"
+                                   Keyboard="Numeric" />
+                            <Entry Grid.Column="1"
+                                   x:Name="ProfilePrUnitEntry"
+                                   Placeholder="Unit" />
+                        </Grid>
 
-                    <Entry x:Name="ProfilePrValueEntry"
-                           Placeholder="Value"
-                           Keyboard="Numeric" />
+                        <Button x:Name="ProfilePrActionButton"
+                                Text="Add Profile PR"
+                                Clicked="OnAddProfilePrClicked" />
 
-                    <Entry x:Name="ProfilePrUnitEntry"
-                           Placeholder="Unit" />
+                        <Button x:Name="ProfilePrCancelButton"
+                                Text="Cancel Edit"
+                                Style="{StaticResource SecondaryButton}"
+                                IsVisible="False"
+                                Clicked="OnCancelProfilePrEditClicked" />
 
-                    <Button x:Name="ProfilePrActionButton"
-                            Text="Add Profile PR"
-                            Clicked="OnAddProfilePrClicked" />
+                        <Label x:Name="ProfilePrEmptyLabel"
+                               Text="No profile PR records yet."
+                               HorizontalOptions="Center"
+                               Style="{StaticResource BodyMuted}" />
 
-                    <Button x:Name="ProfilePrCancelButton"
-                            Text="Cancel Edit"
-                            IsVisible="False"
-                            Clicked="OnCancelProfilePrEditClicked" />
-
-                    <CollectionView x:Name="ProfilePrView">
-                        <CollectionView.EmptyView>
-                            <Label Text="No profile PR records yet."
-                                   HorizontalOptions="Center" />
-                        </CollectionView.EmptyView>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <SwipeView>
-                                    <SwipeView.LeftItems>
-                                        <SwipeItems>
-                                            <SwipeItem Text="Edit"
-                                                       BackgroundColor="#1F6FEB"
-                                                       Invoked="OnEditProfilePrInvoked" />
-                                        </SwipeItems>
-                                    </SwipeView.LeftItems>
-                                    <SwipeView.RightItems>
-                                        <SwipeItems>
-                                            <SwipeItem Text="Delete"
-                                                       BackgroundColor="#8B0000"
-                                                       Invoked="OnDeleteProfilePrInvoked" />
-                                        </SwipeItems>
-                                    </SwipeView.RightItems>
-                                    <Border Padding="10"
-                                            Margin="0,4,0,4">
-                                        <Label Text="{Binding Text}" />
+                        <VerticalStackLayout x:Name="ProfilePrList"
+                                             Spacing="0"
+                                             BindableLayout.ItemsSource="{x:Null}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource CardBorder}"
+                                            BackgroundColor="{StaticResource SurfaceRaised}"
+                                            Padding="14"
+                                            Margin="0,0,0,10">
+                                        <Grid ColumnDefinitions="*,Auto,Auto"
+                                              ColumnSpacing="8">
+                                            <Label Grid.Column="0"
+                                                   Text="{Binding Text}"
+                                                   VerticalOptions="Center" />
+                                            <Button Grid.Column="1"
+                                                    Text="Edit"
+                                                    Clicked="OnEditProfilePrInvoked"
+                                                    BackgroundColor="#24203A"
+                                                    Padding="12,8"
+                                                    FontSize="13"
+                                                    CornerRadius="14"
+                                                    MinimumHeightRequest="36"
+                                                    MinimumWidthRequest="68" />
+                                            <Button Grid.Column="2"
+                                                    Text="Delete"
+                                                    Clicked="OnDeleteProfilePrInvoked"
+                                                    BackgroundColor="#3A1623"
+                                                    Padding="12,8"
+                                                    FontSize="13"
+                                                    CornerRadius="14"
+                                                    MinimumHeightRequest="36"
+                                                    MinimumWidthRequest="78" />
+                                        </Grid>
                                     </Border>
-                                </SwipeView>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
 
-                <Button Text="Logout"
-                        BackgroundColor="#8B0000"
-                        Clicked="OnLogoutClicked" />
+                <Grid ColumnDefinitions="*,*"
+                      ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Text="Logout"
+                            Style="{StaticResource SecondaryButton}"
+                            Clicked="OnLogoutClicked" />
 
-                <Button Text="Delete Account"
-                        BackgroundColor="#5A0F0F"
-                        Clicked="OnDeleteAccountClicked" />
-
+                    <Button Grid.Column="1"
+                            Text="Delete Account"
+                            BackgroundColor="{StaticResource DangerSoft}"
+                            Clicked="OnDeleteAccountClicked" />
+                </Grid>
             </VerticalStackLayout>
         </ScrollView>
 

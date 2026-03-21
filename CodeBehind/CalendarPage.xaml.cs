@@ -94,9 +94,9 @@ public partial class CalendarPage : ContentPage
 				DayText = day.ToString(),
 				IsSelectable = true,
 				HasWorkout = hasWorkout,
-				CellBackgroundColor = isSelected ? Color.FromArgb("#D62828") : Colors.Transparent,
+				CellBackgroundColor = isSelected ? Color.FromArgb("#2B1F46") : Color.FromArgb("#11111A"),
 				DayTextColor = Colors.White,
-				MarkerColor = hasWorkout ? Color.FromArgb("#D62828") : Colors.Transparent,
+				MarkerColor = hasWorkout ? Color.FromArgb("#8B5CF6") : Colors.Transparent,
 				CellOpacity = 1
 			});
 		}
@@ -197,6 +197,11 @@ public partial class CalendarPage : ContentPage
 				? $"{baseText}, Rest {x.RestSeconds.Value}s"
 				: baseText;
 		}));
+	}
+
+	private async void OnHeaderBackClicked(object? sender, EventArgs e)
+	{
+		await Navigation.PopAsync(false);
 	}
 
 	public sealed class CalendarDayCell

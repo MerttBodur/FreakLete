@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GymTracker.TopHeader">
+
+    <Grid ColumnDefinitions="Auto,*,Auto"
+          ColumnSpacing="12"
+          Padding="0,4,0,8">
+        <Button x:Name="BackButton"
+                Grid.Column="0"
+                Text="&lt;"
+                WidthRequest="36"
+                HeightRequest="36"
+                FontSize="22"
+                Padding="0"
+                TextColor="#CFC9E6"
+                BackgroundColor="Transparent"
+                BorderWidth="0"
+                Clicked="OnBackButtonClicked"
+                IsVisible="False" />
+
+        <Label x:Name="TitleLabel"
+               Grid.Column="1"
+               Style="{StaticResource HeaderTitle}"
+               VerticalOptions="Center"
+               HorizontalOptions="Start" />
+
+        <ImageButton x:Name="ActionButton"
+                     Grid.Column="2"
+                     WidthRequest="22"
+                     HeightRequest="22"
+                     BackgroundColor="Transparent"
+                     Clicked="OnActionButtonClicked"
+                     IsVisible="False" />
+    </Grid>
+
+</ContentView>

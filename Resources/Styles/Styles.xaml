@@ -21,7 +21,7 @@
     </Style>
 
     <Style TargetType="BoxView">
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceBorder}" />
     </Style>
 
     <Style TargetType="Button">
@@ -199,6 +199,21 @@
         <Setter Property="FontSize" Value="14" />
     </Style>
 
+    <Style TargetType="Label" x:Key="NavTitle">
+        <Setter Property="TextColor" Value="#E6E2F1" />
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
+    </Style>
+
+    <Style TargetType="Label" x:Key="HeaderTitle">
+        <Setter Property="TextColor" Value="#E9E3F8" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="21" />
+        <Setter Property="CharacterSpacing" Value="0.2" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
+    </Style>
+
     <Style TargetType="Border" x:Key="CardBorder">
         <Setter Property="BackgroundColor" Value="{StaticResource Surface}" />
         <Setter Property="Stroke" Value="{StaticResource SurfaceBorder}" />
@@ -218,7 +233,7 @@
 
     <Style TargetType="Button" x:Key="SecondaryButton">
         <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
-        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceRaised}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceStrong}" />
         <Setter Property="CornerRadius" Value="18" />
         <Setter Property="Padding" Value="18,14" />
         <Setter Property="MinimumHeightRequest" Value="52" />
@@ -360,10 +375,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="SwipeItem">
-        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceRaised}" />
-    </Style>
-
     <Style TargetType="Switch">
         <Setter Property="OnColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
         <Setter Property="ThumbColor" Value="{StaticResource White}" />
@@ -457,7 +468,7 @@
     </Style>
 
     <Style TargetType="NavigationPage">
-        <Setter Property="BarBackgroundColor" Value="{StaticResource Background}" />
+        <Setter Property="BarBackgroundColor" Value="{StaticResource TopBar}" />
         <Setter Property="BarTextColor" Value="{StaticResource TextPrimary}" />
         <Setter Property="IconColor" Value="{StaticResource TextPrimary}" />
     </Style>

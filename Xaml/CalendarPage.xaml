@@ -2,112 +2,146 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GymTracker.CalendarPage"
+             xmlns:local="clr-namespace:GymTracker"
+             NavigationPage.HasNavigationBar="False"
              Title="Calendar">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24,16" Spacing="12">
-            <Label Text="Calendar"
-                   Style="{StaticResource Headline}" />
+        <VerticalStackLayout Padding="24,18,24,28"
+                             Spacing="18">
 
-            <Grid ColumnDefinitions="Auto,*,Auto">
-                <Button Grid.Column="0"
-                        Text="&lt;"
-                        Clicked="OnPreviousMonthClicked"
-                        WidthRequest="48" />
-                <Label Grid.Column="1"
-                       x:Name="MonthLabel"
-                       HorizontalTextAlignment="Center"
-                       VerticalTextAlignment="Center"
-                       FontSize="18"
-                       FontFamily="OpenSansSemibold" />
-                <Button Grid.Column="2"
-                        Text="&gt;"
-                        Clicked="OnNextMonthClicked"
-                        WidthRequest="48" />
-            </Grid>
+            <local:TopHeader Title="Calendar"
+                             ShowBackButton="True"
+                             BackClicked="OnHeaderBackClicked" />
 
-            <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="4">
-                <Label Grid.Column="0" Text="Mon" HorizontalTextAlignment="Center" />
-                <Label Grid.Column="1" Text="Tue" HorizontalTextAlignment="Center" />
-                <Label Grid.Column="2" Text="Wed" HorizontalTextAlignment="Center" />
-                <Label Grid.Column="3" Text="Thu" HorizontalTextAlignment="Center" />
-                <Label Grid.Column="4" Text="Fri" HorizontalTextAlignment="Center" />
-                <Label Grid.Column="5" Text="Sat" HorizontalTextAlignment="Center" />
-                <Label Grid.Column="6" Text="Sun" HorizontalTextAlignment="Center" />
-            </Grid>
+            <Border Style="{StaticResource AccentCardBorder}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="TRAINING HISTORY"
+                           Style="{StaticResource Eyebrow}" />
+                    <Label Text="Review sessions by day and keep your schedule visible."
+                           Style="{StaticResource Headline}"
+                           HorizontalTextAlignment="Start" />
+                    <Label x:Name="SelectedDateLabel"
+                           Style="{StaticResource BodyMuted}" />
+                </VerticalStackLayout>
+            </Border>
 
-            <CollectionView x:Name="CalendarDaysView"
-                            ItemsSource="{Binding CalendarDays}"
-                            SelectionMode="None">
-                <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Vertical" Span="7" HorizontalItemSpacing="4" VerticalItemSpacing="4" />
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Padding="6"
-                                StrokeThickness="0"
-                                BackgroundColor="{Binding CellBackgroundColor}"
-                                Opacity="{Binding CellOpacity}">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnDayTapped" />
-                            </Border.GestureRecognizers>
-                            <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
-                                <Label Text="{Binding DayText}"
-                                       TextColor="{Binding DayTextColor}"
-                                       HorizontalTextAlignment="Center" />
-                                <BoxView HeightRequest="5"
-                                         WidthRequest="5"
-                                         CornerRadius="2.5"
-                                         Color="{Binding MarkerColor}"
-                                         IsVisible="{Binding HasWorkout}" />
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="14">
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="12">
+                        <Button Grid.Column="0"
+                                Text="&lt;"
+                                Style="{StaticResource SecondaryButton}"
+                                Clicked="OnPreviousMonthClicked"
+                                WidthRequest="56" />
+                        <Label Grid.Column="1"
+                               x:Name="MonthLabel"
+                               HorizontalTextAlignment="Center"
+                               VerticalTextAlignment="Center"
+                               FontSize="20" />
+                        <Button Grid.Column="2"
+                                Text="&gt;"
+                                Style="{StaticResource SecondaryButton}"
+                                Clicked="OnNextMonthClicked"
+                                WidthRequest="56" />
+                    </Grid>
 
-            <Label x:Name="SelectedDateLabel"
-                   FontFamily="OpenSansSemibold"
-                   Opacity="0.85" />
+                    <Grid ColumnDefinitions="*,*,*,*,*,*,*"
+                          ColumnSpacing="6">
+                        <Label Grid.Column="0" Text="Mon" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label Grid.Column="1" Text="Tue" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label Grid.Column="2" Text="Wed" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label Grid.Column="3" Text="Thu" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label Grid.Column="4" Text="Fri" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label Grid.Column="5" Text="Sat" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label Grid.Column="6" Text="Sun" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                    </Grid>
 
-            <Label Text="Saved Workouts For Selected Date"
-                   FontSize="16"
-                   FontFamily="OpenSansSemibold" />
+                    <CollectionView x:Name="CalendarDaysView"
+                                    ItemsSource="{Binding CalendarDays}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout Orientation="Vertical"
+                                             Span="7"
+                                             HorizontalItemSpacing="6"
+                                             VerticalItemSpacing="6" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="10"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 18"
+                                        BackgroundColor="{Binding CellBackgroundColor}"
+                                        Opacity="{Binding CellOpacity}">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnDayTapped" />
+                                    </Border.GestureRecognizers>
+                                    <VerticalStackLayout Spacing="4"
+                                                         HorizontalOptions="Center">
+                                        <Label Text="{Binding DayText}"
+                                               TextColor="{Binding DayTextColor}"
+                                               HorizontalTextAlignment="Center" />
+                                        <BoxView HeightRequest="6"
+                                                 WidthRequest="6"
+                                                 CornerRadius="3"
+                                                 Color="{Binding MarkerColor}"
+                                                 IsVisible="{Binding HasWorkout}" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
 
-            <CollectionView x:Name="SavedWorkoutsView">
-                <CollectionView.EmptyView>
-                    <Label Text="No workout saved for this date."
-                           HorizontalOptions="Center"
-                           Margin="0,8,0,0" />
-                </CollectionView.EmptyView>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <SwipeView>
-                            <SwipeView.LeftItems>
-                                <SwipeItems>
-                                    <SwipeItem Text="Edit"
-                                               BackgroundColor="#1F6FEB"
-                                               Invoked="OnEditWorkoutInvoked" />
-                                </SwipeItems>
-                            </SwipeView.LeftItems>
-                            <SwipeView.RightItems>
-                                <SwipeItems>
-                                    <SwipeItem Text="Delete"
-                                               BackgroundColor="#8B0000"
-                                               Invoked="OnDeleteWorkoutInvoked" />
-                                </SwipeItems>
-                            </SwipeView.RightItems>
-                            <Border Padding="10" Margin="0,4,0,4">
-                                <VerticalStackLayout Spacing="4">
-                                    <Label Text="{Binding WorkoutName}"
-                                           FontFamily="OpenSansSemibold" />
-                                    <Label Text="{Binding ExercisesText}" />
-                                </VerticalStackLayout>
-                            </Border>
-                        </SwipeView>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Saved Workouts"
+                           Style="{StaticResource SubHeadline}"
+                           HorizontalTextAlignment="Start" />
+
+                    <CollectionView x:Name="SavedWorkoutsView">
+                        <CollectionView.EmptyView>
+                            <Label Text="No workout saved for this date."
+                                   HorizontalOptions="Center"
+                                   Margin="0,8,0,0"
+                                   Style="{StaticResource BodyMuted}" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <SwipeView>
+                                    <SwipeView.LeftItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Edit"
+                                                       BackgroundColor="#24203A"
+                                                       Invoked="OnEditWorkoutInvoked" />
+                                        </SwipeItems>
+                                    </SwipeView.LeftItems>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Delete"
+                                                       BackgroundColor="#3A1623"
+                                                       Invoked="OnDeleteWorkoutInvoked" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+                                    <Border Style="{StaticResource CardBorder}"
+                                            BackgroundColor="{StaticResource SurfaceRaised}"
+                                            Padding="14"
+                                            Margin="0,0,0,10">
+                                        <VerticalStackLayout Spacing="6">
+                                            <Label Text="{Binding WorkoutName}"
+                                                   FontSize="18" />
+                                            <Label Text="{Binding ExercisesText}"
+                                                   Style="{StaticResource BodyMuted}" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 

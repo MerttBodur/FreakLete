@@ -1,65 +1,56 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             NavigationPage.HasNavigationBar="False"
              x:Class="GymTracker.LoginPage">
 
     <ScrollView>
-        <VerticalStackLayout
-            Padding="30,80,30,30"
-            Spacing="20">
+        <VerticalStackLayout Padding="24,36,24,30"
+                             Spacing="18">
 
-            <Label
-                Text="Gym Tracker"
-                FontSize="36"
-                HorizontalOptions="Center"
-                FontAttributes="Bold" />
+            <Border Style="{StaticResource AccentCardBorder}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="GYM TRACKER"
+                           Style="{StaticResource Eyebrow}" />
+                    <Label Text="Welcome back."
+                           Style="{StaticResource Headline}"
+                           HorizontalTextAlignment="Start" />
+                    <Label Text="Login to continue building workouts, PRs, and performance records."
+                           Style="{StaticResource BodyMuted}" />
+                </VerticalStackLayout>
+            </Border>
 
-            <Label
-                Text="Login to continue"
-                FontSize="18"
-                HorizontalOptions="Center"
-                Opacity="0.7" />
+            <Border Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Email"
+                           Style="{StaticResource BodyMuted}" />
+                    <Entry x:Name="EmailEntry"
+                           Placeholder="Enter your email"
+                           Keyboard="Email" />
 
-            <VerticalStackLayout Spacing="10">
+                    <Label Text="Password"
+                           Style="{StaticResource BodyMuted}" />
+                    <Entry x:Name="PasswordEntry"
+                           Placeholder="Enter your password"
+                           IsPassword="True" />
 
-                <Label
-                    Text="Email"
-                    FontSize="16" />
+                    <Label x:Name="ErrorLabel"
+                           TextColor="{StaticResource Danger}"
+                           FontSize="13"
+                           IsVisible="False" />
 
-                <Entry
-                    x:Name="EmailEntry"
-                    Placeholder="Enter your email"
-                    Keyboard="Email" />
+                    <Button x:Name="LoginBtn"
+                            Text="Login"
+                            Clicked="OnLoginClicked"
+                            HorizontalOptions="Fill" />
 
-                <Label
-                    Text="Password"
-                    FontSize="16" />
-
-                <Entry
-                    x:Name="PasswordEntry"
-                    Placeholder="Enter your password"
-                    IsPassword="True" />
-
-            </VerticalStackLayout>
-
-            <Label
-                x:Name="ErrorLabel"
-                TextColor="Red"
-                FontSize="13"
-                IsVisible="False" />
-
-            <Button
-                x:Name="LoginBtn"
-                Text="Login"
-                Clicked="OnLoginClicked"
-                HorizontalOptions="Fill" />
-
-            <Button
-                x:Name="RegisterBtn"
-                Text="Register"
-                Clicked="OnRegisterClicked"
-                HorizontalOptions="Fill" />
-
+                    <Button x:Name="RegisterBtn"
+                            Text="Create Account"
+                            Style="{StaticResource SecondaryButton}"
+                            Clicked="OnRegisterClicked"
+                            HorizontalOptions="Fill" />
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 

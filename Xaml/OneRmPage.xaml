@@ -3,84 +3,131 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:GymTracker"
              x:Class="GymTracker.OneRmPage"
+             NavigationPage.HasNavigationBar="False"
              Title="1RM Calculator">
 
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
-            <VerticalStackLayout Padding="24,16" Spacing="12">
-                <Label Text="1RM Calculator"
-                       Style="{StaticResource Headline}" />
+            <VerticalStackLayout Padding="24,18,24,24"
+                                 Spacing="18">
 
-                <Label Text="Weight (kg): 40 - 250" />
-                <Entry x:Name="WeightEntry"
-                       Keyboard="Numeric"
-                       Placeholder="Example: 100" />
+                <local:TopHeader Title="1RM Calculator" />
 
-                <Label Text="Reps: 1 - 8" />
-                <Entry x:Name="RepsEntry"
-                       Keyboard="Numeric"
-                       Placeholder="Example: 5" />
+                <Border Style="{StaticResource AccentCardBorder}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="STRENGTH ESTIMATE"
+                               Style="{StaticResource Eyebrow}" />
+                        <Label Text="Calculate your projected max and store the sets that matter."
+                               Style="{StaticResource Headline}"
+                               HorizontalTextAlignment="Start" />
+                        <Label Text="RIR is included in the estimate, so strong training sets stay useful."
+                               Style="{StaticResource BodyMuted}" />
+                    </VerticalStackLayout>
+                </Border>
 
-                <Label Text="RIR: 0 - 5" />
-                <Entry x:Name="RirEntry"
-                       Keyboard="Numeric"
-                       Placeholder="Example: 1" />
+                <Border Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Input"
+                               Style="{StaticResource SubHeadline}"
+                               HorizontalTextAlignment="Start" />
 
-                <Button Text="Calculate"
-                        Clicked="OnCalculateClicked" />
+                        <Label Text="Weight (kg): 40 - 250"
+                               Style="{StaticResource BodyMuted}" />
+                        <Entry x:Name="WeightEntry"
+                               Keyboard="Numeric"
+                               Placeholder="Example: 100" />
 
-                <Button x:Name="SaveExerciseButton"
-                        Text="Save Exercise"
-                        Clicked="OnSaveExerciseClicked" />
+                        <Label Text="Reps: 1 - 8"
+                               Style="{StaticResource BodyMuted}" />
+                        <Entry x:Name="RepsEntry"
+                               Keyboard="Numeric"
+                               Placeholder="Example: 5" />
 
-                <Button x:Name="CancelEditButton"
-                        Text="Cancel Edit"
-                        IsVisible="False"
-                        Clicked="OnCancelEditClicked" />
+                        <Label Text="RIR: 0 - 5"
+                               Style="{StaticResource BodyMuted}" />
+                        <Entry x:Name="RirEntry"
+                               Keyboard="Numeric"
+                               Placeholder="Example: 1" />
 
-                <Label x:Name="ErrorLabel"
-                       TextColor="Red"
-                       IsVisible="False"
-                       FontSize="13" />
+                        <Grid ColumnDefinitions="*,*"
+                              ColumnSpacing="12">
+                            <Button Grid.Column="0"
+                                    Text="Calculate"
+                                    Clicked="OnCalculateClicked" />
+                            <Button Grid.Column="1"
+                                    x:Name="SaveExerciseButton"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Text="Save Exercise"
+                                    Clicked="OnSaveExerciseClicked" />
+                        </Grid>
 
-                <Label x:Name="ResultsLabel"
-                       Text=""
-                       LineBreakMode="WordWrap" />
+                        <Button x:Name="CancelEditButton"
+                                Text="Cancel Edit"
+                                Style="{StaticResource SecondaryButton}"
+                                IsVisible="False"
+                                Clicked="OnCancelEditClicked" />
 
-                <Label Text="Saved PR Entries"
-                       FontSize="16"
-                       FontFamily="OpenSansSemibold" />
+                        <Label x:Name="ErrorLabel"
+                               TextColor="{StaticResource Danger}"
+                               IsVisible="False"
+                               FontSize="13" />
+                    </VerticalStackLayout>
+                </Border>
 
-                <CollectionView x:Name="SavedPrView">
-                    <CollectionView.EmptyView>
-                        <Label Text="No saved PR yet."
-                               HorizontalOptions="Center" />
-                    </CollectionView.EmptyView>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <SwipeView>
-                                <SwipeView.LeftItems>
-                                    <SwipeItems>
-                                        <SwipeItem Text="Edit"
-                                                   BackgroundColor="#1F6FEB"
-                                                   Invoked="OnEditSavedPrInvoked" />
-                                    </SwipeItems>
-                                </SwipeView.LeftItems>
-                                <SwipeView.RightItems>
-                                    <SwipeItems>
-                                        <SwipeItem Text="Delete"
-                                                   BackgroundColor="#8B0000"
-                                                   Invoked="OnDeleteSavedPrInvoked" />
-                                    </SwipeItems>
-                                </SwipeView.RightItems>
-                                <Border Padding="10"
-                                        Margin="0,4,0,4">
-                                    <Label Text="{Binding Text}" />
-                                </Border>
-                            </SwipeView>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                <Border Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Calculated Range"
+                               Style="{StaticResource SubHeadline}"
+                               HorizontalTextAlignment="Start" />
+
+                        <Label x:Name="ResultsLabel"
+                               Text=""
+                               LineBreakMode="WordWrap"
+                               Style="{StaticResource BodyMuted}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Saved PR Entries"
+                               Style="{StaticResource SubHeadline}"
+                               HorizontalTextAlignment="Start" />
+
+                        <CollectionView x:Name="SavedPrView">
+                            <CollectionView.EmptyView>
+                                <Label Text="No saved PR yet."
+                                       HorizontalOptions="Center"
+                                       Style="{StaticResource BodyMuted}" />
+                            </CollectionView.EmptyView>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <SwipeView>
+                                        <SwipeView.LeftItems>
+                                            <SwipeItems>
+                                                <SwipeItem Text="Edit"
+                                                           BackgroundColor="#24203A"
+                                                           Invoked="OnEditSavedPrInvoked" />
+                                            </SwipeItems>
+                                        </SwipeView.LeftItems>
+                                        <SwipeView.RightItems>
+                                            <SwipeItems>
+                                                <SwipeItem Text="Delete"
+                                                           BackgroundColor="#3A1623"
+                                                           Invoked="OnDeleteSavedPrInvoked" />
+                                            </SwipeItems>
+                                        </SwipeView.RightItems>
+                                        <Border Style="{StaticResource CardBorder}"
+                                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                                Padding="14"
+                                                Margin="0,0,0,10">
+                                            <Label Text="{Binding Text}" />
+                                        </Border>
+                                    </SwipeView>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
         </ScrollView>
 

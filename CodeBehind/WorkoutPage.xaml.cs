@@ -16,4 +16,9 @@ public partial class WorkoutPage : ContentPage
 	{
 		await Navigation.PushAsync(new CalendarPage(), false);
 	}
+
+	private void OnHeaderCalendarClicked(object? sender, EventArgs e)
+	{
+		OnOpenCalendarPageClicked(sender, e);
+	}
 }
