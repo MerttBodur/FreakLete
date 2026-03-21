@@ -60,3 +60,9 @@ packages/
 # Local config
 
 appsettings.Development.json
+
+# Local databases
+
+*.db3
+*.sqlite
+*.sqlite3

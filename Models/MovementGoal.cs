@@ -2,7 +2,7 @@ using SQLite;
 
 namespace GymTracker.Models;
 
-public class PrEntry
+public class MovementGoal
 {
 	[PrimaryKey, AutoIncrement]
 	public int Id { get; set; }
@@ -10,13 +10,11 @@ public class PrEntry
 	[Indexed]
 	public int UserId { get; set; }
 
-	public string ExerciseName { get; set; } = string.Empty;
+	public string MovementName { get; set; } = string.Empty;
 
-	public int Weight { get; set; }
+	public double TargetValue { get; set; }
 
-	public int Reps { get; set; }
-
-	public int? RIR { get; set; }
+	public string Unit { get; set; } = string.Empty;
 
 	public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
