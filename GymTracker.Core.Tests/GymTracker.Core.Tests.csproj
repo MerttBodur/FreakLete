@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\\GymTracker.Core\\GymTracker.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\\Data\\AppDatabase.cs" Link="Linked\\AppDatabase.cs" />
+    <Compile Include="..\\Models\\User.cs" Link="Linked\\User.cs" />
+    <Compile Include="..\\Models\\Workout.cs" Link="Linked\\Workout.cs" />
+    <Compile Include="..\\Models\\ExerciseEntry.cs" Link="Linked\\ExerciseEntry.cs" />
+    <Compile Include="..\\Models\\PrEntry.cs" Link="Linked\\PrEntry.cs" />
+    <Compile Include="..\\Models\\AthleticPerformanceEntry.cs" Link="Linked\\AthleticPerformanceEntry.cs" />
+    <Compile Include="..\\Models\\MovementGoal.cs" Link="Linked\\MovementGoal.cs" />
+    <Compile Include="..\\Models\\ExerciseDefinition.cs" Link="Linked\\ExerciseDefinition.cs" />
+    <Compile Include="..\\Models\\ExerciseCatalogItem.cs" Link="Linked\\ExerciseCatalogItem.cs" />
+    <Compile Include="..\\Models\\CatalogSeedState.cs" Link="Linked\\CatalogSeedState.cs" />
+    <Compile Include="..\\Services\\ExerciseCatalog.cs" Link="Linked\\ExerciseCatalog.cs" />
+    <Compile Include="..\\Services\\CalculationsPageLogic.cs" Link="Linked\\CalculationsPageLogic.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\\Resources\\Raw\\exercise_catalog.json"
+                      LogicalName="GymTracker.Resources.Raw.exercise_catalog.json" />
+  </ItemGroup>
+
+</Project>

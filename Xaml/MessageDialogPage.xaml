@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="GymTracker.ConfirmDialogPage"
+             x:Class="GymTracker.MessageDialogPage"
              NavigationPage.HasNavigationBar="False"
              BackgroundColor="{StaticResource OverlayScrim}">
 
@@ -13,33 +13,24 @@
                 MaximumWidthRequest="420"
                 BackgroundColor="{StaticResource SurfaceRaised}">
             <VerticalStackLayout Spacing="14">
-                <Label Text="CONFIRM ACTION"
+                <Label x:Name="BadgeLabel"
+                       Text="SUCCESS"
                        Style="{StaticResource Eyebrow}" />
 
                 <Label x:Name="TitleLabel"
-                       Text="Delete Entry"
+                       Text="Done"
                        Style="{StaticResource SubHeadline}"
                        HorizontalTextAlignment="Start" />
 
                 <Label x:Name="MessageLabel"
-                       Text="Are you sure?"
+                       Text="Everything is ready."
                        Style="{StaticResource BodyMuted}"
                        LineBreakMode="WordWrap" />
 
-                <Grid ColumnDefinitions="*,*"
-                      ColumnSpacing="12"
-                      Margin="0,8,0,0">
-                    <Button Grid.Column="0"
-                            x:Name="CancelButton"
-                            Text="Cancel"
-                            Style="{StaticResource SecondaryButton}"
-                            Clicked="OnCancelClicked" />
-
-                    <Button Grid.Column="1"
-                            x:Name="ConfirmButton"
-                            Text="Delete"
-                            Clicked="OnConfirmClicked" />
-                </Grid>
+                <Button x:Name="CloseButton"
+                        Text="Continue"
+                        Margin="0,8,0,0"
+                        Clicked="OnCloseClicked" />
             </VerticalStackLayout>
         </Border>
     </Grid>

@@ -13,12 +13,6 @@ public partial class App : Application
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		UserSession session = MauiProgram.Services.GetRequiredService<UserSession>();
-
-		Page startPage = session.IsLoggedIn()
-			? new HomePage()
-			: new LoginPage();
-
-		return new Window(new NavigationPage(startPage));
+		return new Window(new NavigationPage(new StartupPage()));
 	}
 }

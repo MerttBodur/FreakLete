@@ -82,7 +82,11 @@ public partial class RegisterPage : ContentPage
 		};
 
 		await _database.CreateUserAsync(user);
-		await DisplayAlertAsync("Success", "Account created. You can now log in.", "OK");
+		await MessageDialogPage.ShowAsync(
+			Navigation,
+			"Account created",
+			"You can now log in with your new account.",
+			buttonText: "Go to Login");
 		await Navigation.PopAsync(true);
 	}
 

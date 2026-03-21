@@ -18,6 +18,7 @@
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<DefaultItemExcludes>$(DefaultItemExcludes);GymTracker.Core\**;GymTracker.Core.Tests\**</DefaultItemExcludes>
 
 		<!-- Enable XAML source generation for faster build times and improved performance.
 		     This generates C# code from XAML at compile time instead of runtime inflation.
@@ -31,7 +32,7 @@
 		<ApplicationTitle>GymTracker</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.gymtracker</ApplicationId>
+		<ApplicationId>com.mert.gymtracker</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -71,7 +72,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\GymTracker.Core\GymTracker.Core.csproj" />
+		<ProjectReference Include="GymTracker.Core\GymTracker.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

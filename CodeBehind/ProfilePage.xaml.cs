@@ -165,6 +165,12 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
+		if (weight.HasValue && (weight.Value < 20 || weight.Value > 400))
+		{
+			ShowError("Weight must be between 20 and 400 kg.");
+			return;
+		}
+
 		if (bodyFat.HasValue && (bodyFat.Value < 0 || bodyFat.Value > 100))
 		{
 			ShowError("Body fat must be between 0 and 100.");
