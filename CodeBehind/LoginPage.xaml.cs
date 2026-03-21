@@ -39,12 +39,7 @@ public partial class LoginPage : ContentPage
 		}
 
 		_session.SignIn(user.Id);
-
-		Window? window = Application.Current?.Windows.FirstOrDefault();
-		if (window is not null)
-		{
-			window.Page = new NavigationPage(new HomePage());
-		}
+		await TabNavigationHelper.ResetToRootAsync(Navigation, () => new HomePage(), false);
 	}
 
 	private async void OnRegisterClicked(object? sender, EventArgs e)

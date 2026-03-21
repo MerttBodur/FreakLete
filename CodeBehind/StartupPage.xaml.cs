@@ -49,10 +49,10 @@ public partial class StartupPage : ContentPage
 			}
 		}
 
-		Window? window = Application.Current?.Windows.FirstOrDefault();
-		if (window is not null)
+		await MainThread.InvokeOnMainThreadAsync(async () =>
 		{
-			window.Page = new NavigationPage(nextPage);
-		}
+			await Navigation.PushAsync(nextPage, false);
+			Navigation.RemovePage(this);
+		});
 	}
 }

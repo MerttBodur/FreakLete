@@ -26,47 +26,69 @@ The app is designed around a fast daily workflow:
 
 ## Screens
 
-Screenshots for the current MVP live under `docs/screenshots/`.
-
 ### Home & Core Navigation
 
-- `docs/screenshots/home-dashboard.png`
-  - Main dashboard with the primary workout and calculations entry points.
-- `docs/screenshots/workout-overview.png`
-  - Workout landing screen for session creation and history access.
-- `docs/screenshots/calendar-history.png`
-  - Calendar view with saved sessions and edit/delete actions.
+Main dashboard with the primary workout and calculations entry points.
+
+![Home dashboard](docs/screenshots/home-dashboard.png)
+
+Workout landing screen for session creation and history access.
+
+![Workout overview](docs/screenshots/workout-overview.png)
+
+Calendar view with saved sessions and edit/delete actions.
+
+![Calendar history](docs/screenshots/calendar-history.png)
 
 ### Workout Flow
 
-- `docs/screenshots/new-workout-builder.png`
-  - Session setup and workout detail entry.
-- `docs/screenshots/exercise-browser-push.png`
-  - Exercise browser with Push category recommendations.
-- `docs/screenshots/exercise-browser-squat-variation.png`
-  - Squat variation recommendations in the browser.
-- `docs/screenshots/exercise-browser-jumps.png`
-  - Jump-focused movement recommendations.
-- `docs/screenshots/exercise-browser-olympic-lifts.png`
-  - Olympic lift recommendations including Power Clean variations.
+Session setup and workout detail entry.
+
+![New workout builder](docs/screenshots/new-workout-builder.png)
+
+Exercise browser with Push category recommendations.
+
+![Exercise browser push](docs/screenshots/exercise-browser-push.png)
+
+Squat variation recommendations in the browser.
+
+![Exercise browser squat variation](docs/screenshots/exercise-browser-squat-variation.png)
+
+Jump-focused movement recommendations.
+
+![Exercise browser jumps](docs/screenshots/exercise-browser-jumps.png)
+
+Olympic lift recommendations including Power Clean variations.
+
+![Exercise browser olympic lifts](docs/screenshots/exercise-browser-olympic-lifts.png)
 
 ### Calculations
 
-- `docs/screenshots/calculations-1rm.png`
-  - Strength estimate flow with movement selection and input capture.
-- `docs/screenshots/calculations-1rm-range.png`
-  - Calculated rep range output from the 1RM tool.
-- `docs/screenshots/calculations-rsi.png`
-  - RSI calculation flow using jump height and GCT.
+Strength estimate flow with movement selection and input capture.
+
+![Calculations 1RM](docs/screenshots/calculations-1rm.png)
+
+Calculated rep range output from the 1RM tool.
+
+![Calculations 1RM range](docs/screenshots/calculations-1rm-range.png)
+
+RSI calculation flow using jump height and GCT.
+
+![Calculations RSI](docs/screenshots/calculations-rsi.png)
 
 ### Profile
 
-- `docs/screenshots/profile-athletic-performance.png`
-  - Athletic performance logging with movement-based result tracking.
-- `docs/screenshots/profile-movement-goals.png`
-  - Movement goal creation tied to catalog movements.
-- `docs/screenshots/profile-details.png`
-  - Profile details including body metrics and sport background.
+Athletic performance logging with movement-based result tracking.
+
+![Profile athletic performance](docs/screenshots/profile-athletic-performance.png)
+
+Movement goal creation tied to catalog movements.
+
+![Profile movement goals](docs/screenshots/profile-movement-goals.png)
+
+Profile details including body metrics and sport background.
+
+![Profile details](docs/screenshots/profile-details.png)
 
 ## Tech Stack & Tooling
 

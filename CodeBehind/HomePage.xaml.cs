@@ -28,18 +28,18 @@ public partial class HomePage : ContentPage
 		int? currentUserId = _session.GetCurrentUserId();
 		if (!currentUserId.HasValue)
 		{
-			WelcomeLabel.Text = "WELCOME";
-			WorkoutTotalLabel.Text = "0";
-			AthleticCountLabel.Text = "0";
-			LatestPrLabel.Text = "No PR saved yet.";
+			_session.SignOut();
 			return;
 		}
 
 		User? user = await _database.GetUserByIdAsync(currentUserId.Value);
-		if (user is not null)
+		if (user is null)
 		{
-			WelcomeLabel.Text = $"WELCOME, {user.FirstName.ToUpperInvariant()}";
+			_session.SignOut();
+			return;
 		}
+
+		WelcomeLabel.Text = $"WELCOME, {user.FirstName.ToUpperInvariant()}";
 
 		int workoutCount = await _database.GetWorkoutCountByUserAsync(currentUserId.Value);
 		List<AthleticPerformanceEntry> athleticEntries = await _database.GetAthleticPerformanceEntriesByUserAsync(currentUserId.Value);

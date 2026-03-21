@@ -465,11 +465,10 @@ public partial class ProfilePage : ContentPage
 
 	private void GoToLogin()
 	{
-		Window? window = Application.Current?.Windows.FirstOrDefault();
-		if (window is not null)
+		MainThread.BeginInvokeOnMainThread(async () =>
 		{
-			window.Page = new NavigationPage(new LoginPage());
-		}
+			await TabNavigationHelper.ResetToRootAsync(Navigation, () => new LoginPage(), false);
+		});
 	}
 
 	private static double? ParseNullableDouble(string? text)

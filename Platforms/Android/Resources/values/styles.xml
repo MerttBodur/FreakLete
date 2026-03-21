@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
-    <style name="Theme.FreakLete" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.FreakLete" parent="Maui.MainTheme.NoActionBar">
         <item name="colorPrimary">#161125</item>
         <item name="colorPrimaryVariant">#100D1A</item>
         <item name="colorSecondary">#8B5CF6</item>
