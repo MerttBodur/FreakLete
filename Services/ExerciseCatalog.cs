@@ -47,6 +47,11 @@ public static class ExerciseCatalog
 		Strength(Push, "Triceps Pushdown"),
 		Strength(Push, "JM Press"),
 		Strength(Push, "Landmine Press"),
+		Strength(Push, "Pin Press"),
+		Strength(Push, "Floor Press"),
+		Strength(Push, "Arnold Press"),
+		Strength(Push, "Behind the Neck Press"),
+		Strength(Push, "Cable Lateral Raise"),
 
 		Strength(Pull, "Pull-Up"),
 		Strength(Pull, "Chin-Up"),
@@ -68,6 +73,11 @@ public static class ExerciseCatalog
 		Strength(Pull, "Rope Hammer Curl"),
 		Strength(Pull, "Straight Arm Pulldown"),
 		Strength(Pull, "Meadows Row"),
+		Strength(Pull, "Seal Row"),
+		Strength(Pull, "Inverted Row"),
+		Strength(Pull, "Machine High Row"),
+		Strength(Pull, "Wide Grip Seated Row"),
+		Strength(Pull, "Bayesian Curl"),
 
 		Strength(SquatVariation, "Back Squat"),
 		Strength(SquatVariation, "Front Squat"),
@@ -89,6 +99,11 @@ public static class ExerciseCatalog
 		Strength(SquatVariation, "Cyclist Squat"),
 		Strength(SquatVariation, "Cossack Squat"),
 		Strength(SquatVariation, "Landmine Squat"),
+		Strength(SquatVariation, "Hatfield Squat"),
+		Strength(SquatVariation, "Tempo Front Squat"),
+		Strength(SquatVariation, "Paused Front Squat"),
+		Strength(SquatVariation, "Jump Squat"),
+		Strength(SquatVariation, "Spanish Squat"),
 
 		Strength(DeadliftVariation, "Conventional Deadlift"),
 		Strength(DeadliftVariation, "Sumo Deadlift"),
@@ -110,6 +125,11 @@ public static class ExerciseCatalog
 		Strength(DeadliftVariation, "Tempo Deadlift"),
 		Strength(DeadliftVariation, "Deadlift from Blocks"),
 		Strength(DeadliftVariation, "Dimel Deadlift"),
+		Strength(DeadliftVariation, "Floating Snatch Grip Deadlift"),
+		Strength(DeadliftVariation, "Paused Romanian Deadlift"),
+		Strength(DeadliftVariation, "Suitcase Deadlift"),
+		Strength(DeadliftVariation, "Clean Deadlift"),
+		Strength(DeadliftVariation, "Snatch Deadlift"),
 
 		SprintItem("0-10m Sprint"),
 		SprintItem("0-20m Sprint"),
@@ -131,27 +151,37 @@ public static class ExerciseCatalog
 		SprintItem("Acceleration Sprint"),
 		SprintItem("Deceleration Sprint"),
 		SprintItem("Repeat Sprint"),
+		SprintItem("Wicket Sprint"),
+		SprintItem("Falling Start Sprint"),
+		SprintItem("Three-Point Start Sprint"),
+		SprintItem("Rolling 30m"),
+		SprintItem("Sprint-Float-Sprint"),
 
 		JumpHeight("Vertical Jump"),
 		JumpHeight("Countermovement Jump"),
 		JumpHeight("Squat Jump"),
 		JumpDistance("Single Broad Jump"),
 		JumpDistance("Standing Broad Jump"),
-		JumpDistance("Triple Broad Jump"),
+		JumpDistanceMeters("Triple Broad Jump"),
 		Custom(Jumps, "Repetitive Broad Jumps", "Distance", "cm", "Contacts", "reps"),
 		JumpHeight("Box Jump"),
 		JumpHeight("Depth Jump"),
 		Custom(Jumps, "Weighted Jump", "Load", "kg", "Reps", "reps"),
 		JumpHeight("Seated Box Jump"),
-		JumpDistance("Lateral Bound"),
-		JumpDistance("Single Leg Hop"),
-		JumpDistance("Triple Hop"),
+		JumpDistanceMeters("Lateral Bound"),
+		JumpDistanceMeters("Single Leg Hop"),
+		JumpDistanceMeters("Triple Hop"),
 		Custom(Jumps, "Hurdle Hop", "Hurdles", "count", "Reps", "reps"),
 		Custom(Jumps, "Continuous Hops", "Contacts", "reps", "Distance", "cm"),
 		JumpHeight("Drop Jump"),
 		JumpHeight("Tuck Jump"),
 		JumpHeight("Split Jump"),
 		JumpHeight("Single Leg Box Jump"),
+		JumpHeight("Repeated Vertical Jump"),
+		JumpDistanceMeters("Five Bound Test"),
+		JumpDistanceMeters("Standing Triple Jump"),
+		Custom(Jumps, "Reactive Hurdle Hop", "Hurdles", "count", "Height", "cm"),
+		Custom(Jumps, "Loaded Broad Jump", "Load", "kg", "Distance", "cm"),
 
 		Custom(Plyometrics, "Pogo Jumps", "Contacts", "reps", "Height", "cm"),
 		Custom(Plyometrics, "Ankle Hops", "Contacts", "reps", "Height", "cm"),
@@ -173,6 +203,11 @@ public static class ExerciseCatalog
 		Custom(Plyometrics, "Stair Jumps", "Steps", "count", "Reps", "reps"),
 		Custom(Plyometrics, "Lateral Box Shuffle", "Box Height", "cm", "Time", "s"),
 		Custom(Plyometrics, "Reactive Broad Jump", "Distance", "cm", "Reps", "reps"),
+		Custom(Plyometrics, "Depth Drop to Stick", "Box Height", "cm", "Reps", "reps"),
+		Custom(Plyometrics, "Repeated Tuck Jump", "Contacts", "reps", "Time", "s"),
+		Custom(Plyometrics, "Band Assisted Pogos", "Contacts", "reps", "Height", "cm"),
+		Custom(Plyometrics, "Hurdle Mobility Hop", "Hurdles", "count", "Reps", "reps"),
+		Custom(Plyometrics, "Single Leg Pogos", "Contacts", "reps", "Time", "s"),
 
 		Strength(OlympicLifts, "Power Clean"),
 		Strength(OlympicLifts, "Hang Power Clean"),
@@ -193,12 +228,25 @@ public static class ExerciseCatalog
 		Strength(OlympicLifts, "Tall Clean"),
 		Strength(OlympicLifts, "Tall Snatch"),
 		Strength(OlympicLifts, "Clean from Blocks"),
-		Strength(OlympicLifts, "Snatch from Blocks")
+		Strength(OlympicLifts, "Snatch from Blocks"),
+		Strength(OlympicLifts, "Hang Power Jerk"),
+		Strength(OlympicLifts, "Clean Grip High Pull"),
+		Strength(OlympicLifts, "Snatch Grip High Pull"),
+		Strength(OlympicLifts, "Power Clean from Blocks"),
+		Strength(OlympicLifts, "Power Snatch from Blocks")
 	];
 
 	public static IReadOnlyList<ExerciseCatalogItem> GetItemsByCategory(string category)
 	{
 		return _items.Where(item => item.Category == category).ToList();
+	}
+
+	public static IReadOnlyList<ExerciseCatalogItem> GetRecommendedItemsByCategory(string category, int take = 20)
+	{
+		return _items
+			.Where(item => item.Category == category)
+			.Take(take)
+			.ToList();
 	}
 
 	public static IReadOnlyList<ExerciseCatalogItem> GetItemsByCategories(IEnumerable<string> categories)
@@ -217,13 +265,27 @@ public static class ExerciseCatalog
 		return _items.FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
 	}
 
+	public static ExerciseCatalogItem? GetByNameAndCategory(string? name, string? category)
+	{
+		if (string.IsNullOrWhiteSpace(name))
+		{
+			return null;
+		}
+
+		return _items.FirstOrDefault(item =>
+			string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase) &&
+			(string.IsNullOrWhiteSpace(category) || string.Equals(item.Category, category, StringComparison.OrdinalIgnoreCase)));
+	}
+
 	private static ExerciseCatalogItem Strength(string category, string name)
 	{
 		return new ExerciseCatalogItem
 		{
 			Category = category,
 			Name = name,
-			TrackingMode = ExerciseTrackingMode.Strength
+			TrackingMode = ExerciseTrackingMode.Strength,
+			PrimaryLabel = "Load",
+			PrimaryUnit = "kg"
 		};
 	}
 
@@ -240,6 +302,11 @@ public static class ExerciseCatalog
 	private static ExerciseCatalogItem JumpDistance(string name)
 	{
 		return Custom(Jumps, name, "Distance", "cm", "Attempts", "reps");
+	}
+
+	private static ExerciseCatalogItem JumpDistanceMeters(string name)
+	{
+		return Custom(Jumps, name, "Distance", "m", "Attempts", "reps");
 	}
 
 	private static ExerciseCatalogItem Custom(

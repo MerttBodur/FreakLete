@@ -72,7 +72,7 @@
                             </VerticalStackLayout>
 
                             <Label Grid.Column="1"
-                                   Text="›"
+                                   Text=">"
                                    FontSize="26"
                                    TextColor="{StaticResource TextSecondary}"
                                    VerticalOptions="Center" />
@@ -84,3 +84,5 @@
     </Grid>
 
 </ContentPage>
+
+

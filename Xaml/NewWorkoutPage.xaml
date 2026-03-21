@@ -126,6 +126,16 @@
                                        Placeholder="Optional" />
                             </VerticalStackLayout>
                         </Grid>
+
+                        <VerticalStackLayout x:Name="StrengthTimingContainer"
+                                             Spacing="8"
+                                             IsVisible="False">
+                            <Label Text="Concentric Time (s)"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Entry x:Name="ConcentricTimeEntry"
+                                   Keyboard="Numeric"
+                                   Placeholder="Optional" />
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout x:Name="CustomInputsSection"
@@ -149,6 +159,16 @@
                             <Entry x:Name="Metric2Entry"
                                    Keyboard="Numeric"
                                    Placeholder="Enter value" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout x:Name="GroundContactTimeContainer"
+                                             Spacing="8"
+                                             IsVisible="False">
+                            <Label Text="Ground Contact Time (ms)"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Entry x:Name="GroundContactTimeEntry"
+                                   Keyboard="Numeric"
+                                   Placeholder="Optional" />
                         </VerticalStackLayout>
                     </VerticalStackLayout>
 

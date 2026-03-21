@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:GymTracker"
+             x:Class="GymTracker.CalculationsPage"
+             NavigationPage.HasNavigationBar="False"
+             Title="Calculations">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="24,18,24,24"
+                                 Spacing="18">
+
+                <local:TopHeader Title="Calculations" />
+
+                <Border Style="{StaticResource AccentCardBorder}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="PERFORMANCE TOOLS"
+                               Style="{StaticResource Eyebrow}" />
+                        <Label Text="Estimate strength, store PRs, and check reactive performance in one place."
+                               Style="{StaticResource Headline}"
+                               HorizontalTextAlignment="Start" />
+                        <Label Text="Use the tabs below to switch between 1RM and RSI without leaving the page."
+                               Style="{StaticResource BodyMuted}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource CardBorder}"
+                        Padding="8">
+                    <Grid ColumnDefinitions="*,*"
+                          ColumnSpacing="8">
+                        <Button Grid.Column="0"
+                                x:Name="OneRmTabButton"
+                                Text="1RM"
+                                Clicked="OnOneRmTabClicked" />
+                        <Button Grid.Column="1"
+                                x:Name="RsiTabButton"
+                                Text="RSI"
+                                Style="{StaticResource SecondaryButton}"
+                                Clicked="OnRsiTabClicked" />
+                    </Grid>
+                </Border>
+
+                <VerticalStackLayout x:Name="OneRmSection"
+                                     Spacing="18">
+                    <Border Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Strength Estimate"
+                                   Style="{StaticResource SubHeadline}"
+                                   HorizontalTextAlignment="Start" />
+
+                            <Label Text="Strength movement"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Border Style="{StaticResource CardBorder}"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Padding="14">
+                                <Grid ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="10">
+                                    <VerticalStackLayout Grid.Column="0"
+                                                         Spacing="4">
+                                        <Label x:Name="SelectedStrengthExerciseLabel"
+                                               Text="No strength movement selected"
+                                               FontSize="18" />
+                                        <Label x:Name="SelectedStrengthExerciseHintLabel"
+                                               Text="Browse weighted movements for the 1RM estimate."
+                                               Style="{StaticResource BodyMuted}" />
+                                    </VerticalStackLayout>
+
+                                    <Button Grid.Column="1"
+                                            Text="Browse"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Clicked="OnChooseStrengthExerciseClicked"
+                                            VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+
+                            <Grid ColumnDefinitions="*,*"
+                                  ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0"
+                                                     Spacing="8">
+                                    <Label Text="Weight (kg): 40 - 250"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Entry x:Name="WeightEntry"
+                                           Keyboard="Numeric"
+                                           Placeholder="Example: 100" />
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="1"
+                                                     Spacing="8">
+                                    <Label Text="Reps: 1 - 8"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Entry x:Name="RepsEntry"
+                                           Keyboard="Numeric"
+                                           Placeholder="Example: 5" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*"
+                                  ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0"
+                                                     Spacing="8">
+                                    <Label Text="RIR: 0 - 5"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Entry x:Name="RirEntry"
+                                           Keyboard="Numeric"
+                                           Placeholder="Example: 1" />
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="1"
+                                                     Spacing="8">
+                                    <Label Text="Concentric Time (s)"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Entry x:Name="ConcentricTimeEntry"
+                                           Keyboard="Numeric"
+                                           Placeholder="Optional" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <Button Text="Calculate"
+                                    Clicked="OnCalculateOneRmClicked" />
+
+                            <Label x:Name="OneRmStatusLabel"
+                                   TextColor="{StaticResource Danger}"
+                                   IsVisible="False"
+                                   FontSize="13" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Calculated Range"
+                                   Style="{StaticResource SubHeadline}"
+                                   HorizontalTextAlignment="Start" />
+
+                            <Label x:Name="ResultsLabel"
+                                   Text=""
+                                   LineBreakMode="WordWrap"
+                                   Style="{StaticResource BodyMuted}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Save PR"
+                                   Style="{StaticResource SubHeadline}"
+                                   HorizontalTextAlignment="Start" />
+
+                            <Label Text="Movement"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Border Style="{StaticResource CardBorder}"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Padding="14">
+                                <Grid ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="10">
+                                    <VerticalStackLayout Grid.Column="0"
+                                                         Spacing="4">
+                                        <Label x:Name="SelectedPrExerciseLabel"
+                                               Text="No PR movement selected"
+                                               FontSize="18" />
+                                        <Label x:Name="SelectedPrExerciseHintLabel"
+                                               Text="Browse gym and athletic movements before saving a PR."
+                                               Style="{StaticResource BodyMuted}" />
+                                    </VerticalStackLayout>
+
+                                    <Button Grid.Column="1"
+                                            Text="Browse"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Clicked="OnChoosePrExerciseClicked"
+                                            VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+
+                            <VerticalStackLayout x:Name="PrStrengthInputsSection"
+                                                 Spacing="12"
+                                                 IsVisible="False">
+                                <Grid ColumnDefinitions="*,*"
+                                      ColumnSpacing="12">
+                                    <VerticalStackLayout Grid.Column="0"
+                                                         Spacing="8">
+                                        <Label Text="Weight (kg)"
+                                               Style="{StaticResource BodyMuted}" />
+                                        <Entry x:Name="PrWeightEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Example: 100" />
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Grid.Column="1"
+                                                         Spacing="8">
+                                        <Label Text="Reps"
+                                               Style="{StaticResource BodyMuted}" />
+                                        <Entry x:Name="PrRepsEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Example: 5" />
+                                    </VerticalStackLayout>
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*,*"
+                                      ColumnSpacing="12">
+                                    <VerticalStackLayout Grid.Column="0"
+                                                         Spacing="8">
+                                        <Label Text="RIR"
+                                               Style="{StaticResource BodyMuted}" />
+                                        <Entry x:Name="PrRirEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Optional" />
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Grid.Column="1"
+                                                         Spacing="8">
+                                        <Label Text="Concentric Time (s)"
+                                               Style="{StaticResource BodyMuted}" />
+                                        <Entry x:Name="PrConcentricTimeEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Optional" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout x:Name="PrCustomInputsSection"
+                                                 Spacing="12"
+                                                 IsVisible="False">
+                                <VerticalStackLayout Spacing="8">
+                                    <Label x:Name="PrMetric1Label"
+                                           Text="Metric 1"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Entry x:Name="PrMetric1Entry"
+                                           Keyboard="Numeric"
+                                           Placeholder="Enter value" />
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout x:Name="PrMetric2Container"
+                                                     Spacing="8"
+                                                     IsVisible="False">
+                                    <Label x:Name="PrMetric2Label"
+                                           Text="Metric 2"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Entry x:Name="PrMetric2Entry"
+                                           Keyboard="Numeric"
+                                           Placeholder="Enter value" />
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout x:Name="PrGctContainer"
+                                                     Spacing="8"
+                                                     IsVisible="False">
+                                    <Label Text="Ground Contact Time (ms)"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Entry x:Name="PrGroundContactTimeEntry"
+                                           Keyboard="Numeric"
+                                           Placeholder="Optional" />
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+
+                            <Grid ColumnDefinitions="*,*"
+                                  ColumnSpacing="12">
+                                <Button Grid.Column="0"
+                                        x:Name="SavePrButton"
+                                        Text="Save PR"
+                                        Clicked="OnSavePrClicked" />
+                                <Button Grid.Column="1"
+                                        x:Name="CancelPrEditButton"
+                                        Text="Cancel"
+                                        Style="{StaticResource SecondaryButton}"
+                                        IsVisible="False"
+                                        Clicked="OnCancelPrEditClicked" />
+                            </Grid>
+
+                            <Label x:Name="PrStatusLabel"
+                                   TextColor="{StaticResource Danger}"
+                                   IsVisible="False"
+                                   FontSize="13" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Saved PR Entries"
+                                   Style="{StaticResource SubHeadline}"
+                                   HorizontalTextAlignment="Start" />
+
+                            <CollectionView x:Name="SavedPrView">
+                                <CollectionView.EmptyView>
+                                    <Label Text="No saved PR yet."
+                                           HorizontalOptions="Center"
+                                           Style="{StaticResource BodyMuted}" />
+                                </CollectionView.EmptyView>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource CardBorder}"
+                                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                                Padding="14"
+                                                Margin="0,0,0,10">
+                                            <Grid ColumnDefinitions="*,Auto,Auto"
+                                                  ColumnSpacing="8">
+                                                <Label Grid.Column="0"
+                                                       Text="{Binding Text}"
+                                                       VerticalOptions="Center" />
+                                                <ImageButton Grid.Column="1"
+                                                             Source="icon_edit.svg"
+                                                             Clicked="OnEditSavedPrInvoked"
+                                                             BackgroundColor="#24203A"
+                                                             Padding="8"
+                                                             WidthRequest="36"
+                                                             HeightRequest="36"
+                                                             CornerRadius="12" />
+                                                <ImageButton Grid.Column="2"
+                                                             Source="icon_delete.svg"
+                                                             Clicked="OnDeleteSavedPrInvoked"
+                                                             BackgroundColor="#3A1623"
+                                                             Padding="8"
+                                                             WidthRequest="36"
+                                                             HeightRequest="36"
+                                                             CornerRadius="12" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout x:Name="RsiSection"
+                                     Spacing="18"
+                                     IsVisible="False">
+                    <Border Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Reactive Strength Index"
+                                   Style="{StaticResource SubHeadline}"
+                                   HorizontalTextAlignment="Start" />
+                            <Label Text="RSI uses jump height and ground contact time to estimate reactive output."
+                                   Style="{StaticResource BodyMuted}" />
+
+                            <Grid ColumnDefinitions="*,*"
+                                  ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0"
+                                                     Spacing="8">
+                                    <Label Text="Jump Height (cm)"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Entry x:Name="RsiJumpHeightEntry"
+                                           Keyboard="Numeric"
+                                           Placeholder="Example: 42.5" />
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="1"
+                                                     Spacing="8">
+                                    <Label Text="GCT (ms)"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Entry x:Name="RsiGroundContactTimeEntry"
+                                           Keyboard="Numeric"
+                                           Placeholder="Example: 185" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <Button Text="Calculate RSI"
+                                    Clicked="OnCalculateRsiClicked" />
+
+                            <Label x:Name="RsiStatusLabel"
+                                   TextColor="{StaticResource Danger}"
+                                   IsVisible="False"
+                                   FontSize="13" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Result"
+                                   Style="{StaticResource SubHeadline}"
+                                   HorizontalTextAlignment="Start" />
+
+                            <Label x:Name="RsiResultLabel"
+                                   Text="No RSI calculated yet."
+                                   Style="{StaticResource BodyMuted}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <local:BottomNavBar Grid.Row="1"
+                            ActiveTab="calculations" />
+    </Grid>
+
+</ContentPage>

@@ -1,10 +1,12 @@
+using GymTracker.Services;
+
 namespace GymTracker;
 
 public partial class BottomNavBar : ContentView
 {
 	public const string HomeTab = "home";
 	public const string WorkoutTab = "workout";
-	public const string OneRmTab = "onerm";
+	public const string CalculationsTab = "calculations";
 	public const string ProfileTab = "profile";
 
 	public static readonly BindableProperty ActiveTabProperty =
@@ -39,12 +41,12 @@ public partial class BottomNavBar : ContentView
 	{
 		HomeIndicator.IsVisible = ActiveTab == HomeTab;
 		WorkoutIndicator.IsVisible = ActiveTab == WorkoutTab;
-		OneRmIndicator.IsVisible = ActiveTab == OneRmTab;
+		CalculationsIndicator.IsVisible = ActiveTab == CalculationsTab;
 		ProfileIndicator.IsVisible = ActiveTab == ProfileTab;
 
 		HomeButton.Opacity = ActiveTab == HomeTab ? 1 : 0.55;
 		WorkoutButton.Opacity = ActiveTab == WorkoutTab ? 1 : 0.55;
-		OneRmButton.Opacity = ActiveTab == OneRmTab ? 1 : 0.55;
+		CalculationsButton.Opacity = ActiveTab == CalculationsTab ? 1 : 0.55;
 		ProfileButton.Opacity = ActiveTab == ProfileTab ? 1 : 0.55;
 	}
 
@@ -55,13 +57,7 @@ public partial class BottomNavBar : ContentView
 			await AnimatePressAsync(element);
 		}
 
-		var navigation = GetNavigation();
-		if (navigation is null)
-		{
-			return;
-		}
-
-		await navigation.PopToRootAsync(true);
+		await TabNavigationHelper.SwitchToTabAsync(() => new HomePage());
 	}
 
 	private async void OnWorkoutClicked(object? sender, EventArgs e)
@@ -71,17 +67,17 @@ public partial class BottomNavBar : ContentView
 			await AnimatePressAsync(element);
 		}
 
-		await NavigateFromRootAsync(() => new WorkoutPage());
+		await TabNavigationHelper.SwitchToTabAsync(() => new WorkoutPage());
 	}
 
-	private async void OnOneRmClicked(object? sender, EventArgs e)
+	private async void OnCalculationsClicked(object? sender, EventArgs e)
 	{
 		if (sender is VisualElement element)
 		{
 			await AnimatePressAsync(element);
 		}
 
-		await NavigateFromRootAsync(() => new OneRmPage());
+		await TabNavigationHelper.SwitchToTabAsync(() => new CalculationsPage());
 	}
 
 	private async void OnProfileClicked(object? sender, EventArgs e)
@@ -91,32 +87,7 @@ public partial class BottomNavBar : ContentView
 			await AnimatePressAsync(element);
 		}
 
-		await NavigateFromRootAsync(() => new ProfilePage());
-	}
-
-	private static INavigation? GetNavigation()
-	{
-		return Application.Current?.Windows.FirstOrDefault()?.Page?.Navigation;
-	}
-
-	private static async Task NavigateFromRootAsync(Func<Page> createPage)
-	{
-		var navigation = GetNavigation();
-		if (navigation is null)
-		{
-			return;
-		}
-
-		await navigation.PopToRootAsync(false);
-
-		Page rootPage = navigation.NavigationStack.FirstOrDefault() ?? new HomePage();
-		Page nextPage = createPage();
-		if (rootPage.GetType() == nextPage.GetType())
-		{
-			return;
-		}
-
-		await navigation.PushAsync(nextPage, true);
+		await TabNavigationHelper.SwitchToTabAsync(() => new ProfilePage());
 	}
 
 	private static async Task AnimatePressAsync(VisualElement element)

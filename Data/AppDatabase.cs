@@ -40,10 +40,23 @@ public class AppDatabase
 		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.Metric1Unit), "TEXT NOT NULL DEFAULT ''");
 		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.Metric2Value), "REAL NULL");
 		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.Metric2Unit), "TEXT NOT NULL DEFAULT ''");
+		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.GroundContactTimeMs), "REAL NULL");
+		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.ConcentricTimeSeconds), "REAL NULL");
 
 		await EnsureColumnAsync(nameof(AthleticPerformanceEntry), nameof(AthleticPerformanceEntry.MovementCategory), "TEXT NOT NULL DEFAULT ''");
 		await EnsureColumnAsync(nameof(AthleticPerformanceEntry), nameof(AthleticPerformanceEntry.SecondaryValue), "REAL NULL");
 		await EnsureColumnAsync(nameof(AthleticPerformanceEntry), nameof(AthleticPerformanceEntry.SecondaryUnit), "TEXT NOT NULL DEFAULT ''");
+		await EnsureColumnAsync(nameof(AthleticPerformanceEntry), nameof(AthleticPerformanceEntry.GroundContactTimeMs), "REAL NULL");
+		await EnsureColumnAsync(nameof(AthleticPerformanceEntry), nameof(AthleticPerformanceEntry.ConcentricTimeSeconds), "REAL NULL");
+
+		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.ExerciseCategory), "TEXT NOT NULL DEFAULT ''");
+		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.TrackingMode), $"TEXT NOT NULL DEFAULT '{nameof(ExerciseTrackingMode.Strength)}'");
+		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.Metric1Value), "REAL NULL");
+		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.Metric1Unit), "TEXT NOT NULL DEFAULT ''");
+		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.Metric2Value), "REAL NULL");
+		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.Metric2Unit), "TEXT NOT NULL DEFAULT ''");
+		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.GroundContactTimeMs), "REAL NULL");
+		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.ConcentricTimeSeconds), "REAL NULL");
 	}
 
 	private async Task EnsureColumnAsync(string tableName, string columnName, string columnDefinition)

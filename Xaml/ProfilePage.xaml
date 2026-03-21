@@ -104,7 +104,7 @@
                                     BackgroundColor="{StaticResource SurfaceRaised}"
                                     Padding="12">
                                 <VerticalStackLayout Spacing="4">
-                                    <Label Text="1RM Saves"
+                                    <Label Text="Saved PRs"
                                            Style="{StaticResource BodyMuted}" />
                                     <Label x:Name="OneRmPrCountLabel"
                                            Text="0"
@@ -176,6 +176,17 @@
                                    Style="{StaticResource BodyMuted}" />
                             <Entry x:Name="PerformanceSecondaryValueEntry"
                                    Placeholder="Enter second result"
+                                   Keyboard="Numeric" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout x:Name="PerformanceTimingContainer"
+                                             Spacing="8"
+                                             IsVisible="False">
+                            <Label x:Name="PerformanceTimingLabel"
+                                   Text="Timing"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Entry x:Name="PerformanceTimingEntry"
+                                   Placeholder="Optional"
                                    Keyboard="Numeric" />
                         </VerticalStackLayout>
 

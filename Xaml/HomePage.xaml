@@ -44,14 +44,14 @@
                     <Border Grid.Column="1"
                             Style="{StaticResource CardBorder}">
                         <VerticalStackLayout Spacing="12">
-                            <Label Text="1RM"
+                            <Label Text="Calculations"
                                    Style="{StaticResource SubHeadline}"
                                    HorizontalTextAlignment="Start" />
-                            <Label Text="Estimate max strength and save important PR sets."
+                            <Label Text="Open 1RM and RSI tools, then keep both strength and athletic PRs together."
                                    Style="{StaticResource BodyMuted}" />
                             <Button Style="{StaticResource SecondaryButton}"
-                                    Text="Calculator"
-                                    Clicked="OnOpenOneRmClicked" />
+                                    Text="Open"
+                                    Clicked="OnOpenCalculationsClicked" />
                         </VerticalStackLayout>
                     </Border>
                 </Grid>

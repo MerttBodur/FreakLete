@@ -75,6 +75,8 @@ public partial class NewWorkoutPage : ContentPage
 				Reps = exercise.Reps,
 				RIR = exercise.RIR,
 				RestSeconds = exercise.RestSeconds,
+				GroundContactTimeMs = exercise.GroundContactTimeMs,
+				ConcentricTimeSeconds = exercise.ConcentricTimeSeconds,
 				Metric1Value = exercise.Metric1Value,
 				Metric1Unit = exercise.Metric1Unit,
 				Metric2Value = exercise.Metric2Value,
@@ -160,6 +162,8 @@ public partial class NewWorkoutPage : ContentPage
 			Reps = exercise.Reps,
 			RIR = exercise.RIR,
 			RestSeconds = exercise.RestSeconds,
+			GroundContactTimeMs = exercise.GroundContactTimeMs,
+			ConcentricTimeSeconds = exercise.ConcentricTimeSeconds,
 			Metric1Value = exercise.Metric1Value,
 			Metric1Unit = exercise.Metric1Unit,
 			Metric2Value = exercise.Metric2Value,
@@ -216,8 +220,10 @@ public partial class NewWorkoutPage : ContentPage
 		RepCountEntry.Text = string.Empty;
 		RirEntry.Text = string.Empty;
 		RestSecondsEntry.Text = string.Empty;
+		ConcentricTimeEntry.Text = string.Empty;
 		Metric1Entry.Text = string.Empty;
 		Metric2Entry.Text = string.Empty;
+		GroundContactTimeEntry.Text = string.Empty;
 		_selectedExerciseItem = null;
 		UpdateExerciseSelectionUI();
 	}
@@ -281,6 +287,8 @@ public partial class NewWorkoutPage : ContentPage
 			StrengthInputsSection.IsVisible = false;
 			CustomInputsSection.IsVisible = false;
 			Metric2Container.IsVisible = false;
+			StrengthTimingContainer.IsVisible = false;
+			GroundContactTimeContainer.IsVisible = false;
 			return;
 		}
 
@@ -290,6 +298,8 @@ public partial class NewWorkoutPage : ContentPage
 		bool isStrength = _selectedExerciseItem.TrackingMode == ExerciseTrackingMode.Strength;
 		StrengthInputsSection.IsVisible = isStrength;
 		CustomInputsSection.IsVisible = !isStrength;
+		StrengthTimingContainer.IsVisible = isStrength && _selectedExerciseItem.SupportsConcentricTime;
+		GroundContactTimeContainer.IsVisible = !isStrength && _selectedExerciseItem.SupportsGroundContactTime;
 
 		if (!isStrength)
 		{
@@ -348,6 +358,18 @@ public partial class NewWorkoutPage : ContentPage
 				restSeconds = parsedRest;
 			}
 
+			double? concentricTime = null;
+			if (!string.IsNullOrWhiteSpace(ConcentricTimeEntry.Text))
+			{
+				if (!double.TryParse(ConcentricTimeEntry.Text, out double parsedTime) || parsedTime <= 0)
+				{
+					ShowError("Concentric time must be a positive number.");
+					return null;
+				}
+
+				concentricTime = parsedTime;
+			}
+
 			return new ExerciseEntry
 			{
 				ExerciseName = _selectedExerciseItem.Name,
@@ -356,7 +378,8 @@ public partial class NewWorkoutPage : ContentPage
 				Sets = setCount,
 				Reps = repCount,
 				RIR = rir,
-				RestSeconds = restSeconds
+				RestSeconds = restSeconds,
+				ConcentricTimeSeconds = concentricTime
 			};
 		}
 
@@ -378,6 +401,18 @@ public partial class NewWorkoutPage : ContentPage
 			metric2 = parsedMetric2;
 		}
 
+		double? gct = null;
+		if (_selectedExerciseItem.SupportsGroundContactTime && !string.IsNullOrWhiteSpace(GroundContactTimeEntry.Text))
+		{
+			if (!double.TryParse(GroundContactTimeEntry.Text, out double parsedGct) || parsedGct <= 0)
+			{
+				ShowError("Ground contact time must be a positive number.");
+				return null;
+			}
+
+			gct = parsedGct;
+		}
+
 		return new ExerciseEntry
 		{
 			ExerciseName = _selectedExerciseItem.Name,
@@ -386,7 +421,8 @@ public partial class NewWorkoutPage : ContentPage
 			Metric1Value = metric1,
 			Metric1Unit = _selectedExerciseItem.PrimaryUnit,
 			Metric2Value = metric2,
-			Metric2Unit = _selectedExerciseItem.SecondaryUnit
+			Metric2Unit = _selectedExerciseItem.SecondaryUnit,
+			GroundContactTimeMs = gct
 		};
 	}
 
@@ -394,7 +430,7 @@ public partial class NewWorkoutPage : ContentPage
 	{
 		if (entry.TrackingMode == nameof(ExerciseTrackingMode.Custom))
 		{
-			ExerciseCatalogItem? item = ExerciseCatalog.GetByName(entry.ExerciseName);
+			ExerciseCatalogItem? item = ExerciseCatalog.GetByNameAndCategory(entry.ExerciseName, entry.ExerciseCategory);
 			if (item is not null)
 			{
 				return $"{item.PrimaryLabel}: {entry.Metric1Value:0.##} {entry.Metric1Unit}";
@@ -410,15 +446,33 @@ public partial class NewWorkoutPage : ContentPage
 	{
 		if (entry.TrackingMode == nameof(ExerciseTrackingMode.Custom))
 		{
-			ExerciseCatalogItem? item = ExerciseCatalog.GetByName(entry.ExerciseName);
+			ExerciseCatalogItem? item = ExerciseCatalog.GetByNameAndCategory(entry.ExerciseName, entry.ExerciseCategory);
 			if (item is not null && item.HasSecondaryMetric && entry.Metric2Value.HasValue)
 			{
-				return $"{item.SecondaryLabel}: {entry.Metric2Value:0.##} {entry.Metric2Unit}";
+				string baseText = $"{item.SecondaryLabel}: {entry.Metric2Value:0.##} {entry.Metric2Unit}";
+				return entry.GroundContactTimeMs.HasValue
+					? $"{baseText} | GCT: {entry.GroundContactTimeMs.Value:0.##} ms"
+					: baseText;
 			}
 
-			return $"Category: {entry.ExerciseCategory}";
+			return entry.GroundContactTimeMs.HasValue
+				? $"GCT: {entry.GroundContactTimeMs.Value:0.##} ms"
+				: $"Category: {entry.ExerciseCategory}";
 		}
 
-		return entry.RestSeconds.HasValue ? $"Rest: {entry.RestSeconds.Value} sec" : $"Category: {entry.ExerciseCategory}";
+		List<string> details = [];
+		if (entry.RestSeconds.HasValue)
+		{
+			details.Add($"Rest: {entry.RestSeconds.Value} sec");
+		}
+
+		if (entry.ConcentricTimeSeconds.HasValue)
+		{
+			details.Add($"Concentric: {entry.ConcentricTimeSeconds.Value:0.##} s");
+		}
+
+		return details.Count > 0
+			? string.Join(" | ", details)
+			: $"Category: {entry.ExerciseCategory}";
 	}
 }

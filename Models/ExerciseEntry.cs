@@ -24,6 +24,10 @@ public class ExerciseEntry
 
 	public int? RestSeconds { get; set; }
 
+	public double? GroundContactTimeMs { get; set; }
+
+	public double? ConcentricTimeSeconds { get; set; }
+
 	public double? Metric1Value { get; set; }
 
 	public string Metric1Unit { get; set; } = string.Empty;

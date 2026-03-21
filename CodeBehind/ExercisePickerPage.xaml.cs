@@ -63,7 +63,7 @@ public partial class ExercisePickerPage : ContentPage
 	{
 		VisibleExercises.Clear();
 
-		foreach (ExerciseCatalogItem item in ExerciseCatalog.GetItemsByCategory(_selectedCategory))
+		foreach (ExerciseCatalogItem item in ExerciseCatalog.GetRecommendedItemsByCategory(_selectedCategory))
 		{
 			VisibleExercises.Add(item);
 		}

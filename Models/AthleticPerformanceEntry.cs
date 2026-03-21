@@ -22,5 +22,9 @@ public class AthleticPerformanceEntry
 
 	public string SecondaryUnit { get; set; } = string.Empty;
 
+	public double? GroundContactTimeMs { get; set; }
+
+	public double? ConcentricTimeSeconds { get; set; }
+
 	public DateTime RecordedAt { get; set; } = DateTime.UtcNow;
 }

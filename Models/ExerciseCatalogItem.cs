@@ -24,6 +24,12 @@ public sealed class ExerciseCatalogItem
 
 	public bool HasSecondaryMetric => !string.IsNullOrWhiteSpace(SecondaryLabel);
 
+	public bool SupportsGroundContactTime =>
+		Category is "Sprint" or "Jumps" or "Plyometrics";
+
+	public bool SupportsConcentricTime =>
+		TrackingMode == ExerciseTrackingMode.Strength;
+
 	public string HintText =>
 		TrackingMode == ExerciseTrackingMode.Strength
 			? "Sets, reps, RIR, rest"

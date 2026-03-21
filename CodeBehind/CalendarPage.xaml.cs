@@ -191,16 +191,21 @@ public partial class CalendarPage : ContentPage
 		{
 			if (x.TrackingMode == nameof(ExerciseTrackingMode.Custom))
 			{
-				ExerciseCatalogItem? item = ExerciseCatalog.GetByName(x.ExerciseName);
+				ExerciseCatalogItem? item = ExerciseCatalog.GetByNameAndCategory(x.ExerciseName, x.ExerciseCategory);
 				if (item is not null)
 				{
 					string primary = $"{item.PrimaryLabel} {x.Metric1Value:0.##}{x.Metric1Unit}";
 					if (item.HasSecondaryMetric && x.Metric2Value.HasValue)
 					{
-						return $"{x.ExerciseName} ({primary}, {item.SecondaryLabel} {x.Metric2Value:0.##}{x.Metric2Unit})";
+						string text = $"{x.ExerciseName} ({primary}, {item.SecondaryLabel} {x.Metric2Value:0.##}{x.Metric2Unit})";
+						return x.GroundContactTimeMs.HasValue
+							? $"{text}, GCT {x.GroundContactTimeMs.Value:0.##}ms"
+							: text;
 					}
 
-					return $"{x.ExerciseName} ({primary})";
+					return x.GroundContactTimeMs.HasValue
+						? $"{x.ExerciseName} ({primary}, GCT {x.GroundContactTimeMs.Value:0.##}ms)"
+						: $"{x.ExerciseName} ({primary})";
 				}
 			}
 
@@ -208,8 +213,19 @@ public partial class CalendarPage : ContentPage
 				? $"{x.ExerciseName} ({x.Sets}x{x.Reps}, RIR{x.RIR.Value})"
 				: $"{x.ExerciseName} ({x.Sets}x{x.Reps})";
 
-			return x.RestSeconds.HasValue
-				? $"{baseText}, Rest {x.RestSeconds.Value}s"
+			List<string> details = [];
+			if (x.RestSeconds.HasValue)
+			{
+				details.Add($"Rest {x.RestSeconds.Value}s");
+			}
+
+			if (x.ConcentricTimeSeconds.HasValue)
+			{
+				details.Add($"Concentric {x.ConcentricTimeSeconds.Value:0.##}s");
+			}
+
+			return details.Count > 0
+				? $"{baseText}, {string.Join(", ", details)}"
 				: baseText;
 		}));
 	}

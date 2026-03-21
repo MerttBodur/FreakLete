@@ -43,13 +43,13 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="2" Spacing="4" HorizontalOptions="Center">
-                <ImageButton x:Name="OneRmButton"
-                             Source="nav_plates.svg"
+                <ImageButton x:Name="CalculationsButton"
+                             Source="nav_notebook.svg"
                              BackgroundColor="Transparent"
                              WidthRequest="22"
                              HeightRequest="22"
-                             Clicked="OnOneRmClicked" />
-                <BoxView x:Name="OneRmIndicator"
+                             Clicked="OnCalculationsClicked" />
+                <BoxView x:Name="CalculationsIndicator"
                          WidthRequest="16"
                          HeightRequest="4"
                          CornerRadius="2"

@@ -113,6 +113,8 @@ public partial class ProfilePage : ContentPage
 			Unit = entry.Unit,
 			SecondaryValue = entry.SecondaryValue,
 			SecondaryUnit = entry.SecondaryUnit,
+			GroundContactTimeMs = entry.GroundContactTimeMs,
+			ConcentricTimeSeconds = entry.ConcentricTimeSeconds,
 			RecordedAt = entry.RecordedAt,
 			Text = FormatAthleticPerformanceText(entry)
 		}).ToList();
@@ -229,6 +231,30 @@ public partial class ProfilePage : ContentPage
 			secondaryValue = parsedSecondary;
 		}
 
+		double? groundContactTime = null;
+		double? concentricTime = null;
+		if (_selectedPerformanceItem.SupportsGroundContactTime && !string.IsNullOrWhiteSpace(PerformanceTimingEntry.Text))
+		{
+			if (!double.TryParse(PerformanceTimingEntry.Text, out double parsedGct) || parsedGct <= 0)
+			{
+				ShowError("Ground contact time must be a positive number.");
+				return;
+			}
+
+			groundContactTime = parsedGct;
+		}
+
+		if (_selectedPerformanceItem.SupportsConcentricTime && !string.IsNullOrWhiteSpace(PerformanceTimingEntry.Text))
+		{
+			if (!double.TryParse(PerformanceTimingEntry.Text, out double parsedTime) || parsedTime <= 0)
+			{
+				ShowError("Concentric time must be a positive number.");
+				return;
+			}
+
+			concentricTime = parsedTime;
+		}
+
 		AthleticPerformanceEntry entry = new()
 		{
 			Id = _editingPerformanceId.GetValueOrDefault(),
@@ -238,7 +264,9 @@ public partial class ProfilePage : ContentPage
 			Value = value,
 			Unit = _selectedPerformanceItem.PrimaryUnit,
 			SecondaryValue = secondaryValue,
-			SecondaryUnit = _selectedPerformanceItem.SecondaryUnit
+			SecondaryUnit = _selectedPerformanceItem.SecondaryUnit,
+			GroundContactTimeMs = groundContactTime,
+			ConcentricTimeSeconds = concentricTime
 		};
 
 		if (_editingPerformanceId.HasValue)
@@ -286,10 +314,11 @@ public partial class ProfilePage : ContentPage
 		}
 
 		_editingPerformanceId = item.Id;
-		_selectedPerformanceItem = ExerciseCatalog.GetByName(item.MovementName);
+		_selectedPerformanceItem = ExerciseCatalog.GetByNameAndCategory(item.MovementName, item.MovementCategory);
 		UpdatePerformanceSelectionUI();
 		PerformanceValueEntry.Text = item.Value.ToString("0.##");
 		PerformanceSecondaryValueEntry.Text = item.SecondaryValue?.ToString("0.##") ?? string.Empty;
+		PerformanceTimingEntry.Text = item.GroundContactTimeMs?.ToString("0.##") ?? item.ConcentricTimeSeconds?.ToString("0.##") ?? string.Empty;
 		PerformanceActionButton.Text = "Update";
 		PerformanceCancelButton.IsVisible = true;
 		ShowSuccess($"Editing: {item.Text}");
@@ -584,6 +613,7 @@ public partial class ProfilePage : ContentPage
 		UpdatePerformanceSelectionUI();
 		PerformanceValueEntry.Text = string.Empty;
 		PerformanceSecondaryValueEntry.Text = string.Empty;
+		PerformanceTimingEntry.Text = string.Empty;
 		PerformanceActionButton.Text = "Save";
 		PerformanceCancelButton.IsVisible = false;
 	}
@@ -613,31 +643,61 @@ public partial class ProfilePage : ContentPage
 			PerformanceMetric1Label.Text = "Result";
 			PerformanceValueEntry.Placeholder = "Enter result";
 			PerformanceMetric2Container.IsVisible = false;
+			PerformanceTimingContainer.IsVisible = false;
 			return;
 		}
 
 		SelectedPerformanceLabel.Text = _selectedPerformanceItem.Name;
-		SelectedPerformanceHintLabel.Text = $"{_selectedPerformanceItem.Category} | {_selectedPerformanceItem.HintText}";
+		SelectedPerformanceHintLabel.Text = _selectedPerformanceItem.TrackingMode == ExerciseTrackingMode.Strength
+			? $"{_selectedPerformanceItem.Category} | Load (kg) with optional concentric time."
+			: $"{_selectedPerformanceItem.Category} | {_selectedPerformanceItem.HintText}";
 		PerformanceMetric1Label.Text = $"{_selectedPerformanceItem.PrimaryLabel} ({_selectedPerformanceItem.PrimaryUnit})";
 		PerformanceValueEntry.Placeholder = $"Enter {_selectedPerformanceItem.PrimaryLabel.ToLowerInvariant()}";
 		PerformanceMetric2Container.IsVisible = _selectedPerformanceItem.HasSecondaryMetric;
 		PerformanceMetric2Label.Text = $"{_selectedPerformanceItem.SecondaryLabel} ({_selectedPerformanceItem.SecondaryUnit})";
 		PerformanceSecondaryValueEntry.Placeholder = $"Enter {_selectedPerformanceItem.SecondaryLabel.ToLowerInvariant()}";
+		PerformanceTimingContainer.IsVisible = _selectedPerformanceItem.SupportsGroundContactTime || _selectedPerformanceItem.SupportsConcentricTime;
+		PerformanceTimingLabel.Text = _selectedPerformanceItem.SupportsGroundContactTime
+			? "Ground Contact Time (ms)"
+			: "Concentric Time (s)";
+		PerformanceTimingEntry.Placeholder = "Optional";
 	}
 
 	private static string FormatAthleticPerformanceText(AthleticPerformanceEntry entry)
 	{
-		ExerciseCatalogItem? item = ExerciseCatalog.GetByName(entry.MovementName);
+		ExerciseCatalogItem? item = ExerciseCatalog.GetByNameAndCategory(entry.MovementName, entry.MovementCategory);
 		string primary = item is not null
 			? $"{item.PrimaryLabel}: {entry.Value:0.##} {entry.Unit}"
 			: $"{entry.Value:0.##} {entry.Unit}";
 
 		if (item is not null && item.HasSecondaryMetric && entry.SecondaryValue.HasValue)
 		{
-			return $"{entry.MovementName}: {primary} | {item.SecondaryLabel}: {entry.SecondaryValue:0.##} {entry.SecondaryUnit} ({entry.RecordedAt:dd.MM.yyyy})";
+			string text = $"{entry.MovementName}: {primary} | {item.SecondaryLabel}: {entry.SecondaryValue:0.##} {entry.SecondaryUnit}";
+			if (entry.GroundContactTimeMs.HasValue)
+			{
+				text += $" | GCT: {entry.GroundContactTimeMs.Value:0.##} ms";
+			}
+
+			if (entry.ConcentricTimeSeconds.HasValue)
+			{
+				text += $" | Concentric: {entry.ConcentricTimeSeconds.Value:0.##} s";
+			}
+
+			return $"{text} ({entry.RecordedAt:dd.MM.yyyy})";
 		}
 
-		return $"{entry.MovementName}: {primary} ({entry.RecordedAt:dd.MM.yyyy})";
+		string singleMetricText = $"{entry.MovementName}: {primary}";
+		if (entry.GroundContactTimeMs.HasValue)
+		{
+			singleMetricText += $" | GCT: {entry.GroundContactTimeMs.Value:0.##} ms";
+		}
+
+		if (entry.ConcentricTimeSeconds.HasValue)
+		{
+			singleMetricText += $" | Concentric: {entry.ConcentricTimeSeconds.Value:0.##} s";
+		}
+
+		return $"{singleMetricText} ({entry.RecordedAt:dd.MM.yyyy})";
 	}
 
 	private void ResetGoalForm()
@@ -674,6 +734,8 @@ public partial class ProfilePage : ContentPage
 		public string Unit { get; set; } = string.Empty;
 		public double? SecondaryValue { get; set; }
 		public string SecondaryUnit { get; set; } = string.Empty;
+		public double? GroundContactTimeMs { get; set; }
+		public double? ConcentricTimeSeconds { get; set; }
 		public DateTime RecordedAt { get; set; }
 	}
 

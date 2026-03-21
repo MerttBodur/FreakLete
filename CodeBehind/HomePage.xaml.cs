@@ -48,7 +48,7 @@ public partial class HomePage : ContentPage
 		WorkoutTotalLabel.Text = workoutCount.ToString();
 		AthleticCountLabel.Text = athleticEntries.Count.ToString();
 		LatestPrLabel.Text = prEntries.Count > 0
-			? $"{prEntries[0].Weight} x {prEntries[0].Reps} RIR{prEntries[0].RIR.GetValueOrDefault()}"
+			? FormatLatestPr(prEntries[0])
 			: "No PR saved yet.";
 	}
 
@@ -57,8 +57,26 @@ public partial class HomePage : ContentPage
 		await Navigation.PushAsync(new WorkoutPage(), true);
 	}
 
-	private async void OnOpenOneRmClicked(object? sender, EventArgs e)
+	private async void OnOpenCalculationsClicked(object? sender, EventArgs e)
 	{
-		await Navigation.PushAsync(new OneRmPage(), true);
+		await Navigation.PushAsync(new CalculationsPage(), true);
+	}
+
+	private static string FormatLatestPr(PrEntry entry)
+	{
+		if (entry.TrackingMode == nameof(ExerciseTrackingMode.Custom))
+		{
+			string text = $"{entry.ExerciseName}: {entry.Metric1Value:0.##} {entry.Metric1Unit}";
+			if (entry.Metric2Value.HasValue && !string.IsNullOrWhiteSpace(entry.Metric2Unit))
+			{
+				text += $" | {entry.Metric2Value:0.##} {entry.Metric2Unit}";
+			}
+
+			return text;
+		}
+
+		return entry.RIR.HasValue
+			? $"{entry.ExerciseName}: {entry.Weight} x {entry.Reps} RIR{entry.RIR.Value}"
+			: $"{entry.ExerciseName}: {entry.Weight} x {entry.Reps}";
 	}
 }
