@@ -293,7 +293,7 @@ public partial class NewWorkoutPage : ContentPage
 		}
 
 		SelectedExerciseLabel.Text = _selectedExerciseItem.Name;
-		SelectedExerciseHintLabel.Text = $"{_selectedExerciseItem.Category} | {_selectedExerciseItem.HintText}";
+		SelectedExerciseHintLabel.Text = _selectedExerciseItem.SelectionHintText;
 
 		bool isStrength = _selectedExerciseItem.TrackingMode == ExerciseTrackingMode.Strength;
 		StrengthInputsSection.IsVisible = isStrength;
@@ -361,7 +361,7 @@ public partial class NewWorkoutPage : ContentPage
 			double? concentricTime = null;
 			if (!string.IsNullOrWhiteSpace(ConcentricTimeEntry.Text))
 			{
-				if (!double.TryParse(ConcentricTimeEntry.Text, out double parsedTime) || parsedTime <= 0)
+				if (!MetricInput.TryParseFlexibleDouble(ConcentricTimeEntry.Text, out double parsedTime) || parsedTime <= 0)
 				{
 					ShowError("Concentric time must be a positive number.");
 					return null;
@@ -383,7 +383,7 @@ public partial class NewWorkoutPage : ContentPage
 			};
 		}
 
-		if (!double.TryParse(Metric1Entry.Text, out double metric1))
+		if (!MetricInput.TryParseFlexibleDouble(Metric1Entry.Text, out double metric1))
 		{
 			ShowError($"{_selectedExerciseItem.PrimaryLabel} is required.");
 			return null;
@@ -392,7 +392,7 @@ public partial class NewWorkoutPage : ContentPage
 		double? metric2 = null;
 		if (_selectedExerciseItem.HasSecondaryMetric)
 		{
-			if (!double.TryParse(Metric2Entry.Text, out double parsedMetric2))
+			if (!MetricInput.TryParseFlexibleDouble(Metric2Entry.Text, out double parsedMetric2))
 			{
 				ShowError($"{_selectedExerciseItem.SecondaryLabel} is required.");
 				return null;
@@ -404,13 +404,13 @@ public partial class NewWorkoutPage : ContentPage
 		double? gct = null;
 		if (_selectedExerciseItem.SupportsGroundContactTime && !string.IsNullOrWhiteSpace(GroundContactTimeEntry.Text))
 		{
-			if (!double.TryParse(GroundContactTimeEntry.Text, out double parsedGct) || parsedGct <= 0)
+			if (!MetricInput.TryParseFlexibleDouble(GroundContactTimeEntry.Text, out double parsedGctSeconds) || parsedGctSeconds <= 0)
 			{
 				ShowError("Ground contact time must be a positive number.");
 				return null;
 			}
 
-			gct = parsedGct;
+			gct = MetricInput.SecondsToMilliseconds(parsedGctSeconds);
 		}
 
 		return new ExerciseEntry
@@ -451,12 +451,12 @@ public partial class NewWorkoutPage : ContentPage
 			{
 				string baseText = $"{item.SecondaryLabel}: {entry.Metric2Value:0.##} {entry.Metric2Unit}";
 				return entry.GroundContactTimeMs.HasValue
-					? $"{baseText} | GCT: {entry.GroundContactTimeMs.Value:0.##} ms"
+					? $"{baseText} | GCT: {MetricInput.FormatSecondsFromMilliseconds(entry.GroundContactTimeMs.Value)}"
 					: baseText;
 			}
 
 			return entry.GroundContactTimeMs.HasValue
-				? $"GCT: {entry.GroundContactTimeMs.Value:0.##} ms"
+				? $"GCT: {MetricInput.FormatSecondsFromMilliseconds(entry.GroundContactTimeMs.Value)}"
 				: $"Category: {entry.ExerciseCategory}";
 		}
 

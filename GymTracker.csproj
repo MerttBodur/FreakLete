@@ -70,4 +70,9 @@
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Include="Resources\Raw\exercise_catalog.json"
+		                  LogicalName="GymTracker.Resources.Raw.exercise_catalog.json" />
+	</ItemGroup>
+
 </Project>

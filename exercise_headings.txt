@@ -1,0 +1,191 @@
+Bu çıktı, yüklediğin .txt prompt’unda tanımlanan üç ana kategoriye göre (Strength / Hypertrophy /
+U18 / Senior / Masters adaptasyon notu:
+Masters’ta (özellikle 35+ / 50+) yüklenme yine yapılır; ancak toparlanma, eklem toleransı ve toplam stres
+Arka Squat / Back Squat
+Ön Squat / Front Squat
+Box Squat / Box Squat
+Pauseli Squat / Pause Back Squat
+Trap Bar Deadlift / Trap Bar Deadlift
+Konvansiyonel Deadlift / Conventional Deadlift
+Sumo Deadlift / Sumo Deadlift
+Romanian Deadlift / Romanian Deadlift
+Barbell Hip Thrust / Barbell Hip Thrust
+Bench Press / Barbell Bench Press
+Pauseli Bench Press / Paused Bench Press
+Incline Bench Press / Incline Barbell Bench Press
+Ayakta Overhead Press / Standing Barbell Overhead Press
+Dar Tutuş Bench / Close-Grip Bench Press
+Floor Press / Floor Press
+Ağırlıklı Barfiks / Weighted Pull-Up
+Ağırlıklı Chin-Up / Weighted Chin-Up
+Pendlay Row / Pendlay Row
+Ağırlıklı Dip / Weighted Dip
+Good Morning / Barbell Good Morning
+Bulgarian Split Squat / Bulgarian Split Squat
+Ağırlıklı Step‑Up / Weighted Step-Up
+Tek Bacak RDL / Single-Leg Romanian Deadlift
+Farmer’s Carry / Farmers Carry
+Equipment: Farmer handles / Dumbbells
+Yoke Carry / Yoke Carry
+Heavy Sled Push / Ağır Sled İtme
+Sandbag Bear Hug Carry / Sandbag Sarma Taşıma
+Log Press / Strongman Log Press
+İzometrik Mid‑Thigh Pull / Isometric Mid-Thigh Pull
+Load Intensity: Maksimal istemli kasılma (MVC) / bar sabit
+İzometrik Squat (Rack/Pins) / Isometric Squat (Pins)
+amacı Birlikte programlanabilir (örnek)Çakışma / overtraining riski (örnek)
+Dumbbell Bench Press / Dumbbell Bench Press
+Target: Primary Chest / Secondary Triceps / Tertiary Anterior delt
+Incline DB Press / Incline Dumbbell Press
+Target: Primary Upper chest / Secondary Delts / Tertiary Triceps
+Cable Fly / Cable Chest Fly
+Target: Primary Chest / Secondary Anterior delt / Tertiary Serratus
+Machine Chest Press / Machine Chest Press
+Target: Primary Chest / Secondary Triceps / Tertiary Delts
+Seated DB Shoulder Press / Seated Dumbbell Shoulder Press
+Target: Primary Delts / Secondary Triceps / Tertiary Upper chest
+DB Lateral Raise / Dumbbell Lateral Raise
+Target: Primary Lateral delt / Secondary Upper traps / Tertiary Supraspinatus
+Cable Lateral Raise / Cable Lateral Raise
+Target: Primary Lateral delt / Secondary Upper traps / Tertiary Core stabilizasyon
+Triceps Pushdown / Cable Triceps Pushdown
+Target: Primary Triceps / Secondary Forearm / Tertiary Shoulder stabilizasyon
+Overhead Triceps Extension / Overhead Triceps Extension
+Target: Primary Long head triceps / Secondary Triceps / Tertiary Core
+Equipment: Cable / Dumbbell
+Pec Deck / Machine Fly
+Target: Primary Chest / Secondary Anterior delt / Tertiary Serratus
+Lat Pulldown / Lat Pulldown
+Target: Primary Lats / Secondary Biceps / Tertiary Mid back
+Seated Cable Row / Seated Cable Row
+Target: Primary Mid back / Secondary Lats / Tertiary Biceps
+Chest‑Supported Row / Chest-Supported Row
+Target: Primary Mid back / Secondary Rear delts / Tertiary Biceps
+One‑Arm DB Row / One-Arm Dumbbell Row
+Target: Primary Lats / Secondary Mid back / Tertiary Biceps
+Face Pull / Cable Face Pull
+Target: Primary Rear delts / Secondary Lower traps / Tertiary Rotator cuff
+Rear Delt Fly / Rear Delt Fly
+Target: Primary Rear delts / Secondary Rhomboids / Tertiary Rotator cuff
+Barbell Curl / Barbell Curl
+Target: Primary Biceps / Secondary Forearm / Tertiary Brachialis
+Incline DB Curl / Incline Dumbbell Curl
+Target: Primary Biceps long head / Secondary Forearm / Tertiary Brachialis
+Hammer Curl / Hammer Curl
+Target: Primary Brachialis/Brachioradialis / Secondary Biceps / Tertiary Forearm
+Cable Curl / Cable Curl
+Target: Primary Biceps / Secondary Forearm / Tertiary Brachialis
+Leg Press / Leg Press
+Target: Primary Quads / Secondary Glute / Tertiary Hamstrings
+Hack Squat / Hack Squat
+Target: Primary Quads / Secondary Glute / Tertiary Calves
+Leg Extension / Leg Extension
+Target: Primary Quads / Secondary — / Tertiary —
+DB Romanian Deadlift / Dumbbell Romanian Deadlift
+Target: Primary Hamstrings/Glute / Secondary Erectors / Tertiary Grip
+Lying Leg Curl / Lying Leg Curl
+Target: Primary Hamstrings / Secondary Calves / Tertiary Glute
+Glute Drive / Hip Thrust Machine
+Target: Primary Glutes / Secondary Hamstrings / Tertiary Core
+Standing Calf Raise / Standing Calf Raise
+Target: Primary Gastrocnemius / Secondary Soleus / Tertiary Foot stabilizers
+Hip Abduction Machine / Hip Abduction
+Target: Primary Glute med/min / Secondary TFL / Tertiary Core
+Cable Crunch / Cable Crunch
+Target: Primary Rectus abdominis / Secondary Obliques / Tertiary Hip flexors
+Hanging Knee Raise / Hanging Knee Raise
+Target: Primary Lower abs / Secondary Hip flexors / Tertiary Grip
+(örnek) Çakışma / risk (örnek)
+(örnek) Çakışma / risk (örnek)
+U18 / Senior / Masters adaptasyon: U18’de pliometrik ve hız içeriklerinde progresyon ve teknik (iniş
+Power Clean / Power Clean
+Progressions/Regressions: Hang power clean → power clean / Kettlebell swing (reg)
+Phase: Off‑Season / Pre‑Season
+Hang Power Clean / Hang Power Clean
+Progressions/Regressions: High hang → mid‑hang / Jump shrug (reg)
+Phase: Pre‑Season / In‑Season (düşük hacim)
+Power Snatch / Power Snatch
+Progressions/Regressions: Hang power snatch / DB snatch (reg)
+Phase: Off‑Season / Pre‑Season
+Hang Power Snatch / Hang Power Snatch
+Progressions/Regressions: High hang → hang / DB snatch (reg)
+Pairing: Squat jump / CMJ ile kontrast
+Push Jerk / Push Jerk
+Progressions/Regressions: Push press (reg) / Split jerk (prog)
+Phase: Off‑Season / Pre‑Season
+Split Jerk / Split Jerk
+Progressions/Regressions: Push jerk (reg) / Jerk from blocks (prog)
+Clean Pull / Clean Pull
+Progressions/Regressions: High pull (prog) / Trap bar jump (reg)
+Phase: Off‑Season / Pre‑Season
+Jump Shrug / Jump Shrug
+Progressions/Regressions: Hang high pull (prog) / DB jump shrug (reg)
+Phase: Pre‑Season / In‑Season (düşük hacim)
+Kutu Sıçrama / Box Jump
+Progressions/Regressions: Higher box / step‑up jump (reg)
+Phase: Off‑Season / Pre‑Season
+CMJ / Countermovement Jump
+Progressions/Regressions: Loaded CMJ (prog) / squat jump (reg)
+Phase: Pre‑Season / Peaking
+Derinlik Sıçraması / Depth Jump
+Progressions/Regressions: Higher drop / drop landing (reg)
+Phase: Pre‑Season / Peaking
+Uzak Atlama Sıçraması / Broad Jump
+Progressions/Regressions: Multiple bounds (prog) / standing long jump to stick (reg)
+Phase: Off‑Season / Pre‑Season
+Snap Down / Drop Landing (Stick Landing)
+Progressions/Regressions: Drop jump (prog) / squat to stick (reg)
+Phase: Off‑Season / Pre‑Season / In‑Season (düşük hacim)
+Alternating Bounds / Alt Bacak Bounding
+Equipment: Bodyweight / track
+Progressions/Regressions: Faster / longer / marching bounds (reg)
+Skater Jump / Lateral Bound
+Progressions/Regressions: Reactive bounds (prog) / side step to stick (reg)
+Phase: Off‑Season / Pre‑Season
+Med Ball Chest Pass / Medicine Ball Chest Pass
+Progressions/Regressions: Heavier MB / kneeling pass (reg)
+Phase: Pre‑Season / In‑Season
+Med Ball Overhead Slam / Overhead Slam
+Progressions/Regressions: Rotational slam / lighter ball
+Phase: Off‑Season / Pre‑Season
+Rotational Scoop Toss / Rotational Throw (Scoop Toss)
+Progressions/Regressions: Step‑in throw (prog) / tall‑kneeling throw (reg)
+Phase: Pre‑Season / In‑Season
+Pairing: Landmine rotation / anti‑rotation core
+Overhead Backward Throw / Med Ball Overhead Backward Throw
+Progressions/Regressions: Heavier ball / lighter ball
+Phase: Off‑Season / Pre‑Season
+Pairing: Jump shrug / CMJ
+Wall Drive Series / Wall Drill (A‑position Drive)
+Progressions/Regressions: Switches faster / marching slower
+Phase: Off‑Season / Pre‑Season
+A‑Skip / A‑Skip Drill
+Progressions/Regressions: A‑run (prog) / A‑march (reg)
+Phase: Off‑Season / Pre‑Season
+Wicket Run / Wicket Run (Mini Engelli Koşu)
+Progressions/Regressions: Daha dar aralık / sadece fast‑leg drills
+Phase: Pre‑Season / Peaking
+Resisted Sled Sprint / Sled Sprint (Dirençli)
+Progressions/Regressions: Daha ağır (ama kontrollü) / sled march (reg)
+Phase: Off‑Season / Pre‑Season
+5‑10‑5 / Pro Agility (Shuttle)
+Progressions/Regressions: Reaktif komutlu (prog) / önceden planlı (reg)
+Phase: Pre‑Season / In‑Season (düşük hacim)
+Sprint‑to‑Stop / Deceleration Drill (Frenleme)
+Progressions/Regressions: Daha yüksek hız (prog) / daha kısa hızlanma (reg)
+Phase: Off‑Season / Pre‑Season
+Reactive Mirror Drill / Ayna Reaktif Shuffle
+Progressions/Regressions: Daha hızlı uyaran (prog) / planlı shuffle (reg)
+Phase: Pre‑Season / In‑Season (az hacim)
+Nordic Hamstring / Nordic Hamstring Exercise
+Progressions/Regressions: Daha fazla ROM / band‑assisted (reg)
+Phase: Off‑Season / Pre‑Season (in‑season düşük hacim)
+Pairing: RDL / sprint günleriyle çakıştırma yönetimi
+Copenhagen Plank / Copenhagen Side Plank
+Progressions/Regressions: Longer lever (prog) / short‑lever (reg)
+Phase: Off‑Season / Pre‑Season / In‑Season (düşük hacim)
+L‑Sit / L‑Sit Hold
+Progressions/Regressions: V‑sit (prog) / tuck L‑sit (reg)
+Phase: Off‑Season / Pre‑Season
+(örnek) Çakışma / risk (örnek)
+(örnek) Çakışma / risk (örnek)

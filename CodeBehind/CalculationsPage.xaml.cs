@@ -88,7 +88,7 @@ public partial class CalculationsPage : ContentPage
 		}
 
 		SelectedStrengthExerciseLabel.Text = _selectedStrengthExerciseItem.Name;
-		SelectedStrengthExerciseHintLabel.Text = $"{_selectedStrengthExerciseItem.Category} | {_selectedStrengthExerciseItem.HintText}";
+		SelectedStrengthExerciseHintLabel.Text = _selectedStrengthExerciseItem.SelectionHintText;
 	}
 
 	private void OnCalculateOneRmClicked(object? sender, EventArgs e)
@@ -160,7 +160,7 @@ public partial class CalculationsPage : ContentPage
 
 		if (!string.IsNullOrWhiteSpace(ConcentricTimeEntry.Text))
 		{
-			if (!double.TryParse(ConcentricTimeEntry.Text, out double parsedTime) || parsedTime <= 0)
+			if (!MetricInput.TryParseFlexibleDouble(ConcentricTimeEntry.Text, out double parsedTime) || parsedTime <= 0)
 			{
 				ShowError(OneRmStatusLabel, "Concentric time must be a positive number.");
 				return false;
@@ -202,7 +202,7 @@ public partial class CalculationsPage : ContentPage
 		}
 
 		SelectedPrExerciseLabel.Text = _selectedPrExerciseItem.Name;
-		SelectedPrExerciseHintLabel.Text = $"{_selectedPrExerciseItem.Category} | {_selectedPrExerciseItem.HintText}";
+		SelectedPrExerciseHintLabel.Text = _selectedPrExerciseItem.SelectionHintText;
 
 		bool isStrength = _selectedPrExerciseItem.TrackingMode == ExerciseTrackingMode.Strength;
 		PrStrengthInputsSection.IsVisible = isStrength;
@@ -301,7 +301,7 @@ public partial class CalculationsPage : ContentPage
 			double? concentricTime = null;
 			if (!string.IsNullOrWhiteSpace(PrConcentricTimeEntry.Text))
 			{
-				if (!double.TryParse(PrConcentricTimeEntry.Text, out double parsedTime) || parsedTime <= 0)
+				if (!MetricInput.TryParseFlexibleDouble(PrConcentricTimeEntry.Text, out double parsedTime) || parsedTime <= 0)
 				{
 					ShowError(PrStatusLabel, "Concentric time must be a positive number.");
 					return null;
@@ -323,7 +323,7 @@ public partial class CalculationsPage : ContentPage
 			};
 		}
 
-		if (!double.TryParse(PrMetric1Entry.Text, out double metric1) || metric1 <= 0)
+		if (!MetricInput.TryParseFlexibleDouble(PrMetric1Entry.Text, out double metric1) || metric1 <= 0)
 		{
 			ShowError(PrStatusLabel, $"{_selectedPrExerciseItem.PrimaryLabel} is required.");
 			return null;
@@ -332,7 +332,7 @@ public partial class CalculationsPage : ContentPage
 		double? metric2 = null;
 		if (_selectedPrExerciseItem.HasSecondaryMetric)
 		{
-			if (!double.TryParse(PrMetric2Entry.Text, out double parsedMetric2) || parsedMetric2 <= 0)
+			if (!MetricInput.TryParseFlexibleDouble(PrMetric2Entry.Text, out double parsedMetric2) || parsedMetric2 <= 0)
 			{
 				ShowError(PrStatusLabel, $"{_selectedPrExerciseItem.SecondaryLabel} is required.");
 				return null;
@@ -344,13 +344,13 @@ public partial class CalculationsPage : ContentPage
 		double? gct = null;
 		if (_selectedPrExerciseItem.SupportsGroundContactTime && !string.IsNullOrWhiteSpace(PrGroundContactTimeEntry.Text))
 		{
-			if (!double.TryParse(PrGroundContactTimeEntry.Text, out double parsedGct) || parsedGct <= 0)
+			if (!MetricInput.TryParseFlexibleDouble(PrGroundContactTimeEntry.Text, out double parsedGctSeconds) || parsedGctSeconds <= 0)
 			{
 				ShowError(PrStatusLabel, "Ground contact time must be a positive number.");
 				return null;
 			}
 
-			gct = parsedGct;
+			gct = MetricInput.SecondsToMilliseconds(parsedGctSeconds);
 		}
 
 		return new PrEntry
@@ -417,7 +417,7 @@ public partial class CalculationsPage : ContentPage
 
 			if (entry.GroundContactTimeMs.HasValue)
 			{
-				text += $" | GCT {entry.GroundContactTimeMs.Value:0.##} ms";
+				text += $" | GCT {MetricInput.FormatSecondsFromMilliseconds(entry.GroundContactTimeMs.Value)}";
 			}
 
 			return text;
@@ -474,7 +474,9 @@ public partial class CalculationsPage : ContentPage
 		{
 			PrMetric1Entry.Text = item.Metric1Value?.ToString("0.##") ?? string.Empty;
 			PrMetric2Entry.Text = item.Metric2Value?.ToString("0.##") ?? string.Empty;
-			PrGroundContactTimeEntry.Text = item.GroundContactTimeMs?.ToString("0.##") ?? string.Empty;
+			PrGroundContactTimeEntry.Text = item.GroundContactTimeMs.HasValue
+				? MetricInput.MillisecondsToSeconds(item.GroundContactTimeMs.Value).ToString("0.##")
+				: string.Empty;
 		}
 		else
 		{
@@ -515,20 +517,20 @@ public partial class CalculationsPage : ContentPage
 	{
 		ClearLabel(RsiStatusLabel);
 
-		if (!double.TryParse(RsiJumpHeightEntry.Text, out double jumpHeightCm) || jumpHeightCm <= 0)
+		if (!MetricInput.TryParseFlexibleDouble(RsiJumpHeightEntry.Text, out double jumpHeightCm) || jumpHeightCm <= 0)
 		{
 			ShowError(RsiStatusLabel, "Jump height must be a positive number.");
 			return;
 		}
 
-		if (!double.TryParse(RsiGroundContactTimeEntry.Text, out double gctMs) || gctMs <= 0)
+		if (!MetricInput.TryParseFlexibleDouble(RsiGroundContactTimeEntry.Text, out double gctSeconds) || gctSeconds <= 0)
 		{
 			ShowError(RsiStatusLabel, "GCT must be a positive number.");
 			return;
 		}
 
-		double rsi = (jumpHeightCm / 100.0) / (gctMs / 1000.0);
-		RsiResultLabel.Text = $"RSI: {rsi:0.00} | Height {jumpHeightCm:0.##} cm | GCT {gctMs:0.##} ms";
+		double rsi = (jumpHeightCm / 100.0) / gctSeconds;
+		RsiResultLabel.Text = $"RSI: {rsi:0.00} | Height {jumpHeightCm:0.##} cm | GCT {gctSeconds:0.##} s";
 	}
 
 	private static double CalculateOneRm(int weightKg, int estimatedMaxReps)

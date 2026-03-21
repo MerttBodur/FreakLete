@@ -186,7 +186,7 @@
                                    Text="Timing"
                                    Style="{StaticResource BodyMuted}" />
                             <Entry x:Name="PerformanceTimingEntry"
-                                   Placeholder="Optional"
+                                   Placeholder="Optional (e.g. 1.96)"
                                    Keyboard="Numeric" />
                         </VerticalStackLayout>
 

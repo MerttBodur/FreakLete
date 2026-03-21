@@ -69,6 +69,10 @@
                                        FontSize="18" />
                                 <Label Text="{Binding HintText}"
                                        Style="{StaticResource BodyMuted}" />
+                                <Label Text="{Binding DetailSummary}"
+                                       Style="{StaticResource BodyMuted}"
+                                       LineBreakMode="WordWrap"
+                                       MaxLines="2" />
                             </VerticalStackLayout>
 
                             <Label Grid.Column="1"

@@ -164,11 +164,11 @@
                         <VerticalStackLayout x:Name="GroundContactTimeContainer"
                                              Spacing="8"
                                              IsVisible="False">
-                            <Label Text="Ground Contact Time (ms)"
+                            <Label Text="Ground Contact Time (s)"
                                    Style="{StaticResource BodyMuted}" />
                             <Entry x:Name="GroundContactTimeEntry"
                                    Keyboard="Numeric"
-                                   Placeholder="Optional" />
+                                   Placeholder="Optional (e.g. 1.96)" />
                         </VerticalStackLayout>
                     </VerticalStackLayout>
 

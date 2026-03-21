@@ -242,11 +242,11 @@
                                 <VerticalStackLayout x:Name="PrGctContainer"
                                                      Spacing="8"
                                                      IsVisible="False">
-                                    <Label Text="Ground Contact Time (ms)"
+                                    <Label Text="Ground Contact Time (s)"
                                            Style="{StaticResource BodyMuted}" />
                                     <Entry x:Name="PrGroundContactTimeEntry"
                                            Keyboard="Numeric"
-                                           Placeholder="Optional" />
+                                           Placeholder="Optional (e.g. 1.96)" />
                                 </VerticalStackLayout>
                             </VerticalStackLayout>
 
@@ -343,11 +343,11 @@
 
                                 <VerticalStackLayout Grid.Column="1"
                                                      Spacing="8">
-                                    <Label Text="GCT (ms)"
+                                    <Label Text="GCT (s)"
                                            Style="{StaticResource BodyMuted}" />
                                     <Entry x:Name="RsiGroundContactTimeEntry"
                                            Keyboard="Numeric"
-                                           Placeholder="Example: 185" />
+                                           Placeholder="Example: 0.21" />
                                 </VerticalStackLayout>
                             </Grid>
 

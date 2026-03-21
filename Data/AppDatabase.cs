@@ -1,4 +1,5 @@
 using GymTracker.Models;
+using GymTracker.Services;
 using SQLite;
 
 namespace GymTracker.Data;
@@ -33,6 +34,7 @@ public class AppDatabase
 		await _database.CreateTableAsync<AthleticPerformanceEntry>();
 		await _database.CreateTableAsync<MovementGoal>();
 		await _database.CreateTableAsync<ProfilePrEntry>();
+		await _database.CreateTableAsync<ExerciseDefinition>();
 
 		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.ExerciseCategory), "TEXT NOT NULL DEFAULT ''");
 		await EnsureColumnAsync(nameof(ExerciseEntry), nameof(ExerciseEntry.TrackingMode), $"TEXT NOT NULL DEFAULT '{nameof(ExerciseTrackingMode.Strength)}'");
@@ -57,6 +59,8 @@ public class AppDatabase
 		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.Metric2Unit), "TEXT NOT NULL DEFAULT ''");
 		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.GroundContactTimeMs), "REAL NULL");
 		await EnsureColumnAsync(nameof(PrEntry), nameof(PrEntry.ConcentricTimeSeconds), "REAL NULL");
+
+		await SeedExerciseDefinitionsAsync();
 	}
 
 	private async Task EnsureColumnAsync(string tableName, string columnName, string columnDefinition)
@@ -67,6 +71,68 @@ public class AppDatabase
 		{
 			await _database.ExecuteAsync($"ALTER TABLE [{tableName}] ADD COLUMN [{columnName}] {columnDefinition}");
 		}
+	}
+
+	private async Task SeedExerciseDefinitionsAsync()
+	{
+		List<ExerciseDefinition> definitions = ExerciseCatalog.GetAllItems()
+			.Select(item => new ExerciseDefinition
+			{
+				CatalogId = item.Id,
+				Name = item.Name,
+				DisplayName = item.DisplayName,
+				TurkishName = item.TurkishName,
+				EnglishName = item.EnglishName,
+				Category = item.Category,
+				SourceSection = item.SourceSection,
+				Force = item.Force,
+				Level = item.Level,
+				Mechanic = item.Mechanic,
+				Equipment = item.Equipment,
+				PrimaryMusclesText = string.Join(", ", item.PrimaryMuscles),
+				SecondaryMusclesText = string.Join(", ", item.SecondaryMuscles),
+				InstructionsText = string.Join(Environment.NewLine, item.Instructions),
+				TrackingMode = item.TrackingMode.ToString(),
+				PrimaryLabel = item.PrimaryLabel,
+				PrimaryUnit = item.PrimaryUnit,
+				SecondaryLabel = item.SecondaryLabel,
+				SecondaryUnit = item.SecondaryUnit,
+				SupportsGroundContactTime = item.SupportsGroundContactTime,
+				SupportsConcentricTime = item.SupportsConcentricTime,
+				MovementPattern = item.MovementPattern,
+				AthleticQuality = item.AthleticQuality,
+				SportRelevance = item.SportRelevance,
+				NervousSystemLoad = item.NervousSystemLoad,
+				GctProfile = item.GctProfile,
+				LoadPrescription = item.LoadPrescription,
+				CommonMistakes = item.CommonMistakes,
+				Progression = item.Progression,
+				Regression = item.Regression,
+				RecommendedRank = item.RecommendedRank
+			})
+			.ToList();
+
+		foreach (ExerciseDefinition definition in definitions)
+		{
+			await _database!.InsertOrReplaceAsync(definition);
+		}
+	}
+
+	public async Task<List<ExerciseDefinition>> GetExerciseDefinitionsByCategoryAsync(string category, int take = 20)
+	{
+		await InitAsync();
+		return await _database!.Table<ExerciseDefinition>()
+			.Where(item => item.Category == category)
+			.OrderBy(item => item.RecommendedRank)
+			.Take(take)
+			.ToListAsync();
+	}
+
+	public async Task<ExerciseDefinition?> GetExerciseDefinitionByNameAndCategoryAsync(string name, string category)
+	{
+		await InitAsync();
+		return await _database!.Table<ExerciseDefinition>()
+			.FirstOrDefaultAsync(item => item.Name == name && item.Category == category);
 	}
 
 	public async Task<int> CreateUserAsync(User user)

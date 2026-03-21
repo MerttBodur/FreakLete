@@ -1,0 +1,1773 @@
+--- PAGE 1 ---
+Athlete Workout Tracker Egzersiz Kataloğu
+Bu çıktı, yüklediğin .txt prompt’unda tanımlanan üç ana kategoriye göre (Strength / Hypertrophy /
+Athletic Performance) “önce overview → sonra egzersiz kartları → kategori sonu cross‑reference → en
+sonda sport matrix” akışını izler (promptta özellikle istenen alanlar ve çıktı formatı doğrultusunda). 
+flowchart TD
+  A[Egzersiz Kataloğu] --> B[STRENGTH: Maksimal Kuvvet]
+  A --> C[HYPERTROPHY: Kas Gelişimi]
+  A --> D[ATHLETIC PERFORMANCE: Performans]
+  B --> B1[Overview]
+  B --> B2[Egzersiz Kartları]
+  B --> B3[Cross-reference Tablosu]
+  C --> C1[Overview]
+  C --> C2[Egzersiz Kartları]
+  C --> C3[Cross-reference Tablosu]
+  D --> D1[Overview]
+  D --> D2[Egzersiz Kartları]
+  D --> D3[Cross-reference Tablosu]
+  A --> E[SPORT MATRIX: Spor x Kategori]
+Kanıta dayalı yük/tekrar referansları için National Strength and Conditioning Association (NSCA)
+1RM‑% ilişkisi tablosu ve genel S&C kaynakları; progresyon ve direnç antrenmanı reçeteleme çerçevesi
+için American College of Sports Medicine (ACSM) pozisyon metinleri; hipertrofi mekanizmaları ve
+yüklenme  önerileri  için  Brad  Schoenfeld çalışmalarının  özetlediği  “mekanik  gerilim  +  metabolik
+stres” çerçevesi kullanıldı. 
+Not:  Aşağıdaki  kartlar  bir  “egzersiz  kataloğu  +  koç  notları”  formatındadır;  kişiye  özel
+program  değildir .  Özellikle  1RM’ye  yakın  yükler ,  olimpik  türevler ,  pliometrik  ve
+deceleration  (frenleme)  içerikleri;  teknik  yeterlilik,  ısınma,  uygun  zemin/ekipman  ve
+gerektiğinde sağlık taraması gerektirir . 
+Strength
+Overview
+Amaç: 1–5  tekrar  aralığında,  yüksek  şiddetle  maksimal  kuvveti  artırmak  (nöromonar  adaptasyon
+ağırlıklı). Pratikte “ağır ama teknik bozulmadan”, uzun dinlenmeyle ve çok eklemli temel hareketlerle
+ilerler . 
+Yük/tekrar  referansı: 1–5  tekrar  genellikle  ~%80–100  1RM  bandına  denk  gelir;  1RM  değerinden
+yüzdelerle reçetelemek için NSCA yük tablosu pratik referanstır . 
+Dinlenme & kalite: Maksimal kuvvet hedefinde set arası dinlenme tipik olarak uzundur (çoğunlukla 2–5
+dk), amaç her tekrarın kaliteli, kontrollü ve “niyet olarak hızlı” olmasıdır (bar hızı niyeti). 
+1
+2
+3
+4
+5
+6
+7
+8
+1
+
+--- PAGE 2 ---
+Kadın/erkek  notu: Göreli  (relative)  kuvvet  ve  hipertrofi  adaptasyonları  genelde  benzerdir;  ancak
+kadınlarda  bazı  protokollerde  yorgunluğa  direnç/iyileşme  dinamikleri  farklılaşabilir .  Bu  nedenle  aynı
+%1RM ile mutlak kilogramlar değil, bireysel performans‑teknik kalitesi esas alınır . 
+U18 / Senior / Masters adaptasyon notu:
+U18’de  teknik  öğretim,  kontrollü  progresyon  ve  gözetim  önceliklidir;  düzgün  tasarlanmış  direnç
+antrenmanı güvenli ve faydalı olabilir . 
+Masters’ta (özellikle 35+ / 50+) yüklenme yine yapılır; ancak toparlanma, eklem toleransı ve toplam stres
+yönetimi daha kritik hâle gelir (ör . haftalık ağır set sayısı). 
+Egzersiz Kartları
+Arka Squat / Back Squat
+Movement Pattern: Squat
+Primary: Quadriceps, Glute
+Secondary: Adductors, Erectors, Core
+Equipment: Barbell + Rack
+Difficulty: Intermediate–Advanced
+Rep Range: 1–5
+Load Intensity: %80–95 1RM
+Key Cues: Brace; “kablo gibi” gövde; diz‑ayak aynı hat; orta taban itiş; kontrollü iniş
+Common Mistakes: Bel yuvarlama; diz valgus; kalça “shoot up”; topuk kalkması
+Progression: Pauseli Squat
+Regression: Goblet Squat
+Sport Relevance: Sprint, Amerikan futbolu, futbol, basketbol, güreş
+Injury Risk Notes: Bel/diz stresini teknik ve hacim yönetimiyle kontrol et
+Ön Squat / Front Squat
+Movement Pattern: Squat
+Primary: Quadriceps
+Secondary: Glute, Upper back, Core
+Equipment: Barbell + Rack
+Difficulty: Advanced
+Rep Range: 1–5
+Load Intensity: %80–92 1RM
+Key Cues: Dirsekler yüksek; gövde dik; ayak orta taban; nefes‑brace
+Common Mistakes: Dirsek düşmesi; gövde öne kapanma; topuk kalkması
+Progression: Pauseli Front Squat
+Regression: Goblet Squat + Heels‑elevated
+Sport Relevance: Sprint, halter türevleri, futbol/basketbol hız‑güç
+Injury Risk Notes: Bilek/dirsek toleransı; rack pozisyonu mobilitesi şart
+Box Squat / Box Squat
+Movement Pattern: Squat
+Primary: Glute, Quadriceps
+Secondary: Hamstrings, Core
+Equipment: Barbell + Box
+Difficulty: Advanced
+Rep Range: 1–5
+Load Intensity: %80–95 1RM (box yüksekliğine göre)
+Key Cues: Box’a “otur‑gevşeme yok”; shin kontrol; brace; patlayıcı kalk
+9
+10
+11
+2
+
+--- PAGE 3 ---
+Common Mistakes: Box’ta gevşeme; aşırı geriye atma; diz‑ayak hizası bozulması
+Progression: Box Squat (daha alçak)
+Regression: Tempo Squat (hafif)
+Sport Relevance: Güç sporları, saha sporları (posterior chain vurgusu)
+Injury Risk Notes: Aşırı yüksek yük + teknik bozulması bel stresini artırır
+Pauseli Squat / Pause Back Squat
+Movement Pattern: Squat
+Primary: Quadriceps, Glute
+Secondary: Core, Adductors
+Equipment: Barbell + Rack
+Difficulty: Advanced
+Rep Range: 1–4 (1–2 sn pause)
+Load Intensity: %75–90 1RM
+Key Cues: Dipte brace koru; kontrollü; “ölü noktadan” çık
+Common Mistakes: Pause’da gevşeme; bounce; bel yuvarlama
+Progression: Daha uzun pause / daha ağır
+Regression: Tempo Squat
+Sport Relevance: Sprint çıkışı, güreş “pozisyon tutma”
+Injury Risk Notes: Dip pozisyon toleransı (kalça/diz)
+Trap Bar Deadlift / Trap Bar Deadlift
+Movement Pattern: Hinge
+Primary: Glute, Quadriceps
+Secondary: Hamstrings, Upper back, Grip
+Equipment: Trap bar
+Difficulty: Intermediate–Advanced
+Rep Range: 1–5
+Load Intensity: %80–95 1RM
+Key Cues: Nötr omurga; “iterek kalk”; bar ortada; kilitte kalça sık
+Common Mistakes: Bel yuvarlama; kalça erken yükselme; omuz öne düşme
+Progression: Trap Bar DL (deficit)
+Regression: Kettlebell Deadlift
+Sport Relevance: Amerikan futbolu, sprint, rugby benzeri hız‑güç sporları
+Injury Risk Notes: Bel yüklenmesi—teknik + set hacmi kontrolü
+Konvansiyonel Deadlift / Conventional Deadlift
+Movement Pattern: Hinge
+Primary: Posterior chain (Glute/Hamstring), Back
+Secondary: Grip, Core
+Equipment: Barbell
+Difficulty: Advanced
+Rep Range: 1–5
+Load Intensity: %80–97 1RM
+Key Cues: Lat “kilitle”; bar kaval kemiğine yakın; brace; yerden “it”
+Common Mistakes: Bar uzak; bel rounding; kalça hızlı yükselme
+Progression: Deficit Deadlift
+Regression: Block Pull (yüksek)
+Sport Relevance: Güreş, dövüş sporları, güçlü posterior chain gerektiren tüm branşlar
+Injury Risk Notes: Bel stresini yönet; maksimale çok sık gitme
+3
+
+--- PAGE 4 ---
+Sumo Deadlift / Sumo Deadlift
+Movement Pattern: Hinge
+Primary: Glute, Adductors
+Secondary: Quadriceps, Back, Core
+Equipment: Barbell
+Difficulty: Advanced
+Rep Range: 1–5
+Load Intensity: %80–97 1RM
+Key Cues: Diz dışa; göğüs açık; bar yakın; kilitte kalça sık
+Common Mistakes: Diz içe kaçma; bar uzak; kilitte aşırı geriye yaslanma
+Progression: Pauseli Sumo (diz hizasında)
+Regression: Trap Bar DL
+Sport Relevance: Güç sporları, saha sporları (kalça‑adductor güçlü)
+Injury Risk Notes: Kalça/adductor toleransı; ısınma şart
+Romanian Deadlift / Romanian Deadlift
+Movement Pattern: Hinge
+Primary: Hamstrings, Glute
+Secondary: Erectors, Upper back, Grip
+Equipment: Barbell
+Difficulty: Intermediate–Advanced
+Rep Range: 3–5 (kuvvet odağı)
+Load Intensity: %80–90 1RM (RDL 1RM)
+Key Cues: Kalçayı geriye “gönder”; bar bacakta sürt; hamstring gerilimi; sırt nötr
+Common Mistakes: Diz fazla kırma; bar uzak; bel yuvarlama
+Progression: Deficit RDL / Tempo RDL ağır
+Regression: Hip hinge drill + hafif RDL
+Sport Relevance: Sprint (hamstring), futbol, Amerikan futbolu
+Injury Risk Notes: Hamstring çekiş hissi—ROM’u kontrol et
+Barbell Hip Thrust / Barbell Hip Thrust
+Movement Pattern: Hinge / Hip extension
+Primary: Glute max
+Secondary: Hamstrings, Core
+Equipment: Barbell + Bench
+Difficulty: Intermediate
+Rep Range: 2–5
+Load Intensity: %80–95 1RM
+Key Cues: Kaburga aşağı; pelvis nötr; tepede 1 sn sık; diz‑ayak hizalı
+Common Mistakes: Belden kaldırma; tepede hiperekstansiyon; ayak yanlış mesafe
+Progression: Pause Hip Thrust ağır
+Regression: Glute Bridge
+Sport Relevance: Sprint ivmelenme, sıçrama, saha sporları
+Injury Risk Notes: Bel hiperekstansiyonuna dikkat
+Bench Press / Barbell Bench Press
+Movement Pattern: Push
+Primary: Pectoralis major
+Secondary: Triceps, Anterior deltoid, Upper back stabilizasyon
+Equipment: Barbell + Bench
+Difficulty: Intermediate
+4
+
+--- PAGE 5 ---
+Rep Range: 1–5
+Load Intensity: %80–95 1RM
+Key Cues: Kürek kemikleri “set”; ayak sabit; bar yolu tutarlı; bilek nötr
+Common Mistakes: Omuz öne kaçma; kalça zıplatma; barı boyna indirme
+Progression: Paused Bench Press
+Regression: Dumbbell Bench Press
+Sport Relevance: Amerikan futbolu, dövüş sporlarında itiş gücü, genel üst gövde kuvveti
+Injury Risk Notes: Omuz ön kapsül—kontrollü ROM, scapula set
+Pauseli Bench Press / Paused Bench Press
+Movement Pattern: Push
+Primary: Chest
+Secondary: Triceps
+Equipment: Barbell
+Difficulty: Advanced
+Rep Range: 1–4 (1 sn pause)
+Load Intensity: %75–90 1RM
+Key Cues: Göğüste kontrol; pause’da gerginlik; patlayıcı it
+Common Mistakes: Göğüste gevşeme; bilek kırma
+Progression: Daha uzun pause / ağır
+Regression: Bench Press hafif
+Sport Relevance: Güç sporları, temas sporları
+Injury Risk Notes: Omuz konforu için tutuş genişliğini ayarla
+Incline Bench Press / Incline Barbell Bench Press
+Movement Pattern: Push
+Primary: Upper chest
+Secondary: Anterior deltoid, Triceps
+Equipment: Barbell + Incline bench
+Difficulty: Intermediate–Advanced
+Rep Range: 2–5
+Load Intensity: %80–92 1RM
+Key Cues: Kürek “set”; dirsek açısı kontrollü; bar üst göğüs hattı
+Common Mistakes: Aşırı omuz yükü; bel aşırı ark
+Progression: Paused Incline
+Regression: Incline DB Press
+Sport Relevance: Atıcılık/itiş (temas sporları), üst gövde kuvveti
+Injury Risk Notes: Omuz sıkışması riskine dikkat
+Ayakta Overhead Press / Standing Barbell Overhead Press
+Movement Pattern: Push
+Primary: Deltoids
+Secondary: Triceps, Upper back, Core
+Equipment: Barbell
+Difficulty: Advanced
+Rep Range: 1–5
+Load Intensity: %80–92 1RM
+Key Cues: Kaburga aşağı; kalça sık; barı “yüzün etrafından” geçir; kilitte kulağın üstü
+Common Mistakes: Belden itme; barı öne kaçırma; boyun uzatma
+Progression: Pin Press (overhead)
+Regression: Seated DB Press
+5
+
+--- PAGE 6 ---
+Sport Relevance: Güreş/dövüş clinch, jimnastik, saha sporları temas gücü
+Injury Risk Notes: Omuz mobilitesi + core kontrol şart
+Dar Tutuş Bench / Close-Grip Bench Press
+Movement Pattern: Push
+Primary: Triceps
+Secondary: Chest
+Equipment: Barbell
+Difficulty: Advanced
+Rep Range: 2–5
+Load Intensity: %80–90 1RM
+Key Cues: Dirsekler vücuda yakın; bilek nötr; kontrollü iniş
+Common Mistakes: Dirsek aşırı açma; omuzu öne kaçırma
+Progression: Board Press ağır
+Regression: Triceps Pushdown (kuvvet)
+Sport Relevance: İtiş gücü + triceps (Amerikan futbolu, dövüş)
+Injury Risk Notes: Dirsek/omuz toleransı
+Floor Press / Floor Press
+Movement Pattern: Push
+Primary: Chest, Triceps
+Secondary: Anterior deltoid
+Equipment: Barbell
+Difficulty: Advanced
+Rep Range: 1–5
+Load Intensity: %80–95 1RM
+Key Cues: Omuz set; kontrollü temas; patlayıcı it
+Common Mistakes: Dirseği zemine “çakma”; bilek kırma
+Progression: Paused Floor Press
+Regression: Dumbbell Floor Press
+Sport Relevance: Lockout gücü, temas sporları
+Injury Risk Notes: Dirsek/omuz teması kontrollü olmalı
+Ağırlıklı Barfiks / Weighted Pull-Up
+Movement Pattern: Pull
+Primary: Lats
+Secondary: Biceps, Lower traps, Core
+Equipment: Bodyweight + Dip belt
+Difficulty: Advanced
+Rep Range: 1–5
+Load Intensity: Ek yük ile 1–5RM (yaklaşık %80–95)
+Key Cues: Göğüs bar’a; scapula depresyon; kontrollü eksantrik
+Common Mistakes: Kipping; boyundan çekme; yarım ROM
+Progression: Chest-to-bar weighted
+Regression: Assisted Pull-Up / Lat Pulldown
+Sport Relevance: Jimnastik, güreş, tırmanma, yüzme çekişi
+Injury Risk Notes: Dirsek/biceps tendonu—yük artışını kademeli yap
+Ağırlıklı Chin-Up / Weighted Chin-Up
+Movement Pattern: Pull
+Primary: Lats + Biceps
+6
+
+--- PAGE 7 ---
+Secondary: Mid back, Core
+Equipment: Bodyweight + Dip belt
+Difficulty: Advanced
+Rep Range: 1–5
+Load Intensity: Ek yük ile 1–5RM
+Key Cues: Dirsekleri aşağı‑geriye çek; tam askıdan başla; kontrollü dönüş
+Common Mistakes: Gövde savurma; omuz öne düşme
+Progression: Slow eccentric weighted
+Regression: Band‑assisted Chin-Up
+Sport Relevance: Çekiş gücü (güreş/dövüş), tırmanış
+Injury Risk Notes: Biceps tendonu/dirsek
+Pendlay Row / Pendlay Row
+Movement Pattern: Pull
+Primary: Mid back (rhomboids, traps)
+Secondary: Lats, Posterior delts, Core
+Equipment: Barbell
+Difficulty: Advanced
+Rep Range: 2–5
+Load Intensity: %80–90 1RM
+Key Cues: Gövde paralel; her tekrar zeminden; lat‑scap “çek”
+Common Mistakes: Belden sallama; barı göğse değil bele çekme
+Progression: Paused Pendlay Row
+Regression: Chest‑Supported Row
+Sport Relevance: Duruş, çekiş gücü, temas sporları
+Injury Risk Notes: Bel hinge toleransı; form bozulursa değiştir
+Ağırlıklı Dip / Weighted Dip
+Movement Pattern: Push
+Primary: Triceps, Lower chest
+Secondary: Anterior deltoid
+Equipment: Parallel bars + Dip belt
+Difficulty: Advanced–Elite
+Rep Range: 1–5
+Load Intensity: Ek yük ile 1–5RM
+Key Cues: Omuzları aşağı‑geriye; kontrollü derinlik; dirsek hattı sabit
+Common Mistakes: Omuzu öne düşürme; çok derin ROM’da ağrı; sallanma
+Progression: Ring Dip weighted (çok ileri)
+Regression: Assisted Dip / Push‑Up
+Sport Relevance: Jimnastik, temas sporları itişi
+Injury Risk Notes: Omuz ön kapsül—ROM’u kişi toleransına göre ayarla
+Good Morning / Barbell Good Morning
+Movement Pattern: Hinge
+Primary: Hamstrings, Erectors
+Secondary: Glute, Upper back
+Equipment: Barbell
+Difficulty: Elite
+Rep Range: 2–5
+Load Intensity: %75–85 1RM (genelde daha konservatif)
+Key Cues: Brace; kalça geriye; nötr omurga; ROM kontrol
+7
+
+--- PAGE 8 ---
+Common Mistakes: Bel yuvarlama; çok ağır yük; diz kilitleme
+Progression: Pause Good Morning
+Regression: RDL
+Sport Relevance: Posterior chain kuvveti (sprint, saha sporları)
+Injury Risk Notes: Bel stresine duyarlı—yük ve ROM’u konservatif tut
+Bulgarian Split Squat / Bulgarian Split Squat
+Movement Pattern: Squat (unilateral)
+Primary: Quadriceps, Glute
+Secondary: Adductors, Core
+Equipment: Dumbbell/Barbell + Bench
+Difficulty: Intermediate–Advanced
+Rep Range: 3–5 (kuvvet odağı)
+Load Intensity: %80–90 (tek bacak “5RM” algısı)
+Key Cues: Ön ayakta orta taban; diz‑ayak hizalı; gövde kontrollü
+Common Mistakes: Diz içe; denge kaybı; arka ayak “itme”
+Progression: Front‑rack split squat ağır
+Regression: Split squat (yer)
+Sport Relevance: Sprint, futbol/basketbol (tek bacak kuvveti)
+Injury Risk Notes: Diz önü ağrısında ROM’u ayarla
+Ağırlıklı Step‑Up / Weighted Step-Up
+Movement Pattern: Squat / Step
+Primary: Quadriceps, Glute
+Secondary: Hamstrings, Calves, Core
+Equipment: Dumbbell/Barbell + Box
+Difficulty: Intermediate
+Rep Range: 3–5
+Load Intensity: %80–90 (tek bacak 3–5RM)
+Key Cues: Kutuyu “çekme” değil “it”; kalça hizası; diz kontrol
+Common Mistakes: Arkadaki bacakla aşırı destek; diz içe
+Progression: High step‑up + heavier
+Regression: Low step‑up bodyweight
+Sport Relevance: Saha sporları, merdiven/çıkış kuvveti
+Injury Risk Notes: Diz stabilitesi—yük artışı kademeli
+Tek Bacak RDL / Single-Leg Romanian Deadlift
+Movement Pattern: Hinge (unilateral)
+Primary: Hamstrings, Glute med/max
+Secondary: Core, Foot/ankle stabilizers
+Equipment: Dumbbell/KB
+Difficulty: Intermediate–Advanced
+Rep Range: 3–5 (kuvvet odağı)
+Load Intensity: Ağır ama denge bozulmadan (yaklaşık %80–90)
+Key Cues: Kalça “kapat‑aç”; pelvis düz; bakış sabit; hamstring gerilimi
+Common Mistakes: Kalça açılması; bel dönmesi; dengeyi kaybetmek
+Progression: Barbell single‑leg RDL (ileri)
+Regression: Kickstand RDL
+Sport Relevance: Sprint, futbol, ACL/hamstring risk yönetimi için tek bacak kontrol
+Injury Risk Notes: Hamstring gerilimi—ROM’u stopla
+8
+
+--- PAGE 9 ---
+Farmer’s Carry / Farmers Carry
+Movement Pattern: Carry
+Primary: Grip, Upper back
+Secondary: Core, Legs (isometric)
+Equipment: Farmer handles / Dumbbells
+Difficulty: Intermediate–Advanced
+Rep Range: 10–40 m (veya 20–60 sn)
+Load Intensity: Çok ağır (RPE 8–9)
+Key Cues: Omuzlar aşağı; “uzun” duruş; kısa‑hızlı adım; nefes kontrol
+Common Mistakes: Omuzları yükseltme; yana eğilme; adım bozulması
+Progression: Heavier / longer carries
+Regression: Suitcase carry (tek taraf hafif)
+Sport Relevance: Amerikan futbolu, güreş, dövüş (tutuş + gövde sertliği)
+Injury Risk Notes: Bel yan stabilizasyonu—yükü artırırken tekniği koru
+Yoke Carry / Yoke Carry
+Movement Pattern: Carry
+Primary: Total body bracing
+Secondary: Hips, Quads, Upper back
+Equipment: Yoke
+Difficulty: Elite
+Rep Range: 10–30 m
+Load Intensity: Çok ağır (RPE 8–10)
+Key Cues: Brace; kısa adım; “sarsmadan” yürü; göz ileri
+Common Mistakes: Acele; adım çapraz; belde “salınım”
+Progression: Heavier / faster
+Regression: Farmer’s Carry
+Sport Relevance: Strongman, Amerikan futbolu “drive” hissi, genel sertlik
+Injury Risk Notes: Yük çok yüksek—toparlanmayı iyi yönet
+Heavy Sled Push / Ağır Sled İtme
+Movement Pattern: Carry/Push (locomotion)
+Primary: Quads, Glute
+Secondary: Calves, Core
+Equipment: Sled
+Difficulty: Intermediate–Advanced
+Rep Range: 10–30 m
+Load Intensity: Ağır (hız düşük ama form bozulmadan)
+Key Cues: Gövde açı; tam ayak itiş; kollar sabit; ritim
+Common Mistakes: Bel çökmesi; kısa itiş; diz içe
+Progression: Daha ağır / daha uzun mesafe
+Regression: Hafif sled push (hız odak)
+Sport Relevance: Futbol/AF “drive”, sprint ivmelenme destek
+Injury Risk Notes: Diz‑bel toleransı; yüksek hacimle kombine etme
+Sandbag Bear Hug Carry / Sandbag Sarma Taşıma
+Movement Pattern: Carry
+Primary: Core, Upper back
+Secondary: Hips, Grip
+Equipment: Sandbag
+Difficulty: Intermediate–Advanced
+9
+
+--- PAGE 10 ---
+Rep Range: 10–40 m
+Load Intensity: Ağır (RPE 8–9)
+Key Cues: Torbayı “kilitle”; kaburga aşağı; kısa adım
+Common Mistakes: Belden bükülme; nefesin dağılması
+Progression: Sandbag load to platform
+Regression: Lighter carry
+Sport Relevance: Güreş/dövüş “sarılma” kuvveti, temas sporları
+Injury Risk Notes: Bel flexion’a kaçma—yük seçimi kritik
+Log Press / Strongman Log Press
+Movement Pattern: Push
+Primary: Shoulders, Triceps
+Secondary: Upper back, Core, Legs (clean phase)
+Equipment: Log
+Difficulty: Elite
+Rep Range: 1–5
+Load Intensity: %80–92 (log 1RM)
+Key Cues: Log clean’de kalça yakın; press’te brace; kilitte “stack”
+Common Mistakes: Belden itme; bilek/dirsek kötü rack; kontrolsüz iniş
+Progression: Heavier log / strict log press
+Regression: Standing OHP
+Sport Relevance: Strongman, temas sporlarında “üstten itiş” güçlü
+Injury Risk Notes: Omuz‑bel stresini yönet; teknik öğrenmeden ağırlaşma
+İzometrik Mid‑Thigh Pull / Isometric Mid-Thigh Pull
+Movement Pattern: Isometric
+Primary: Posterior chain + total body force
+Secondary: Grip, Upper back, Core
+Equipment: Rack + Bar + Straps (opsiyonel) + Force plate (opsiyonel)
+Difficulty: Advanced–Elite
+Rep Range: 3–6 sn maksimal çekiş × 3–6 set
+Load Intensity: Maksimal istemli kasılma (MVC) / bar sabit
+Key Cues: Brace; ayak basıncı; “her şeyi aynı anda çek”; boyun nötr
+Common Mistakes: Yumuşak başlangıç; bel pozisyonu kaçması
+Progression: Daha yüksek set / daha kısa dinlenme (ileri)
+Regression: Isometric hinge hold (hafif)
+Sport Relevance: Sprint/power üretimi, test‑takip için iyi
+Injury Risk Notes: Çok yüksek gerilim—ısınma şart
+İzometrik Squat (Rack/Pins) / Isometric Squat (Pins)
+Movement Pattern: Isometric
+Primary: Quads, Glute
+Secondary: Core, Adductors
+Equipment: Rack + Bar/Pins
+Difficulty: Advanced
+Rep Range: 3–6 sn maksimal itiş × 3–6 set
+Load Intensity: MVC (bar/pins sabit) veya “çok ağır” statik
+Key Cues: Dizi‑ayak hizala; brace; “zemini it”
+Common Mistakes: Diz içe; bel pozisyonu bozulması
+Progression: Daha derin açı / daha uzun süre
+Regression: Wall sit (daha düşük şiddet)
+10
+
+--- PAGE 11 ---
+Sport Relevance: Güreş, rugby/AF “pozisyon tutma”, sprint çıkışı
+Injury Risk Notes: Diz açısında ağrı varsa açı değiştir
+Strength Cross‑Reference Tablosu
+Programlama
+amacı Birlikte programlanabilir (örnek)Çakışma / overtraining riski (örnek)
+Total‑body max
+güç
+Back Squat + Bench Press +
+Weighted Pull‑Up
+Back Squat ağır + Yoke Carry çok ağır
+(aynı gün)
+Posterior chain
+ağır
+Trap Bar DL + Hip Thrust + Farmer’s
+Carry
+Conventional DL ağır + Good Morning
+ağır (aynı gün)
+Unilateral kuvvetBulgarian Split Squat + Single‑Leg
+RDL
+Unilateral ağır + Sled Push yüksek
+hacim (diz/kalça stres)
+Overhead itiş Standing OHP + Log Press (düşük
+toplam hacim)
+OHP ağır + Dip ağır (omuz/dirsek
+toleransı)
+Isometric “sinir
+sistemi”
+Isometric Mid‑Thigh Pull +
+Isometric Squat (az set)
+Isometric gün + deadlift günleri çok
+sık (toparlanma)
+Hypertrophy
+Overview
+Amaç: 6–20 tekrar aralığında (çoğunlukla 6–12 bandına vurgu) mekanik gerilim + metabolik stres ile kas
+kütlesi artırmak. 
+Genel  reçete: Yükler  periodize  edilebilir;  kısa‑orta  dinlenmeler  (çoğu  izolasyonda  45–90  sn,
+compound’larda 90–150 sn) ve yeterli toplam hacim kritik olur . 
+Tempo/TUT: Hipertrofide  kontrollü  eksantrik  ve  “hedef  kasa”  gerilim  taşıma  işe  yarayan  pratik  bir
+yaklaşımdır; ancak tempo tek başına mucize değildir—esas belirleyiciler toplam set‑yakınlık‑yoğunluk
+yönetimidir . (Tempo burada uygulama standardizasyonu için verilmiştir .) 
+Bodybuilding vs Athletic Hypertrophy (genel):
+Bodybuilding  yaklaşımı  daha  çok  lokal  yorgunluk,  pump  ve  kas  izolasyonunu  büyütürken;  athletic
+hypertrophy eklem toleransı, dinamik performansın bozulmaması ve sezon içi yük yönetimiyle “gerekli
+kası, gereksiz bedeli ödemeden” almayı hedefler . 
+Kadın/erkek  notu: Direnç  antrenmanına  yanıtlar  genelde  benzerdir;  dolayısıyla  egzersiz  seçimi  ve
+progresyon prensipleri iki cinsiyette de geçerlidir (bireysel tolerans değişebilir). 
+Egzersiz Kartları
+Dumbbell Bench Press / Dumbbell Bench Press
+Target: Primary Chest / Secondary Triceps / Tertiary Anterior delt
+Isolation vs Compound: Compound
+Equipment: Dumbbell + Bench
+Difficulty: Beginner–Intermediate
+12
+13
+14
+15
+16
+11
+
+--- PAGE 12 ---
+Optimal Rep Range: 6–12
+Tempo: 3:0:1:0
+TUT: 30–50 sn/set
+Cues: Kürek set; DB’ler kontrollü; dirsek 45°
+Mistakes: Omuz öne kaçma; DB’leri çarpma
+Variations: Incline DB Press; Neutral‑grip DB Press; Floor DB Press
+Antagonist Pair: Seated Cable Row
+Sport Relevance: Temas sporları, üst gövde dayanıklılığı
+BB vs Athletic: BB’de failure’a yakın; atletikte 1–3 RIR + omuz sağlığı öncelik
+Incline DB Press / Incline Dumbbell Press
+Target: Primary Upper chest / Secondary Delts / Tertiary Triceps
+Isolation vs Compound: Compound
+Equipment: Dumbbell + Incline bench
+Difficulty: Intermediate
+Optimal Rep Range: 8–15
+Tempo: 3:0:1:0
+TUT: 35–55 sn/set
+Cues: Kürek set; ROM kontrollü; boyun rahat
+Mistakes: Çok dik açı → omuz baskın
+Variations: Low‑incline; Neutral grip; Smith incline press
+Antagonist Pair: Lat Pulldown
+Sport Relevance: İtiş hacmi (AF, dövüş sporları)
+BB vs Athletic: Atletikte omuz sıkışması riskine göre açı/ROM seç
+Cable Fly / Cable Chest Fly
+Target: Primary Chest / Secondary Anterior delt / Tertiary Serratus
+Isolation vs Compound: Isolation
+Equipment: Cable
+Difficulty: Beginner
+Optimal Rep Range: 10–20
+Tempo: 2:1:2:0
+TUT: 40–60 sn/set
+Cues: Dirsek hafif kırık; göğüste gerilim; tepede sık
+Mistakes: Omuz öne; ROM fazla açıp ekleme yük
+Variations: Low‑to‑high; High‑to‑low; Single‑arm fly
+Antagonist Pair: Face Pull
+Sport Relevance: Üst gövde hacmi/denge
+BB vs Athletic: Atletikte omuz önüne yük bindirmeden “kontrollü pump”
+Machine Chest Press / Machine Chest Press
+Target: Primary Chest / Secondary Triceps / Tertiary Delts
+Isolation vs Compound: Compound (guided)
+Equipment: Machine
+Difficulty: Beginner
+Optimal Rep Range: 8–15
+Tempo: 2:0:2:0
+TUT: 30–55 sn/set
+Cues: Scapula set; tam temas; nefes/brace
+Mistakes: Omuz kalkık; kısmi ROM
+Variations: Single‑arm; Incline machine press; Tempo press
+12
+
+--- PAGE 13 ---
+Antagonist Pair: Seated Cable Row
+Sport Relevance: Sezon içi “daha güvenli” itiş hacmi
+BB vs Athletic: Atletikte eklem dostu volüm aracı
+Seated DB Shoulder Press / Seated Dumbbell Shoulder Press
+Target: Primary Delts / Secondary Triceps / Tertiary Upper chest
+Isolation vs Compound: Compound
+Equipment: Dumbbell + Bench
+Difficulty: Intermediate
+Optimal Rep Range: 6–12
+Tempo: 2:0:2:0
+TUT: 30–45 sn/set
+Cues: Kaburga aşağı; DB’ler kulak hizası; kontrollü iniş
+Mistakes: Belden itme; dirsek aşırı açma
+Variations: Arnold press; Neutral grip; Machine shoulder press
+Antagonist Pair: Rear Delt Fly
+Sport Relevance: Omuz kuvvet‑hacim (temas sporları)
+BB vs Athletic: Atletikte boyun/omuz sıkışması varsa ROM’u ayarla
+DB Lateral Raise / Dumbbell Lateral Raise
+Target: Primary Lateral delt / Secondary Upper traps / Tertiary Supraspinatus
+Isolation vs Compound: Isolation
+Equipment: Dumbbell
+Difficulty: Beginner
+Optimal Rep Range: 12–20
+Tempo: 2:1:2:0
+TUT: 45–70 sn/set
+Cues: Hafif öne eğil; dirsek “lider”; omuzu yükseltme
+Mistakes: Salınım; trap’le çekme
+Variations: Lean‑away; Partial reps top‑range; Machine lateral raise
+Antagonist Pair: Face Pull
+Sport Relevance: Omuz dayanıklılığı/estetik denge
+BB vs Athletic: Atletikte omuz sağlığı için düşük eklem stresiyle yüksek tekrar
+Cable Lateral Raise / Cable Lateral Raise
+Target: Primary Lateral delt / Secondary Upper traps / Tertiary Core stabilizasyon
+Isolation vs Compound: Isolation
+Equipment: Cable
+Difficulty: Beginner
+Optimal Rep Range: 12–20
+Tempo: 2:1:2:0
+TUT: 45–70 sn/set
+Cues: Sürekli gerilim; küçük salınım; scapula aşağı
+Mistakes: Gövdeyi yana kırma
+Variations: Behind‑the‑back; Cross‑body; Seated cable raise
+Antagonist Pair: Seated Cable Row
+Sport Relevance: Omuz hacmi (kontrollü)
+BB vs Athletic: Atletikte form bozulmadan “süreklilik”
+Triceps Pushdown / Cable Triceps Pushdown
+Target: Primary Triceps / Secondary Forearm / Tertiary Shoulder stabilizasyon
+13
+
+--- PAGE 14 ---
+Isolation vs Compound: Isolation
+Equipment: Cable
+Difficulty: Beginner
+Optimal Rep Range: 10–20
+Tempo: 2:0:2:0
+TUT: 35–60 sn/set
+Cues: Dirsek sabit; son kısım sık; omuz aşağı
+Mistakes: Gövdeyi öne atma; dirsek açıp kapama
+Variations: Rope; V‑bar; Single‑arm
+Antagonist Pair: Cable Curl
+Sport Relevance: Kilitleme gücü/dirsek dayanıklılığı
+BB vs Athletic: Atletikte dirsek sağlığı için orta yük‑yüksek kontrol
+Overhead Triceps Extension / Overhead Triceps Extension
+Target: Primary Long head triceps / Secondary Triceps / Tertiary Core
+Isolation vs Compound: Isolation
+Equipment: Cable / Dumbbell
+Difficulty: Intermediate
+Optimal Rep Range: 10–15
+Tempo: 3:0:1:0
+TUT: 35–55 sn/set
+Cues: Kaburga aşağı; dirsekler sabit; tam geril‑tam sık
+Mistakes: Belden kaçma; dirsek açısı bozulması
+Variations: Rope cable; Single‑arm cable; Seated DB
+Antagonist Pair: Incline DB Curl
+Sport Relevance: Temas sporları (kol kuvveti)
+BB vs Athletic: Atletikte omuz rahatsızsa kablo açısını değiştir
+Pec Deck / Machine Fly
+Target: Primary Chest / Secondary Anterior delt / Tertiary Serratus
+Isolation vs Compound: Isolation
+Equipment: Machine
+Difficulty: Beginner
+Optimal Rep Range: 10–20
+Tempo: 2:1:2:0
+TUT: 40–60 sn/set
+Cues: Omuzlar aşağı; göğüs açık; kontrollü eksantrik
+Mistakes: Omuz öne; ROM aşırı
+Variations: Reverse pec deck (rear delt); Single‑arm; Partial stretch‑range
+Antagonist Pair: Reverse Pec Deck
+Sport Relevance: Omuz‑göğüs dengeleme
+BB vs Athletic: Atletikte omuz sağlığını bozmadan izolasyon
+Lat Pulldown / Lat Pulldown
+Target: Primary Lats / Secondary Biceps / Tertiary Mid back
+Isolation vs Compound: Compound (guided)
+Equipment: Machine/Cable
+Difficulty: Beginner
+Optimal Rep Range: 8–15
+Tempo: 2:1:2:0
+TUT: 35–55 sn/set
+14
+
+--- PAGE 15 ---
+Cues: Göğüs yukarı; scapula depresyon; bar üst göğse
+Mistakes: Gövdeyi aşırı geriye atma; kısmi ROM
+Variations: Neutral grip; Single‑arm; Close‑grip
+Antagonist Pair: DB Bench Press
+Sport Relevance: Yüzme, güreş, çekiş sporları
+BB vs Athletic: Atletikte omuz sıkışması varsa tutuş/ROM değiştir
+Seated Cable Row / Seated Cable Row
+Target: Primary Mid back / Secondary Lats / Tertiary Biceps
+Isolation vs Compound: Compound
+Equipment: Cable
+Difficulty: Beginner
+Optimal Rep Range: 8–15
+Tempo: 2:1:2:0
+TUT: 35–55 sn/set
+Cues: Gövde sabit; scapula “çek‑bırak”; dirsek geriye
+Mistakes: Belden sallama; omuz yükseltme
+Variations: Close‑grip; Wide handle; Single‑arm
+Antagonist Pair: Cable Fly
+Sport Relevance: Postür , temas sporları, yüzme
+BB vs Athletic: Atletikte bel dostu, stabil row tercih
+Chest‑Supported Row / Chest-Supported Row
+Target: Primary Mid back / Secondary Rear delts / Tertiary Biceps
+Isolation vs Compound: Compound
+Equipment: Machine/DB bench
+Difficulty: Intermediate
+Optimal Rep Range: 8–15
+Tempo: 2:1:2:0
+TUT: 35–55 sn/set
+Cues: Göğüs destek; çekişte scapula; kontrollü indir
+Mistakes: Boyundan çekme; yarım ROM
+Variations: DB chest‑supported; Machine row; T‑bar chest supported
+Antagonist Pair: Incline DB Press
+Sport Relevance: Yorgunken bile form korunur (sezon içi iyi)
+BB vs Athletic: Atletikte bel yükünü azaltan row seçimi
+One‑Arm DB Row / One-Arm Dumbbell Row
+Target: Primary Lats / Secondary Mid back / Tertiary Biceps
+Isolation vs Compound: Compound
+Equipment: Dumbbell
+Difficulty: Intermediate
+Optimal Rep Range: 8–15
+Tempo: 2:1:2:0
+TUT: 35–55 sn/set
+Cues: Kalça‑gövde sabit; dirseği “kalçaya” çek
+Mistakes: Gövde dönmesi; DB’yi kısaltma
+Variations: Bench‑supported; Meadows row; Cable 1‑arm row
+Antagonist Pair: Seated DB Shoulder Press
+Sport Relevance: Tek taraflı çekiş dengesi (güreş, dövüş)
+BB vs Athletic: Atletikte core kontrolünü de eğitir
+15
+
+--- PAGE 16 ---
+Face Pull / Cable Face Pull
+Target: Primary Rear delts / Secondary Lower traps / Tertiary Rotator cuff
+Isolation vs Compound: Isolation
+Equipment: Cable
+Difficulty: Beginner
+Optimal Rep Range: 12–20
+Tempo: 2:1:2:0
+TUT: 45–70 sn/set
+Cues: Dirsekler yüksek; “yüz‑kulak” hattı; scapula aşağı‑geriye
+Mistakes: Belden çekme; omuz yükseltme
+Variations: Rope; Band; High‑to‑low face pull
+Antagonist Pair: Lateral Raise
+Sport Relevance: Omuz sağlığı, atış/temas sporları
+BB vs Athletic: Atletikte “prehab + hipertrofi” hibriti
+Rear Delt Fly / Rear Delt Fly
+Target: Primary Rear delts / Secondary Rhomboids / Tertiary Rotator cuff
+Isolation vs Compound: Isolation
+Equipment: Dumbbell/Machine
+Difficulty: Beginner
+Optimal Rep Range: 12–20
+Tempo: 2:1:2:0
+TUT: 45–70 sn/set
+Cues: Kürek kontrol; boyun rahat; küçük ağırlık‑temiz form
+Mistakes: Trap ile çekme; belden sallama
+Variations: Reverse pec deck; Cable rear fly; Bent‑over DB fly
+Antagonist Pair: DB Bench Press
+Sport Relevance: Omuz dengesi, yüzme/atış sporları
+BB vs Athletic: Atletikte omuz stabilizasyonunu güçlendirir
+Barbell Curl / Barbell Curl
+Target: Primary Biceps / Secondary Forearm / Tertiary Brachialis
+Isolation vs Compound: Isolation
+Equipment: Barbell/EZ bar
+Difficulty: Beginner
+Optimal Rep Range: 8–15
+Tempo: 2:0:2:0
+TUT: 30–55 sn/set
+Cues: Dirsek sabit; kontrollü eksantrik; tam ROM
+Mistakes: Sallama; omuzla kaldırma
+Variations: EZ curl; Strict curl (wall); Cable curl
+Antagonist Pair: Triceps Pushdown
+Sport Relevance: Tutuş/çekiş sporları, dirsek dayanıklılığı
+BB vs Athletic: Atletikte eklem dostu form; aşırı cheat’ten kaçın
+Incline DB Curl / Incline Dumbbell Curl
+Target: Primary Biceps long head / Secondary Forearm / Tertiary Brachialis
+Isolation vs Compound: Isolation
+Equipment: Dumbbell + Incline bench
+Difficulty: Intermediate
+Optimal Rep Range: 10–15
+16
+
+--- PAGE 17 ---
+Tempo: 3:0:1:0
+TUT: 35–60 sn/set
+Cues: Omuz geride; dirsek sabit; tam esneme
+Mistakes: Omuz öne; yarım ROM
+Variations: Alternating; Supinating; Cable incline curl
+Antagonist Pair: Overhead Triceps Extension
+Sport Relevance: Çekiş sporları
+BB vs Athletic: Atletikte tendon yükünü artırmadan kontrollü uygula
+Hammer Curl / Hammer Curl
+Target: Primary Brachialis/Brachioradialis / Secondary Biceps / Tertiary Forearm
+Isolation vs Compound: Isolation
+Equipment: Dumbbell
+Difficulty: Beginner
+Optimal Rep Range: 10–20
+Tempo: 2:0:2:0
+TUT: 35–70 sn/set
+Cues: Nötr bilek; dirsek sabit; kontrollü indir
+Mistakes: Sallama; bileği bükme
+Variations: Cross‑body; Rope hammer curl; Incline hammer
+Antagonist Pair: Rope Pushdown
+Sport Relevance: Tutuş gücü, güreş/dövüş
+BB vs Athletic: Atletikte dirsek‑önkol dayanıklılığını destekler
+Cable Curl / Cable Curl
+Target: Primary Biceps / Secondary Forearm / Tertiary Brachialis
+Isolation vs Compound: Isolation
+Equipment: Cable
+Difficulty: Beginner
+Optimal Rep Range: 12–20
+Tempo: 2:1:2:0
+TUT: 45–70 sn/set
+Cues: Sürekli gerilim; dirsek sabit; tepede sık
+Mistakes: Omuzla çekme; kısmi ROM
+Variations: Single‑arm; High cable curl; EZ cable curl
+Antagonist Pair: Triceps Pushdown
+Sport Relevance: Kol dayanıklılığı
+BB vs Athletic: Atletikte düşük eklem stresiyle hacim
+Leg Press / Leg Press
+Target: Primary Quads / Secondary Glute / Tertiary Hamstrings
+Isolation vs Compound: Compound (guided)
+Equipment: Machine
+Difficulty: Beginner
+Optimal Rep Range: 8–20
+Tempo: 3:0:1:0
+TUT: 35–70 sn/set
+Cues: Bel destek; diz‑ayak hizası; kontrollü derinlik
+Mistakes: Kalça “lift”; diz içe; çok kısa ROM
+Variations: High‑feet (glute); Narrow stance (quad); Single‑leg
+Antagonist Pair: Lying Leg Curl
+17
+
+--- PAGE 18 ---
+Sport Relevance: Saha sporlarında bacak hacmi (eklem dostu)
+BB vs Athletic: Atletikte bel/diz toleransına göre ayak pozisyonu
+Hack Squat / Hack Squat
+Target: Primary Quads / Secondary Glute / Tertiary Calves
+Isolation vs Compound: Compound (guided)
+Equipment: Machine
+Difficulty: Intermediate
+Optimal Rep Range: 6–15
+Tempo: 3:0:1:0
+TUT: 30–55 sn/set
+Cues: Diz takip; bel destek; iniş kontrollü
+Mistakes: Diz içe; topuk kalk
+Variations: Heels‑elevated; Pause bottom; 1.5 reps
+Antagonist Pair: Seated Leg Curl
+Sport Relevance: Quad hacmi + diz çevresi dayanıklılık
+BB vs Athletic: Atletikte diz ağrısında ROM/tempo ayarla
+Leg Extension / Leg Extension
+Target: Primary Quads / Secondary — / Tertiary —
+Isolation vs Compound: Isolation
+Equipment: Machine
+Difficulty: Beginner
+Optimal Rep Range: 12–20
+Tempo: 2:1:2:0
+TUT: 45–70 sn/set
+Cues: Tepede sık; kontrollü indir; diz ekseni sabit
+Mistakes: Çok ağır; “tekme” gibi
+Variations: Single‑leg; Partial top‑range; Tempo slow
+Antagonist Pair: Leg Curl
+Sport Relevance: Diz çevresi kuvvet‑hacim (kontrollü)
+BB vs Athletic: Atletikte sezon içi düşük sistemik yorgunlukla quad hacmi
+DB Romanian Deadlift / Dumbbell Romanian Deadlift
+Target: Primary Hamstrings/Glute / Secondary Erectors / Tertiary Grip
+Isolation vs Compound: Compound
+Equipment: Dumbbell
+Difficulty: Intermediate
+Optimal Rep Range: 8–15
+Tempo: 3:0:1:0
+TUT: 35–60 sn/set
+Cues: Kalça geriye; hamstring gerilimi; DB bacak yakın
+Mistakes: Bel rounding; diz aşırı kırma
+Variations: Barbell RDL; Single‑leg RDL; Cable pull‑through
+Antagonist Pair: Leg Extension
+Sport Relevance: Sprint hamstring dayanıklılığı (hacim)
+BB vs Athletic: Atletikte hamstringi büyütürken koşu kalitesini bozma
+Lying Leg Curl / Lying Leg Curl
+Target: Primary Hamstrings / Secondary Calves / Tertiary Glute
+Isolation vs Compound: Isolation
+18
+
+--- PAGE 19 ---
+Equipment: Machine
+Difficulty: Beginner
+Optimal Rep Range: 10–20
+Tempo: 2:1:2:0
+TUT: 40–70 sn/set
+Cues: Kalça sabit; tam sık; kontrollü eksantrik
+Mistakes: Kalçayı kaldırma; momentum
+Variations: Seated curl; Single‑leg; Drop set
+Antagonist Pair: Leg Press
+Sport Relevance: Sakatlık yönetimi için hamstring hacmi
+BB vs Athletic: Atletikte koşu günleriyle çakıştırma (DOMS kontrol)
+Glute Drive / Hip Thrust Machine
+Target: Primary Glutes / Secondary Hamstrings / Tertiary Core
+Isolation vs Compound: Compound (guided)
+Equipment: Machine
+Difficulty: Beginner–Intermediate
+Optimal Rep Range: 8–15
+Tempo: 2:1:2:0
+TUT: 35–55 sn/set
+Cues: Tepede 1 sn; kaburga aşağı; pelvis nötr
+Mistakes: Bel hiperekstansiyon; kısa ROM
+Variations: Barbell hip thrust; B‑stance; Pause‑reps
+Antagonist Pair: DB RDL
+Sport Relevance: Sprint/itme sporları kalça hacmi
+BB vs Athletic: Atletikte glute hacmi + performans transferi iyi
+Standing Calf Raise / Standing Calf Raise
+Target: Primary Gastrocnemius / Secondary Soleus / Tertiary Foot stabilizers
+Isolation vs Compound: Isolation
+Equipment: Machine/Smith
+Difficulty: Beginner
+Optimal Rep Range: 8–20
+Tempo: 2:1:2:0
+TUT: 35–70 sn/set
+Cues: Tam esneme; tepede sık; yavaş indir
+Mistakes: Zıplama; kısmi ROM
+Variations: Single‑leg; Donkey raise; Smith calf raise
+Antagonist Pair: Tibialis raises (prehab)
+Sport Relevance: Sprint/atlama ayak bileği dayanıklılığı
+BB vs Athletic: Atletikte ayak bileği kapasitesini destekler
+Hip Abduction Machine / Hip Abduction
+Target: Primary Glute med/min / Secondary TFL / Tertiary Core
+Isolation vs Compound: Isolation
+Equipment: Machine
+Difficulty: Beginner
+Optimal Rep Range: 12–25
+Tempo: 2:1:2:0
+TUT: 45–90 sn/set
+Cues: Pelvis sabit; tepede sık; kontrollü dönüş
+19
+
+--- PAGE 20 ---
+Mistakes: Momentum; bel dönmesi
+Variations: Banded lateral walk; Cable abduction; Side‑lying abduction
+Antagonist Pair: Adductor plank (Copenhagen)
+Sport Relevance: Diz‑kalça stabilitesi (saha sporları)
+BB vs Athletic: Atletikte “yan kalça” stabilitesi performans için kritik
+Cable Crunch / Cable Crunch
+Target: Primary Rectus abdominis / Secondary Obliques / Tertiary Hip flexors
+Isolation vs Compound: Isolation
+Equipment: Cable
+Difficulty: Beginner
+Optimal Rep Range: 10–20
+Tempo: 2:1:2:0
+TUT: 35–70 sn/set
+Cues: Kaburga aşağı; omurgadan “kıvır”; kalça sabit
+Mistakes: Kalçadan bükme; boynu çekme
+Variations: Kneeling; Standing; Rope high‑to‑low crunch
+Antagonist Pair: Back extension (hip hinge)
+Sport Relevance: Temas sporları “trunk” dayanıklılığı
+BB vs Athletic: Atletikte core hacmi + brace kapasitesi
+Hanging Knee Raise / Hanging Knee Raise
+Target: Primary Lower abs / Secondary Hip flexors / Tertiary Grip
+Isolation vs Compound: Compound core
+Equipment: Pull‑up bar
+Difficulty: Intermediate
+Optimal Rep Range: 8–15
+Tempo: 2:0:2:0
+TUT: 30–55 sn/set
+Cues: Pelvis posterior tilt; sallanma yok; kontrollü indir
+Mistakes: Salınım; kalçayı kullanmama
+Variations: Straight‑leg raise; Captains chair; Toes‑to‑bar (ileri)
+Antagonist Pair: Hyperextension
+Sport Relevance: Jimnastik, koşu mekaniği (core)
+BB vs Athletic: Atletikte kontrollü core; aşırı swing’ten kaçın
+Hypertrophy Cross‑Reference Tablosu
+Programlama
+amacı
+Birlikte programlanabilir
+(örnek) Çakışma / risk (örnek)
+Push‑Pull
+superset
+Cable Fly + Seated Cable
+Row
+Aynı gün çok fazla press varyasyonu → omuz
+yorgunluğu
+Omuz sağlığı Lateral Raise + Face PullLateral raise’ı ağır‑cheat yapmak → boyun/trap
+baskın
+Kol superset Triceps Pushdown + Cable
+Curl Dirsek ağrısı varsa toplam kol hacmini azalt
+Quad‑Ham
+dengesi Leg Extension + Leg CurlYoğun koşu/sprint gününden önce ağır
+hamstring curl DOMS
+20
+
+--- PAGE 21 ---
+Programlama
+amacı
+Birlikte programlanabilir
+(örnek) Çakışma / risk (örnek)
+Core + hinge Cable Crunch + DB RDLBel yorgunken hinge formu bozulabilir
+Athletic Performance
+Overview
+Amaç: Güç  (power),  hız,  çeviklik,  patlayıcılık,  koordinasyon,  denge,  reaktif  kuvvet  ve  özellikle  saha
+sporları için “deceleration (frenleme) kapasitesi” gibi atletik nitelikleri geliştirmek. Agility, sadece yön
+değiştirme değil; “uyarıya yanıtla hız/yön değiştiren hızlı bütün‑vücut hareketi” olarak tanımlanır . 
+Güç  (power)  yükleri: Power  odaklı  direnç  çalışmalarında  hafif‑orta  yükler  yüksek  hız  niyetiyle
+kullanılabilir (ör . alt gövde için 0–60% 1RM bandı gibi), ayrıca olimpik türevler ve çekiş varyasyonları
+“yüksek güç çıktısı” üretmede sıklıkla kullanılır . 
+Pliometrik  prensip: Pliometrik  antrenman  stretch‑shortening  cycle  (SSC)  üzerinden  çalışır;  hızlı
+eksantrik → kısa amortizasyon → hızlı konsantrik geçiş performans için kritiktir . 
+Dozaj (basit kural): Pliometrikte “daha çok” her zaman daha iyi değildir; düşük‑orta hacimle (ör . 3–6 set
+× 2–5 tekrar gibi) kaliteli temaslar çoğu durumda yeterlidir . 
+Deceleration & sakatlık riski: Keskin frenleme ve agresif yön değiştirmeler yüksek çok‑düzlemli diz
+yükleri yaratabilir; bu yüzden deceleration kapasitesi hem performans hem sakatlık risk yönetimi için
+ayrıca planlanır . 
+Resisted sprint (slede) notu: Sled sprintlerde yük seçimi, sprint mekaniğini aşırı bozmayacak şekilde
+yapılmalı; bazı yaklaşımlar hız kaybı (velocity decrement) ile reçetelemeyi önerir ve “çok ağır yükler” de
+belirli amaçlarla (ivmelenme profili) kullanılabilir . 
+U18 / Senior / Masters adaptasyon: U18’de pliometrik ve hız içeriklerinde progresyon ve teknik (iniş
+mekaniği, yüzey seçimi) önceliklidir . 
+Masters’ta reaktif/çok sert temaslar ve yoğun decel hacmi kademeli artırılmalı; güç‑hız korunumu için
+düşük hacim yüksek kalite tercih edilir . 
+Egzersiz Kartları
+Power Clean / Power Clean
+Athletic Quality: Power ✓ Explosiveness ✓ Coordination ✓ Reactive Strength ✓
+Movement Plane: Sagittal (multi‑joint)
+Primary Chain: Triple extension (ayak bileği‑diz‑kalça) + upper back
+Equipment: Barbell + plates
+Difficulty: Advanced–Elite
+Volume/Intensity: 3–6 set × 1–3 rep @ ~%70–85 (teknik hızlı)
+Key Cues: Bar yakın; “dikey sıçra”; hızlı dirsek; sağlam rack
+Mistakes: Barı uzak çekme; erken kol çekişi; kötü rack
+GCT: —
+Force Vector: Vertical
+Progressions/Regressions: Hang power clean → power clean / Kettlebell swing (reg)
+17
+18
+19
+20
+21
+22
+23
+24
+21
+
+--- PAGE 22 ---
+Sport Specificity: Sprint, futbol, AF, basketbol
+Phase: Off‑Season / Pre‑Season
+Pairing: Front squat veya heavy squat ile kompleks
+Hang Power Clean / Hang Power Clean
+Athletic Quality: Power ✓ Explosiveness ✓ Coordination ✓
+Movement Plane: Sagittal
+Primary Chain: Posterior chain + triple extension
+Equipment: Barbell
+Difficulty: Advanced
+Volume/Intensity: 3–5 × 2–3 rep @ ~%60–80
+Cues: Diz üstünden “patlat”; bar yakın; hızlı dirsek
+Mistakes: Kalçayı erken açma; barı “süpürmeme”
+GCT: —
+Force Vector: Vertical
+Progressions/Regressions: High hang → mid‑hang / Jump shrug (reg)
+Sport Specificity: Saha sporları, sprinter
+Phase: Pre‑Season / In‑Season (düşük hacim)
+Pairing: Trap bar DL (hafif) veya squat
+Power Snatch / Power Snatch
+Athletic Quality: Power ✓ Coordination ✓ Mobility ✓
+Movement Plane: Sagittal
+Primary Chain: Triple extension + overhead stability
+Equipment: Barbell
+Difficulty: Elite
+Volume/Intensity: 4–6 × 1–2 rep @ ~%70–85
+Cues: Bar close; hızlı “turnover”; kilitte stabil
+Mistakes: Overhead instabilite; bar yolu bozuk
+GCT: —
+Force Vector: Vertical
+Progressions/Regressions: Hang power snatch / DB snatch (reg)
+Sport Specificity: Sprint, atlama branşları, saha sporları
+Phase: Off‑Season / Pre‑Season
+Pairing: Overhead strength (push press), posterior chain
+Hang Power Snatch / Hang Power Snatch
+Athletic Quality: Power ✓ Coordination ✓
+Movement Plane: Sagittal
+Primary Chain: Triple extension + shoulder stability
+Equipment: Barbell
+Difficulty: Advanced–Elite
+Volume/Intensity: 3–5 × 2 rep @ ~%60–80
+Cues: Diz üstünden patlat; “yukarı çek‑altına gir”
+Mistakes: Erken kol; bar uzak
+GCT: —
+Force Vector: Vertical
+Progressions/Regressions: High hang → hang / DB snatch (reg)
+Sport Specificity: Sprint, tenis (overhead kapasite)
+Phase: Pre‑Season
+Pairing: Squat jump / CMJ ile kontrast
+22
+
+--- PAGE 23 ---
+Push Jerk / Push Jerk
+Athletic Quality: Power ✓ Explosiveness ✓ Coordination ✓
+Movement Plane: Sagittal
+Primary Chain: Legs → overhead transfer
+Equipment: Barbell
+Difficulty: Advanced
+Volume/Intensity: 4–6 × 1–3 rep @ ~%70–85
+Cues: Dip dik; hızlı drive; ayak “catch”
+Mistakes: Dip öne; press’e dönmek; kilitte yumuşak
+GCT: —
+Force Vector: Vertical
+Progressions/Regressions: Push press (reg) / Split jerk (prog)
+Sport Specificity: Basketbol, AF, dövüş sporları (üstten güç aktarımı)
+Phase: Off‑Season / Pre‑Season
+Pairing: Overhead press kuvvet günüyle
+Split Jerk / Split Jerk
+Athletic Quality: Power ✓ Coordination ✓ Stability ✓
+Movement Plane: Sagittal
+Primary Chain: Legs + overhead stability
+Equipment: Barbell
+Difficulty: Elite
+Volume/Intensity: 4–6 × 1–2 rep @ ~%75–90
+Cues: Uzun split; ön diz kontrollü; kilitte “stack”
+Mistakes: Dar split; ön diz içe; bar öne kaçma
+GCT: —
+Force Vector: Vertical
+Progressions/Regressions: Push jerk (reg) / Jerk from blocks (prog)
+Sport Specificity: Halter türevleri, temas sporları üstten kuvvet
+Phase: Off‑Season
+Pairing: Front squat + jerk kompleks
+Clean Pull / Clean Pull
+Athletic Quality: Power ✓ Explosiveness ✓
+Movement Plane: Sagittal
+Primary Chain: Posterior chain + triple extension
+Equipment: Barbell
+Difficulty: Advanced
+Volume/Intensity: 3–5 × 2–4 rep @ ~%80–110 (clean 1RM referans)
+Cues: Bar close; güçlü “finish”; omuz yükselt
+Mistakes: Çok erken kol; bar uzak
+GCT: —
+Force Vector: Vertical
+Progressions/Regressions: High pull (prog) / Trap bar jump (reg)
+Sport Specificity: Sprint, AF, futbol (RFD)
+Phase: Off‑Season / Pre‑Season
+Pairing: Squat + jump kombinleri
+Jump Shrug / Jump Shrug
+Athletic Quality: Power ✓ Explosiveness ✓ Reactive Strength ✓
+Movement Plane: Sagittal
+23
+
+--- PAGE 24 ---
+Primary Chain: Triple extension
+Equipment: Barbell
+Difficulty: Intermediate–Advanced
+Volume/Intensity: 3–6 × 3 rep @ ~%30–60 (hız odak)
+Cues: Gerçek sıçra; omuz silkme geç; bar close
+Mistakes: Dizleri kullanmama; sırf omuzla silkme
+GCT: —
+Force Vector: Vertical
+Progressions/Regressions: Hang high pull (prog) / DB jump shrug (reg)
+Sport Specificity: Sprint, basketbol, AF
+Phase: Pre‑Season / In‑Season (düşük hacim)
+Pairing: Trap bar deadlift veya squat sonrası kontrast
+Kutu Sıçrama / Box Jump
+Athletic Quality: Explosiveness ✓ Power ✓ Coordination ✓
+Movement Plane: Sagittal
+Primary Chain: Legs + landing control
+Equipment: Box
+Difficulty: Beginner–Intermediate
+Volume/Intensity: 3–6 × 2–5 rep (tam dinlenme)
+Cues: “Sessiz iniş”; diz‑ayak hizası; tam güç çıkış
+Mistakes: Yorgunken çok tekrar; kötü iniş
+GCT: Genelde “slow SSC” (hedef: güvenli iniş)
+Force Vector: Vertical
+Progressions/Regressions: Higher box / step‑up jump (reg)
+Sport Specificity: Basketbol, voleybola benzer branşlar , genel patlayıcılık
+Phase: Off‑Season / Pre‑Season
+Pairing: Back squat (ağır) sonrası düşük hacim
+CMJ / Countermovement Jump
+Athletic Quality: Power ✓ Explosiveness ✓
+Movement Plane: Sagittal
+Primary Chain: Triple extension
+Equipment: Bodyweight (opsiyonel jump mat)
+Difficulty: Beginner
+Volume/Intensity: 3–6 × 3–5 rep (tam dinlenme)
+Cues: Hızlı dip; sert çıkış; iniş stabilize
+Mistakes: Çok yorulup zıplama kalitesini düşürmek
+GCT: Slow SSC
+Force Vector: Vertical
+Progressions/Regressions: Loaded CMJ (prog) / squat jump (reg)
+Sport Specificity: Sprint, basketbol, futbol
+Phase: Pre‑Season / Peaking
+Pairing: Olympic derivative + CMJ kontrast
+Derinlik Sıçraması / Depth Jump
+Athletic Quality: Reactive Strength ✓ Explosiveness ✓
+Movement Plane: Sagittal
+Primary Chain: Ankle‑knee stiffness + posterior chain
+Equipment: Box
+Difficulty: Advanced–Elite
+24
+
+--- PAGE 25 ---
+Volume/Intensity: 3–6 × 2–4 rep (uzun dinlenme)
+Cues: Zeminde “kısa temas”; rebound; diz kontrollü
+Mistakes: Yüksek kutu; uzun temas; diz içe
+GCT: Hedef “fast SSC” (<~250 ms)
+Force Vector: Vertical
+Progressions/Regressions: Higher drop / drop landing (reg)
+Sport Specificity: Sprint, atlama, basketbol
+Phase: Pre‑Season / Peaking
+Pairing: Heavy squat sonrası (az hacim, yüksek kalite) 
+Uzak Atlama Sıçraması / Broad Jump
+Athletic Quality: Power ✓ Explosiveness ✓
+Movement Plane: Sagittal
+Primary Chain: Posterior chain (horizontal)
+Equipment: Bodyweight
+Difficulty: Beginner–Intermediate
+Volume/Intensity: 3–6 × 2–4 rep
+Cues: Kalçadan yükle; kollar; “ileri‑yukarı” it
+Mistakes: İnişte diz kontrolsüz; çok tekrar
+GCT: Slow SSC (iniş kontrol)
+Force Vector: Horizontal
+Progressions/Regressions: Multiple bounds (prog) / standing long jump to stick (reg)
+Sport Specificity: Sprint ivmelenme, futbol/AF
+Phase: Off‑Season / Pre‑Season
+Pairing: Deadlift türevleriyle kompleks
+Snap Down / Drop Landing (Stick Landing)
+Athletic Quality: Deceleration ✓ Stability ✓ Coordination ✓
+Movement Plane: Sagittal (multi‑planar kontrol)
+Primary Chain: Landing mechanics (hips‑knees‑ankles)
+Equipment: Bodyweight
+Difficulty: Beginner
+Volume/Intensity: 3–5 × 3–5 rep (kalite)
+Cues: “Sessiz iniş”; diz‑ayak; kalça geriye; gövde kontrol
+Mistakes: Diz valgus; sert‑kontrolsüz iniş
+GCT: — (hedef kontrol)
+Force Vector: Vertical
+Progressions/Regressions: Drop jump (prog) / squat to stick (reg)
+Sport Specificity: Basketbol, futbol, AF (iniş/frenleme)
+Phase: Off‑Season / Pre‑Season / In‑Season (düşük hacim)
+Pairing: COD gününden önce teknik hazırlık 
+Alternating Bounds / Alt Bacak Bounding
+Athletic Quality: Speed ✓ Power ✓ Coordination ✓
+Movement Plane: Sagittal
+Primary Chain: Posterior chain + stiffness
+Equipment: Bodyweight / track
+Difficulty: Advanced
+Volume/Intensity: 3–6 × 10–30 m
+Cues: Ritm; kalça yüksek; aktif ayak; postür
+Mistakes: “Oturmak”; topukla basmak; form bozulması
+25
+26
+25
+
+--- PAGE 26 ---
+GCT: Fast‑SSC niyeti (kısa temas)
+Force Vector: Horizontal
+Progressions/Regressions: Faster / longer / marching bounds (reg)
+Sport Specificity: Sprint, futbol kanat/receiver profili
+Phase: Pre‑Season
+Pairing: Resisted sprint + bounds (aynı gün düşük hacim)
+Skater Jump / Lateral Bound
+Athletic Quality: Agility ✓ Explosiveness ✓ Deceleration ✓
+Movement Plane: Frontal
+Primary Chain: Glute med + lateral knee control
+Equipment: Bodyweight
+Difficulty: Intermediate
+Volume/Intensity: 3–5 × 4–8/side
+Cues: “Stick” iniş; diz hizası; gövde dengede
+Mistakes: Diz içe; kontrolsüz iniş
+GCT: Orta (kontrol öncelik)
+Force Vector: Lateral
+Progressions/Regressions: Reactive bounds (prog) / side step to stick (reg)
+Sport Specificity: Basketbol, tenis, futbol (lateral)
+Phase: Off‑Season / Pre‑Season
+Pairing: Copenhagen plank + lateral bounds
+Med Ball Chest Pass / Medicine Ball Chest Pass
+Athletic Quality: Power ✓ Explosiveness ✓ Coordination ✓
+Movement Plane: Transverse/Sagittal (hedefe göre)
+Primary Chain: Upper body power transfer
+Equipment: Medicine ball + wall/partner
+Difficulty: Beginner
+Volume/Intensity: 4–8 × 3–5 throw (tam dinlenme)
+Cues: “Hızlı fırlat”; gövde sert; ayak‑kalça transfer
+Mistakes: Yorgunken hız düşmesi; omuzla itme
+GCT: —
+Force Vector: Horizontal
+Progressions/Regressions: Heavier MB / kneeling pass (reg)
+Sport Specificity: Basketbol pas, AF itiş, dövüş
+Phase: Pre‑Season / In‑Season
+Pairing: Bench press + MB pass kompleks
+Med Ball Overhead Slam / Overhead Slam
+Athletic Quality: Power ✓ Explosiveness ✓
+Movement Plane: Sagittal
+Primary Chain: Lats + core + hip hinge
+Equipment: Medicine ball
+Difficulty: Beginner
+Volume/Intensity: 4–8 × 3–6 slam
+Cues: Kaburga aşağı; kalçayı kullan; “sert” vur
+Mistakes: Belden bükülmek; kontrolsüz yakalama
+GCT: —
+Force Vector: Vertical (downward)
+Progressions/Regressions: Rotational slam / lighter ball
+26
+
+--- PAGE 27 ---
+Sport Specificity: Dövüş sporları, güreş, genel core güç
+Phase: Off‑Season / Pre‑Season
+Pairing: RDL/hinge günü
+Rotational Scoop Toss / Rotational Throw (Scoop Toss)
+Athletic Quality: Rotational Power ✓ Coordination ✓
+Movement Plane: Transverse
+Primary Chain: Hips‑core‑shoulder “kinetic chain”
+Equipment: Medicine ball + wall
+Difficulty: Intermediate
+Volume/Intensity: 4–8 × 3–5/side
+Cues: Kalçadan başlat; omuz takip; hızlı ama kontrollü
+Mistakes: Sadece kolla atmak; bel dönmesini abartmak
+GCT: —
+Force Vector: Rotational
+Progressions/Regressions: Step‑in throw (prog) / tall‑kneeling throw (reg)
+Sport Specificity: Tenis, beyzbol benzeri, futbol şut/turn, dövüş
+Phase: Pre‑Season / In‑Season
+Pairing: Landmine rotation / anti‑rotation core
+Overhead Backward Throw / Med Ball Overhead Backward Throw
+Athletic Quality: Explosiveness ✓ Power ✓
+Movement Plane: Sagittal
+Primary Chain: Posterior chain + trunk
+Equipment: Medicine ball
+Difficulty: Intermediate
+Volume/Intensity: 4–6 × 2–4 throw
+Cues: Kalçadan yükle; hızlı triple extension; güvenli alan
+Mistakes: Belden koparma; kontrolsüz
+GCT: —
+Force Vector: Vertical/Diagonal
+Progressions/Regressions: Heavier ball / lighter ball
+Sport Specificity: Sprint, atlama, AF “total power”
+Phase: Off‑Season / Pre‑Season
+Pairing: Jump shrug / CMJ
+Wall Drive Series / Wall Drill (A‑position Drive)
+Athletic Quality: Speed ✓ Coordination ✓
+Movement Plane: Sagittal
+Primary Chain: Hip flexor/extension timing + trunk
+Equipment: Wall
+Difficulty: Beginner
+Volume/Intensity: 2–4 × 5–10/side (veya 10–20 sn)
+Cues: “Rib‑down”; postür; diz 90°; aktif ayak bileği
+Mistakes: Bel boşaltma; diz düşük; topuk düşürme
+GCT: —
+Force Vector: Horizontal (mekanik hazırlık)
+Progressions/Regressions: Switches faster / marching slower
+Sport Specificity: Sprint, futbol/AF ivmelenme
+Phase: Off‑Season / Pre‑Season
+Pairing: Resisted sled march/sprint
+27
+
+--- PAGE 28 ---
+A‑Skip / A‑Skip Drill
+Athletic Quality: Speed ✓ Coordination ✓
+Movement Plane: Sagittal
+Primary Chain: Hip flexion + stiffness
+Equipment: Track/space
+Difficulty: Beginner
+Volume/Intensity: 2–6 × 10–30 m
+Cues: Postür; diz‑ayak ritmi; aktif iniş
+Mistakes: Topukla basma; “oturma”
+GCT: —
+Force Vector: Horizontal/Vertical (mekanik)
+Progressions/Regressions: A‑run (prog) / A‑march (reg)
+Sport Specificity: Sprint, saha sporları
+Phase: Off‑Season / Pre‑Season
+Pairing: Flying sprint öncesi primer
+Wicket Run / Wicket Run (Mini Engelli Koşu)
+Athletic Quality: Speed ✓ Coordination ✓
+Movement Plane: Sagittal
+Primary Chain: Stride patterning
+Equipment: Mini hurdles/wickets
+Difficulty: Intermediate
+Volume/Intensity: 4–8 koşu (20–40 m)
+Cues: Kalça yüksek; “over‑stride yok”; ritim
+Mistakes: Adımı uzatmak; omuz‑kol gergin
+GCT: —
+Force Vector: Horizontal
+Progressions/Regressions: Daha dar aralık / sadece fast‑leg drills
+Sport Specificity: Sprinter , receiver/wing profili
+Phase: Pre‑Season / Peaking
+Pairing: Light plyometrics + wicket
+Resisted Sled Sprint / Sled Sprint (Dirençli)
+Athletic Quality: Speed ✓ Power ✓ Acceleration ✓
+Movement Plane: Sagittal
+Primary Chain: Horizontal force production
+Equipment: Sled + harness
+Difficulty: Intermediate–Advanced
+Volume/Intensity: 4–10 × 10–30 m; tam dinlenme
+Cues: Postür; güçlü itiş; adım frekansı; kalça kilit
+Mistakes: Çok ağır yük → mekanik bozulma; bel çökmesi
+GCT: —
+Force Vector: Horizontal
+Progressions/Regressions: Daha ağır (ama kontrollü) / sled march (reg)
+Sport Specificity: Futbol, AF, rugby benzeri, sprinter ivmelenme
+Phase: Off‑Season / Pre‑Season
+Pairing: Horizontal jumps (broad jump) 
+5‑10‑5 / Pro Agility (Shuttle)
+Athletic Quality: Agility ✓ Deceleration ✓ Coordination ✓
+Movement Plane: Multi‑planar
+27
+28
+
+--- PAGE 29 ---
+Primary Chain: Braking + re‑acceleration mechanics
+Equipment: Cones
+Difficulty: Intermediate
+Volume/Intensity: 4–10 tekrar; tam dinlenme
+Cues: Alçak kalça; “penultimate” kontrol; göz‑gövde hizası
+Mistakes: Diz içe; frenlemeyi son adıma bırakma
+GCT: —
+Force Vector: Lateral/Horizontal
+Progressions/Regressions: Reaktif komutlu (prog) / önceden planlı (reg)
+Sport Specificity: Futbol, basketbol, AF, tenis
+Phase: Pre‑Season / In‑Season (düşük hacim)
+Pairing: Deceleration drill + Copenhagen plank 
+Sprint‑to‑Stop / Deceleration Drill (Frenleme)
+Athletic Quality: Deceleration ✓ Stability ✓
+Movement Plane: Sagittal (+ kontrol multi)
+Primary Chain: Braking (quads + posterior chain) + trunk
+Equipment: Cones/space
+Difficulty: Intermediate
+Volume/Intensity: 4–8 tekrar (10–20 m hızlan + 5–10 m fren)
+Cues: Frenlemeyi “yay”; kalça geriye; diz kontrol; kısa adım
+Mistakes: Ani kilitleme; diz valgus; bel kontrolsüz
+GCT: —
+Force Vector: Horizontal (braking)
+Progressions/Regressions: Daha yüksek hız (prog) / daha kısa hızlanma (reg)
+Sport Specificity: Takım sporları, ACL risk yönetimi
+Phase: Off‑Season / Pre‑Season
+Pairing: Squat pattern + landing drills 
+Reactive Mirror Drill / Ayna Reaktif Shuffle
+Athletic Quality: Agility ✓ Coordination ✓ Reactive ✓
+Movement Plane: Frontal/Multi
+Primary Chain: Lateral hips + trunk control
+Equipment: Partner/space
+Difficulty: Intermediate
+Volume/Intensity: 4–8 × 8–15 sn (tam dinlenme)
+Cues: “Sessiz” ayak; alçak kalça; göz‑gövde hazır
+Mistakes: Dik duruş; ayak çapraz; kontrolsüz fren
+GCT: —
+Force Vector: Lateral
+Progressions/Regressions: Daha hızlı uyaran (prog) / planlı shuffle (reg)
+Sport Specificity: Basketbol, tenis, futbol
+Phase: Pre‑Season / In‑Season (az hacim)
+Pairing: Lateral bound + mirror
+Nordic Hamstring / Nordic Hamstring Exercise
+Athletic Quality: Injury resilience ✓ Strength ✓ (eccentric)
+Movement Plane: Sagittal
+Primary Chain: Hamstrings (eccentric)
+Equipment: Partner/Nordic bench
+Difficulty: Intermediate–Advanced
+28
+29
+29
+
+--- PAGE 30 ---
+Volume/Intensity: 2–4 set × 4–8 rep (progresif)
+Cues: Kalça düz; kontrollü düş; “ellerle” minimum destek
+Mistakes: Kalçayı kırma; çok hızlı düşme; aşırı hacim
+GCT: —
+Force Vector: —
+Progressions/Regressions: Daha fazla ROM / band‑assisted (reg)
+Sport Specificity: Sprint, futbol, AF (hamstring sakatlığı)
+Phase: Off‑Season / Pre‑Season (in‑season düşük hacim)
+Pairing: RDL / sprint günleriyle çakıştırma yönetimi
+Copenhagen Plank / Copenhagen Side Plank
+Athletic Quality: Stability ✓ Injury resilience ✓
+Movement Plane: Frontal
+Primary Chain: Adductors + trunk lateral stability
+Equipment: Bench/box
+Difficulty: Intermediate
+Volume/Intensity: 2–4 set × 10–30 sn/side
+Cues: Kalça yüksek; omuz‑kalça‑ayak hizası; nefes
+Mistakes: Kalça düşmesi; bel dönmesi
+GCT: —
+Force Vector: Lateral (isometric)
+Progressions/Regressions: Longer lever (prog) / short‑lever (reg)
+Sport Specificity: Futbol, buz hokeyi benzeri, saha sporları, güreş
+Phase: Off‑Season / Pre‑Season / In‑Season (düşük hacim)
+Pairing: Lateral bound + COD günleri
+L‑Sit / L‑Sit Hold
+Athletic Quality: Stability ✓ Coordination ✓ Strength ✓
+Movement Plane: Isometric (sagittal control)
+Primary Chain: Core + hip flexors + shoulder depression
+Equipment: Parallettes/rings (opsiyonel)
+Difficulty: Advanced
+Volume/Intensity: 3–6 set × 10–30 sn
+Cues: Omuzları aşağı; dizleri kilitle; pelvis posterior tilt
+Mistakes: Omuz yükseltme; bel çökmesi; nefes tutma
+GCT: —
+Force Vector: —
+Progressions/Regressions: V‑sit (prog) / tuck L‑sit (reg)
+Sport Specificity: Jimnastik, dövüş sporları, genel trunk sertliği
+Phase: Off‑Season / Pre‑Season
+Pairing: Pull‑up + dips (hacim kontrollü)
+Athletic Performance Cross‑Reference Tablosu
+Amaç Birlikte programlanabilir
+(örnek) Çakışma / risk (örnek)
+Power + kuvvet
+transferi
+Power Clean + Front Squat
+(kompleks)
+Olimpik türev + ağır hinge çok yüksek
+hacim (bel/toparlanma)
+30
+30
+
+--- PAGE 31 ---
+Amaç Birlikte programlanabilir
+(örnek) Çakışma / risk (örnek)
+Reactive güç Depth Jump + Heavy Squat
+(az set)
+Çok yüksek pliometrik temas + sprint aynı
+gün (aşırı tendon yükü)
+Hız mekaniği +
+ivmelenme
+Wall drill + Resisted sled
+sprint Teknik bozulurken “daha ağır” yük takmak
+COD + frenleme 5‑10‑5 + Sprint‑to‑Stop +
+Lateral bound
+Yüksek yoğun COD’u sık tekrarlamak → diz
+yükü artışı 
+Sakatlık önleme
+“ek”
+Nordic + Copenhagen (düşük
+hacim)
+Sprint/hamstring DOMS günleriyle Nordic
+hacmini çakıştırmak 
+Sport Matrix
+Her hücre:  Öncelik + Top 5 (bu katalogdan). (Top 5’ler , o spor için en hızlı transfer beklenen temel
+seçimlerdir; sezon/rol/yaralanma geçmişine göre değiştirilebilir .)
+Spor Strength Hypertrophy Athletic Performance
+Futbol
+Yüksek: Back Squat, Trap
+Bar DL, Bulgarian Split
+Squat, Farmer’s Carry, Hip
+Thrust
+Orta: Leg Press, DB
+RDL, Hip Abduction,
+Cable Crunch, Lat
+Pulldown
+Yüksek: Resisted Sled
+Sprint, 5‑10‑5, Decel Drill,
+Lateral Bound, Nordic
+Basketbol
+Yüksek: Back Squat, Front
+Squat, Hip Thrust,
+Weighted Pull‑Up, Farmer’s
+Carry
+Orta: Lateral Raise,
+Face Pull, Leg
+Extension, Leg Press,
+Hanging Knee Raise
+Yüksek: CMJ, Depth
+Jump, Box Jump, Skater
+Jump, Pro Agility
+Yüzme
+Orta: Weighted Pull‑Up,
+Pendlay Row, Trap Bar DL,
+Farmer’s Carry, Hip Thrust
+Yüksek: Lat Pulldown,
+Seated Cable Row, Face
+Pull, Rear Delt Fly,
+Cable Crunch
+Orta: Med Ball Chest
+Pass, Overhead Slam,
+Copenhagen, Wall Drill,
+L‑Sit
+Güreş
+Yüksek: Conventional DL,
+Back Squat, Sandbag Carry,
+Farmer’s Carry, Weighted
+Chin‑Up
+Orta: Seated Cable
+Row, Cable Curl, Triceps
+Pushdown, Leg Press,
+Cable Crunch
+Yüksek: Overhead Slam,
+Rotational Throw, Nordic,
+Copenhagen, Decel Drill
+Atletizm
+Sprint
+Yüksek: Trap Bar DL, Back
+Squat, RDL, Hip Thrust,
+Bulgarian Split Squat
+Orta: DB RDL, Hip
+Abduction, Leg Curl,
+Cable Crunch, Calf
+Raise
+Yüksek: Resisted Sled
+Sprint, Wicket Run,
+Bounds, Broad Jump,
+Depth Jump
+Atletizm
+Uzun
+Mesafe
+Orta: Back Squat (düşük
+hacim), Trap Bar DL (düşük
+hacim), Farmer’s Carry,
+Single‑Leg RDL, Isometric
+Squat
+Orta: Hip Abduction,
+Calf Raise, Cable
+Crunch, Leg Extension
+(kontrollü), Rear Delt Fly
+Orta: Drop Landing, Wall
+Drill, Copenhagen, L‑Sit,
+(hafif) CMJ
+26
+31
+31
+
+--- PAGE 32 ---
+Spor Strength Hypertrophy Athletic Performance
+Tenis
+Yüksek: Front Squat, Trap
+Bar DL, Farmer’s Carry,
+Weighted Pull‑Up, Split
+Squat
+Orta: Face Pull, Rear
+Delt Fly, Cable Curl, Hip
+Abduction, Cable
+Crunch
+Yüksek: Rotational
+Throw, Skater Jump,
+Mirror Drill, Pro Agility,
+Decel Drill
+Dövüş
+Sporları
+Yüksek: Hip Thrust,
+Weighted Dip, Weighted
+Chin‑Up, Sandbag Carry,
+Back Squat
+Orta: Cable Crunch, Lat
+Pulldown, Seated Cable
+Row, Lateral Raise,
+Hammer Curl
+Yüksek: Overhead Slam,
+Rotational Throw, Nordic,
+L‑Sit, Pro Agility
+Jimnastik
+Orta: Weighted Pull‑Up,
+Weighted Dip, Isometric
+Squat, Farmer’s Carry
+(kontrollü), OHP
+Orta: Face Pull, Rear
+Delt Fly, Cable Crunch,
+Hanging Knee Raise,
+Lat Pulldown
+Yüksek: L‑Sit, Box Jump
+(kontrollü), Drop Landing,
+Med Ball Chest Pass, Wall
+Drill
+Amerikan
+Futbolu
+Yüksek: Back Squat, Trap
+Bar DL, Bench Press, Log
+Press, Yoke Carry
+Orta: Leg Press, Lat
+Pulldown, Seated Cable
+Row, Triceps Pushdown,
+Cable Crunch
+Yüksek: Resisted Sled
+Sprint, Power Clean, Pro
+Agility, Decel Drill,
+Overhead Backward
+Throw
+Bu katalog, promptta istenen “kapsamlı ve farklı atlet profillerine uygun” yaklaşımı hedefler; istersen bir
+sonraki adım olarak aynı formatla kalan alt‑kategorileri daha da genişletip (ör . daha fazla strongman
+varyasyonu,  daha  fazla  cable‑isolation,  daha  fazla  sprint  drill/COD  varyasyonu,  sezon  içi  mikro‑doz
+örnekleri) toplam egzersiz sayısını 150+ seviyesine çıkaracak şekilde devam edebilirim.
+https://pubmed.ncbi.nlm.nih.gov/16882626/
+https://pubmed.ncbi.nlm.nih.gov/16882626/
+https://pmc.ncbi.nlm.nih.gov/articles/PMC8761154/
+https://pmc.ncbi.nlm.nih.gov/articles/PMC8761154/
+https://www.nsca.com/contentassets/2a4112fb355a4a48853bbafbe070fb8e/
+resistance_training_for_older_adults__position.1.pdf?
+srsltid=AfmBOorUH_XoFKqmnTAeheilwjTTgrtO77_JEarTkbKgWWnWJPGEaCZM
+https://www.nsca.com/contentassets/2a4112fb355a4a48853bbafbe070fb8e/resistance_training_for_older_adults__position.
+1.pdf?srsltid=AfmBOorUH_XoFKqmnTAeheilwjTTgrtO77_JEarTkbKgWWnWJPGEaCZM
+https://www.nsca.com/contentassets/61d813865e264c6e852cadfe247eae52/
+nsca_training_load_chart.pdf?srsltid=AfmBOoqYyk-Wp2nMl-
+uCmGEFiJ-9pO4_BMx4sh1T0hM6dG3_aoIR9Kqc
+https://www.nsca.com/contentassets/61d813865e264c6e852cadfe247eae52/nsca_training_load_chart.pdf?
+srsltid=AfmBOoqYyk-Wp2nMl-uCmGEFiJ-9pO4_BMx4sh1T0hM6dG3_aoIR9Kqc
+https://www.nsca.com/globalassets/about/position-statements/
+position_stand_youth_resistance_training---2009.pdf?
+srsltid=AfmBOoqHq2wIVid_Q_LPDixgulVSya9_Wlqn7M1YAZS4mWja-XUSv4R_
+https://www.nsca.com/globalassets/about/position-statements/position_stand_youth_resistance_training---2009.pdf?
+srsltid=AfmBOoqHq2wIVid_Q_LPDixgulVSya9_Wlqn7M1YAZS4mWja-XUSv4R_
+Loading Recommendations for Muscle Strength, Hypertrophy ...
+https://pmc.ncbi.nlm.nih.gov/articles/PMC7927075/?utm_source=chatgpt.com
+1 17 28
+2 21 26 29
+3 11 24
+4 7
+5 10 23
+6
+32
+
+--- PAGE 33 ---
+https://pubmed.ncbi.nlm.nih.gov/19204579/
+https://pubmed.ncbi.nlm.nih.gov/19204579/
+https://pubmed.ncbi.nlm.nih.gov/32218059/
+https://pubmed.ncbi.nlm.nih.gov/32218059/
+Metabolic Stress in Hypertrophic Adaptations to Resistance ...
+https://paulogentil.com/pdf/
+Metabolic%20Stress%20in%20Hypertrophic%20Adaptations%20to%20Resistance%20Training.pdf?utm_source=chatgpt.com
+ACSM Position Stand Progression Models in Resistance ...
+https://www.sportgeneeskunde.com/wp-content/uploads/archief_bestanden/files/bestanden/
+ACSM%20Position%20Stand%20Progression%20models%20in%20resistance%20training%20for%20healthy%20adults.pdf?
+utm_source=chatgpt.com
+American College of Sports Medicine position stand. ...
+https://pubmed.ncbi.nlm.nih.gov/19204579/?utm_source=chatgpt.com
+https://pmc.ncbi.nlm.nih.gov/articles/PMC4637913/
+https://pmc.ncbi.nlm.nih.gov/articles/PMC4637913/
+https://www.nsca.com/education/articles/kinetic-select/plyometric-exercises/?
+srsltid=AfmBOorf0bTkpfMlUtDna91jn-O1Y61DcanH1RqxRfgjS8hqkZzwvdau
+https://www.nsca.com/education/articles/kinetic-select/plyometric-exercises/?srsltid=AfmBOorf0bTkpfMlUtDna91jn-
+O1Y61DcanH1RqxRfgjS8hqkZzwvdau
+https://athleticperformanceacademy.co.uk/wp-content/uploads/2019/06/
+Optimalloadforsled_Cross_2017.pdf
+https://athleticperformanceacademy.co.uk/wp-content/uploads/2019/06/Optimalloadforsled_Cross_2017.pdf
+https://www.scienceforsport.com/stretch-shortening-cycle/?srsltid=AfmBOorjvQD8-
+ExvmU10C7S9H7KooOsjOm2hP8FZ3tvS5Nukk3QVZT0r
+https://www.scienceforsport.com/stretch-shortening-cycle/?srsltid=AfmBOorjvQD8-
+ExvmU10C7S9H7KooOsjOm2hP8FZ3tvS5Nukk3QVZT0r
+https://bjsm.bmj.com/content/53/21/1362
+https://bjsm.bmj.com/content/53/21/1362
+8 15
+9 16
+12 14
+13
+18
+19
+20
+22 27
+25
+30 31
+33

@@ -212,7 +212,7 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		bool parsed = double.TryParse(PerformanceValueEntry.Text, out double value);
+		bool parsed = MetricInput.TryParseFlexibleDouble(PerformanceValueEntry.Text, out double value);
 		if (!parsed)
 		{
 			ShowError($"{_selectedPerformanceItem.PrimaryLabel} is required.");
@@ -222,7 +222,7 @@ public partial class ProfilePage : ContentPage
 		double? secondaryValue = null;
 		if (_selectedPerformanceItem.HasSecondaryMetric)
 		{
-			if (!double.TryParse(PerformanceSecondaryValueEntry.Text, out double parsedSecondary))
+			if (!MetricInput.TryParseFlexibleDouble(PerformanceSecondaryValueEntry.Text, out double parsedSecondary))
 			{
 				ShowError($"{_selectedPerformanceItem.SecondaryLabel} is required.");
 				return;
@@ -235,18 +235,18 @@ public partial class ProfilePage : ContentPage
 		double? concentricTime = null;
 		if (_selectedPerformanceItem.SupportsGroundContactTime && !string.IsNullOrWhiteSpace(PerformanceTimingEntry.Text))
 		{
-			if (!double.TryParse(PerformanceTimingEntry.Text, out double parsedGct) || parsedGct <= 0)
+			if (!MetricInput.TryParseFlexibleDouble(PerformanceTimingEntry.Text, out double parsedGctSeconds) || parsedGctSeconds <= 0)
 			{
 				ShowError("Ground contact time must be a positive number.");
 				return;
 			}
 
-			groundContactTime = parsedGct;
+			groundContactTime = MetricInput.SecondsToMilliseconds(parsedGctSeconds);
 		}
 
 		if (_selectedPerformanceItem.SupportsConcentricTime && !string.IsNullOrWhiteSpace(PerformanceTimingEntry.Text))
 		{
-			if (!double.TryParse(PerformanceTimingEntry.Text, out double parsedTime) || parsedTime <= 0)
+			if (!MetricInput.TryParseFlexibleDouble(PerformanceTimingEntry.Text, out double parsedTime) || parsedTime <= 0)
 			{
 				ShowError("Concentric time must be a positive number.");
 				return;
@@ -318,7 +318,9 @@ public partial class ProfilePage : ContentPage
 		UpdatePerformanceSelectionUI();
 		PerformanceValueEntry.Text = item.Value.ToString("0.##");
 		PerformanceSecondaryValueEntry.Text = item.SecondaryValue?.ToString("0.##") ?? string.Empty;
-		PerformanceTimingEntry.Text = item.GroundContactTimeMs?.ToString("0.##") ?? item.ConcentricTimeSeconds?.ToString("0.##") ?? string.Empty;
+		PerformanceTimingEntry.Text = item.GroundContactTimeMs.HasValue
+			? MetricInput.MillisecondsToSeconds(item.GroundContactTimeMs.Value).ToString("0.##")
+			: item.ConcentricTimeSeconds?.ToString("0.##") ?? string.Empty;
 		PerformanceActionButton.Text = "Update";
 		PerformanceCancelButton.IsVisible = true;
 		ShowSuccess($"Editing: {item.Text}");
@@ -335,7 +337,7 @@ public partial class ProfilePage : ContentPage
 
 		string movementName = GoalMovementEntry.Text?.Trim() ?? string.Empty;
 		string unit = GoalUnitEntry.Text?.Trim() ?? string.Empty;
-		bool parsed = double.TryParse(GoalTargetValueEntry.Text, out double targetValue);
+		bool parsed = MetricInput.TryParseFlexibleDouble(GoalTargetValueEntry.Text, out double targetValue);
 
 		if (string.IsNullOrWhiteSpace(movementName) || string.IsNullOrWhiteSpace(unit) || !parsed)
 		{
@@ -416,7 +418,7 @@ public partial class ProfilePage : ContentPage
 
 		string movementName = ProfilePrMovementEntry.Text?.Trim() ?? string.Empty;
 		string unit = ProfilePrUnitEntry.Text?.Trim() ?? string.Empty;
-		bool parsed = double.TryParse(ProfilePrValueEntry.Text, out double value);
+		bool parsed = MetricInput.TryParseFlexibleDouble(ProfilePrValueEntry.Text, out double value);
 
 		if (string.IsNullOrWhiteSpace(movementName) || string.IsNullOrWhiteSpace(unit) || !parsed)
 		{
@@ -556,7 +558,7 @@ public partial class ProfilePage : ContentPage
 			return null;
 		}
 
-		return double.TryParse(text, out double value) ? value : null;
+		return MetricInput.TryParseFlexibleDouble(text, out double value) ? value : null;
 	}
 
 	private static TItem? GetBindingContext<TItem>(object? sender) where TItem : class
@@ -648,9 +650,7 @@ public partial class ProfilePage : ContentPage
 		}
 
 		SelectedPerformanceLabel.Text = _selectedPerformanceItem.Name;
-		SelectedPerformanceHintLabel.Text = _selectedPerformanceItem.TrackingMode == ExerciseTrackingMode.Strength
-			? $"{_selectedPerformanceItem.Category} | Load (kg) with optional concentric time."
-			: $"{_selectedPerformanceItem.Category} | {_selectedPerformanceItem.HintText}";
+		SelectedPerformanceHintLabel.Text = _selectedPerformanceItem.SelectionHintText;
 		PerformanceMetric1Label.Text = $"{_selectedPerformanceItem.PrimaryLabel} ({_selectedPerformanceItem.PrimaryUnit})";
 		PerformanceValueEntry.Placeholder = $"Enter {_selectedPerformanceItem.PrimaryLabel.ToLowerInvariant()}";
 		PerformanceMetric2Container.IsVisible = _selectedPerformanceItem.HasSecondaryMetric;
@@ -658,7 +658,7 @@ public partial class ProfilePage : ContentPage
 		PerformanceSecondaryValueEntry.Placeholder = $"Enter {_selectedPerformanceItem.SecondaryLabel.ToLowerInvariant()}";
 		PerformanceTimingContainer.IsVisible = _selectedPerformanceItem.SupportsGroundContactTime || _selectedPerformanceItem.SupportsConcentricTime;
 		PerformanceTimingLabel.Text = _selectedPerformanceItem.SupportsGroundContactTime
-			? "Ground Contact Time (ms)"
+			? "Ground Contact Time (s)"
 			: "Concentric Time (s)";
 		PerformanceTimingEntry.Placeholder = "Optional";
 	}
@@ -675,7 +675,7 @@ public partial class ProfilePage : ContentPage
 			string text = $"{entry.MovementName}: {primary} | {item.SecondaryLabel}: {entry.SecondaryValue:0.##} {entry.SecondaryUnit}";
 			if (entry.GroundContactTimeMs.HasValue)
 			{
-				text += $" | GCT: {entry.GroundContactTimeMs.Value:0.##} ms";
+				text += $" | GCT: {MetricInput.FormatSecondsFromMilliseconds(entry.GroundContactTimeMs.Value)}";
 			}
 
 			if (entry.ConcentricTimeSeconds.HasValue)
@@ -689,7 +689,7 @@ public partial class ProfilePage : ContentPage
 		string singleMetricText = $"{entry.MovementName}: {primary}";
 		if (entry.GroundContactTimeMs.HasValue)
 		{
-			singleMetricText += $" | GCT: {entry.GroundContactTimeMs.Value:0.##} ms";
+			singleMetricText += $" | GCT: {MetricInput.FormatSecondsFromMilliseconds(entry.GroundContactTimeMs.Value)}";
 		}
 
 		if (entry.ConcentricTimeSeconds.HasValue)

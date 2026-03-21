@@ -199,12 +199,12 @@ public partial class CalendarPage : ContentPage
 					{
 						string text = $"{x.ExerciseName} ({primary}, {item.SecondaryLabel} {x.Metric2Value:0.##}{x.Metric2Unit})";
 						return x.GroundContactTimeMs.HasValue
-							? $"{text}, GCT {x.GroundContactTimeMs.Value:0.##}ms"
+							? $"{text}, GCT {MetricInput.FormatSecondsFromMilliseconds(x.GroundContactTimeMs.Value)}"
 							: text;
 					}
 
 					return x.GroundContactTimeMs.HasValue
-						? $"{x.ExerciseName} ({primary}, GCT {x.GroundContactTimeMs.Value:0.##}ms)"
+						? $"{x.ExerciseName} ({primary}, GCT {MetricInput.FormatSecondsFromMilliseconds(x.GroundContactTimeMs.Value)})"
 						: $"{x.ExerciseName} ({primary})";
 				}
 			}
