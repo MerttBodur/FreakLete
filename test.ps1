@@ -8,5 +8,5 @@ $env:DOTNET_CLI_HOME = $PSScriptRoot
 
 $testProject = Join-Path $PSScriptRoot 'GymTracker.Core.Tests\GymTracker.Core.Tests.csproj'
 
-dotnet test $testProject @DotnetArgs
+dotnet test $testProject --no-restore @DotnetArgs
 exit $LASTEXITCODE
