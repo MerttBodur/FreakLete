@@ -38,9 +38,10 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Auto-migrate database on startup
-using (var scope = app.Services.CreateScope())
+// Auto-migrate database on startup (development only)
+if (app.Environment.IsDevelopment())
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
 }
