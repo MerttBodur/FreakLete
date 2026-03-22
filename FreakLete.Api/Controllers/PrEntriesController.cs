@@ -10,7 +10,7 @@ namespace FreakLete.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/pr-entries")]
 public class PrEntriesController : ControllerBase
 {
     private readonly AppDbContext _db;

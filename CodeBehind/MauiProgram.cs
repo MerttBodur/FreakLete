@@ -1,4 +1,3 @@
-using FreakLete.Data;
 using FreakLete.Services;
 using Microsoft.Extensions.Logging;
 
@@ -19,7 +18,6 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
-		builder.Services.AddSingleton<AppDatabase>();
 		builder.Services.AddSingleton<UserSession>();
 		builder.Services.AddSingleton<ApiClient>();
 

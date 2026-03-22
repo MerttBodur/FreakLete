@@ -34,6 +34,10 @@ public class ApiClient
 
 	private static string GetBaseUrl()
 	{
+		string? configured = AppConfig.ApiBaseUrl;
+		if (!string.IsNullOrEmpty(configured))
+			return configured;
+
 #if ANDROID
 		// Android emulator routes 10.0.2.2 to host machine's localhost
 		return "http://10.0.2.2:5131";

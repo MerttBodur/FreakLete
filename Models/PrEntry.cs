@@ -1,13 +1,9 @@
-using SQLite;
-
 namespace FreakLete.Models;
 
 public class PrEntry
 {
-	[PrimaryKey, AutoIncrement]
 	public int Id { get; set; }
 
-	[Indexed]
 	public int UserId { get; set; }
 
 	public string ExerciseName { get; set; } = string.Empty;

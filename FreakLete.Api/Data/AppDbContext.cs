@@ -15,6 +15,35 @@ public class AppDbContext : DbContext
     public DbSet<MovementGoal> MovementGoals => Set<MovementGoal>();
     public DbSet<ExerciseDefinition> ExerciseDefinitions => Set<ExerciseDefinition>();
 
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        NormalizeDateTimesToUtc();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void NormalizeDateTimesToUtc()
+    {
+        foreach (var entry in ChangeTracker.Entries()
+            .Where(e => e.State is EntityState.Added or EntityState.Modified))
+        {
+            foreach (var prop in entry.Properties
+                .Where(p => p.CurrentValue is DateTime && p.Metadata.ClrType == typeof(DateTime)))
+            {
+                var dt = (DateTime)prop.CurrentValue!;
+                if (dt.Kind == DateTimeKind.Unspecified)
+                    prop.CurrentValue = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+            }
+
+            foreach (var prop in entry.Properties
+                .Where(p => p.CurrentValue is DateTime && p.Metadata.ClrType == typeof(DateTime?)))
+            {
+                var dt = (DateTime)prop.CurrentValue!;
+                if (dt.Kind == DateTimeKind.Unspecified)
+                    prop.CurrentValue = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+            }
+        }
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // User
