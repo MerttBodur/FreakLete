@@ -66,6 +66,55 @@ public class ApiClient
 		return PutAsync("api/auth/profile", profileData);
 	}
 
+	public Task<ApiResult<bool>> DeleteAccountAsync()
+	{
+		return DeleteAsync("api/auth/account");
+	}
+
+	// ── Athletic Performance ───────────────────────────
+
+	public Task<ApiResult<List<AthleticPerformanceResponse>>> GetAthleticPerformancesAsync()
+	{
+		return GetAsync<List<AthleticPerformanceResponse>>("api/athleticperformance");
+	}
+
+	public Task<ApiResult<AthleticPerformanceResponse>> CreateAthleticPerformanceAsync(object data)
+	{
+		return PostAsync<AthleticPerformanceResponse>("api/athleticperformance", data);
+	}
+
+	public Task<ApiResult<bool>> UpdateAthleticPerformanceAsync(int id, object data)
+	{
+		return PutAsync($"api/athleticperformance/{id}", data);
+	}
+
+	public Task<ApiResult<bool>> DeleteAthleticPerformanceAsync(int id)
+	{
+		return DeleteAsync($"api/athleticperformance/{id}");
+	}
+
+	// ── Movement Goals ─────────────────────────────────
+
+	public Task<ApiResult<List<MovementGoalResponse>>> GetMovementGoalsAsync()
+	{
+		return GetAsync<List<MovementGoalResponse>>("api/movementgoals");
+	}
+
+	public Task<ApiResult<MovementGoalResponse>> CreateMovementGoalAsync(object data)
+	{
+		return PostAsync<MovementGoalResponse>("api/movementgoals", data);
+	}
+
+	public Task<ApiResult<bool>> UpdateMovementGoalAsync(int id, object data)
+	{
+		return PutAsync($"api/movementgoals/{id}", data);
+	}
+
+	public Task<ApiResult<bool>> DeleteMovementGoalAsync(int id)
+	{
+		return DeleteAsync($"api/movementgoals/{id}");
+	}
+
 	// ── HTTP helpers ────────────────────────────────────
 
 	private void AttachToken()
@@ -112,6 +161,25 @@ public class ApiClient
 		{
 			AttachToken();
 			var response = await _http.PutAsJsonAsync(endpoint, data, JsonOptions);
+
+			if (response.IsSuccessStatusCode)
+				return ApiResult<bool>.Ok(true);
+
+			var error = await ReadError(response);
+			return ApiResult<bool>.Fail(error);
+		}
+		catch (Exception ex)
+		{
+			return ApiResult<bool>.Fail($"Bağlantı hatası: {ex.Message}");
+		}
+	}
+
+	private async Task<ApiResult<bool>> DeleteAsync(string endpoint)
+	{
+		try
+		{
+			AttachToken();
+			var response = await _http.DeleteAsync(endpoint);
 
 			if (response.IsSuccessStatusCode)
 				return ApiResult<bool>.Ok(true);
@@ -192,5 +260,30 @@ public class UserProfileResponse
 	public string GymExperienceLevel { get; set; } = "";
 	public int TotalWorkouts { get; set; }
 	public int TotalPrs { get; set; }
+	public DateTime CreatedAt { get; set; }
+}
+
+public class AthleticPerformanceResponse
+{
+	public int Id { get; set; }
+	public string MovementName { get; set; } = "";
+	public string MovementCategory { get; set; } = "";
+	public double Value { get; set; }
+	public string Unit { get; set; } = "";
+	public double? SecondaryValue { get; set; }
+	public string SecondaryUnit { get; set; } = "";
+	public double? GroundContactTimeMs { get; set; }
+	public double? ConcentricTimeSeconds { get; set; }
+	public DateTime RecordedAt { get; set; }
+}
+
+public class MovementGoalResponse
+{
+	public int Id { get; set; }
+	public string MovementName { get; set; } = "";
+	public string MovementCategory { get; set; } = "";
+	public string GoalMetricLabel { get; set; } = "";
+	public double TargetValue { get; set; }
+	public string Unit { get; set; } = "";
 	public DateTime CreatedAt { get; set; }
 }

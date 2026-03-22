@@ -101,13 +101,13 @@ public class AuthController : ControllerBase
         var user = await _db.Users.FindAsync(userId);
         if (user is null) return NotFound();
 
-        user.FirstName = request.FirstName;
-        user.LastName = request.LastName;
-        user.DateOfBirth = request.DateOfBirth;
-        user.WeightKg = request.WeightKg;
-        user.BodyFatPercentage = request.BodyFatPercentage;
-        user.SportName = request.SportName;
-        user.GymExperienceLevel = request.GymExperienceLevel;
+        if (request.FirstName is not null) user.FirstName = request.FirstName;
+        if (request.LastName is not null) user.LastName = request.LastName;
+        if (request.DateOfBirth.HasValue) user.DateOfBirth = request.DateOfBirth;
+        if (request.WeightKg.HasValue) user.WeightKg = request.WeightKg;
+        if (request.BodyFatPercentage.HasValue) user.BodyFatPercentage = request.BodyFatPercentage;
+        if (request.SportName is not null) user.SportName = request.SportName;
+        if (request.GymExperienceLevel is not null) user.GymExperienceLevel = request.GymExperienceLevel;
 
         await _db.SaveChangesAsync();
         return NoContent();

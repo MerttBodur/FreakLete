@@ -1,4 +1,3 @@
-using FreakLete.Data;
 using FreakLete.Models;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,9 +22,9 @@ public partial class ProfilePage : ContentPage
 		ExerciseCatalog.OlympicLifts
 	];
 
-	private readonly AppDatabase _database;
+	private readonly ApiClient _api;
 	private readonly UserSession _session;
-	private User? _currentUser;
+	private UserProfileResponse? _profile;
 	private int? _editingPerformanceId;
 	private int? _editingGoalId;
 	private ExerciseCatalogItem? _selectedPerformanceItem;
@@ -34,7 +33,7 @@ public partial class ProfilePage : ContentPage
 	public ProfilePage()
 	{
 		InitializeComponent();
-		_database = MauiProgram.Services.GetRequiredService<AppDatabase>();
+		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 
 		GymExperiencePicker.ItemsSource = ExperienceLevels;
@@ -50,59 +49,64 @@ public partial class ProfilePage : ContentPage
 
 	private async Task LoadProfileAsync()
 	{
-		int? currentUserId = _session.GetCurrentUserId();
-		if (!currentUserId.HasValue)
+		if (!_session.IsLoggedIn())
 		{
 			GoToLogin();
 			return;
 		}
 
-		_currentUser = await _database.GetUserByIdAsync(currentUserId.Value);
-		if (_currentUser is null)
+		var result = await _api.GetProfileAsync();
+		if (!result.Success || result.Data is null)
 		{
-			_session.SignOut();
-			GoToLogin();
+			if (result.StatusCode == 401)
+			{
+				_session.SignOut();
+				GoToLogin();
+				return;
+			}
+			ShowError(result.Error ?? "Failed to load profile.");
 			return;
 		}
 
-		FullNameLabel.Text = $"{_currentUser.FirstName} {_currentUser.LastName}";
-		EmailLabel.Text = _currentUser.Email;
+		_profile = result.Data;
 
-		DateTime dateOfBirth = _currentUser.DateOfBirth?.Date ?? DateTime.Today.AddYears(-18);
+		FullNameLabel.Text = $"{_profile.FirstName} {_profile.LastName}";
+		EmailLabel.Text = _profile.Email;
+
+		DateTime dateOfBirth = _profile.DateOfBirth?.Date ?? DateTime.Today.AddYears(-18);
 		DateOfBirthPicker.Date = dateOfBirth;
-		UpdateAgeLabel(_currentUser.DateOfBirth);
+		UpdateAgeLabel(_profile.DateOfBirth);
 
-		WeightEntry.Text = _currentUser.WeightKg?.ToString("0.##") ?? string.Empty;
-		BodyFatEntry.Text = _currentUser.BodyFatPercentage?.ToString("0.##") ?? string.Empty;
-		SportEntry.Text = _currentUser.SportName;
+		WeightEntry.Text = _profile.WeightKg?.ToString("0.##") ?? string.Empty;
+		BodyFatEntry.Text = _profile.BodyFatPercentage?.ToString("0.##") ?? string.Empty;
+		SportEntry.Text = _profile.SportName;
 
-		if (!string.IsNullOrWhiteSpace(_currentUser.GymExperienceLevel))
+		if (!string.IsNullOrWhiteSpace(_profile.GymExperienceLevel))
 		{
-			GymExperiencePicker.SelectedItem = _currentUser.GymExperienceLevel;
+			GymExperiencePicker.SelectedItem = _profile.GymExperienceLevel;
 		}
 		else
 		{
 			GymExperiencePicker.SelectedIndex = -1;
 		}
 
-		await LoadStatsAsync(_currentUser.Id);
-		await LoadAthleticPerformancesAsync(_currentUser.Id);
-		await LoadMovementGoalsAsync(_currentUser.Id);
+		WorkoutCountLabel.Text = _profile.TotalWorkouts.ToString();
+		OneRmPrCountLabel.Text = _profile.TotalPrs.ToString();
+
+		await LoadAthleticPerformancesAsync();
+		await LoadMovementGoalsAsync();
 	}
 
-	private async Task LoadStatsAsync(int userId)
+	private async Task LoadAthleticPerformancesAsync()
 	{
-		int workoutCount = await _database.GetWorkoutCountByUserAsync(userId);
-		int oneRmPrCount = await _database.GetPrCountByUserAsync(userId);
+		var result = await _api.GetAthleticPerformancesAsync();
+		if (!result.Success || result.Data is null)
+		{
+			AthleticPerformanceEmptyLabel.IsVisible = true;
+			return;
+		}
 
-		WorkoutCountLabel.Text = workoutCount.ToString();
-		OneRmPrCountLabel.Text = oneRmPrCount.ToString();
-	}
-
-	private async Task LoadAthleticPerformancesAsync(int userId)
-	{
-		List<AthleticPerformanceEntry> entries = await _database.GetAthleticPerformanceEntriesByUserAsync(userId);
-		List<AthleticPerformanceListItem> items = entries.Select(entry => new AthleticPerformanceListItem
+		List<AthleticPerformanceListItem> items = result.Data.Select(entry => new AthleticPerformanceListItem
 		{
 			Id = entry.Id,
 			MovementName = entry.MovementName,
@@ -121,10 +125,16 @@ public partial class ProfilePage : ContentPage
 		AthleticPerformanceEmptyLabel.IsVisible = items.Count == 0;
 	}
 
-	private async Task LoadMovementGoalsAsync(int userId)
+	private async Task LoadMovementGoalsAsync()
 	{
-		List<MovementGoal> goals = await _database.GetMovementGoalsByUserAsync(userId);
-		List<MovementGoalListItem> items = goals.Select(goal => new MovementGoalListItem
+		var result = await _api.GetMovementGoalsAsync();
+		if (!result.Success || result.Data is null)
+		{
+			MovementGoalsEmptyLabel.IsVisible = true;
+			return;
+		}
+
+		List<MovementGoalListItem> items = result.Data.Select(goal => new MovementGoalListItem
 		{
 			Id = goal.Id,
 			MovementName = goal.MovementName,
@@ -145,7 +155,7 @@ public partial class ProfilePage : ContentPage
 	{
 		ClearStatus();
 
-		if (_currentUser is null)
+		if (_profile is null)
 		{
 			return;
 		}
@@ -177,22 +187,33 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		_currentUser.DateOfBirth = DateOfBirthPicker.Date;
-		_currentUser.WeightKg = weight;
-		_currentUser.BodyFatPercentage = bodyFat;
-		_currentUser.SportName = SportEntry.Text?.Trim() ?? string.Empty;
-		_currentUser.GymExperienceLevel = GymExperiencePicker.SelectedItem?.ToString() ?? string.Empty;
+		string dateStr = $"{DateOfBirthPicker.Date:yyyy-MM-dd}";
+		var profileData = new
+		{
+			dateOfBirth = dateStr,
+			weightKg = weight,
+			bodyFatPercentage = bodyFat,
+			sportName = SportEntry.Text?.Trim() ?? string.Empty,
+			gymExperienceLevel = GymExperiencePicker.SelectedItem?.ToString() ?? string.Empty
+		};
 
-		await _database.UpdateUserAsync(_currentUser);
-		UpdateAgeLabel(_currentUser.DateOfBirth);
-		ShowSuccess("Profile saved.");
+		var result = await _api.UpdateProfileAsync(profileData);
+		if (result.Success)
+		{
+			UpdateAgeLabel(DateOfBirthPicker.Date);
+			ShowSuccess("Profile saved.");
+		}
+		else
+		{
+			ShowError(result.Error ?? "Failed to save profile.");
+		}
 	}
 
 	private async void OnAddPerformanceClicked(object? sender, EventArgs e)
 	{
 		ClearStatus();
 
-		if (_currentUser is null)
+		if (_profile is null)
 		{
 			return;
 		}
@@ -246,38 +267,48 @@ public partial class ProfilePage : ContentPage
 			concentricTime = parsedTime;
 		}
 
-		AthleticPerformanceEntry entry = new()
+		var data = new
 		{
-			Id = _editingPerformanceId.GetValueOrDefault(),
-			UserId = _currentUser.Id,
-			MovementName = _selectedPerformanceItem.Name,
-			MovementCategory = _selectedPerformanceItem.Category,
-			Value = value,
-			Unit = _selectedPerformanceItem.PrimaryUnit,
-			SecondaryValue = secondaryValue,
-			SecondaryUnit = _selectedPerformanceItem.SecondaryUnit,
-			GroundContactTimeMs = groundContactTime,
-			ConcentricTimeSeconds = concentricTime
+			movementName = _selectedPerformanceItem.Name,
+			movementCategory = _selectedPerformanceItem.Category,
+			value,
+			unit = _selectedPerformanceItem.PrimaryUnit,
+			secondaryValue,
+			secondaryUnit = _selectedPerformanceItem.SecondaryUnit ?? string.Empty,
+			groundContactTimeMs = groundContactTime,
+			concentricTimeSeconds = concentricTime
 		};
 
 		if (_editingPerformanceId.HasValue)
 		{
-			await _database.UpdateAthleticPerformanceEntryAsync(entry);
-			ShowSuccess("Athletic performance updated.");
+			var result = await _api.UpdateAthleticPerformanceAsync(_editingPerformanceId.Value, data);
+			if (result.Success)
+				ShowSuccess("Athletic performance updated.");
+			else
+			{
+				ShowError(result.Error ?? "Failed to update.");
+				return;
+			}
 		}
 		else
 		{
-			await _database.SaveAthleticPerformanceEntryAsync(entry);
-			ShowSuccess("Athletic performance added.");
+			var result = await _api.CreateAthleticPerformanceAsync(data);
+			if (result.Success)
+				ShowSuccess("Athletic performance added.");
+			else
+			{
+				ShowError(result.Error ?? "Failed to save.");
+				return;
+			}
 		}
 
 		ResetPerformanceForm();
-		await LoadAthleticPerformancesAsync(_currentUser.Id);
+		await LoadAthleticPerformancesAsync();
 	}
 
 	private async void OnDeletePerformanceInvoked(object? sender, EventArgs e)
 	{
-		if (_currentUser is null || GetBindingContext<AthleticPerformanceListItem>(sender) is not AthleticPerformanceListItem item)
+		if (_profile is null || GetBindingContext<AthleticPerformanceListItem>(sender) is not AthleticPerformanceListItem item)
 		{
 			return;
 		}
@@ -293,13 +324,20 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		await _database.DeleteAthleticPerformanceEntryAsync(item.Id);
-		if (_editingPerformanceId == item.Id)
+		var result = await _api.DeleteAthleticPerformanceAsync(item.Id);
+		if (result.Success)
 		{
-			ResetPerformanceForm();
+			if (_editingPerformanceId == item.Id)
+			{
+				ResetPerformanceForm();
+			}
+			await LoadAthleticPerformancesAsync();
+			ShowSuccess("Athletic performance deleted.");
 		}
-		await LoadAthleticPerformancesAsync(_currentUser.Id);
-		ShowSuccess("Athletic performance deleted.");
+		else
+		{
+			ShowError(result.Error ?? "Failed to delete.");
+		}
 	}
 
 	private void OnEditPerformanceInvoked(object? sender, EventArgs e)
@@ -326,7 +364,7 @@ public partial class ProfilePage : ContentPage
 	{
 		ClearStatus();
 
-		if (_currentUser is null)
+		if (_profile is null)
 		{
 			return;
 		}
@@ -347,35 +385,45 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		MovementGoal goal = new()
+		var data = new
 		{
-			Id = _editingGoalId.GetValueOrDefault(),
-			UserId = _currentUser.Id,
-			MovementName = movementName,
-			MovementCategory = _selectedGoalItem.Category,
-			GoalMetricLabel = ResolveGoalLabel(_selectedGoalItem),
-			TargetValue = targetValue,
-			Unit = unit
+			movementName,
+			movementCategory = _selectedGoalItem.Category,
+			goalMetricLabel = ResolveGoalLabel(_selectedGoalItem),
+			targetValue,
+			unit
 		};
 
 		if (_editingGoalId.HasValue)
 		{
-			await _database.UpdateMovementGoalAsync(goal);
-			ShowSuccess("Movement goal updated.");
+			var result = await _api.UpdateMovementGoalAsync(_editingGoalId.Value, data);
+			if (result.Success)
+				ShowSuccess("Movement goal updated.");
+			else
+			{
+				ShowError(result.Error ?? "Failed to update goal.");
+				return;
+			}
 		}
 		else
 		{
-			await _database.SaveMovementGoalAsync(goal);
-			ShowSuccess("Movement goal saved.");
+			var result = await _api.CreateMovementGoalAsync(data);
+			if (result.Success)
+				ShowSuccess("Movement goal saved.");
+			else
+			{
+				ShowError(result.Error ?? "Failed to save goal.");
+				return;
+			}
 		}
 
 		ResetGoalForm();
-		await LoadMovementGoalsAsync(_currentUser.Id);
+		await LoadMovementGoalsAsync();
 	}
 
 	private async void OnDeleteGoalInvoked(object? sender, EventArgs e)
 	{
-		if (_currentUser is null || GetBindingContext<MovementGoalListItem>(sender) is not MovementGoalListItem item)
+		if (_profile is null || GetBindingContext<MovementGoalListItem>(sender) is not MovementGoalListItem item)
 		{
 			return;
 		}
@@ -391,13 +439,20 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		await _database.DeleteMovementGoalAsync(item.Id);
-		if (_editingGoalId == item.Id)
+		var result = await _api.DeleteMovementGoalAsync(item.Id);
+		if (result.Success)
 		{
-			ResetGoalForm();
+			if (_editingGoalId == item.Id)
+			{
+				ResetGoalForm();
+			}
+			await LoadMovementGoalsAsync();
+			ShowSuccess("Movement goal deleted.");
 		}
-		await LoadMovementGoalsAsync(_currentUser.Id);
-		ShowSuccess("Movement goal deleted.");
+		else
+		{
+			ShowError(result.Error ?? "Failed to delete goal.");
+		}
 	}
 
 	private void OnEditGoalInvoked(object? sender, EventArgs e)
@@ -441,7 +496,7 @@ public partial class ProfilePage : ContentPage
 
 	private async void OnDeleteAccountClicked(object? sender, EventArgs e)
 	{
-		if (_currentUser is null)
+		if (_profile is null)
 		{
 			return;
 		}
@@ -458,9 +513,16 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		await _database.DeleteUserAsync(_currentUser.Id);
-		_session.SignOut();
-		GoToLogin();
+		var result = await _api.DeleteAccountAsync();
+		if (result.Success)
+		{
+			_session.SignOut();
+			GoToLogin();
+		}
+		else
+		{
+			ShowError(result.Error ?? "Failed to delete account.");
+		}
 	}
 
 	private void GoToLogin()
@@ -634,7 +696,7 @@ public partial class ProfilePage : ContentPage
 			item.SecondaryUnit);
 	}
 
-	private static string FormatAthleticPerformanceText(AthleticPerformanceEntry entry)
+	private static string FormatAthleticPerformanceText(AthleticPerformanceResponse entry)
 	{
 		ExerciseCatalogItem? item = ExerciseCatalog.GetByNameAndCategory(entry.MovementName, entry.MovementCategory);
 		string primary = item is not null
