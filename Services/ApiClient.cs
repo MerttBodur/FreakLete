@@ -38,11 +38,17 @@ public class ApiClient
 		if (!string.IsNullOrEmpty(configured))
 			return configured;
 
+#if DEBUG
+		// Local development backend
 #if ANDROID
 		// Android emulator routes 10.0.2.2 to host machine's localhost
 		return "http://10.0.2.2:5131";
 #else
 		return "http://localhost:5131";
+#endif
+#else
+		// Release / production
+		return "https://freaklete-production.up.railway.app";
 #endif
 	}
 
