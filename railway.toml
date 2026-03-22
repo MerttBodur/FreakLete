@@ -1,0 +1,6 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "dotnet publish FreakLete.Api/FreakLete.Api.csproj -c Release -o out"
+
+[deploy]
+startCommand = "dotnet out/FreakLete.Api.dll"
