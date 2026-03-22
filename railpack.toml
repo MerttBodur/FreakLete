@@ -1,0 +1,5 @@
+[build]
+cmd = "dotnet publish FreakLete.Api/FreakLete.Api.csproj -c Release -o out"
+
+[start]
+cmd = "dotnet out/FreakLete.Api.dll"
