@@ -116,7 +116,6 @@ Automated testing is included.
 - More custom UI replacements for remaining platform-native selection flows
 - Release polish for publishing assets and store-ready packaging
 
-
 ## Author
 
 - GitHub: https://github.com/MerttBodur
