@@ -1,6 +1,4 @@
-using FreakLete.Data;
-using FreakLete.Models;
-using FreakLete.Security;
+using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.RegularExpressions;
 
@@ -8,12 +6,12 @@ namespace FreakLete;
 
 public partial class RegisterPage : ContentPage
 {
-	private readonly AppDatabase _database;
+	private readonly ApiClient _api;
 
 	public RegisterPage()
 	{
 		InitializeComponent();
-		_database = MauiProgram.Services.GetRequiredService<AppDatabase>();
+		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 	}
 
 	private async void OnCreateAccountClicked(object? sender, EventArgs e)
@@ -66,28 +64,21 @@ public partial class RegisterPage : ContentPage
 			return;
 		}
 
-		bool emailExists = await _database.EmailExistsAsync(email);
-		if (emailExists)
+		var result = await _api.RegisterAsync(firstName, lastName, email, password);
+
+		if (result.Success)
 		{
-			ShowError("This email is already registered.");
-			return;
+			await MessageDialogPage.ShowAsync(
+				Navigation,
+				"Account created",
+				"You can now log in with your new account.",
+				buttonText: "Go to Login");
+			await Navigation.PopAsync(true);
 		}
-
-		User user = new()
+		else
 		{
-			FirstName = firstName,
-			LastName = lastName,
-			Email = email,
-			PasswordHash = PasswordHasher.HashPassword(password)
-		};
-
-		await _database.CreateUserAsync(user);
-		await MessageDialogPage.ShowAsync(
-			Navigation,
-			"Account created",
-			"You can now log in with your new account.",
-			buttonText: "Go to Login");
-		await Navigation.PopAsync(true);
+			ShowError(result.Error ?? "Registration failed.");
+		}
 	}
 
 	private void ShowError(string message)

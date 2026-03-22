@@ -1,0 +1,196 @@
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
+
+namespace FreakLete.Services;
+
+public class ApiClient
+{
+	private readonly HttpClient _http;
+	private readonly UserSession _session;
+
+	private static readonly JsonSerializerOptions JsonOptions = new()
+	{
+		PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+		PropertyNameCaseInsensitive = true
+	};
+
+	public ApiClient(UserSession session)
+	{
+		_session = session;
+
+		var handler = new HttpClientHandler();
+
+#if DEBUG
+		// Development: accept self-signed certificates
+		handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
+#endif
+
+		_http = new HttpClient(handler);
+		_http.BaseAddress = new Uri(GetBaseUrl());
+		_http.DefaultRequestHeaders.Accept.Add(
+			new MediaTypeWithQualityHeaderValue("application/json"));
+	}
+
+	private static string GetBaseUrl()
+	{
+#if ANDROID
+		// Android emulator routes 10.0.2.2 to host machine's localhost
+		return "http://10.0.2.2:5131";
+#else
+		return "http://localhost:5131";
+#endif
+	}
+
+	// ── Auth ────────────────────────────────────────────
+
+	public Task<ApiResult<AuthResponse>> RegisterAsync(string firstName, string lastName, string email, string password)
+	{
+		var request = new { firstName, lastName, email, password };
+		return PostAsync<AuthResponse>("api/auth/register", request);
+	}
+
+	public Task<ApiResult<AuthResponse>> LoginAsync(string email, string password)
+	{
+		var request = new { email, password };
+		return PostAsync<AuthResponse>("api/auth/login", request);
+	}
+
+	public Task<ApiResult<UserProfileResponse>> GetProfileAsync()
+	{
+		return GetAsync<UserProfileResponse>("api/auth/profile");
+	}
+
+	public Task<ApiResult<bool>> UpdateProfileAsync(object profileData)
+	{
+		return PutAsync("api/auth/profile", profileData);
+	}
+
+	// ── HTTP helpers ────────────────────────────────────
+
+	private void AttachToken()
+	{
+		var token = _session.GetToken();
+		if (!string.IsNullOrEmpty(token))
+		{
+			_http.DefaultRequestHeaders.Authorization =
+				new AuthenticationHeaderValue("Bearer", token);
+		}
+	}
+
+	private async Task<ApiResult<T>> GetAsync<T>(string endpoint)
+	{
+		try
+		{
+			AttachToken();
+			var response = await _http.GetAsync(endpoint);
+			return await HandleResponse<T>(response);
+		}
+		catch (Exception ex)
+		{
+			return ApiResult<T>.Fail($"Bağlantı hatası: {ex.Message}");
+		}
+	}
+
+	private async Task<ApiResult<T>> PostAsync<T>(string endpoint, object data)
+	{
+		try
+		{
+			AttachToken();
+			var response = await _http.PostAsJsonAsync(endpoint, data, JsonOptions);
+			return await HandleResponse<T>(response);
+		}
+		catch (Exception ex)
+		{
+			return ApiResult<T>.Fail($"Bağlantı hatası: {ex.Message}");
+		}
+	}
+
+	private async Task<ApiResult<bool>> PutAsync(string endpoint, object data)
+	{
+		try
+		{
+			AttachToken();
+			var response = await _http.PutAsJsonAsync(endpoint, data, JsonOptions);
+
+			if (response.IsSuccessStatusCode)
+				return ApiResult<bool>.Ok(true);
+
+			var error = await ReadError(response);
+			return ApiResult<bool>.Fail(error);
+		}
+		catch (Exception ex)
+		{
+			return ApiResult<bool>.Fail($"Bağlantı hatası: {ex.Message}");
+		}
+	}
+
+	private static async Task<ApiResult<T>> HandleResponse<T>(HttpResponseMessage response)
+	{
+		if (response.IsSuccessStatusCode)
+		{
+			var data = await response.Content.ReadFromJsonAsync<T>(JsonOptions);
+			return data is not null
+				? ApiResult<T>.Ok(data)
+				: ApiResult<T>.Fail("Boş yanıt alındı.");
+		}
+
+		var error = await ReadError(response);
+		return ApiResult<T>.Fail(error, (int)response.StatusCode);
+	}
+
+	private static async Task<string> ReadError(HttpResponseMessage response)
+	{
+		try
+		{
+			var body = await response.Content.ReadAsStringAsync();
+			using var doc = JsonDocument.Parse(body);
+			if (doc.RootElement.TryGetProperty("message", out var msg))
+				return msg.GetString() ?? "Bilinmeyen hata.";
+			return body;
+		}
+		catch
+		{
+			return $"Hata kodu: {(int)response.StatusCode}";
+		}
+	}
+}
+
+// ── Result wrapper ──────────────────────────────────────
+
+public class ApiResult<T>
+{
+	public bool Success { get; init; }
+	public T? Data { get; init; }
+	public string? Error { get; init; }
+	public int StatusCode { get; init; }
+
+	public static ApiResult<T> Ok(T data) => new() { Success = true, Data = data, StatusCode = 200 };
+	public static ApiResult<T> Fail(string error, int statusCode = 0) => new() { Success = false, Error = error, StatusCode = statusCode };
+}
+
+// ── Response DTOs ───────────────────────────────────────
+
+public class AuthResponse
+{
+	public int UserId { get; set; }
+	public string Email { get; set; } = "";
+	public string FirstName { get; set; } = "";
+	public string Token { get; set; } = "";
+}
+
+public class UserProfileResponse
+{
+	public int Id { get; set; }
+	public string FirstName { get; set; } = "";
+	public string LastName { get; set; } = "";
+	public string Email { get; set; } = "";
+	public DateTime? DateOfBirth { get; set; }
+	public double? WeightKg { get; set; }
+	public double? BodyFatPercentage { get; set; }
+	public string SportName { get; set; } = "";
+	public string GymExperienceLevel { get; set; } = "";
+	public int TotalWorkouts { get; set; }
+	public int TotalPrs { get; set; }
+	public DateTime CreatedAt { get; set; }
+}

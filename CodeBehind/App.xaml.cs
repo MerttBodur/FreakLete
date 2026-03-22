@@ -1,5 +1,3 @@
-using FreakLete.Data;
-using FreakLete.Models;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,38 +13,15 @@ public partial class App : Application
 
 	private static Page BuildStartPage()
 	{
-		AppDatabase database = MauiProgram.Services.GetRequiredService<AppDatabase>();
 		UserSession session = MauiProgram.Services.GetRequiredService<UserSession>();
-		Page startPage = new LoginPage();
 
 		if (session.IsLoggedIn())
 		{
-			int? currentUserId = session.GetCurrentUserId();
-			if (currentUserId.HasValue)
-			{
-				try
-				{
-					User? existingUser = database.GetUserByIdAsync(currentUserId.Value).GetAwaiter().GetResult();
-					if (existingUser is not null)
-					{
-						startPage = new HomePage();
-					}
-					else
-					{
-						session.SignOut();
-					}
-				}
-				catch
-				{
-					session.SignOut();
-				}
-			}
-			else
-			{
-				session.SignOut();
-			}
+			// Token var, kullanıcıyı direkt HomePage'e yönlendir
+			// Token expired ise profile çağrısında 401 alır, o zaman login'e yönlendiririz
+			return new HomePage();
 		}
 
-		return startPage;
+		return new LoginPage();
 	}
 }

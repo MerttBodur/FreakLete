@@ -1,6 +1,6 @@
 # FreakLete
 
-FreakLete is a .NET MAUI mobile app for lifters and field athletes who want to log gym sessions, track athletic performance, and keep key calculations in one focused workflow.
+FreakLete is a mobile app for field athletes who lifting and want to log gym sessions, track athletic performance, and keep key calculations in one focused workflow.
 
 ## Overview
 
@@ -110,13 +110,14 @@ Automated testing is included.
 
 ## Roadmap
 
-- richer filtering and discovery inside the exercise browser
-- broader athletic analytics and comparisons
-- more custom UI replacements for remaining platform-native selection flows
-- release polish for publishing assets and store-ready packaging
+- Richer filtering and discovery inside the exercise browser
+- Broader athletic analytics and comparisons
+- AI Assisted workout planner - workout plan analyzer based on user needs
+- More custom UI replacements for remaining platform-native selection flows
+- Release polish for publishing assets and store-ready packaging
+
 
 ## Author
 
-- Mert
 - GitHub: https://github.com/MerttBodur
 - LinkedIn: https://www.linkedin.com/in/mert-bodur-08a053285/

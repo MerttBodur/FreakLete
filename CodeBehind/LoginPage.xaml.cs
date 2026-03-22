@@ -1,6 +1,3 @@
-using FreakLete.Data;
-using FreakLete.Models;
-using FreakLete.Security;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,13 +5,13 @@ namespace FreakLete;
 
 public partial class LoginPage : ContentPage
 {
-	private readonly AppDatabase _database;
+	private readonly ApiClient _api;
 	private readonly UserSession _session;
 
 	public LoginPage()
 	{
 		InitializeComponent();
-		_database = MauiProgram.Services.GetRequiredService<AppDatabase>();
+		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 	}
 
@@ -31,15 +28,17 @@ public partial class LoginPage : ContentPage
 			return;
 		}
 
-		User? user = await _database.GetUserByEmailAsync(email);
-		if (user is null || !PasswordHasher.VerifyPassword(password, user.PasswordHash))
-		{
-			ShowError("Invalid email or password.");
-			return;
-		}
+		var result = await _api.LoginAsync(email, password);
 
-		_session.SignIn(user.Id);
-		await TabNavigationHelper.ResetToRootAsync(Navigation, () => new HomePage(), false);
+		if (result.Success && result.Data is not null)
+		{
+			_session.SignIn(result.Data.UserId, result.Data.Token, result.Data.Email, result.Data.FirstName);
+			await TabNavigationHelper.ResetToRootAsync(Navigation, () => new HomePage(), false);
+		}
+		else
+		{
+			ShowError(result.Error ?? "Login failed.");
+		}
 	}
 
 	private async void OnRegisterClicked(object? sender, EventArgs e)

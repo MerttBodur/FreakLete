@@ -21,6 +21,7 @@ public static class MauiProgram
 
 		builder.Services.AddSingleton<AppDatabase>();
 		builder.Services.AddSingleton<UserSession>();
+		builder.Services.AddSingleton<ApiClient>();
 
 #if DEBUG
 		builder.Logging.AddDebug();
