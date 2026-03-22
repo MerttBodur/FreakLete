@@ -57,6 +57,33 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+// Health check — verifies DB connectivity
+app.MapGet("/api/health", async (AppDbContext db) =>
+{
+    try
+    {
+        var canConnect = await db.Database.CanConnectAsync();
+        var pending = await db.Database.GetPendingMigrationsAsync();
+        var pendingList = pending.ToList();
+        return Results.Ok(new
+        {
+            status = canConnect ? "healthy" : "unhealthy",
+            database = canConnect,
+            pendingMigrations = pendingList.Count,
+            migrations = pendingList
+        });
+    }
+    catch (Exception ex)
+    {
+        return Results.Ok(new
+        {
+            status = "unhealthy",
+            database = false,
+            error = ex.Message
+        });
+    }
+});
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
