@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using FreakLete.Data;
 using FreakLete.Models;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,9 +7,9 @@ namespace FreakLete;
 
 public partial class CalendarPage : ContentPage
 {
-	private readonly AppDatabase _database;
+	private readonly ApiClient _api;
 	private readonly UserSession _session;
-	private readonly List<Workout> _allWorkouts = new();
+	private readonly List<WorkoutResponse> _allWorkouts = new();
 	private DateTime _currentMonth;
 	private DateTime _selectedDate;
 
@@ -19,7 +18,7 @@ public partial class CalendarPage : ContentPage
 	public CalendarPage()
 	{
 		InitializeComponent();
-		_database = MauiProgram.Services.GetRequiredService<AppDatabase>();
+		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 		BindingContext = this;
 		_selectedDate = DateTime.Today;
@@ -36,14 +35,17 @@ public partial class CalendarPage : ContentPage
 	private async Task ReloadWorkoutsAsync()
 	{
 		_allWorkouts.Clear();
-		int? currentUserId = _session.GetCurrentUserId();
-		if (!currentUserId.HasValue)
+
+		if (!_session.IsLoggedIn())
 		{
 			return;
 		}
 
-		List<Workout> workouts = await _database.GetWorkoutsByUserAsync(currentUserId.Value);
-		_allWorkouts.AddRange(workouts);
+		var result = await _api.GetWorkoutsAsync();
+		if (result.Success && result.Data is not null)
+		{
+			_allWorkouts.AddRange(result.Data);
+		}
 	}
 
 	private void OnPreviousMonthClicked(object? sender, EventArgs e)
@@ -133,25 +135,26 @@ public partial class CalendarPage : ContentPage
 
 	private async Task RefreshWorkoutsForDateAsync(DateTime selectedDate)
 	{
-		int? currentUserId = _session.GetCurrentUserId();
-		if (!currentUserId.HasValue)
+		if (!_session.IsLoggedIn())
 		{
 			SavedWorkoutsView.ItemsSource = new List<CalendarWorkoutItem>();
 			return;
 		}
 
-		List<Workout> workouts = await _database.GetWorkoutsByUserAndDateAsync(currentUserId.Value, selectedDate);
+		var result = await _api.GetWorkoutsByDateAsync(selectedDate);
 		List<CalendarWorkoutItem> items = new();
 
-		foreach (Workout workout in workouts)
+		if (result.Success && result.Data is not null)
 		{
-			List<ExerciseEntry> exercises = await _database.GetExercisesByWorkoutIdAsync(workout.Id);
-			items.Add(new CalendarWorkoutItem
+			foreach (var workout in result.Data)
 			{
-				WorkoutId = workout.Id,
-				WorkoutName = workout.WorkoutName,
-				ExercisesText = BuildExerciseText(exercises)
-			});
+				items.Add(new CalendarWorkoutItem
+				{
+					WorkoutId = workout.Id,
+					WorkoutName = workout.WorkoutName,
+					ExercisesText = BuildExerciseText(workout.Exercises)
+				});
+			}
 		}
 
 		SavedWorkoutsView.ItemsSource = items;
@@ -175,7 +178,7 @@ public partial class CalendarPage : ContentPage
 			return;
 		}
 
-		await _database.DeleteWorkoutAsync(item.WorkoutId);
+		await _api.DeleteWorkoutAsync(item.WorkoutId);
 		await ReloadWorkoutsAsync();
 		BuildCalendar();
 	}
@@ -190,7 +193,7 @@ public partial class CalendarPage : ContentPage
 		await Navigation.PushAsync(new NewWorkoutPage(item.WorkoutId), true);
 	}
 
-	private static string BuildExerciseText(List<ExerciseEntry> exercises)
+	private static string BuildExerciseText(List<ExerciseEntryDto> exercises)
 	{
 		return string.Join(" | ", exercises.Select(x =>
 		{

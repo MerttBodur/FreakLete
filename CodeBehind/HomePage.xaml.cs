@@ -49,7 +49,18 @@ public partial class HomePage : ContentPage
 			? perfResult.Data.Count.ToString()
 			: "0";
 
-		LatestPrLabel.Text = "No PR saved yet.";
+		var prResult = await _api.GetPrEntriesAsync();
+		if (prResult.Success && prResult.Data is not null && prResult.Data.Count > 0)
+		{
+			var latest = prResult.Data[0]; // API returns ordered by CreatedAt desc
+			LatestPrLabel.Text = latest.TrackingMode == "Strength"
+				? $"{latest.ExerciseName}: {latest.Weight} x {latest.Reps}"
+				: $"{latest.ExerciseName}: {latest.Metric1Value:0.##} {latest.Metric1Unit}";
+		}
+		else
+		{
+			LatestPrLabel.Text = "No PR saved yet.";
+		}
 	}
 
 	private async void OnStartWorkoutClicked(object? sender, EventArgs e)

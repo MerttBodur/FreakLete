@@ -1,5 +1,4 @@
 using System.Text;
-using FreakLete.Data;
 using FreakLete.Models;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +16,7 @@ public partial class CalculationsPage : ContentPage
 		ExerciseCatalog.OlympicLifts
 	];
 
-	private readonly AppDatabase _database;
+	private readonly ApiClient _api;
 	private readonly UserSession _session;
 	private readonly List<SavedPrItem> _savedPrEntries = [];
 	private ExerciseCatalogItem? _selectedStrengthExerciseItem;
@@ -27,7 +26,7 @@ public partial class CalculationsPage : ContentPage
 	public CalculationsPage()
 	{
 		InitializeComponent();
-		_database = MauiProgram.Services.GetRequiredService<AppDatabase>();
+		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 		UpdateOneRmSelectionUI();
 		UpdatePrSelectionUI();
@@ -188,8 +187,7 @@ public partial class CalculationsPage : ContentPage
 	{
 		ClearLabel(PrStatusLabel);
 
-		int? currentUserId = _session.GetCurrentUserId();
-		if (!currentUserId.HasValue)
+		if (!_session.IsLoggedIn())
 		{
 			ShowError(PrStatusLabel, "Please log in again.");
 			return;
@@ -201,22 +199,49 @@ public partial class CalculationsPage : ContentPage
 			return;
 		}
 
-		PrEntryBuildResult buildResult = BuildPrEntry(currentUserId.Value);
+		// Use existing validation logic (userId=0 is fine, API uses JWT token)
+		PrEntryBuildResult buildResult = BuildPrEntry(0);
 		if (!buildResult.IsValid || buildResult.Entry is null)
 		{
 			ShowError(PrStatusLabel, buildResult.ErrorMessage);
 			return;
 		}
 
+		var entry = buildResult.Entry;
+		var data = new
+		{
+			exerciseName = entry.ExerciseName,
+			exerciseCategory = entry.ExerciseCategory,
+			trackingMode = entry.TrackingMode,
+			weight = entry.Weight,
+			reps = entry.Reps,
+			rir = entry.RIR,
+			metric1Value = entry.Metric1Value,
+			metric1Unit = entry.Metric1Unit,
+			metric2Value = entry.Metric2Value,
+			metric2Unit = entry.Metric2Unit,
+			groundContactTimeMs = entry.GroundContactTimeMs,
+			concentricTimeSeconds = entry.ConcentricTimeSeconds
+		};
+
 		if (_editingPrEntryId.HasValue)
 		{
-			buildResult.Entry.Id = _editingPrEntryId.Value;
-			await _database.UpdatePrEntryAsync(buildResult.Entry);
+			var result = await _api.UpdatePrEntryAsync(_editingPrEntryId.Value, data);
+			if (!result.Success)
+			{
+				ShowError(PrStatusLabel, result.Error ?? "Failed to update PR.");
+				return;
+			}
 			ShowSuccess(PrStatusLabel, "Saved PR updated.");
 		}
 		else
 		{
-			await _database.SavePrEntryAsync(buildResult.Entry);
+			var result = await _api.CreatePrEntryAsync(data);
+			if (!result.Success)
+			{
+				ShowError(PrStatusLabel, result.Error ?? "Failed to save PR.");
+				return;
+			}
 			ShowSuccess(PrStatusLabel, "Saved PR added.");
 		}
 
@@ -258,14 +283,18 @@ public partial class CalculationsPage : ContentPage
 	{
 		_savedPrEntries.Clear();
 
-		int? currentUserId = _session.GetCurrentUserId();
-		if (!currentUserId.HasValue)
+		if (!_session.IsLoggedIn())
 		{
 			return;
 		}
 
-		List<PrEntry> entries = await _database.GetPrEntriesByUserAsync(currentUserId.Value);
-		_savedPrEntries.AddRange(entries.Select(entry => new SavedPrItem
+		var result = await _api.GetPrEntriesAsync();
+		if (!result.Success || result.Data is null)
+		{
+			return;
+		}
+
+		_savedPrEntries.AddRange(result.Data.Select(entry => new SavedPrItem
 		{
 			Id = entry.Id,
 			ExerciseName = entry.ExerciseName,
@@ -289,7 +318,7 @@ public partial class CalculationsPage : ContentPage
 		SavedPrView.ItemsSource = _savedPrEntries.ToList();
 	}
 
-	private static string FormatSavedPr(PrEntry entry)
+	private static string FormatSavedPr(PrEntryResponse entry)
 	{
 		if (entry.TrackingMode == nameof(ExerciseTrackingMode.Custom))
 		{
@@ -340,7 +369,7 @@ public partial class CalculationsPage : ContentPage
 			return;
 		}
 
-		await _database.DeletePrEntryAsync(item.Id);
+		await _api.DeletePrEntryAsync(item.Id);
 		if (_editingPrEntryId == item.Id)
 		{
 			ResetPrSaveMode();

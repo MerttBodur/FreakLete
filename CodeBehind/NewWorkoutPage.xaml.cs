@@ -1,4 +1,3 @@
-using FreakLete.Data;
 using FreakLete.Models;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +7,7 @@ namespace FreakLete;
 public partial class NewWorkoutPage : ContentPage
 {
 	private readonly List<ExerciseEntry> _exercises = new();
-	private readonly AppDatabase _database;
+	private readonly ApiClient _api;
 	private readonly UserSession _session;
 	private readonly int? _editingWorkoutId;
 	private ExerciseCatalogItem? _selectedExerciseItem;
@@ -20,7 +19,7 @@ public partial class NewWorkoutPage : ContentPage
 	public NewWorkoutPage(int? workoutId)
 	{
 		InitializeComponent();
-		_database = MauiProgram.Services.GetRequiredService<AppDatabase>();
+		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 		_editingWorkoutId = workoutId;
 		ConfigurePageMode();
@@ -50,37 +49,36 @@ public partial class NewWorkoutPage : ContentPage
 
 	private async Task LoadWorkoutForEditAsync()
 	{
-		Workout? workout = await _database.GetWorkoutByIdAsync(_editingWorkoutId!.Value);
-		if (workout is null)
+		var result = await _api.GetWorkoutByIdAsync(_editingWorkoutId!.Value);
+		if (!result.Success || result.Data is null)
 		{
 			ShowError("Workout could not be loaded.");
 			return;
 		}
 
-		List<ExerciseEntry> exercises = await _database.GetExercisesByWorkoutIdAsync(workout.Id);
-
+		var workout = result.Data;
 		WorkoutNameEntry.Text = workout.WorkoutName;
 		WorkoutDatePicker.Date = workout.WorkoutDate;
 		ExercisesSection.IsVisible = true;
 
 		_exercises.Clear();
-		foreach (ExerciseEntry exercise in exercises)
+		foreach (var ex in workout.Exercises)
 		{
 			_exercises.Add(new ExerciseEntry
 			{
-				ExerciseName = exercise.ExerciseName,
-				ExerciseCategory = exercise.ExerciseCategory,
-				TrackingMode = exercise.TrackingMode,
-				Sets = exercise.Sets,
-				Reps = exercise.Reps,
-				RIR = exercise.RIR,
-				RestSeconds = exercise.RestSeconds,
-				GroundContactTimeMs = exercise.GroundContactTimeMs,
-				ConcentricTimeSeconds = exercise.ConcentricTimeSeconds,
-				Metric1Value = exercise.Metric1Value,
-				Metric1Unit = exercise.Metric1Unit,
-				Metric2Value = exercise.Metric2Value,
-				Metric2Unit = exercise.Metric2Unit
+				ExerciseName = ex.ExerciseName,
+				ExerciseCategory = ex.ExerciseCategory,
+				TrackingMode = ex.TrackingMode,
+				Sets = ex.Sets,
+				Reps = ex.Reps,
+				RIR = ex.RIR,
+				RestSeconds = ex.RestSeconds,
+				GroundContactTimeMs = ex.GroundContactTimeMs,
+				ConcentricTimeSeconds = ex.ConcentricTimeSeconds,
+				Metric1Value = ex.Metric1Value,
+				Metric1Unit = ex.Metric1Unit,
+				Metric2Value = ex.Metric2Value,
+				Metric2Unit = ex.Metric2Unit
 			});
 		}
 
@@ -126,8 +124,7 @@ public partial class NewWorkoutPage : ContentPage
 	{
 		ClearError();
 
-		int? currentUserId = _session.GetCurrentUserId();
-		if (!currentUserId.HasValue)
+		if (!_session.IsLoggedIn())
 		{
 			ShowError("Please log in again.");
 			return;
@@ -145,38 +142,48 @@ public partial class NewWorkoutPage : ContentPage
 			return;
 		}
 
-		Workout workout = new()
+		string dateStr = $"{WorkoutDatePicker.Date:yyyy-MM-dd}";
+		var exercises = _exercises.Select(ex => new
 		{
-			Id = _editingWorkoutId.GetValueOrDefault(),
-			UserId = currentUserId.Value,
-			WorkoutDate = WorkoutDatePicker.Date.GetValueOrDefault().Date,
-			WorkoutName = WorkoutNameEntry.Text.Trim()
-		};
-
-		List<ExerciseEntry> exerciseCopies = _exercises.Select(exercise => new ExerciseEntry
-		{
-			ExerciseName = exercise.ExerciseName,
-			ExerciseCategory = exercise.ExerciseCategory,
-			TrackingMode = exercise.TrackingMode,
-			Sets = exercise.Sets,
-			Reps = exercise.Reps,
-			RIR = exercise.RIR,
-			RestSeconds = exercise.RestSeconds,
-			GroundContactTimeMs = exercise.GroundContactTimeMs,
-			ConcentricTimeSeconds = exercise.ConcentricTimeSeconds,
-			Metric1Value = exercise.Metric1Value,
-			Metric1Unit = exercise.Metric1Unit,
-			Metric2Value = exercise.Metric2Value,
-			Metric2Unit = exercise.Metric2Unit
+			exerciseName = ex.ExerciseName,
+			exerciseCategory = ex.ExerciseCategory,
+			trackingMode = ex.TrackingMode,
+			sets = ex.Sets,
+			reps = ex.Reps,
+			rir = ex.RIR,
+			restSeconds = ex.RestSeconds,
+			groundContactTimeMs = ex.GroundContactTimeMs,
+			concentricTimeSeconds = ex.ConcentricTimeSeconds,
+			metric1Value = ex.Metric1Value,
+			metric1Unit = ex.Metric1Unit,
+			metric2Value = ex.Metric2Value,
+			metric2Unit = ex.Metric2Unit
 		}).ToList();
+
+		var workoutData = new
+		{
+			workoutName = WorkoutNameEntry.Text.Trim(),
+			workoutDate = dateStr,
+			exercises
+		};
 
 		if (_editingWorkoutId.HasValue)
 		{
-			await _database.UpdateWorkoutAsync(workout, exerciseCopies);
+			var result = await _api.UpdateWorkoutAsync(_editingWorkoutId.Value, workoutData);
+			if (!result.Success)
+			{
+				ShowError(result.Error ?? "Failed to update workout.");
+				return;
+			}
 		}
 		else
 		{
-			await _database.SaveWorkoutAsync(workout, exerciseCopies);
+			var result = await _api.CreateWorkoutAsync(workoutData);
+			if (!result.Success)
+			{
+				ShowError(result.Error ?? "Failed to save workout.");
+				return;
+			}
 		}
 
 		await Navigation.PopAsync(true);

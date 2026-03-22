@@ -115,6 +115,60 @@ public class ApiClient
 		return DeleteAsync($"api/movementgoals/{id}");
 	}
 
+	// ── Workouts ──────────────────────────────────────
+
+	public Task<ApiResult<List<WorkoutResponse>>> GetWorkoutsAsync()
+	{
+		return GetAsync<List<WorkoutResponse>>("api/workouts");
+	}
+
+	public Task<ApiResult<WorkoutResponse>> GetWorkoutByIdAsync(int id)
+	{
+		return GetAsync<WorkoutResponse>($"api/workouts/{id}");
+	}
+
+	public Task<ApiResult<List<WorkoutResponse>>> GetWorkoutsByDateAsync(DateTime date)
+	{
+		return GetAsync<List<WorkoutResponse>>($"api/workouts/by-date/{date:yyyy-MM-dd}");
+	}
+
+	public Task<ApiResult<WorkoutResponse>> CreateWorkoutAsync(object data)
+	{
+		return PostAsync<WorkoutResponse>("api/workouts", data);
+	}
+
+	public Task<ApiResult<bool>> UpdateWorkoutAsync(int id, object data)
+	{
+		return PutAsync($"api/workouts/{id}", data);
+	}
+
+	public Task<ApiResult<bool>> DeleteWorkoutAsync(int id)
+	{
+		return DeleteAsync($"api/workouts/{id}");
+	}
+
+	// ── PR Entries ────────────────────────────────────
+
+	public Task<ApiResult<List<PrEntryResponse>>> GetPrEntriesAsync()
+	{
+		return GetAsync<List<PrEntryResponse>>("api/pr-entries");
+	}
+
+	public Task<ApiResult<PrEntryResponse>> CreatePrEntryAsync(object data)
+	{
+		return PostAsync<PrEntryResponse>("api/pr-entries", data);
+	}
+
+	public Task<ApiResult<bool>> UpdatePrEntryAsync(int id, object data)
+	{
+		return PutAsync($"api/pr-entries/{id}", data);
+	}
+
+	public Task<ApiResult<bool>> DeletePrEntryAsync(int id)
+	{
+		return DeleteAsync($"api/pr-entries/{id}");
+	}
+
 	// ── HTTP helpers ────────────────────────────────────
 
 	private void AttachToken()
@@ -285,5 +339,48 @@ public class MovementGoalResponse
 	public string GoalMetricLabel { get; set; } = "";
 	public double TargetValue { get; set; }
 	public string Unit { get; set; } = "";
+	public DateTime CreatedAt { get; set; }
+}
+
+public class WorkoutResponse
+{
+	public int Id { get; set; }
+	public string WorkoutName { get; set; } = "";
+	public DateTime WorkoutDate { get; set; }
+	public List<ExerciseEntryDto> Exercises { get; set; } = [];
+}
+
+public class ExerciseEntryDto
+{
+	public string ExerciseName { get; set; } = "";
+	public string ExerciseCategory { get; set; } = "";
+	public string TrackingMode { get; set; } = "Strength";
+	public int Sets { get; set; }
+	public int Reps { get; set; }
+	public int? RIR { get; set; }
+	public int? RestSeconds { get; set; }
+	public double? GroundContactTimeMs { get; set; }
+	public double? ConcentricTimeSeconds { get; set; }
+	public double? Metric1Value { get; set; }
+	public string Metric1Unit { get; set; } = "";
+	public double? Metric2Value { get; set; }
+	public string Metric2Unit { get; set; } = "";
+}
+
+public class PrEntryResponse
+{
+	public int Id { get; set; }
+	public string ExerciseName { get; set; } = "";
+	public string ExerciseCategory { get; set; } = "";
+	public string TrackingMode { get; set; } = "";
+	public int Weight { get; set; }
+	public int Reps { get; set; }
+	public int? RIR { get; set; }
+	public double? Metric1Value { get; set; }
+	public string Metric1Unit { get; set; } = "";
+	public double? Metric2Value { get; set; }
+	public string Metric2Unit { get; set; } = "";
+	public double? GroundContactTimeMs { get; set; }
+	public double? ConcentricTimeSeconds { get; set; }
 	public DateTime CreatedAt { get; set; }
 }
