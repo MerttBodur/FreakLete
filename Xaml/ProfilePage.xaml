@@ -37,8 +37,17 @@
 
                         <Label Text="Date of Birth"
                                Style="{StaticResource BodyMuted}" />
-                        <DatePicker x:Name="DateOfBirthPicker"
-                                    DateSelected="OnDateOfBirthChanged" />
+                        <Border Style="{StaticResource CardBorder}"
+                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                Padding="14,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnDateOfBirthTapped" />
+                            </Border.GestureRecognizers>
+                            <Label x:Name="DateOfBirthLabel"
+                                   Text="Select date of birth"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   FontSize="15" />
+                        </Border>
 
                         <Label x:Name="AgeLabel"
                                Text="Age: -" />
@@ -65,23 +74,49 @@
 
                         <Label Text="Sport"
                                Style="{StaticResource BodyMuted}" />
-                        <Picker x:Name="SportPicker"
-                                Title="Select your sport"
-                                SelectedIndexChanged="OnSportPickerChanged" />
+                        <Border Style="{StaticResource CardBorder}"
+                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                Padding="14,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSportSelectorTapped" />
+                            </Border.GestureRecognizers>
+                            <Label x:Name="SportLabel"
+                                   Text="Select your sport"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   FontSize="15" />
+                        </Border>
 
                         <VerticalStackLayout x:Name="PositionContainer"
                                              Spacing="8"
                                              IsVisible="False">
                             <Label Text="Position / Discipline"
                                    Style="{StaticResource BodyMuted}" />
-                            <Picker x:Name="PositionPicker"
-                                    Title="Select your position" />
+                            <Border Style="{StaticResource CardBorder}"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Padding="14,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnPositionSelectorTapped" />
+                                </Border.GestureRecognizers>
+                                <Label x:Name="PositionLabel"
+                                       Text="Select your position"
+                                       TextColor="{StaticResource TextSecondary}"
+                                       FontSize="15" />
+                            </Border>
                         </VerticalStackLayout>
 
                         <Label Text="Gym Experience"
                                Style="{StaticResource BodyMuted}" />
-                        <Picker x:Name="GymExperiencePicker"
-                                Title="Select experience level" />
+                        <Border Style="{StaticResource CardBorder}"
+                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                Padding="14,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnGymExperienceTapped" />
+                            </Border.GestureRecognizers>
+                            <Label x:Name="GymExperienceLabel"
+                                   Text="Select experience level"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   FontSize="15" />
+                        </Border>
 
                         <Button Text="Save"
                                 Clicked="OnSaveProfileClicked" />
@@ -96,23 +131,59 @@
 
                         <Label Text="Training Days / Week"
                                Style="{StaticResource BodyMuted}" />
-                        <Picker x:Name="TrainingDaysPicker"
-                                Title="Select days per week" />
+                        <Border Style="{StaticResource CardBorder}"
+                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                Padding="14,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnTrainingDaysTapped" />
+                            </Border.GestureRecognizers>
+                            <Label x:Name="TrainingDaysLabel"
+                                   Text="Select days per week"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   FontSize="15" />
+                        </Border>
 
                         <Label Text="Session Duration (minutes)"
                                Style="{StaticResource BodyMuted}" />
-                        <Picker x:Name="SessionDurationPicker"
-                                Title="Select session duration" />
+                        <Border Style="{StaticResource CardBorder}"
+                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                Padding="14,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSessionDurationTapped" />
+                            </Border.GestureRecognizers>
+                            <Label x:Name="SessionDurationLabel"
+                                   Text="Select session duration"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   FontSize="15" />
+                        </Border>
 
                         <Label Text="Primary Training Goal"
                                Style="{StaticResource BodyMuted}" />
-                        <Picker x:Name="PrimaryGoalPicker"
-                                Title="Select your primary goal" />
+                        <Border Style="{StaticResource CardBorder}"
+                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                Padding="14,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnPrimaryGoalTapped" />
+                            </Border.GestureRecognizers>
+                            <Label x:Name="PrimaryGoalLabel"
+                                   Text="Select your primary goal"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   FontSize="15" />
+                        </Border>
 
                         <Label Text="Secondary Goal (optional)"
                                Style="{StaticResource BodyMuted}" />
-                        <Picker x:Name="SecondaryGoalPicker"
-                                Title="Select secondary goal" />
+                        <Border Style="{StaticResource CardBorder}"
+                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                Padding="14,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSecondaryGoalTapped" />
+                            </Border.GestureRecognizers>
+                            <Label x:Name="SecondaryGoalLabel"
+                                   Text="Select secondary goal"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   FontSize="15" />
+                        </Border>
 
                         <Label Text="Available Equipment"
                                Style="{StaticResource BodyMuted}" />
@@ -148,8 +219,17 @@
 
                         <Label Text="Dietary Preference (optional)"
                                Style="{StaticResource BodyMuted}" />
-                        <Picker x:Name="DietaryPreferencePicker"
-                                Title="Select dietary preference" />
+                        <Border Style="{StaticResource CardBorder}"
+                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                Padding="14,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnDietaryPreferenceTapped" />
+                            </Border.GestureRecognizers>
+                            <Label x:Name="DietaryPreferenceLabel"
+                                   Text="Select dietary preference"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   FontSize="15" />
+                        </Border>
 
                         <Button Text="Save Coach Profile"
                                 Clicked="OnSaveCoachProfileClicked" />

@@ -46,19 +46,23 @@ public partial class ProfilePage : ContentPage
 	private ExerciseCatalogItem? _selectedGoalItem;
 	private List<SportDefinitionResponse> _sportCatalog = [];
 	private SportDefinitionResponse? _selectedSport;
+	private string? _sportCatalogLoadError;
+
+	// Selection state for custom pickers
+	private DateTime _selectedDateOfBirth = DateTime.Today.AddYears(-18);
+	private string? _selectedPosition;
+	private string? _selectedGymExperience;
+	private string? _selectedTrainingDays;
+	private string? _selectedSessionDuration;
+	private string? _selectedPrimaryGoal;
+	private string? _selectedSecondaryGoal;
+	private string? _selectedDietaryPreference;
 
 	public ProfilePage()
 	{
 		InitializeComponent();
 		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
-
-		GymExperiencePicker.ItemsSource = ExperienceLevels;
-		TrainingDaysPicker.ItemsSource = TrainingDaysOptions;
-		SessionDurationPicker.ItemsSource = SessionDurationOptions;
-		PrimaryGoalPicker.ItemsSource = TrainingGoalOptions;
-		SecondaryGoalPicker.ItemsSource = TrainingGoalOptions;
-		DietaryPreferencePicker.ItemsSource = DietaryPreferenceOptions;
 		UpdatePerformanceSelectionUI();
 		UpdateGoalSelectionUI();
 	}
@@ -95,47 +99,181 @@ public partial class ProfilePage : ContentPage
 		FullNameLabel.Text = $"{_profile.FirstName} {_profile.LastName}";
 		EmailLabel.Text = _profile.Email;
 
-		DateTime dateOfBirth = _profile.DateOfBirth?.Date ?? DateTime.Today.AddYears(-18);
-		DateOfBirthPicker.Date = dateOfBirth;
+		_selectedDateOfBirth = _profile.DateOfBirth?.Date ?? DateTime.Today.AddYears(-18);
+		UpdateDateOfBirthLabel();
 		UpdateAgeLabel(_profile.DateOfBirth);
 
 		WeightEntry.Text = _profile.WeightKg?.ToString("0.##") ?? string.Empty;
 		BodyFatEntry.Text = _profile.BodyFatPercentage?.ToString("0.##") ?? string.Empty;
 
 		await LoadSportCatalogAsync();
-		SetSportPickerSelection(_profile.SportName, _profile.Position);
+		SetSportSelection(_profile.SportName, _profile.Position);
 
-		if (!string.IsNullOrWhiteSpace(_profile.GymExperienceLevel))
-		{
-			GymExperiencePicker.SelectedItem = _profile.GymExperienceLevel;
-		}
-		else
-		{
-			GymExperiencePicker.SelectedIndex = -1;
-		}
+		SetSelectorValue(GymExperienceLabel, _profile.GymExperienceLevel, "Select experience level");
+		_selectedGymExperience = string.IsNullOrWhiteSpace(_profile.GymExperienceLevel) ? null : _profile.GymExperienceLevel;
 
 		WorkoutCountLabel.Text = _profile.TotalWorkouts.ToString();
 		OneRmPrCountLabel.Text = _profile.TotalPrs.ToString();
 
 		// Coach profile fields
-		if (_profile.TrainingDaysPerWeek.HasValue)
-			TrainingDaysPicker.SelectedItem = _profile.TrainingDaysPerWeek.Value.ToString();
-		if (_profile.PreferredSessionDurationMinutes.HasValue)
-			SessionDurationPicker.SelectedItem = _profile.PreferredSessionDurationMinutes.Value.ToString();
-		if (!string.IsNullOrWhiteSpace(_profile.PrimaryTrainingGoal))
-			PrimaryGoalPicker.SelectedItem = _profile.PrimaryTrainingGoal;
-		if (!string.IsNullOrWhiteSpace(_profile.SecondaryTrainingGoal))
-			SecondaryGoalPicker.SelectedItem = _profile.SecondaryTrainingGoal;
+		SetSelectorValue(TrainingDaysLabel, _profile.TrainingDaysPerWeek?.ToString(), "Select days per week");
+		_selectedTrainingDays = _profile.TrainingDaysPerWeek?.ToString();
+
+		SetSelectorValue(SessionDurationLabel, _profile.PreferredSessionDurationMinutes?.ToString(), "Select session duration");
+		_selectedSessionDuration = _profile.PreferredSessionDurationMinutes?.ToString();
+
+		SetSelectorValue(PrimaryGoalLabel, _profile.PrimaryTrainingGoal, "Select your primary goal");
+		_selectedPrimaryGoal = string.IsNullOrWhiteSpace(_profile.PrimaryTrainingGoal) ? null : _profile.PrimaryTrainingGoal;
+
+		SetSelectorValue(SecondaryGoalLabel, _profile.SecondaryTrainingGoal, "Select secondary goal");
+		_selectedSecondaryGoal = string.IsNullOrWhiteSpace(_profile.SecondaryTrainingGoal) ? null : _profile.SecondaryTrainingGoal;
+
 		EquipmentEditor.Text = _profile.AvailableEquipment;
 		InjuryHistoryEditor.Text = _profile.InjuryHistory;
 		CurrentPainEditor.Text = _profile.CurrentPainPoints;
 		PhysicalLimitationsEditor.Text = _profile.PhysicalLimitations;
-		if (!string.IsNullOrWhiteSpace(_profile.DietaryPreference))
-			DietaryPreferencePicker.SelectedItem = _profile.DietaryPreference;
+
+		SetSelectorValue(DietaryPreferenceLabel, _profile.DietaryPreference, "Select dietary preference");
+		_selectedDietaryPreference = string.IsNullOrWhiteSpace(_profile.DietaryPreference) ? null : _profile.DietaryPreference;
 
 		await LoadAthleticPerformancesAsync();
 		await LoadMovementGoalsAsync();
 	}
+
+	private static void SetSelectorValue(Label label, string? value, string placeholder)
+	{
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			label.Text = placeholder;
+			label.TextColor = Color.FromArgb("#B3B2C5"); // TextSecondary
+		}
+		else
+		{
+			label.Text = value;
+			label.TextColor = Color.FromArgb("#F7F7FB"); // TextPrimary
+		}
+	}
+
+	private void UpdateDateOfBirthLabel()
+	{
+		DateOfBirthLabel.Text = _selectedDateOfBirth.ToString("dd MMMM yyyy");
+		DateOfBirthLabel.TextColor = Color.FromArgb("#F7F7FB");
+	}
+
+	// ── Custom selector tap handlers ──────────────────────────────────
+
+	private async void OnDateOfBirthTapped(object? sender, TappedEventArgs e)
+	{
+		await Navigation.PushAsync(
+			new DateSelectorPage(_selectedDateOfBirth, date =>
+			{
+				_selectedDateOfBirth = date;
+				UpdateDateOfBirthLabel();
+				UpdateAgeLabel(date);
+			}), true);
+	}
+
+	private async void OnSportSelectorTapped(object? sender, TappedEventArgs e)
+	{
+		if (_sportCatalog.Count == 0)
+		{
+			await LoadSportCatalogAsync(forceReload: true);
+		}
+
+		if (_sportCatalog.Count == 0)
+		{
+			ShowError(_sportCatalogLoadError ?? "Sport list could not be loaded. Please try again.");
+			return;
+		}
+
+		var sportNames = _sportCatalog.Select(s => s.Name).ToArray();
+		await Navigation.PushAsync(
+			new OptionPickerPage("Select Sport", sportNames, _selectedSport?.Name, name =>
+			{
+				var sport = _sportCatalog.FirstOrDefault(s =>
+					string.Equals(s.Name, name, StringComparison.OrdinalIgnoreCase));
+				if (sport is not null)
+				{
+					_selectedSport = sport;
+					SetSelectorValue(SportLabel, sport.Name, "Select your sport");
+					UpdatePositionUI(sport, null);
+				}
+			}), true);
+	}
+
+	private async void OnPositionSelectorTapped(object? sender, TappedEventArgs e)
+	{
+		if (_selectedSport is null || !_selectedSport.HasPositions || _selectedSport.Positions.Count == 0) return;
+
+		await Navigation.PushAsync(
+			new OptionPickerPage("Select Position", _selectedSport.Positions, _selectedPosition, pos =>
+			{
+				_selectedPosition = pos;
+				SetSelectorValue(PositionLabel, pos, "Select your position");
+			}), true);
+	}
+
+	private async void OnGymExperienceTapped(object? sender, TappedEventArgs e)
+	{
+		await Navigation.PushAsync(
+			new OptionPickerPage("Gym Experience", ExperienceLevels, _selectedGymExperience, val =>
+			{
+				_selectedGymExperience = val;
+				SetSelectorValue(GymExperienceLabel, val, "Select experience level");
+			}), true);
+	}
+
+	private async void OnTrainingDaysTapped(object? sender, TappedEventArgs e)
+	{
+		await Navigation.PushAsync(
+			new OptionPickerPage("Training Days / Week", TrainingDaysOptions, _selectedTrainingDays, val =>
+			{
+				_selectedTrainingDays = val;
+				SetSelectorValue(TrainingDaysLabel, val, "Select days per week");
+			}), true);
+	}
+
+	private async void OnSessionDurationTapped(object? sender, TappedEventArgs e)
+	{
+		await Navigation.PushAsync(
+			new OptionPickerPage("Session Duration", SessionDurationOptions, _selectedSessionDuration, val =>
+			{
+				_selectedSessionDuration = val;
+				SetSelectorValue(SessionDurationLabel, val, "Select session duration");
+			}), true);
+	}
+
+	private async void OnPrimaryGoalTapped(object? sender, TappedEventArgs e)
+	{
+		await Navigation.PushAsync(
+			new OptionPickerPage("Primary Goal", TrainingGoalOptions, _selectedPrimaryGoal, val =>
+			{
+				_selectedPrimaryGoal = val;
+				SetSelectorValue(PrimaryGoalLabel, val, "Select your primary goal");
+			}), true);
+	}
+
+	private async void OnSecondaryGoalTapped(object? sender, TappedEventArgs e)
+	{
+		await Navigation.PushAsync(
+			new OptionPickerPage("Secondary Goal", TrainingGoalOptions, _selectedSecondaryGoal, val =>
+			{
+				_selectedSecondaryGoal = val;
+				SetSelectorValue(SecondaryGoalLabel, val, "Select secondary goal");
+			}), true);
+	}
+
+	private async void OnDietaryPreferenceTapped(object? sender, TappedEventArgs e)
+	{
+		await Navigation.PushAsync(
+			new OptionPickerPage("Dietary Preference", DietaryPreferenceOptions, _selectedDietaryPreference, val =>
+			{
+				_selectedDietaryPreference = val;
+				SetSelectorValue(DietaryPreferenceLabel, val, "Select dietary preference");
+			}), true);
+	}
+
+	// ── Data loading ──────────────────────────────────────────────────
 
 	private async Task LoadAthleticPerformancesAsync()
 	{
@@ -191,6 +329,8 @@ public partial class ProfilePage : ContentPage
 		MovementGoalsEmptyLabel.IsVisible = items.Count == 0;
 	}
 
+	// ── Save handlers ─────────────────────────────────────────────────
+
 	private async void OnSaveProfileClicked(object? sender, EventArgs e)
 	{
 		ClearStatus();
@@ -227,9 +367,9 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		string dateStr = $"{DateOfBirthPicker.Date:yyyy-MM-dd}";
+		string dateStr = $"{_selectedDateOfBirth:yyyy-MM-dd}";
 		string sportName = _selectedSport?.Name ?? string.Empty;
-		string position = PositionPicker.SelectedItem?.ToString() ?? string.Empty;
+		string position = _selectedPosition ?? string.Empty;
 
 		var profileData = new
 		{
@@ -238,13 +378,13 @@ public partial class ProfilePage : ContentPage
 			bodyFatPercentage = bodyFat,
 			sportName,
 			position,
-			gymExperienceLevel = GymExperiencePicker.SelectedItem?.ToString() ?? string.Empty
+			gymExperienceLevel = _selectedGymExperience ?? string.Empty
 		};
 
 		var result = await _api.UpdateProfileAsync(profileData);
 		if (result.Success)
 		{
-			UpdateAgeLabel(DateOfBirthPicker.Date);
+			UpdateAgeLabel(_selectedDateOfBirth);
 			ShowSuccess("Profile saved.");
 		}
 		else
@@ -259,8 +399,8 @@ public partial class ProfilePage : ContentPage
 
 		if (_profile is null) return;
 
-		int? trainingDays = TrainingDaysPicker.SelectedItem is string td ? int.Parse(td) : null;
-		int? sessionDuration = SessionDurationPicker.SelectedItem is string sd ? int.Parse(sd) : null;
+		int? trainingDays = _selectedTrainingDays is not null ? int.Parse(_selectedTrainingDays) : null;
+		int? sessionDuration = _selectedSessionDuration is not null ? int.Parse(_selectedSessionDuration) : null;
 
 		var coachData = new
 		{
@@ -270,9 +410,9 @@ public partial class ProfilePage : ContentPage
 			physicalLimitations = PhysicalLimitationsEditor.Text?.Trim() ?? "",
 			injuryHistory = InjuryHistoryEditor.Text?.Trim() ?? "",
 			currentPainPoints = CurrentPainEditor.Text?.Trim() ?? "",
-			primaryTrainingGoal = PrimaryGoalPicker.SelectedItem?.ToString() ?? "",
-			secondaryTrainingGoal = SecondaryGoalPicker.SelectedItem?.ToString() ?? "",
-			dietaryPreference = DietaryPreferencePicker.SelectedItem?.ToString() ?? ""
+			primaryTrainingGoal = _selectedPrimaryGoal ?? "",
+			secondaryTrainingGoal = _selectedSecondaryGoal ?? "",
+			dietaryPreference = _selectedDietaryPreference ?? ""
 		};
 
 		var result = await _api.UpdateProfileAsync(coachData);
@@ -281,6 +421,8 @@ public partial class ProfilePage : ContentPage
 		else
 			ShowError(result.Error ?? "Failed to save coach profile.");
 	}
+
+	// ── Athletic Performance CRUD ─────────────────────────────────────
 
 	private async void OnAddPerformanceClicked(object? sender, EventArgs e)
 	{
@@ -433,6 +575,8 @@ public partial class ProfilePage : ContentPage
 		ShowSuccess($"Editing: {item.Text}");
 	}
 
+	// ── Movement Goals CRUD ───────────────────────────────────────────
+
 	private async void OnSaveGoalClicked(object? sender, EventArgs e)
 	{
 		ClearStatus();
@@ -556,10 +700,7 @@ public partial class ProfilePage : ContentPage
 		ClearStatus();
 	}
 
-	private void OnDateOfBirthChanged(object? sender, DateChangedEventArgs e)
-	{
-		UpdateAgeLabel(e.NewDate);
-	}
+	// ── Account actions ───────────────────────────────────────────────
 
 	private void OnLogoutClicked(object? sender, EventArgs e)
 	{
@@ -605,6 +746,8 @@ public partial class ProfilePage : ContentPage
 			await TabNavigationHelper.ResetToRootAsync(Navigation, () => new LoginPage(), false);
 		});
 	}
+
+	// ── Helpers ───────────────────────────────────────────────────────
 
 	private static double? ParseNullableDouble(string? text)
 	{
@@ -816,23 +959,28 @@ public partial class ProfilePage : ContentPage
 		GoalCancelButton.IsVisible = false;
 	}
 
-	private async Task LoadSportCatalogAsync()
+	private async Task LoadSportCatalogAsync(bool forceReload = false)
 	{
-		if (_sportCatalog.Count > 0) return;
+		if (!forceReload && _sportCatalog.Count > 0) return;
 
 		var result = await _api.GetSportCatalogAsync();
 		if (result.Success && result.Data is not null)
 		{
 			_sportCatalog = result.Data;
-			SportPicker.ItemsSource = _sportCatalog.Select(s => s.Name).ToList();
+			_sportCatalogLoadError = null;
+		}
+		else
+		{
+			_sportCatalog = [];
+			_sportCatalogLoadError = result.Error ?? "Sport catalog request failed.";
 		}
 	}
 
-	private void SetSportPickerSelection(string sportName, string position)
+	private void SetSportSelection(string sportName, string position)
 	{
 		if (string.IsNullOrWhiteSpace(sportName) || _sportCatalog.Count == 0)
 		{
-			SportPicker.SelectedIndex = -1;
+			SetSelectorValue(SportLabel, null, "Select your sport");
 			return;
 		}
 
@@ -842,53 +990,42 @@ public partial class ProfilePage : ContentPage
 		if (sport is not null)
 		{
 			_selectedSport = sport;
-			SportPicker.SelectedIndex = _sportCatalog.IndexOf(sport);
-			UpdatePositionPicker(sport, position);
+			SetSelectorValue(SportLabel, sport.Name, "Select your sport");
+			UpdatePositionUI(sport, position);
 		}
 		else
 		{
-			SportPicker.SelectedIndex = -1;
+			SetSelectorValue(SportLabel, null, "Select your sport");
 		}
 	}
 
-	private void OnSportPickerChanged(object? sender, EventArgs e)
-	{
-		int index = SportPicker.SelectedIndex;
-		if (index < 0 || index >= _sportCatalog.Count)
-		{
-			_selectedSport = null;
-			PositionContainer.IsVisible = false;
-			return;
-		}
-
-		_selectedSport = _sportCatalog[index];
-		UpdatePositionPicker(_selectedSport, null);
-	}
-
-	private void UpdatePositionPicker(SportDefinitionResponse sport, string? currentPosition)
+	private void UpdatePositionUI(SportDefinitionResponse sport, string? currentPosition)
 	{
 		if (sport.HasPositions && sport.Positions.Count > 0)
 		{
 			PositionContainer.IsVisible = true;
-			PositionPicker.ItemsSource = sport.Positions;
+			_selectedPosition = null;
 
 			if (!string.IsNullOrWhiteSpace(currentPosition))
 			{
-				int posIndex = sport.Positions.FindIndex(p =>
+				string? match = sport.Positions.FirstOrDefault(p =>
 					string.Equals(p, currentPosition, StringComparison.OrdinalIgnoreCase));
-				PositionPicker.SelectedIndex = posIndex >= 0 ? posIndex : -1;
+				if (match is not null)
+				{
+					_selectedPosition = match;
+				}
 			}
-			else
-			{
-				PositionPicker.SelectedIndex = -1;
-			}
+
+			SetSelectorValue(PositionLabel, _selectedPosition, "Select your position");
 		}
 		else
 		{
 			PositionContainer.IsVisible = false;
-			PositionPicker.SelectedIndex = -1;
+			_selectedPosition = null;
 		}
 	}
+
+	// ── Inner model classes ───────────────────────────────────────────
 
 	private class TextListItem
 	{

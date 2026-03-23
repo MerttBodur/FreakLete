@@ -28,6 +28,7 @@ public class ApiClient
 
 		_http = new HttpClient(handler);
 		_http.BaseAddress = new Uri(GetBaseUrl());
+		_http.Timeout = TimeSpan.FromSeconds(45);
 		_http.DefaultRequestHeaders.Accept.Add(
 			new MediaTypeWithQualityHeaderValue("application/json"));
 	}

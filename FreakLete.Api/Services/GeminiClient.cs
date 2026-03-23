@@ -30,7 +30,7 @@ public class GeminiClient
         _logger = logger;
     }
 
-    public async Task<GeminiResponse> GenerateContentAsync(GeminiRequest request)
+    public async Task<GeminiResponse> GenerateContentAsync(GeminiRequest request, CancellationToken cancellationToken = default)
     {
         var url = $"https://generativelanguage.googleapis.com/v1beta/models/{_options.Model}:generateContent?key={_options.ApiKey}";
 
@@ -38,9 +38,9 @@ public class GeminiClient
         _logger.LogDebug("Gemini request: {Json}", json);
 
         using var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await _http.PostAsync(url, content);
+        var response = await _http.PostAsync(url, content, cancellationToken);
 
-        var responseBody = await response.Content.ReadAsStringAsync();
+        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {

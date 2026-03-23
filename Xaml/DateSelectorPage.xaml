@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:FreakLete"
+             x:Class="FreakLete.DateSelectorPage"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <VerticalStackLayout Grid.Row="0"
+                             Padding="24,18,24,12"
+                             Spacing="18">
+
+            <local:TopHeader x:Name="HeaderView"
+                             ShowBackButton="True"
+                             BackClicked="OnHeaderBackClicked"
+                             Title="Date of Birth" />
+
+            <Border Style="{StaticResource AccentCardBorder}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="DATE OF BIRTH"
+                           Style="{StaticResource Eyebrow}" />
+                    <Label x:Name="SelectedDateLabel"
+                           Text="--"
+                           Style="{StaticResource Headline}"
+                           HorizontalTextAlignment="Start" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+
+        <ScrollView Grid.Row="1"
+                    Padding="24,0">
+            <VerticalStackLayout Spacing="16">
+
+                <Label Text="Year"
+                       Style="{StaticResource SubHeadline}" />
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout x:Name="YearChips"
+                                           Spacing="8" />
+                </ScrollView>
+
+                <Label Text="Month"
+                       Style="{StaticResource SubHeadline}" />
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout x:Name="MonthChips"
+                                           Spacing="8" />
+                </ScrollView>
+
+                <Label Text="Day"
+                       Style="{StaticResource SubHeadline}" />
+                <FlexLayout x:Name="DayChips"
+                            Wrap="Wrap"
+                            JustifyContent="Start"
+                            AlignItems="Start" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Button Grid.Row="2"
+                Text="Done"
+                Margin="24,12"
+                Clicked="OnDoneClicked" />
+    </Grid>
+
+</ContentPage>

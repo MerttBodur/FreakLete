@@ -29,7 +29,7 @@ public class FreakAiController : ControllerBase
 
         try
         {
-            var reply = await _orchestrator.ChatAsync(userId, request.Message, request.History);
+            var reply = await _orchestrator.ChatAsync(userId, request.Message, request.History, HttpContext.RequestAborted);
 
             return Ok(new FreakAiChatResponse { Reply = reply });
         }

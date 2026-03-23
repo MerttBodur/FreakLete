@@ -8,8 +8,9 @@ public class FreakAiOrchestrator
     private readonly FreakAiToolExecutor _toolExecutor;
     private readonly ILogger<FreakAiOrchestrator> _logger;
 
-    private const int MaxToolRounds = 8;
+    private const int MaxToolRounds = 5;
     private const int MaxHistoryMessages = 20;
+    private static readonly TimeSpan MaxChatDuration = TimeSpan.FromSeconds(40);
 
     public FreakAiOrchestrator(
         GeminiClient gemini,
@@ -21,8 +22,15 @@ public class FreakAiOrchestrator
         _logger = logger;
     }
 
-    public async Task<string> ChatAsync(int userId, string userMessage, List<ChatMessage>? history)
+    public async Task<string> ChatAsync(
+        int userId,
+        string userMessage,
+        List<ChatMessage>? history,
+        CancellationToken cancellationToken = default)
     {
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutCts.CancelAfter(MaxChatDuration);
+
         var contents = BuildContents(userMessage, history);
         var tools = BuildToolDeclarations();
         var systemPrompt = FreakAiSystemPrompt.Build();
@@ -38,14 +46,14 @@ public class FreakAiOrchestrator
             GenerationConfig = new GeminiGenerationConfig
             {
                 Temperature = 0.7,
-                MaxOutputTokens = 4096
+                MaxOutputTokens = 2048
             }
         };
 
         // Tool-calling loop
         for (int round = 0; round < MaxToolRounds; round++)
         {
-            var response = await _gemini.GenerateContentAsync(request);
+            var response = await _gemini.GenerateContentAsync(request, timeoutCts.Token);
 
             var candidate = response.Candidates?.FirstOrDefault();
             if (candidate?.Content is null)

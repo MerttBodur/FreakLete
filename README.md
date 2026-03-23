@@ -6,7 +6,17 @@ FreakLete is a mobile app for field athletes who lift and want to log gym sessio
 
 FreakLete combines classic strength tracking with athletic metrics such as jumps, sprint work, RSI, movement goals, and exercise-specific data entry. The app now runs with a production backend and PostgreSQL persistence, so accounts and training data are no longer limited to a single device.
 
-Long term, the product direction includes `FreakAI`, an intelligence layer that will sit on top of structured athlete data, exercise metadata, and recommendation logic.
+The current product also includes:
+- structured athlete profile selection for sport, position, and coach preferences
+- initial training program persistence
+- an early `FreakAI` coach workflow for chat, program guidance, and active program review
+
+Long term, `FreakAI` will move beyond its current MVP and become a deeper intelligence layer sitting on top of structured athlete data, exercise metadata, and recommendation logic.
+
+Near-term product direction also includes deeper tracking visibility and session flow improvements:
+- analytics dashboards for PR, bodyweight, and workout consistency trends
+- a live workout mode with set/rest timing
+- internal fatigue scoring to support smarter coaching and recovery decisions
 
 The app is designed around a fast daily workflow:
 - build workouts with categorized exercise recommendations
@@ -25,6 +35,9 @@ The app is designed around a fast daily workflow:
 - Athletic performance tracking
 - Movement goal tracking
 - Profile and body metrics management
+- Structured sport, position, and coach profile selection
+- Training program persistence and active program retrieval
+- FreakAI coach MVP with multilingual response behavior
 - Cloud-backed persistence for profile, workouts, PRs, movement goals, and athletic performance
 
 ## Screens
@@ -100,6 +113,7 @@ Profile details including body metrics and sport background.
 - ASP.NET Core Web API
 - PostgreSQL
 - Railway
+- Google Gemini
 - xUnit
 - VS Code
 - GenAI
@@ -117,9 +131,22 @@ Automated testing is included. The production backend has also passed end-to-end
 
 - Android Play Store release flow
 - iOS release preparation
+- Tracking analytics dashboards
+  - PR trend line charts
+  - bodyweight trend line charts
+  - workout count / consistency trend charts
+- Live workout mode
+  - start workout flow
+  - set timer and rest timer flow
+  - per-set reps, RPE, and optional concentric time capture
+- Internal fatigue modeling
+  - calculate total session fatigue in the background
+  - classify fatigue internally as low / intermediate / high
+  - use this as an internal signal rather than a user-facing score
 - Structured athlete profile improvements
+- Training template library and better program browsing
 - Richer exercise metadata and recommendation groundwork
-- FreakAI intelligence layer
+- Deeper FreakAI intelligence layer
 
 ## Author
 
