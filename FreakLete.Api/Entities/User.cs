@@ -11,12 +11,25 @@ public class User
     public double? WeightKg { get; set; }
     public double? BodyFatPercentage { get; set; }
     public string SportName { get; set; } = string.Empty;
+    public string Position { get; set; } = string.Empty;
     public string GymExperienceLevel { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    // Coach profile fields
+    public int? TrainingDaysPerWeek { get; set; }
+    public int? PreferredSessionDurationMinutes { get; set; }
+    public string AvailableEquipment { get; set; } = string.Empty;
+    public string PhysicalLimitations { get; set; } = string.Empty;
+    public string InjuryHistory { get; set; } = string.Empty;
+    public string CurrentPainPoints { get; set; } = string.Empty;
+    public string PrimaryTrainingGoal { get; set; } = string.Empty;
+    public string SecondaryTrainingGoal { get; set; } = string.Empty;
+    public string DietaryPreference { get; set; } = string.Empty;
 
     // Navigation properties
     public ICollection<Workout> Workouts { get; set; } = [];
     public ICollection<PrEntry> PrEntries { get; set; } = [];
     public ICollection<AthleticPerformanceEntry> AthleticPerformanceEntries { get; set; } = [];
     public ICollection<MovementGoal> MovementGoals { get; set; } = [];
+    public ICollection<TrainingProgram> TrainingPrograms { get; set; } = [];
 }

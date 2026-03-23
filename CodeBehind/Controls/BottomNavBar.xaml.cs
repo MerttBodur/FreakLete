@@ -6,6 +6,7 @@ public partial class BottomNavBar : ContentView
 {
 	public const string HomeTab = "home";
 	public const string WorkoutTab = "workout";
+	public const string FreakAiTab = "freakai";
 	public const string CalculationsTab = "calculations";
 	public const string ProfileTab = "profile";
 
@@ -41,11 +42,13 @@ public partial class BottomNavBar : ContentView
 	{
 		HomeIndicator.IsVisible = ActiveTab == HomeTab;
 		WorkoutIndicator.IsVisible = ActiveTab == WorkoutTab;
+		FreakAiIndicator.IsVisible = ActiveTab == FreakAiTab;
 		CalculationsIndicator.IsVisible = ActiveTab == CalculationsTab;
 		ProfileIndicator.IsVisible = ActiveTab == ProfileTab;
 
 		HomeButton.Opacity = ActiveTab == HomeTab ? 1 : 0.55;
 		WorkoutButton.Opacity = ActiveTab == WorkoutTab ? 1 : 0.55;
+		FreakAiButton.Opacity = ActiveTab == FreakAiTab ? 1 : 0.55;
 		CalculationsButton.Opacity = ActiveTab == CalculationsTab ? 1 : 0.55;
 		ProfileButton.Opacity = ActiveTab == ProfileTab ? 1 : 0.55;
 	}
@@ -68,6 +71,16 @@ public partial class BottomNavBar : ContentView
 		}
 
 		await TabNavigationHelper.SwitchToTabAsync(() => new WorkoutPage());
+	}
+
+	private async void OnFreakAiClicked(object? sender, EventArgs e)
+	{
+		if (sender is VisualElement element)
+		{
+			await AnimatePressAsync(element);
+		}
+
+		await TabNavigationHelper.SwitchToTabAsync(() => new FreakAiPage());
 	}
 
 	private async void OnCalculationsClicked(object? sender, EventArgs e)

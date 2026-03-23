@@ -9,7 +9,7 @@
             Padding="18,12"
             Margin="14,0,14,10"
             StrokeShape="RoundRectangle 26">
-        <Grid ColumnDefinitions="*,*,*,*">
+        <Grid ColumnDefinitions="*,*,*,*,*">
             <VerticalStackLayout Grid.Column="0" Spacing="4" HorizontalOptions="Center">
                 <ImageButton x:Name="HomeButton"
                              Source="nav_home.svg"
@@ -43,6 +43,22 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="2" Spacing="4" HorizontalOptions="Center">
+                <ImageButton x:Name="FreakAiButton"
+                             Source="nav_notebook.svg"
+                             BackgroundColor="Transparent"
+                             WidthRequest="22"
+                             HeightRequest="22"
+                             Clicked="OnFreakAiClicked" />
+                <BoxView x:Name="FreakAiIndicator"
+                         WidthRequest="16"
+                         HeightRequest="4"
+                         CornerRadius="2"
+                         Color="{StaticResource Accent}"
+                         IsVisible="False"
+                         HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="3" Spacing="4" HorizontalOptions="Center">
                 <ImageButton x:Name="CalculationsButton"
                              Source="nav_notebook.svg"
                              BackgroundColor="Transparent"
@@ -58,7 +74,7 @@
                          HorizontalOptions="Center" />
             </VerticalStackLayout>
 
-            <VerticalStackLayout Grid.Column="3" Spacing="4" HorizontalOptions="Center">
+            <VerticalStackLayout Grid.Column="4" Spacing="4" HorizontalOptions="Center">
                 <ImageButton x:Name="ProfileButton"
                              Source="nav_profile.svg"
                              BackgroundColor="Transparent"

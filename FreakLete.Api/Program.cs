@@ -33,6 +33,25 @@ builder.Services.AddAuthorization();
 
 // Services
 builder.Services.AddSingleton<TokenService>();
+builder.Services.AddScoped<TrainingSummaryService>();
+builder.Services.AddScoped<FreakAiToolExecutor>();
+builder.Services.AddScoped<FreakAiOrchestrator>();
+
+// Gemini AI — key from user-secrets (local) or env var Gemini__ApiKey (Railway)
+var geminiApiKey = builder.Configuration["Gemini:ApiKey"]
+    ?? throw new InvalidOperationException(
+        "Gemini:ApiKey is not configured. " +
+        "Local: dotnet user-secrets set \"Gemini:ApiKey\" \"your-key\" --project FreakLete.Api  " +
+        "Railway: set Gemini__ApiKey environment variable.");
+var geminiOptions = new GeminiOptions
+{
+    ApiKey = geminiApiKey,
+    Model = builder.Configuration["Gemini:Model"] ?? "gemini-2.5-flash-lite"
+};
+builder.Services.AddSingleton(geminiOptions);
+builder.Services.AddHttpClient<GeminiClient>()
+    .ConfigureHttpClient(http => http.Timeout = TimeSpan.FromSeconds(60));
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 

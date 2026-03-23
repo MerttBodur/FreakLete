@@ -65,8 +65,18 @@
 
                         <Label Text="Sport"
                                Style="{StaticResource BodyMuted}" />
-                        <Entry x:Name="SportEntry"
-                               Placeholder="Example: Basketball" />
+                        <Picker x:Name="SportPicker"
+                                Title="Select your sport"
+                                SelectedIndexChanged="OnSportPickerChanged" />
+
+                        <VerticalStackLayout x:Name="PositionContainer"
+                                             Spacing="8"
+                                             IsVisible="False">
+                            <Label Text="Position / Discipline"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Picker x:Name="PositionPicker"
+                                    Title="Select your position" />
+                        </VerticalStackLayout>
 
                         <Label Text="Gym Experience"
                                Style="{StaticResource BodyMuted}" />
@@ -75,6 +85,74 @@
 
                         <Button Text="Save"
                                 Clicked="OnSaveProfileClicked" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Coach Profile"
+                               Style="{StaticResource SubHeadline}"
+                               HorizontalTextAlignment="Start" />
+
+                        <Label Text="Training Days / Week"
+                               Style="{StaticResource BodyMuted}" />
+                        <Picker x:Name="TrainingDaysPicker"
+                                Title="Select days per week" />
+
+                        <Label Text="Session Duration (minutes)"
+                               Style="{StaticResource BodyMuted}" />
+                        <Picker x:Name="SessionDurationPicker"
+                                Title="Select session duration" />
+
+                        <Label Text="Primary Training Goal"
+                               Style="{StaticResource BodyMuted}" />
+                        <Picker x:Name="PrimaryGoalPicker"
+                                Title="Select your primary goal" />
+
+                        <Label Text="Secondary Goal (optional)"
+                               Style="{StaticResource BodyMuted}" />
+                        <Picker x:Name="SecondaryGoalPicker"
+                                Title="Select secondary goal" />
+
+                        <Label Text="Available Equipment"
+                               Style="{StaticResource BodyMuted}" />
+                        <Editor x:Name="EquipmentEditor"
+                                Placeholder="e.g. Full gym, Barbell, Dumbbells, Pull-up bar, Bands..."
+                                AutoSize="TextChanges"
+                                MaxLength="1000"
+                                HeightRequest="60" />
+
+                        <Label Text="Injury History"
+                               Style="{StaticResource BodyMuted}" />
+                        <Editor x:Name="InjuryHistoryEditor"
+                                Placeholder="e.g. ACL reconstruction 2023 left knee, chronic shoulder impingement..."
+                                AutoSize="TextChanges"
+                                MaxLength="1000"
+                                HeightRequest="60" />
+
+                        <Label Text="Current Pain Points"
+                               Style="{StaticResource BodyMuted}" />
+                        <Editor x:Name="CurrentPainEditor"
+                                Placeholder="e.g. Mild right knee discomfort during deep squats..."
+                                AutoSize="TextChanges"
+                                MaxLength="1000"
+                                HeightRequest="60" />
+
+                        <Label Text="Physical Limitations"
+                               Style="{StaticResource BodyMuted}" />
+                        <Editor x:Name="PhysicalLimitationsEditor"
+                                Placeholder="e.g. Limited overhead mobility, can't do behind-neck movements..."
+                                AutoSize="TextChanges"
+                                MaxLength="1000"
+                                HeightRequest="60" />
+
+                        <Label Text="Dietary Preference (optional)"
+                               Style="{StaticResource BodyMuted}" />
+                        <Picker x:Name="DietaryPreferencePicker"
+                                Title="Select dietary preference" />
+
+                        <Button Text="Save Coach Profile"
+                                Clicked="OnSaveCoachProfileClicked" />
                     </VerticalStackLayout>
                 </Border>
 

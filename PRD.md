@@ -8,6 +8,22 @@ Bu dokumanin amaci:
 - mevcut urun mimarisini ozetlemek
 - bundan sonraki roadmap'i mantikli fazlara ayirmak
 
+## 1.1 Guncel Durum Ozeti
+22 Mart 2026 itibariyla FreakLete artik sadece local-first bir MVP degildir.
+
+Bugunku durum:
+- Mobile app production backend'e baglidir
+- Backend Railway uzerinde canlidir
+- Production PostgreSQL persistence aktiftir
+- JWT auth ve SecureStorage tabanli session mantigi calismaktadir
+- Profile, workouts, PRs, athletic performance ve movement goals backend tarafinda tutulmaktadir
+- Production backend smoke test'i gecmistir
+- Android signed AAB uretilmistir
+
+Bu nedenle urun durumu:
+- Phase 1 tamamlandi
+- aktif odak Android release / Play Store cikisidir
+
 ## 2. Problem
 Mevcut fitness uygulamalarinin cogu ya sadece klasik bodybuilding log mantigina odaklanir ya da atletik performans tarafini yuzeysel gecer. Field athletes icin gerekli olan seyler genelde ayni yerde bulunmaz:
 - strength log
@@ -29,15 +45,15 @@ FreakLete'in uzun vadeli hedefi:
 - kullanicinin antrenman verilerini merkezi olarak saklayan
 - zayif noktalarini tespit eden
 - hedefine, sporuna ve pozisyonuna gore akilli oneriler yapan
-- zamanla AI destekli bir performance companion'a donusen
+- zamanla FreakAI tarafindan guclendirilen bir performance companion'a donusen
 bir urun olmaktir.
 
-## 5. Tamamlanan MVP
+## 5. Tamamlanan Urun Temeli
 Asagidaki basliklar artik roadmap maddesi degil, mevcut urunun parcasidir.
 
 ### 5.1 Core Features
 - Register / Login
-- Local hashed auth
+- JWT tabanli auth
 - Workout olusturma
 - Exercise browser
 - Calendar tabanli workout history
@@ -56,10 +72,19 @@ Asagidaki basliklar artik roadmap maddesi degil, mevcut urunun parcasidir.
 - Modern custom dialogs eklendi
 
 ### 5.3 Data and Quality
-- Local SQLite persistence
-- Exercise catalog JSON + local DB seed yapisi
+- Production PostgreSQL persistence
+- Railway production deployment
+- Exercise catalog JSON + backend persistence
+- SecureStorage tabanli token saklama
 - Automated tests
-- Core logic, calculations, catalog ve DB integration test coverage
+- Core logic, calculations, catalog ve backend integration test coverage
+
+### 5.4 Production Validation
+- Railway production backend canli
+- Production PostgreSQL migration'lari uygulanmis
+- Backend smoke test sonucu: 13/13 PASSED
+- Register / login / profile / workouts / PR / athletic performance / movement goals / delete account production'da dogrulandi
+- Signed Android AAB uretilmis durumda
 
 ## 6. Mevcut Mimari
 
@@ -67,9 +92,16 @@ Asagidaki basliklar artik roadmap maddesi degil, mevcut urunun parcasidir.
 - .NET MAUI
 - C#
 - XAML
-- Local SQLite
+- SecureStorage + backend API
 
-### 6.2 Local Data Model
+### 6.2 Backend
+- ASP.NET Core Web API
+- Entity Framework Core
+- PostgreSQL
+- JWT authentication
+- Dockerized Railway deployment
+
+### 6.3 Data Model
 - User
 - Workout
 - ExerciseEntry
@@ -78,27 +110,29 @@ Asagidaki basliklar artik roadmap maddesi degil, mevcut urunun parcasidir.
 - MovementGoal
 - ExerciseDefinition
 
-### 6.3 Current State
-Bugunku uygulama polished bir local-first MVP'dir.
+### 6.4 Current State
+Bugunku uygulama cloud-backed mobile product foundation'ina ulasmistir.
 
 Bu ne demek:
-- veriler cihaz icinde tutulur
-- reinstall sonrasi local data kaybolur
-- cok cihazli hesap sistemi yoktur
-- merkezi veri kaynagi yoktur
+- kullanici hesabi backend tarafinda tutulur
+- reinstall sonrasi login ve veri geri gelebilir
+- production source of truth PostgreSQL'dir
+- app debug modda local backend kullanabilir, release modda production backend kullanir
 
-## 7. Mevcut Backend Yonu
-Projede backend tarafina gecis baslamistir.
+## 7. Backend Durumu
+Backend tarafi artik "direction" seviyesinde degil, aktif production katmanidir.
 
-Mevcut backend izi:
-- ASP.NET Core Web API
-- JWT auth direction
-- PostgreSQL / EF Core direction
+Mevcut backend durumu:
+- Railway uzerinde deploy edilmis production API
+- Railway PostgreSQL ile calisan production database
+- Dockerfile tabanli deploy
+- Health check / migration mantigi dogrulanmis production ortam
 
-Bu katmanin amaci:
+Bu katmanin mevcut rolu:
 - gercek account system
 - cloud persistence
 - reinstall sonrasi account restore
+- release build'lerde production source of truth olmak
 - gelecekte recommendation ve AI sistemleri icin merkezi veri kaynagi saglamak
 
 ## 8. Product Principles
@@ -107,11 +141,12 @@ Roadmap boyunca su prensipler korunmali:
 - once deterministic recommendation logic, sonra AI
 - once structured metadata, sonra open-ended AI output
 - mobile app offline hissini kaybetmeden cloud'a gecmeli
+- FreakAI, veri ve recommendation katmanlarinin ustune kurulan urunun ana intelligence omurgasi olmalidir
 
 ## 9. Roadmap
 
 ## Phase 1 - Real Account System and Cloud Sync
-Bu faz su an en yuksek onceliktir.
+Durum: TAMAMLANDI
 
 ### Hedef
 Kullanicinin hesabi ve verileri artik sadece cihaz icinde degil, backend tarafinda da tutulacak.
@@ -130,6 +165,17 @@ Kullanicinin hesabi ve verileri artik sadece cihaz icinde degil, backend tarafin
 - Kullanici uygulamayi silip yeniden yuklediginde tekrar login olabilir
 - Workout, goals, PR ve athletic performance datasi geri gelir
 - Session sadece local Preferences'e degil, gercek auth mantigina dayanir
+
+### Sonuc
+Bu faz tamamlanmistir.
+
+Tamamlananlar:
+- production backend deployment
+- PostgreSQL persistence
+- JWT auth
+- SecureStorage token handling
+- production smoke test
+- mobile app'in production backend'e baglanmasi
 
 ## Phase 2 - Structured Athlete Profile
 Recommendation sisteminden once kullanici profilini daha anlamli ve secilebilir hale getirmek gerekir.
@@ -205,25 +251,34 @@ Kullanicinin mevcut verisine gore mantiksal ve aciklanabilir oneriler sunmak.
 - Kullanici broad jump gelistirmek istiyor ama relevant power movement exposure zayif
 - Kullanici RB olarak acceleration odakli bir profile sahip
 
-## Phase 5 - AI Recommendation Layer
-AI bu urunde temel veri yapisinin yerine gecmeyecek; onun ustune oturacak.
+## Phase 5 - FreakAI Intelligence Layer
+FreakAI bu urunde tek basina bir "chat feature" degil, uzun vadede urunun intelligence backbone'u olacak katmandir.
 
 ### Hedef
-Kullaniciya daha akilli, daha aciklayici ve daha context-aware oneriler sunmak.
+Kullaniciya daha akilli, daha aciklayici ve daha context-aware oneriler sunan; recommendation, aciklama ve guidance sistemlerini merkezi olarak tasiyan bir FreakAI katmani kurmak.
 
 ### Kapsam
-- AI assisted recommendation summaries
+- FreakAI assisted recommendation summaries
 - Weak point explanation
 - Sport + position specific guidance
 - Goal-oriented movement suggestions
 - Program idea generation
+- User context aware coaching style explanations
 
 ### Onemli Ilke
-AI output:
+FreakAI output:
 - Phase 2'deki structured profile
 - Phase 3'teki exercise metadata
 - Phase 4'teki deterministic scoring
 ustune kurulacak.
+
+### Product Rolu
+FreakAI zamanla su alanlarin ana orkestrasyon katmani olacaktir:
+- recommendation explanation
+- athlete-specific insight generation
+- goal-driven movement reasoning
+- future program builder intelligence
+- kullanicinin tum performans verisini anlamlandiran ust katman
 
 ## Phase 6 - Program Builder
 Bu fazda urun tek tek movement onerisi veren bir uygulamadan daha ileri gider.
@@ -248,6 +303,10 @@ Asagidaki basliklar artik "gelecek is" degil:
 - athletic performance tracking
 - local catalog seeding
 - automated tests
+- backend auth
+- production PostgreSQL persistence
+- Railway deployment
+- production smoke testing
 
 ## 11. Product Risks
 - Cloud migration sirasinda local SQLite ile backend verisinin cakisabilmesi
@@ -263,17 +322,44 @@ Su an bir sonraki faz icin odak disi sayilabilecek basliklar:
 - monetization
 - subscription flow
 - coaching marketplace
+- AI recommendation implementation
+- iOS release execution
+- advanced infrastructure migration
 
-## 13. Next Recommended Execution Order
+## 13. Store Readiness - Current Focus
+Aktif odak product roadmap fazlarindan bagimsiz olarak Android release execution'dir.
+
+### Hedef
+FreakLete'i Google Play'e cikabilecek seviyeye getirmek.
+
+### Tamamlananlar
+- production backend canli
+- release build production backend'e bagli
+- Android signed AAB uretilmis
+
+### Kalanlar
+- dogru signed AAB ile Play Console upload
+- internal testing / closed testing acilisi
+- privacy policy URL
+- Play Store listing assets
+- final Android release smoke test on real device
+
+### Basari Kriteri
+- signed AAB Play Console'a yuklenmis olacak
+- test track acilmis olacak
+- production backend ile release build gercek cihazda dogrulanmis olacak
+
+## 14. Next Recommended Execution Order
 Urunu saglam buyutmek icin onerilen sira:
 
-1. Real account system / backend persistence
-2. Structured athlete profile
-3. Exercise metadata engine
-4. Rule-based recommendation engine
-5. AI recommendation layer
-6. Program builder
+1. Android release / Play Store cikisi
+2. iOS release hazirligi
+3. Structured athlete profile
+4. Exercise metadata engine
+5. Rule-based recommendation engine
+6. FreakAI intelligence layer
+7. Program builder
 
-## 14. Net Product Direction
+## 15. Net Product Direction
 FreakLete'in bundan sonraki asil hedefi sadece "log tutan bir app" olmak degil;
-athlete-specific, structured-data-driven, recommendation-capable bir performance platform'una donusmektir.
+athlete-specific, structured-data-driven, recommendation-capable ve uzun vadede FreakAI tarafindan guclendirilen bir performance platform'una donusmektir.

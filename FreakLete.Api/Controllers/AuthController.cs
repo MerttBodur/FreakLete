@@ -86,10 +86,20 @@ public class AuthController : ControllerBase
             WeightKg = user.WeightKg,
             BodyFatPercentage = user.BodyFatPercentage,
             SportName = user.SportName,
+            Position = user.Position,
             GymExperienceLevel = user.GymExperienceLevel,
             TotalWorkouts = workoutCount,
             TotalPrs = prCount,
-            CreatedAt = user.CreatedAt
+            CreatedAt = user.CreatedAt,
+            TrainingDaysPerWeek = user.TrainingDaysPerWeek,
+            PreferredSessionDurationMinutes = user.PreferredSessionDurationMinutes,
+            AvailableEquipment = user.AvailableEquipment,
+            PhysicalLimitations = user.PhysicalLimitations,
+            InjuryHistory = user.InjuryHistory,
+            CurrentPainPoints = user.CurrentPainPoints,
+            PrimaryTrainingGoal = user.PrimaryTrainingGoal,
+            SecondaryTrainingGoal = user.SecondaryTrainingGoal,
+            DietaryPreference = user.DietaryPreference
         });
     }
 
@@ -107,7 +117,17 @@ public class AuthController : ControllerBase
         if (request.WeightKg.HasValue) user.WeightKg = request.WeightKg;
         if (request.BodyFatPercentage.HasValue) user.BodyFatPercentage = request.BodyFatPercentage;
         if (request.SportName is not null) user.SportName = request.SportName;
+        if (request.Position is not null) user.Position = request.Position;
         if (request.GymExperienceLevel is not null) user.GymExperienceLevel = request.GymExperienceLevel;
+        if (request.TrainingDaysPerWeek.HasValue) user.TrainingDaysPerWeek = request.TrainingDaysPerWeek;
+        if (request.PreferredSessionDurationMinutes.HasValue) user.PreferredSessionDurationMinutes = request.PreferredSessionDurationMinutes;
+        if (request.AvailableEquipment is not null) user.AvailableEquipment = request.AvailableEquipment;
+        if (request.PhysicalLimitations is not null) user.PhysicalLimitations = request.PhysicalLimitations;
+        if (request.InjuryHistory is not null) user.InjuryHistory = request.InjuryHistory;
+        if (request.CurrentPainPoints is not null) user.CurrentPainPoints = request.CurrentPainPoints;
+        if (request.PrimaryTrainingGoal is not null) user.PrimaryTrainingGoal = request.PrimaryTrainingGoal;
+        if (request.SecondaryTrainingGoal is not null) user.SecondaryTrainingGoal = request.SecondaryTrainingGoal;
+        if (request.DietaryPreference is not null) user.DietaryPreference = request.DietaryPreference;
 
         await _db.SaveChangesAsync();
         return NoContent();

@@ -41,10 +41,11 @@ public class ApiClient
 #if DEBUG
 		// Local development backend
 #if ANDROID
-		// Android emulator routes 10.0.2.2 to host machine's localhost
-		return "http://10.0.2.2:5131";
+		// Android emulator routes 10.0.2.2 to host machine's localhost.
+		// Use HTTPS in debug so Android does not block cleartext local traffic.
+		return "https://10.0.2.2:7074";
 #else
-		return "http://localhost:5131";
+		return "https://localhost:7074";
 #endif
 #else
 		// Release / production
@@ -177,6 +178,38 @@ public class ApiClient
 	public Task<ApiResult<bool>> DeletePrEntryAsync(int id)
 	{
 		return DeleteAsync($"api/pr-entries/{id}");
+	}
+
+	// ── Sport Catalog ────────────────────────────────────
+
+	public Task<ApiResult<List<SportDefinitionResponse>>> GetSportCatalogAsync()
+	{
+		return GetAsync<List<SportDefinitionResponse>>("api/sportcatalog");
+	}
+
+	// ── FreakAI ──────────────────────────────────────────
+
+	public Task<ApiResult<FreakAiChatResponse>> FreakAiChatAsync(string message, List<FreakAiChatMessage>? history)
+	{
+		var request = new { message, history };
+		return PostAsync<FreakAiChatResponse>("api/freakai/chat", request);
+	}
+
+	// ── Training Programs ────────────────────────────────
+
+	public Task<ApiResult<List<TrainingProgramListResponse>>> GetTrainingProgramsAsync()
+	{
+		return GetAsync<List<TrainingProgramListResponse>>("api/trainingprogram");
+	}
+
+	public Task<ApiResult<TrainingProgramResponse>> GetActiveProgramAsync()
+	{
+		return GetAsync<TrainingProgramResponse>("api/trainingprogram/active");
+	}
+
+	public Task<ApiResult<TrainingProgramResponse>> GetProgramByIdAsync(int id)
+	{
+		return GetAsync<TrainingProgramResponse>($"api/trainingprogram/{id}");
 	}
 
 	// ── HTTP helpers ────────────────────────────────────
@@ -321,10 +354,22 @@ public class UserProfileResponse
 	public double? WeightKg { get; set; }
 	public double? BodyFatPercentage { get; set; }
 	public string SportName { get; set; } = "";
+	public string Position { get; set; } = "";
 	public string GymExperienceLevel { get; set; } = "";
 	public int TotalWorkouts { get; set; }
 	public int TotalPrs { get; set; }
 	public DateTime CreatedAt { get; set; }
+
+	// Coach profile fields
+	public int? TrainingDaysPerWeek { get; set; }
+	public int? PreferredSessionDurationMinutes { get; set; }
+	public string AvailableEquipment { get; set; } = "";
+	public string PhysicalLimitations { get; set; } = "";
+	public string InjuryHistory { get; set; } = "";
+	public string CurrentPainPoints { get; set; } = "";
+	public string PrimaryTrainingGoal { get; set; } = "";
+	public string SecondaryTrainingGoal { get; set; } = "";
+	public string DietaryPreference { get; set; } = "";
 }
 
 public class AthleticPerformanceResponse
@@ -393,4 +438,90 @@ public class PrEntryResponse
 	public double? GroundContactTimeMs { get; set; }
 	public double? ConcentricTimeSeconds { get; set; }
 	public DateTime CreatedAt { get; set; }
+}
+
+// ── Sport Catalog DTOs ──────────────────────────────────
+
+public class SportDefinitionResponse
+{
+	public string Id { get; set; } = "";
+	public string Name { get; set; } = "";
+	public string Category { get; set; } = "";
+	public bool HasPositions { get; set; }
+	public List<string> Positions { get; set; } = [];
+}
+
+// ── FreakAI DTOs ────────────────────────────────────────
+
+public class FreakAiChatResponse
+{
+	public string Reply { get; set; } = "";
+}
+
+public class FreakAiChatMessage
+{
+	public string Role { get; set; } = "user";
+	public string Content { get; set; } = "";
+}
+
+// ── Training Program DTOs ───────────────────────────────
+
+public class TrainingProgramListResponse
+{
+	public int Id { get; set; }
+	public string Name { get; set; } = "";
+	public string Goal { get; set; } = "";
+	public string Status { get; set; } = "";
+	public int DaysPerWeek { get; set; }
+	public DateTime CreatedAt { get; set; }
+}
+
+public class TrainingProgramResponse
+{
+	public int Id { get; set; }
+	public string Name { get; set; } = "";
+	public string Description { get; set; } = "";
+	public string Goal { get; set; } = "";
+	public int DaysPerWeek { get; set; }
+	public int SessionDurationMinutes { get; set; }
+	public string Status { get; set; } = "";
+	public string Sport { get; set; } = "";
+	public string Position { get; set; } = "";
+	public string Notes { get; set; } = "";
+	public DateTime CreatedAt { get; set; }
+	public DateTime UpdatedAt { get; set; }
+	public List<ProgramWeekResponse> Weeks { get; set; } = [];
+}
+
+public class ProgramWeekResponse
+{
+	public int Id { get; set; }
+	public int WeekNumber { get; set; }
+	public string Focus { get; set; } = "";
+	public bool IsDeload { get; set; }
+	public List<ProgramSessionResponse> Sessions { get; set; } = [];
+}
+
+public class ProgramSessionResponse
+{
+	public int Id { get; set; }
+	public int DayNumber { get; set; }
+	public string SessionName { get; set; } = "";
+	public string Focus { get; set; } = "";
+	public string Notes { get; set; } = "";
+	public List<ProgramExerciseResponse> Exercises { get; set; } = [];
+}
+
+public class ProgramExerciseResponse
+{
+	public int Id { get; set; }
+	public int Order { get; set; }
+	public string ExerciseName { get; set; } = "";
+	public string ExerciseCategory { get; set; } = "";
+	public int Sets { get; set; }
+	public string RepsOrDuration { get; set; } = "";
+	public string IntensityGuidance { get; set; } = "";
+	public int? RestSeconds { get; set; }
+	public string Notes { get; set; } = "";
+	public string SupersetGroup { get; set; } = "";
 }

@@ -1,10 +1,12 @@
 # FreakLete
 
-FreakLete is a mobile app for field athletes who lifting and want to log gym sessions, track athletic performance, and keep key calculations in one focused workflow.
+FreakLete is a mobile app for field athletes who lift and want to log gym sessions, track athletic performance, and keep key calculations in one focused workflow.
 
 ## Overview
 
-FreakLete was built as a product-style MVP for athletes who need more than a basic gym log. It combines classic strength tracking with athletic metrics such as jumps, sprint work, RSI, movement goals, and exercise-specific data entry.
+FreakLete combines classic strength tracking with athletic metrics such as jumps, sprint work, RSI, movement goals, and exercise-specific data entry. The app now runs with a production backend and PostgreSQL persistence, so accounts and training data are no longer limited to a single device.
+
+Long term, the product direction includes `FreakAI`, an intelligence layer that will sit on top of structured athlete data, exercise metadata, and recommendation logic.
 
 The app is designed around a fast daily workflow:
 - build workouts with categorized exercise recommendations
@@ -14,7 +16,7 @@ The app is designed around a fast daily workflow:
 
 ## Features
 
-- Login and register flow with hashed local authentication
+- Register and login flow with JWT-based authentication
 - Workout logging with categorized exercise selection
 - Exercise browser with recommended movements by category
 - Calendar-based workout history
@@ -23,6 +25,7 @@ The app is designed around a fast daily workflow:
 - Athletic performance tracking
 - Movement goal tracking
 - Profile and body metrics management
+- Cloud-backed persistence for profile, workouts, PRs, movement goals, and athletic performance
 
 ## Screens
 
@@ -94,7 +97,9 @@ Profile details including body metrics and sport background.
 
 - .NET MAUI
 - C#
-- SQLite
+- ASP.NET Core Web API
+- PostgreSQL
+- Railway
 - xUnit
 - VS Code
 - GenAI
@@ -106,15 +111,15 @@ Profile details including body metrics and sport background.
 
 ## Quality
 
-Automated testing is included.
+Automated testing is included. The production backend has also passed end-to-end smoke tests for auth, profile, workouts, PRs, athletic performance, movement goals, and account deletion.
 
 ## Roadmap
 
-- Richer filtering and discovery inside the exercise browser
-- Broader athletic analytics and comparisons
-- AI Assisted workout planner - workout plan analyzer based on user needs
-- More custom UI replacements for remaining platform-native selection flows
-- Release polish for publishing assets and store-ready packaging
+- Android Play Store release flow
+- iOS release preparation
+- Structured athlete profile improvements
+- Richer exercise metadata and recommendation groundwork
+- FreakAI intelligence layer
 
 ## Author
 

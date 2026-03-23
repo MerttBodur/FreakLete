@@ -14,6 +14,10 @@ public class AppDbContext : DbContext
     public DbSet<AthleticPerformanceEntry> AthleticPerformanceEntries => Set<AthleticPerformanceEntry>();
     public DbSet<MovementGoal> MovementGoals => Set<MovementGoal>();
     public DbSet<ExerciseDefinition> ExerciseDefinitions => Set<ExerciseDefinition>();
+    public DbSet<TrainingProgram> TrainingPrograms => Set<TrainingProgram>();
+    public DbSet<ProgramWeek> ProgramWeeks => Set<ProgramWeek>();
+    public DbSet<ProgramSession> ProgramSessions => Set<ProgramSession>();
+    public DbSet<ProgramExercise> ProgramExercises => Set<ProgramExercise>();
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -55,7 +59,15 @@ public class AppDbContext : DbContext
             e.Property(u => u.LastName).HasMaxLength(100);
             e.Property(u => u.Email).HasMaxLength(256);
             e.Property(u => u.SportName).HasMaxLength(100);
+            e.Property(u => u.Position).HasMaxLength(100);
             e.Property(u => u.GymExperienceLevel).HasMaxLength(50);
+            e.Property(u => u.AvailableEquipment).HasMaxLength(1000);
+            e.Property(u => u.PhysicalLimitations).HasMaxLength(1000);
+            e.Property(u => u.InjuryHistory).HasMaxLength(1000);
+            e.Property(u => u.CurrentPainPoints).HasMaxLength(1000);
+            e.Property(u => u.PrimaryTrainingGoal).HasMaxLength(200);
+            e.Property(u => u.SecondaryTrainingGoal).HasMaxLength(200);
+            e.Property(u => u.DietaryPreference).HasMaxLength(200);
         });
 
         // Workout
@@ -141,6 +153,67 @@ public class AppDbContext : DbContext
             e.Property(d => d.Name).HasMaxLength(200);
             e.Property(d => d.Category).HasMaxLength(100);
             e.Property(d => d.TrackingMode).HasMaxLength(20);
+        });
+
+        // TrainingProgram
+        modelBuilder.Entity<TrainingProgram>(e =>
+        {
+            e.HasKey(p => p.Id);
+            e.HasIndex(p => p.UserId);
+            e.HasOne(p => p.User)
+             .WithMany(u => u.TrainingPrograms)
+             .HasForeignKey(p => p.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.Property(p => p.Name).HasMaxLength(200);
+            e.Property(p => p.Description).HasMaxLength(2000);
+            e.Property(p => p.Goal).HasMaxLength(500);
+            e.Property(p => p.Status).HasMaxLength(20);
+            e.Property(p => p.Sport).HasMaxLength(100);
+            e.Property(p => p.Position).HasMaxLength(100);
+            e.Property(p => p.Notes).HasMaxLength(2000);
+        });
+
+        // ProgramWeek
+        modelBuilder.Entity<ProgramWeek>(e =>
+        {
+            e.HasKey(w => w.Id);
+            e.HasIndex(w => w.TrainingProgramId);
+            e.HasOne(w => w.TrainingProgram)
+             .WithMany(p => p.Weeks)
+             .HasForeignKey(w => w.TrainingProgramId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.Property(w => w.Focus).HasMaxLength(200);
+        });
+
+        // ProgramSession
+        modelBuilder.Entity<ProgramSession>(e =>
+        {
+            e.HasKey(s => s.Id);
+            e.HasIndex(s => s.ProgramWeekId);
+            e.HasOne(s => s.ProgramWeek)
+             .WithMany(w => w.Sessions)
+             .HasForeignKey(s => s.ProgramWeekId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.Property(s => s.SessionName).HasMaxLength(200);
+            e.Property(s => s.Focus).HasMaxLength(200);
+            e.Property(s => s.Notes).HasMaxLength(1000);
+        });
+
+        // ProgramExercise
+        modelBuilder.Entity<ProgramExercise>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.ProgramSessionId);
+            e.HasOne(x => x.ProgramSession)
+             .WithMany(s => s.Exercises)
+             .HasForeignKey(x => x.ProgramSessionId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.Property(x => x.ExerciseName).HasMaxLength(200);
+            e.Property(x => x.ExerciseCategory).HasMaxLength(100);
+            e.Property(x => x.RepsOrDuration).HasMaxLength(50);
+            e.Property(x => x.IntensityGuidance).HasMaxLength(200);
+            e.Property(x => x.Notes).HasMaxLength(500);
+            e.Property(x => x.SupersetGroup).HasMaxLength(10);
         });
     }
 }

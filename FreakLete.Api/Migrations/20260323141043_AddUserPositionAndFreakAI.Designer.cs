@@ -3,6 +3,7 @@ using System;
 using FreakLete.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FreakLete.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260323141043_AddUserPositionAndFreakAI")]
+    partial class AddUserPositionAndFreakAI
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -388,193 +391,6 @@ namespace FreakLete.Api.Migrations
                     b.ToTable("PrEntries");
                 });
 
-            modelBuilder.Entity("FreakLete.Api.Entities.ProgramExercise", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ExerciseCategory")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("ExerciseName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("IntensityGuidance")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProgramSessionId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("RepsOrDuration")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int?>("RestSeconds")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Sets")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SupersetGroup")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProgramSessionId");
-
-                    b.ToTable("ProgramExercises");
-                });
-
-            modelBuilder.Entity("FreakLete.Api.Entities.ProgramSession", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DayNumber")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Focus")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<int>("ProgramWeekId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SessionName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProgramWeekId");
-
-                    b.ToTable("ProgramSessions");
-                });
-
-            modelBuilder.Entity("FreakLete.Api.Entities.ProgramWeek", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Focus")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<bool>("IsDeload")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("TrainingProgramId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("WeekNumber")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrainingProgramId");
-
-                    b.ToTable("ProgramWeeks");
-                });
-
-            modelBuilder.Entity("FreakLete.Api.Entities.TrainingProgram", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("DaysPerWeek")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<string>("Goal")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("SessionDurationMinutes")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Sport")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TrainingPrograms");
-                });
-
             modelBuilder.Entity("FreakLete.Api.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -583,29 +399,14 @@ namespace FreakLete.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AvailableEquipment")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
                     b.Property<double?>("BodyFatPercentage")
                         .HasColumnType("double precision");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CurrentPainPoints")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DietaryPreference")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -622,11 +423,6 @@ namespace FreakLete.Api.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("InjuryHistory")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -636,36 +432,15 @@ namespace FreakLete.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("PhysicalLimitations")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
                     b.Property<string>("Position")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<int?>("PreferredSessionDurationMinutes")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("PrimaryTrainingGoal")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("SecondaryTrainingGoal")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
                     b.Property<string>("SportName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
-
-                    b.Property<int?>("TrainingDaysPerWeek")
-                        .HasColumnType("integer");
 
                     b.Property<double?>("WeightKg")
                         .HasColumnType("double precision");
@@ -747,50 +522,6 @@ namespace FreakLete.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FreakLete.Api.Entities.ProgramExercise", b =>
-                {
-                    b.HasOne("FreakLete.Api.Entities.ProgramSession", "ProgramSession")
-                        .WithMany("Exercises")
-                        .HasForeignKey("ProgramSessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProgramSession");
-                });
-
-            modelBuilder.Entity("FreakLete.Api.Entities.ProgramSession", b =>
-                {
-                    b.HasOne("FreakLete.Api.Entities.ProgramWeek", "ProgramWeek")
-                        .WithMany("Sessions")
-                        .HasForeignKey("ProgramWeekId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProgramWeek");
-                });
-
-            modelBuilder.Entity("FreakLete.Api.Entities.ProgramWeek", b =>
-                {
-                    b.HasOne("FreakLete.Api.Entities.TrainingProgram", "TrainingProgram")
-                        .WithMany("Weeks")
-                        .HasForeignKey("TrainingProgramId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TrainingProgram");
-                });
-
-            modelBuilder.Entity("FreakLete.Api.Entities.TrainingProgram", b =>
-                {
-                    b.HasOne("FreakLete.Api.Entities.User", "User")
-                        .WithMany("TrainingPrograms")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("FreakLete.Api.Entities.Workout", b =>
                 {
                     b.HasOne("FreakLete.Api.Entities.User", "User")
@@ -802,21 +533,6 @@ namespace FreakLete.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FreakLete.Api.Entities.ProgramSession", b =>
-                {
-                    b.Navigation("Exercises");
-                });
-
-            modelBuilder.Entity("FreakLete.Api.Entities.ProgramWeek", b =>
-                {
-                    b.Navigation("Sessions");
-                });
-
-            modelBuilder.Entity("FreakLete.Api.Entities.TrainingProgram", b =>
-                {
-                    b.Navigation("Weeks");
-                });
-
             modelBuilder.Entity("FreakLete.Api.Entities.User", b =>
                 {
                     b.Navigation("AthleticPerformanceEntries");
@@ -824,8 +540,6 @@ namespace FreakLete.Api.Migrations
                     b.Navigation("MovementGoals");
 
                     b.Navigation("PrEntries");
-
-                    b.Navigation("TrainingPrograms");
 
                     b.Navigation("Workouts");
                 });

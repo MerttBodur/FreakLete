@@ -14,6 +14,21 @@ public partial class ProfilePage : ContentPage
 		"5+ years"
 	];
 
+	private static readonly string[] TrainingDaysOptions = ["1", "2", "3", "4", "5", "6", "7"];
+	private static readonly string[] SessionDurationOptions = ["30", "45", "60", "75", "90", "120"];
+	private static readonly string[] TrainingGoalOptions =
+	[
+		"Strength", "Hypertrophy", "Athletic Performance", "Fat Loss",
+		"General Fitness", "Sport-Specific", "Powerlifting", "Olympic Weightlifting",
+		"Rehab / Return to Training", "Body Recomposition"
+	];
+	private static readonly string[] DietaryPreferenceOptions =
+	[
+		"No preference", "Standard / Balanced", "High Protein", "Vegetarian",
+		"Vegan", "Pescatarian", "Keto / Low Carb", "Mediterranean",
+		"Intermittent Fasting", "Halal", "Kosher"
+	];
+
 	private static readonly string[] AthleticCategories =
 	[
 		ExerciseCatalog.Sprint,
@@ -29,6 +44,8 @@ public partial class ProfilePage : ContentPage
 	private int? _editingGoalId;
 	private ExerciseCatalogItem? _selectedPerformanceItem;
 	private ExerciseCatalogItem? _selectedGoalItem;
+	private List<SportDefinitionResponse> _sportCatalog = [];
+	private SportDefinitionResponse? _selectedSport;
 
 	public ProfilePage()
 	{
@@ -37,6 +54,11 @@ public partial class ProfilePage : ContentPage
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 
 		GymExperiencePicker.ItemsSource = ExperienceLevels;
+		TrainingDaysPicker.ItemsSource = TrainingDaysOptions;
+		SessionDurationPicker.ItemsSource = SessionDurationOptions;
+		PrimaryGoalPicker.ItemsSource = TrainingGoalOptions;
+		SecondaryGoalPicker.ItemsSource = TrainingGoalOptions;
+		DietaryPreferencePicker.ItemsSource = DietaryPreferenceOptions;
 		UpdatePerformanceSelectionUI();
 		UpdateGoalSelectionUI();
 	}
@@ -79,7 +101,9 @@ public partial class ProfilePage : ContentPage
 
 		WeightEntry.Text = _profile.WeightKg?.ToString("0.##") ?? string.Empty;
 		BodyFatEntry.Text = _profile.BodyFatPercentage?.ToString("0.##") ?? string.Empty;
-		SportEntry.Text = _profile.SportName;
+
+		await LoadSportCatalogAsync();
+		SetSportPickerSelection(_profile.SportName, _profile.Position);
 
 		if (!string.IsNullOrWhiteSpace(_profile.GymExperienceLevel))
 		{
@@ -92,6 +116,22 @@ public partial class ProfilePage : ContentPage
 
 		WorkoutCountLabel.Text = _profile.TotalWorkouts.ToString();
 		OneRmPrCountLabel.Text = _profile.TotalPrs.ToString();
+
+		// Coach profile fields
+		if (_profile.TrainingDaysPerWeek.HasValue)
+			TrainingDaysPicker.SelectedItem = _profile.TrainingDaysPerWeek.Value.ToString();
+		if (_profile.PreferredSessionDurationMinutes.HasValue)
+			SessionDurationPicker.SelectedItem = _profile.PreferredSessionDurationMinutes.Value.ToString();
+		if (!string.IsNullOrWhiteSpace(_profile.PrimaryTrainingGoal))
+			PrimaryGoalPicker.SelectedItem = _profile.PrimaryTrainingGoal;
+		if (!string.IsNullOrWhiteSpace(_profile.SecondaryTrainingGoal))
+			SecondaryGoalPicker.SelectedItem = _profile.SecondaryTrainingGoal;
+		EquipmentEditor.Text = _profile.AvailableEquipment;
+		InjuryHistoryEditor.Text = _profile.InjuryHistory;
+		CurrentPainEditor.Text = _profile.CurrentPainPoints;
+		PhysicalLimitationsEditor.Text = _profile.PhysicalLimitations;
+		if (!string.IsNullOrWhiteSpace(_profile.DietaryPreference))
+			DietaryPreferencePicker.SelectedItem = _profile.DietaryPreference;
 
 		await LoadAthleticPerformancesAsync();
 		await LoadMovementGoalsAsync();
@@ -188,12 +228,16 @@ public partial class ProfilePage : ContentPage
 		}
 
 		string dateStr = $"{DateOfBirthPicker.Date:yyyy-MM-dd}";
+		string sportName = _selectedSport?.Name ?? string.Empty;
+		string position = PositionPicker.SelectedItem?.ToString() ?? string.Empty;
+
 		var profileData = new
 		{
 			dateOfBirth = dateStr,
 			weightKg = weight,
 			bodyFatPercentage = bodyFat,
-			sportName = SportEntry.Text?.Trim() ?? string.Empty,
+			sportName,
+			position,
 			gymExperienceLevel = GymExperiencePicker.SelectedItem?.ToString() ?? string.Empty
 		};
 
@@ -207,6 +251,35 @@ public partial class ProfilePage : ContentPage
 		{
 			ShowError(result.Error ?? "Failed to save profile.");
 		}
+	}
+
+	private async void OnSaveCoachProfileClicked(object? sender, EventArgs e)
+	{
+		ClearStatus();
+
+		if (_profile is null) return;
+
+		int? trainingDays = TrainingDaysPicker.SelectedItem is string td ? int.Parse(td) : null;
+		int? sessionDuration = SessionDurationPicker.SelectedItem is string sd ? int.Parse(sd) : null;
+
+		var coachData = new
+		{
+			trainingDaysPerWeek = trainingDays,
+			preferredSessionDurationMinutes = sessionDuration,
+			availableEquipment = EquipmentEditor.Text?.Trim() ?? "",
+			physicalLimitations = PhysicalLimitationsEditor.Text?.Trim() ?? "",
+			injuryHistory = InjuryHistoryEditor.Text?.Trim() ?? "",
+			currentPainPoints = CurrentPainEditor.Text?.Trim() ?? "",
+			primaryTrainingGoal = PrimaryGoalPicker.SelectedItem?.ToString() ?? "",
+			secondaryTrainingGoal = SecondaryGoalPicker.SelectedItem?.ToString() ?? "",
+			dietaryPreference = DietaryPreferencePicker.SelectedItem?.ToString() ?? ""
+		};
+
+		var result = await _api.UpdateProfileAsync(coachData);
+		if (result.Success)
+			ShowSuccess("Coach profile saved.");
+		else
+			ShowError(result.Error ?? "Failed to save coach profile.");
 	}
 
 	private async void OnAddPerformanceClicked(object? sender, EventArgs e)
@@ -741,6 +814,80 @@ public partial class ProfilePage : ContentPage
 		GoalTargetValueEntry.Text = string.Empty;
 		GoalActionButton.Text = "Save";
 		GoalCancelButton.IsVisible = false;
+	}
+
+	private async Task LoadSportCatalogAsync()
+	{
+		if (_sportCatalog.Count > 0) return;
+
+		var result = await _api.GetSportCatalogAsync();
+		if (result.Success && result.Data is not null)
+		{
+			_sportCatalog = result.Data;
+			SportPicker.ItemsSource = _sportCatalog.Select(s => s.Name).ToList();
+		}
+	}
+
+	private void SetSportPickerSelection(string sportName, string position)
+	{
+		if (string.IsNullOrWhiteSpace(sportName) || _sportCatalog.Count == 0)
+		{
+			SportPicker.SelectedIndex = -1;
+			return;
+		}
+
+		var sport = _sportCatalog.FirstOrDefault(s =>
+			string.Equals(s.Name, sportName, StringComparison.OrdinalIgnoreCase));
+
+		if (sport is not null)
+		{
+			_selectedSport = sport;
+			SportPicker.SelectedIndex = _sportCatalog.IndexOf(sport);
+			UpdatePositionPicker(sport, position);
+		}
+		else
+		{
+			SportPicker.SelectedIndex = -1;
+		}
+	}
+
+	private void OnSportPickerChanged(object? sender, EventArgs e)
+	{
+		int index = SportPicker.SelectedIndex;
+		if (index < 0 || index >= _sportCatalog.Count)
+		{
+			_selectedSport = null;
+			PositionContainer.IsVisible = false;
+			return;
+		}
+
+		_selectedSport = _sportCatalog[index];
+		UpdatePositionPicker(_selectedSport, null);
+	}
+
+	private void UpdatePositionPicker(SportDefinitionResponse sport, string? currentPosition)
+	{
+		if (sport.HasPositions && sport.Positions.Count > 0)
+		{
+			PositionContainer.IsVisible = true;
+			PositionPicker.ItemsSource = sport.Positions;
+
+			if (!string.IsNullOrWhiteSpace(currentPosition))
+			{
+				int posIndex = sport.Positions.FindIndex(p =>
+					string.Equals(p, currentPosition, StringComparison.OrdinalIgnoreCase));
+				PositionPicker.SelectedIndex = posIndex >= 0 ? posIndex : -1;
+			}
+			else
+			{
+				PositionPicker.SelectedIndex = -1;
+			}
+		}
+		else
+		{
+			PositionContainer.IsVisible = false;
+			PositionPicker.SelectedIndex = -1;
+		}
 	}
 
 	private class TextListItem

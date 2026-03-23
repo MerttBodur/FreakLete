@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:FreakLete"
+             x:Class="FreakLete.FreakAiPage"
+             NavigationPage.HasNavigationBar="False"
+             Title="FreakAI">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto">
+
+        <local:TopHeader Grid.Row="0"
+                         Title="FreakAI" />
+
+        <!-- Quick Actions Bar -->
+        <ScrollView Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalScrollBarVisibility="Never"
+                    Padding="12,4,12,0">
+            <HorizontalStackLayout Spacing="8">
+                <Button Text="Generate Program"
+                        Style="{StaticResource SecondaryButton}"
+                        FontSize="12"
+                        Padding="12,6"
+                        Clicked="OnGenerateProgramClicked" />
+                <Button Text="View Program"
+                        Style="{StaticResource SecondaryButton}"
+                        FontSize="12"
+                        Padding="12,6"
+                        Clicked="OnViewProgramClicked" />
+                <Button Text="Analyze Training"
+                        Style="{StaticResource SecondaryButton}"
+                        FontSize="12"
+                        Padding="12,6"
+                        Clicked="OnAnalyzeTrainingClicked" />
+                <Button Text="Nutrition Help"
+                        Style="{StaticResource SecondaryButton}"
+                        FontSize="12"
+                        Padding="12,6"
+                        Clicked="OnNutritionHelpClicked" />
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <ScrollView Grid.Row="2"
+                    x:Name="ChatScrollView"
+                    Padding="16,0">
+            <VerticalStackLayout x:Name="ChatContainer"
+                                 Spacing="12"
+                                 Padding="0,12,0,12">
+
+                <!-- Welcome message -->
+                <Border x:Name="WelcomeBorder"
+                        Style="{StaticResource CardBorder}"
+                        BackgroundColor="{StaticResource SurfaceRaised}"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="FreakAI Coach"
+                               FontSize="20"
+                               FontAttributes="Bold" />
+                        <Label Text="Your personal hybrid training coach. I can write training programs, adjust them based on your feedback, help with injury/rehab questions, and provide nutrition guidance — all personalized to your data."
+                               Style="{StaticResource BodyMuted}" />
+                        <Label Text="Try: 'Write me a program' or 'My knee hurts during squats' or 'Help me with my nutrition'"
+                               Style="{StaticResource BodyMuted}"
+                               FontAttributes="Italic" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Active Program Card (shown when program exists) -->
+                <Border x:Name="ActiveProgramCard"
+                        Style="{StaticResource CardBorder}"
+                        BackgroundColor="#1A2535"
+                        Padding="14"
+                        IsVisible="False">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="ACTIVE PROGRAM"
+                               FontSize="11"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Accent}" />
+                        <Label x:Name="ActiveProgramName"
+                               Text=""
+                               FontSize="16"
+                               FontAttributes="Bold" />
+                        <Label x:Name="ActiveProgramDetails"
+                               Text=""
+                               Style="{StaticResource BodyMuted}"
+                               FontSize="12" />
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Loading indicator -->
+        <HorizontalStackLayout Grid.Row="3"
+                               x:Name="LoadingIndicator"
+                               IsVisible="False"
+                               Padding="20,8"
+                               Spacing="8">
+            <ActivityIndicator IsRunning="True"
+                               WidthRequest="16"
+                               HeightRequest="16"
+                               Color="{StaticResource Accent}" />
+            <Label Text="FreakAI is thinking..."
+                   Style="{StaticResource BodyMuted}"
+                   VerticalOptions="Center" />
+        </HorizontalStackLayout>
+
+        <!-- Input area -->
+        <Border Grid.Row="4"
+                Style="{StaticResource CardBorder}"
+                BackgroundColor="{StaticResource SurfaceRaised}"
+                Stroke="{StaticResource SurfaceBorder}"
+                Padding="12"
+                Margin="12,4,12,12"
+                StrokeShape="RoundRectangle 20">
+            <Grid ColumnDefinitions="*,Auto"
+                  ColumnSpacing="8">
+                <Editor x:Name="MessageEditor"
+                        Grid.Column="0"
+                        Placeholder="Ask FreakAI..."
+                        AutoSize="TextChanges"
+                        MaxLength="2000"
+                        HeightRequest="40"
+                        FontSize="15"
+                        BackgroundColor="Transparent" />
+                <ImageButton Grid.Column="1"
+                             x:Name="SendButton"
+                             Source="nav_home.svg"
+                             BackgroundColor="{StaticResource Accent}"
+                             WidthRequest="40"
+                             HeightRequest="40"
+                             CornerRadius="20"
+                             Padding="10"
+                             Clicked="OnSendClicked"
+                             VerticalOptions="End" />
+            </Grid>
+        </Border>
+
+        <local:BottomNavBar Grid.Row="5"
+                            ActiveTab="freakai" />
+
+    </Grid>
+
+</ContentPage>
