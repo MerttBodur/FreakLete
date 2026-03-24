@@ -7,7 +7,7 @@ public class User
     public string LastName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
-    public DateTime? DateOfBirth { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
     public double? WeightKg { get; set; }
     public double? BodyFatPercentage { get; set; }
     public string SportName { get; set; } = string.Empty;

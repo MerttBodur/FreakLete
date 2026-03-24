@@ -351,7 +351,7 @@ public class UserProfileResponse
 	public string FirstName { get; set; } = "";
 	public string LastName { get; set; } = "";
 	public string Email { get; set; } = "";
-	public DateTime? DateOfBirth { get; set; }
+	public DateOnly? DateOfBirth { get; set; }
 	public double? WeightKg { get; set; }
 	public double? BodyFatPercentage { get; set; }
 	public string SportName { get; set; } = "";

@@ -10,7 +10,7 @@ public class UpdateProfileRequest
     [MaxLength(100)]
     public string? LastName { get; set; }
 
-    public DateTime? DateOfBirth { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
     public double? WeightKg { get; set; }
     public double? BodyFatPercentage { get; set; }
 

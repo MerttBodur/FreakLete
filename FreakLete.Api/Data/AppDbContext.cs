@@ -60,6 +60,7 @@ public class AppDbContext : DbContext
             e.Property(u => u.Email).HasMaxLength(256);
             e.Property(u => u.SportName).HasMaxLength(100);
             e.Property(u => u.Position).HasMaxLength(100);
+            e.Property(u => u.DateOfBirth).HasColumnType("date");
             e.Property(u => u.GymExperienceLevel).HasMaxLength(50);
             e.Property(u => u.AvailableEquipment).HasMaxLength(1000);
             e.Property(u => u.PhysicalLimitations).HasMaxLength(1000);

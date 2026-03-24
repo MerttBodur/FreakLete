@@ -103,7 +103,7 @@ public partial class ProfilePage : ContentPage
 		FullNameLabel.Text = $"{_profile.FirstName} {_profile.LastName}";
 		EmailLabel.Text = _profile.Email;
 
-		_selectedDateOfBirth = _profile.DateOfBirth?.Date ?? DateTime.Today.AddYears(-18);
+		_selectedDateOfBirth = _profile.DateOfBirth?.ToDateTime(TimeOnly.MinValue) ?? DateTime.Today.AddYears(-18);
 		UpdateDateOfBirthLabel();
 		UpdateAgeLabel(_profile.DateOfBirth);
 
@@ -174,7 +174,7 @@ public partial class ProfilePage : ContentPage
 				_selectedDateOfBirth = date;
 				_dateOfBirthChanged = true;
 				UpdateDateOfBirthLabel();
-				UpdateAgeLabel(date);
+				UpdateAgeLabel(DateOnly.FromDateTime(date));
 			}), true);
 	}
 
@@ -427,7 +427,7 @@ public partial class ProfilePage : ContentPage
 		var profileData = new Dictionary<string, object?>();
 
 		if (_dateOfBirthChanged)
-			profileData["dateOfBirth"] = _selectedDateOfBirth;
+			profileData["dateOfBirth"] = DateOnly.FromDateTime(_selectedDateOfBirth);
 
 		profileData["weightKg"] = weight;
 		profileData["bodyFatPercentage"] = bodyFat;
@@ -445,7 +445,7 @@ public partial class ProfilePage : ContentPage
 		if (result.Success)
 		{
 			if (_dateOfBirthChanged)
-				UpdateAgeLabel(_selectedDateOfBirth);
+				UpdateAgeLabel(DateOnly.FromDateTime(_selectedDateOfBirth));
 			ShowSuccess("Profile saved.");
 		}
 		else
@@ -850,7 +850,7 @@ public partial class ProfilePage : ContentPage
 		};
 	}
 
-	private void UpdateAgeLabel(DateTime? dateOfBirth)
+	private void UpdateAgeLabel(DateOnly? dateOfBirth)
 	{
 		if (!dateOfBirth.HasValue)
 		{
@@ -858,9 +858,9 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		DateTime today = DateTime.Today;
+		var today = DateOnly.FromDateTime(DateTime.Today);
 		int age = today.Year - dateOfBirth.Value.Year;
-		if (dateOfBirth.Value.Date > today.AddYears(-age))
+		if (dateOfBirth.Value > today.AddYears(-age))
 		{
 			age--;
 		}
