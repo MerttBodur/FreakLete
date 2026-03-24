@@ -92,7 +92,11 @@ Not:
 - Exercise catalog JSON + backend persistence
 - SecureStorage tabanli token saklama
 - Automated tests
-- Core logic, calculations, catalog ve backend integration test coverage
+- `FreakLete.Core.Tests` ile core logic / calculations / parsing / rules coverage
+- `FreakLete.Api.Tests` ile auth/profile API regression coverage
+- Auth/profile roundtrip persistence, partial update, invalid input rejection ve `DateOfBirth` date-only behavior dogrulanmis durumda
+- API regression coverage backend persistence guveni sagliyor, ancak profile save sonrasi mobile UI state'in hemen dogru yenilendigini tek basina garanti etmiyor
+- Full system regression coverage halen tamamlanmis degil; workouts, PRs, athletic performance, movement goals, training programs, FreakAI controller ve mobile profile state consistency coverage halen eksik
 
 ### 5.4 Production Validation
 - Railway production backend canli
@@ -330,6 +334,28 @@ Bu faz, mevcut visual refresh'i daha ileri tasiyip urunu text-heavy utility app 
 - Workout ve program akislarinda image-backed / status-aware kartlar kullanilir
 - Uygulama "tool collection" degil, "training system" gibi hissedilir
 
+## Phase 2C - Regression Safety Expansion
+Bu fazin amaci, uygulamanin yalnizca build alan degil, regression'a dayanikli bir urun haline gelmesini saglamaktir.
+
+### Hedef
+- Auth/profile tarafinda baslayan API regression coverage'i urunun diger kritik alanlarina yaymak
+- Mobile profile state tutarsizliklarini yakalayacak testable logic ve regression coverage eklemek
+- FreakAI ve tracked-data endpoint'lerinde korkmadan iterasyon yapilabilecek bir safety net kurmak
+
+### Kapsam
+- Workouts API regression tests
+- PR entries API regression tests
+- Athletic performance API regression tests
+- Movement goals API regression tests
+- Training program endpoint regression tests
+- FreakAI controller / error-path tests
+- Mobile profile save/state consistency tests
+
+### Neden Onemli
+- API roundtrip coverage tek basina yeterli degil; kullanicinin "saved" gorup sonra eski state'e donmesi gibi mobile-state bug'lari ayrica ele alinmali
+- Bu faz correctness ve risk reduction fazidir
+- UI V2 ve yeni feature development'i daha guvenli hale getirir
+
 ## Phase 3 - Exercise Metadata Engine
 Bu faz roadmap'in en kritik katmanlarindan biridir.
 
@@ -490,13 +516,14 @@ Urunu saglam buyutmek icin onerilen sira:
 
 1. Android release / Play Store cikisi
 2. iOS release hazirligi
-3. Dashboard-first UI V2
-4. Structured athlete profile
-5. Live workout and tracking analytics
-6. Exercise metadata engine
-7. Rule-based recommendation engine
-8. FreakAI intelligence layer
-9. Program builder
+3. Regression safety expansion
+4. Dashboard-first UI V2
+5. Structured athlete profile
+6. Live workout and tracking analytics
+7. Exercise metadata engine
+8. Rule-based recommendation engine
+9. FreakAI intelligence layer
+10. Program builder
 
 ## 15. Net Product Direction
 FreakLete'in bundan sonraki asil hedefi sadece "log tutan bir app" olmak degil;

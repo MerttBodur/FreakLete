@@ -57,7 +57,8 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Apply pending migrations on startup
+// Apply pending migrations on startup (skip in Testing — test fixture owns the lifecycle)
+if (!app.Environment.IsEnvironment("Testing"))
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -102,3 +103,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Marker class for WebApplicationFactory<Program> in integration tests
+public partial class Program { }

@@ -126,7 +126,14 @@ Profile details including body metrics and sport background.
 
 ## Quality
 
-Automated testing is included. The production backend has also passed end-to-end smoke tests for auth, profile, workouts, PRs, athletic performance, movement goals, and account deletion.
+Automated testing now has multiple layers:
+- `FreakLete.Core.Tests` covers core/unit logic such as calculations, parsing, catalog rules, and helper behavior
+- `FreakLete.Api.Tests` covers auth/profile API regression scenarios such as roundtrip persistence, partial updates, invalid input rejection, and `DateOfBirth` date-only behavior
+- manual smoke testing remains a separate release-verification layer for end-to-end mobile flows
+
+That API regression coverage improves backend confidence, but it does not yet guarantee immediate mobile page-state consistency after profile saves. UI-side refresh and state-sync regressions are still tracked separately.
+
+The production backend has also passed end-to-end smoke tests for auth, profile, workouts, PRs, athletic performance, movement goals, and account deletion.
 
 ## Roadmap
 
@@ -149,6 +156,14 @@ Automated testing is included. The production backend has also passed end-to-end
   - calculate total session fatigue in the background
   - classify fatigue internally as low / intermediate / high
   - use this as an internal signal rather than a user-facing score
+- Regression safety expansion
+  - workouts API integration tests
+  - PR entries API integration tests
+  - athletic performance API integration tests
+  - movement goals API integration tests
+  - training program endpoint tests
+  - FreakAI controller tests
+  - mobile profile state consistency tests
 - Structured athlete profile improvements
 - Training template library and better program browsing
 - Richer exercise metadata and recommendation groundwork
