@@ -41,11 +41,11 @@ public partial class HomePage : ContentPage
 		}
 
 		var profile = profileResult.Data;
-		WelcomeLabel.Text = $"WELCOME, {profile.FirstName.ToUpperInvariant()}";
-		WorkoutTotalLabel.Text = profile.TotalWorkouts.ToString();
+		HeroPanelView.Eyebrow = $"WELCOME, {profile.FirstName.ToUpperInvariant()}";
+		WorkoutMetric.Value = profile.TotalWorkouts.ToString();
 
 		var perfResult = await _api.GetAthleticPerformancesAsync();
-		AthleticCountLabel.Text = perfResult.Success && perfResult.Data is not null
+		AthleticMetric.Value = perfResult.Success && perfResult.Data is not null
 			? perfResult.Data.Count.ToString()
 			: "0";
 

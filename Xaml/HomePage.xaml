@@ -11,92 +11,61 @@
             <VerticalStackLayout Padding="24,18,24,20"
                                  Spacing="18">
 
-                <Border Style="{StaticResource AccentCardBorder}">
-                    <VerticalStackLayout Spacing="10">
-                        <Label x:Name="WelcomeLabel"
-                               Text="WELCOME BACK"
-                               Style="{StaticResource Eyebrow}" />
+                <!-- Hero -->
+                <local:HeroPanel x:Name="HeroPanelView"
+                                 Eyebrow="WELCOME BACK"
+                                 Title="Train with focus."
+                                 Subtitle="Workouts, PRs, performance — one place." />
 
-                        <Label Text="Train with focus. Track with clarity."
-                               Style="{StaticResource Headline}"
-                               HorizontalTextAlignment="Start" />
-
-                        <Label Text="Your workouts, PRs, and performance stats in one place."
-                               Style="{StaticResource BodyMuted}" />
-                    </VerticalStackLayout>
-                </Border>
-
+                <!-- Action tiles -->
                 <Grid ColumnDefinitions="*,*"
                       ColumnSpacing="12">
-                    <Border Grid.Column="0"
-                            Style="{StaticResource CardBorder}">
-                        <VerticalStackLayout Spacing="12">
-                            <Label Text="Workout"
-                                   Style="{StaticResource SubHeadline}"
-                                   HorizontalTextAlignment="Start" />
-                            <Label Text="Build a session, log exercises, and keep progress moving."
-                                   Style="{StaticResource BodyMuted}" />
-                            <Button Text="Start"
-                                    Clicked="OnStartWorkoutClicked" />
-                        </VerticalStackLayout>
-                    </Border>
+                    <local:ActionTile Grid.Column="0"
+                                      Title="Workout"
+                                      Description="Build a session, log exercises."
+                                      ButtonText="Start"
+                                      ButtonClicked="OnStartWorkoutClicked" />
 
-                    <Border Grid.Column="1"
-                            Style="{StaticResource CardBorder}">
-                        <VerticalStackLayout Spacing="12">
-                            <Label Text="Calculations"
-                                   Style="{StaticResource SubHeadline}"
-                                   HorizontalTextAlignment="Start" />
-                            <Label Text="Open 1RM and RSI tools, then keep both strength and athletic PRs together."
-                                   Style="{StaticResource BodyMuted}" />
-                            <Button Style="{StaticResource SecondaryButton}"
-                                    Text="Open"
-                                    Clicked="OnOpenCalculationsClicked" />
-                        </VerticalStackLayout>
-                    </Border>
+                    <local:ActionTile Grid.Column="1"
+                                      Title="Calculations"
+                                      Description="1RM, RSI tools and PR tracking."
+                                      ButtonText="Open"
+                                      IsSecondary="True"
+                                      ButtonClicked="OnOpenCalculationsClicked" />
                 </Grid>
 
+                <!-- Quick metrics -->
                 <Label Text="Quick View"
                        Style="{StaticResource SubHeadline}"
+                       FontSize="18"
                        HorizontalTextAlignment="Start" />
 
                 <Grid ColumnDefinitions="*,*"
                       ColumnSpacing="12"
                       RowDefinitions="Auto,Auto"
                       RowSpacing="12">
-                    <Border Grid.Row="0"
-                            Grid.Column="0"
-                            Style="{StaticResource CardBorder}">
-                        <VerticalStackLayout Spacing="6">
-                            <Label Text="Total Workouts"
-                                   Style="{StaticResource BodyMuted}" />
-                            <Label x:Name="WorkoutTotalLabel"
-                                   Text="0"
-                                   FontSize="28" />
-                        </VerticalStackLayout>
-                    </Border>
+                    <local:MetricTile Grid.Row="0"
+                                      Grid.Column="0"
+                                      x:Name="WorkoutMetric"
+                                      Label="Total Workouts"
+                                      Value="0" />
 
-                    <Border Grid.Row="0"
-                            Grid.Column="1"
-                            Style="{StaticResource CardBorder}">
-                        <VerticalStackLayout Spacing="6">
-                            <Label Text="Athletic Entries"
-                                   Style="{StaticResource BodyMuted}" />
-                            <Label x:Name="AthleticCountLabel"
-                                   Text="0"
-                                   FontSize="28" />
-                        </VerticalStackLayout>
-                    </Border>
+                    <local:MetricTile Grid.Row="0"
+                                      Grid.Column="1"
+                                      x:Name="AthleticMetric"
+                                      Label="Athletic Entries"
+                                      Value="0" />
 
                     <Border Grid.Row="1"
                             Grid.ColumnSpan="2"
                             Style="{StaticResource CardBorder}">
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="Latest Saved PR"
-                                   Style="{StaticResource BodyMuted}" />
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Latest PR"
+                                   Style="{StaticResource BodyMuted}"
+                                   FontSize="12" />
                             <Label x:Name="LatestPrLabel"
                                    Text="No PR saved yet."
-                                   FontSize="20"
+                                   FontSize="18"
                                    LineBreakMode="WordWrap" />
                         </VerticalStackLayout>
                     </Border>
