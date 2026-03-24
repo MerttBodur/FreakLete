@@ -24,29 +24,115 @@
                            HorizontalTextAlignment="Start" />
                 </VerticalStackLayout>
             </Border>
+
+            <!-- Search bar (hidden for small lists) -->
+            <Border x:Name="SearchContainer"
+                    Style="{StaticResource CardBorder}"
+                    BackgroundColor="{StaticResource SurfaceRaised}"
+                    IsVisible="False">
+                <Entry x:Name="SearchEntry"
+                       Placeholder="Search..."
+                       PlaceholderColor="{StaticResource TextMuted}"
+                       TextColor="{StaticResource TextPrimary}"
+                       BackgroundColor="Transparent"
+                       TextChanged="OnSearchTextChanged" />
+            </Border>
+
+            <!-- Category chips (hidden when no categories) -->
+            <ScrollView x:Name="CategoryScrollView"
+                        Orientation="Horizontal"
+                        HorizontalScrollBarVisibility="Never"
+                        IsVisible="False">
+                <HorizontalStackLayout x:Name="CategoryChipsLayout"
+                                       Spacing="8" />
+            </ScrollView>
         </VerticalStackLayout>
 
-        <CollectionView Grid.Row="1"
-                        x:Name="OptionsCollection"
-                        Margin="24,0,24,24"
-                        SelectionMode="None">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Border Style="{StaticResource CardBorder}"
-                            BackgroundColor="{Binding Background}"
-                            Margin="0,0,0,10"
-                            Padding="16">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnOptionTapped" />
-                        </Border.GestureRecognizers>
-                        <Label Text="{Binding Text}"
-                               FontSize="17"
-                               TextColor="{Binding Foreground}"
-                               VerticalOptions="Center" />
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+        <!-- Main content area -->
+        <Grid Grid.Row="1">
+
+            <!-- Loading indicator -->
+            <VerticalStackLayout x:Name="LoadingView"
+                                 IsVisible="False"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Spacing="12">
+                <ActivityIndicator IsRunning="True"
+                                   WidthRequest="32"
+                                   HeightRequest="32"
+                                   Color="{StaticResource Accent}" />
+                <Label Text="Loading..."
+                       Style="{StaticResource BodyMuted}"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <!-- Empty state -->
+            <VerticalStackLayout x:Name="EmptyView"
+                                 IsVisible="False"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Spacing="8"
+                                 Padding="24">
+                <Label x:Name="EmptyLabel"
+                       Text="No options found"
+                       Style="{StaticResource BodyMuted}"
+                       HorizontalTextAlignment="Center"
+                       FontSize="16" />
+                <Label x:Name="EmptyHintLabel"
+                       Text="Try a different search term"
+                       Style="{StaticResource BodyMuted}"
+                       HorizontalTextAlignment="Center"
+                       FontSize="13" />
+            </VerticalStackLayout>
+
+            <!-- Error state -->
+            <VerticalStackLayout x:Name="ErrorView"
+                                 IsVisible="False"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Spacing="12"
+                                 Padding="24">
+                <Label x:Name="ErrorLabel"
+                       Text="Failed to load"
+                       TextColor="Red"
+                       HorizontalTextAlignment="Center"
+                       FontSize="15" />
+                <Button x:Name="RetryButton"
+                        Text="Retry"
+                        Style="{StaticResource SecondaryButton}"
+                        Clicked="OnRetryClicked"
+                        HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <!-- Options list -->
+            <CollectionView x:Name="OptionsCollection"
+                            Margin="24,0,24,24"
+                            SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource CardBorder}"
+                                BackgroundColor="{Binding Background}"
+                                Margin="0,0,0,10"
+                                Padding="16">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnOptionTapped" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding Text}"
+                                       FontSize="17"
+                                       TextColor="{Binding Foreground}"
+                                       VerticalOptions="Center" />
+                                <Label Text="{Binding GroupName}"
+                                       FontSize="12"
+                                       TextColor="{StaticResource TextMuted}"
+                                       IsVisible="{Binding HasGroup}"
+                                       VerticalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
     </Grid>
 
 </ContentPage>

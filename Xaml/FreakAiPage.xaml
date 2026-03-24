@@ -99,7 +99,8 @@
                                WidthRequest="16"
                                HeightRequest="16"
                                Color="{StaticResource Accent}" />
-            <Label Text="FreakAI is thinking..."
+            <Label x:Name="LoadingLabel"
+                   Text="FreakAI is thinking..."
                    Style="{StaticResource BodyMuted}"
                    VerticalOptions="Center" />
         </HorizontalStackLayout>

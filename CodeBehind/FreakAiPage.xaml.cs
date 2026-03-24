@@ -8,6 +8,7 @@ public partial class FreakAiPage : ContentPage
 	private readonly ApiClient _api;
 	private readonly List<FreakAiChatMessage> _history = [];
 	private bool _isSending;
+	private CancellationTokenSource? _loadingAnimationCts;
 
 	public FreakAiPage()
 	{
@@ -88,14 +89,17 @@ public partial class FreakAiPage : ContentPage
 		AddChatBubble(message, isUser: true);
 		_history.Add(new FreakAiChatMessage { Role = "user", Content = message });
 
-		LoadingIndicator.IsVisible = true;
+		// Determine if this is a heavy operation for better loading UX
+		bool isProgramGeneration = IsProgramGenerationRequest(message);
+
+		ShowLoadingIndicator(isProgramGeneration);
 		await ScrollToBottom();
 
 		try
 		{
 			var result = await _api.FreakAiChatAsync(message, _history.Count > 1 ? _history.SkipLast(1).ToList() : null);
 
-			LoadingIndicator.IsVisible = false;
+			HideLoadingIndicator();
 
 			if (result.Success && result.Data is not null)
 			{
@@ -108,6 +112,8 @@ public partial class FreakAiPage : ContentPage
 					(reply.Contains("created", StringComparison.OrdinalIgnoreCase) ||
 					 reply.Contains("adjusted", StringComparison.OrdinalIgnoreCase) ||
 					 reply.Contains("oluşturuldu", StringComparison.OrdinalIgnoreCase) ||
+					 reply.Contains("oluşturdum", StringComparison.OrdinalIgnoreCase) ||
+					 reply.Contains("aktif", StringComparison.OrdinalIgnoreCase) ||
 					 reply.Contains("active", StringComparison.OrdinalIgnoreCase)))
 				{
 					await LoadActiveProgramCard();
@@ -116,12 +122,12 @@ public partial class FreakAiPage : ContentPage
 			else
 			{
 				string error = result.Error ?? "Failed to get response.";
-				AddChatBubble($"Error: {error}", isUser: false);
+				AddChatBubble(error, isUser: false);
 			}
 		}
 		catch (Exception ex)
 		{
-			LoadingIndicator.IsVisible = false;
+			HideLoadingIndicator();
 			AddChatBubble($"Connection error: {ex.Message}", isUser: false);
 		}
 		finally
@@ -131,6 +137,78 @@ public partial class FreakAiPage : ContentPage
 			await ScrollToBottom();
 		}
 	}
+
+	// ── Loading indicator with progressive messages ──────────
+
+	private void ShowLoadingIndicator(bool isHeavyOperation)
+	{
+		LoadingLabel.Text = "FreakAI is thinking...";
+		LoadingIndicator.IsVisible = true;
+
+		// Start progressive loading text animation
+		_loadingAnimationCts?.Cancel();
+		_loadingAnimationCts = new CancellationTokenSource();
+		var token = _loadingAnimationCts.Token;
+
+		_ = AnimateLoadingText(isHeavyOperation, token);
+	}
+
+	private void HideLoadingIndicator()
+	{
+		_loadingAnimationCts?.Cancel();
+		_loadingAnimationCts = null;
+		LoadingIndicator.IsVisible = false;
+	}
+
+	private async Task AnimateLoadingText(bool isHeavyOperation, CancellationToken ct)
+	{
+		try
+		{
+			string[] phases = isHeavyOperation
+				? [
+					"FreakAI is thinking...",
+					"Analyzing your profile...",
+					"Checking your data...",
+					"Building your program...",
+					"Almost there..."
+				  ]
+				: [
+					"FreakAI is thinking...",
+					"Fetching your data...",
+					"Preparing response..."
+				  ];
+
+			for (int i = 0; i < phases.Length; i++)
+			{
+				if (ct.IsCancellationRequested) return;
+
+				MainThread.BeginInvokeOnMainThread(() =>
+				{
+					if (!ct.IsCancellationRequested)
+						LoadingLabel.Text = phases[i];
+				});
+
+				// Wait progressively longer between phases
+				int delayMs = isHeavyOperation ? 4000 : 3000;
+				await Task.Delay(delayMs, ct);
+			}
+		}
+		catch (TaskCanceledException)
+		{
+			// Expected when response arrives
+		}
+	}
+
+	private static bool IsProgramGenerationRequest(string message)
+	{
+		string lower = message.ToLowerInvariant();
+		return lower.Contains("program") || lower.Contains("write me") ||
+		       lower.Contains("generate") || lower.Contains("create") ||
+		       lower.Contains("yaz") || lower.Contains("oluştur") ||
+		       lower.Contains("antrenman programı");
+	}
+
+	// ── Chat bubble rendering ───────────────────────────────
 
 	private void AddChatBubble(string text, bool isUser)
 	{

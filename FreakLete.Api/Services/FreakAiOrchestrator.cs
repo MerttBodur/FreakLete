@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace FreakLete.Api.Services;
@@ -28,12 +29,22 @@ public class FreakAiOrchestrator
         List<ChatMessage>? history,
         CancellationToken cancellationToken = default)
     {
+        var totalSw = Stopwatch.StartNew();
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeoutCts.CancelAfter(MaxChatDuration);
 
+        // ── Language detection ──────────────────────────────────
+        string detectedLang = LanguageDetector.Detect(userMessage);
+        string langName = LanguageDetector.GetLanguageName(detectedLang);
+
+        _logger.LogInformation(
+            "FreakAI chat for user {UserId}: detected language={Lang} ({LangName}), messageLen={Len}",
+            userId, detectedLang, langName, userMessage.Length);
+
+        // ── Build request with language-aware system prompt ─────
         var contents = BuildContents(userMessage, history);
         var tools = BuildToolDeclarations();
-        var systemPrompt = FreakAiSystemPrompt.Build();
+        var systemPrompt = BuildLanguageAwarePrompt(detectedLang, langName);
 
         var request = new GeminiRequest
         {
@@ -50,14 +61,24 @@ public class FreakAiOrchestrator
             }
         };
 
-        // Tool-calling loop
+        // ── Tool-calling loop with per-round timing ─────────────
         for (int round = 0; round < MaxToolRounds; round++)
         {
+            var roundSw = Stopwatch.StartNew();
+
             var response = await _gemini.GenerateContentAsync(request, timeoutCts.Token);
+
+            roundSw.Stop();
+            _logger.LogInformation(
+                "FreakAI round {Round}/{Max} for user {UserId}: Gemini call took {ElapsedMs}ms",
+                round + 1, MaxToolRounds, userId, roundSw.ElapsedMilliseconds);
 
             var candidate = response.Candidates?.FirstOrDefault();
             if (candidate?.Content is null)
-                return "I couldn't generate a response. Please try again.";
+            {
+                _logger.LogWarning("FreakAI: empty candidate in round {Round} for user {UserId}", round + 1, userId);
+                return GetLocalizedErrorMessage(detectedLang, "empty_response");
+            }
 
             var parts = candidate.Content.Parts;
 
@@ -71,9 +92,15 @@ public class FreakAiOrchestrator
                     .Where(p => !string.IsNullOrWhiteSpace(p.Text))
                     .Select(p => p.Text));
 
-                return string.IsNullOrWhiteSpace(text)
-                    ? "I don't have enough data to help with that yet. Please fill out your profile and coach preferences first."
-                    : text;
+                totalSw.Stop();
+                _logger.LogInformation(
+                    "FreakAI completed for user {UserId}: {Rounds} round(s), total {TotalMs}ms, lang={Lang}",
+                    userId, round + 1, totalSw.ElapsedMilliseconds, detectedLang);
+
+                if (string.IsNullOrWhiteSpace(text))
+                    return GetLocalizedErrorMessage(detectedLang, "no_data");
+
+                return text;
             }
 
             // Add model's response to contents
@@ -88,12 +115,20 @@ public class FreakAiOrchestrator
             foreach (var fc in functionCalls)
             {
                 var call = fc.FunctionCall!;
-                _logger.LogInformation("FreakAI tool call round {Round}: {Tool} for user {UserId}", round + 1, call.Name, userId);
+                var toolSw = Stopwatch.StartNew();
+
+                _logger.LogInformation(
+                    "FreakAI tool call round {Round}: {Tool} for user {UserId}",
+                    round + 1, call.Name, userId);
 
                 var result = await _toolExecutor.ExecuteToolAsync(userId, call.Name, call.Args);
 
-                // Gemini requires functionResponse.response to be a JSON object (Struct),
-                // not an array. Wrap raw arrays/primitives in {"result": ...}
+                toolSw.Stop();
+                _logger.LogInformation(
+                    "FreakAI tool {Tool} completed in {ElapsedMs}ms for user {UserId}",
+                    call.Name, toolSw.ElapsedMilliseconds, userId);
+
+                // Gemini requires functionResponse.response to be a JSON object (Struct)
                 var parsed = JsonSerializer.Deserialize<JsonElement>(result);
                 var responseElement = parsed.ValueKind == JsonValueKind.Object
                     ? parsed
@@ -116,8 +151,80 @@ public class FreakAiOrchestrator
             });
         }
 
-        return "I'm having trouble processing your request. Please try a simpler question.";
+        totalSw.Stop();
+        _logger.LogWarning(
+            "FreakAI hit max tool rounds ({Max}) for user {UserId}, total {TotalMs}ms",
+            MaxToolRounds, userId, totalSw.ElapsedMilliseconds);
+
+        return GetLocalizedErrorMessage(detectedLang, "too_complex");
     }
+
+    // ── Language-aware system prompt ────────────────────────────
+
+    private static string BuildLanguageAwarePrompt(string langCode, string langName)
+    {
+        var basePrompt = FreakAiSystemPrompt.Build();
+
+        // Prepend a hard language directive that the model sees first
+        string langDirective = $"""
+            ## MANDATORY RESPONSE LANGUAGE: {langName} ({langCode})
+            The user's latest message is in {langName}. You MUST write your ENTIRE response in {langName}.
+            This includes: explanations, coaching cues, program names, session names, notes, and all text output.
+            Tool results are in English — translate/adapt them naturally into {langName}.
+            Technical exercise names (Bench Press, Squat, Deadlift) may stay in English only if that is natural usage in {langName}.
+            DO NOT switch to English unless the detected language IS English.
+
+            """;
+
+        return langDirective + basePrompt;
+    }
+
+    // ── Localized error messages ────────────────────────────────
+
+    private static string GetLocalizedErrorMessage(string langCode, string errorType)
+    {
+        return (langCode, errorType) switch
+        {
+            ("tr", "empty_response") => "Yanıt oluşturulamadı. Lütfen tekrar deneyin.",
+            ("tr", "no_data") => "Yeterli veri yok. Lütfen profilinizi ve antrenman tercihlerinizi doldurun.",
+            ("tr", "too_complex") => "İsteğinizi işlerken sorun oluştu. Lütfen daha kısa veya basit bir mesaj deneyin.",
+            ("tr", "timeout") => "İstek zaman aşımına uğradı. Lütfen daha kısa bir mesaj deneyin.",
+            ("tr", "ai_error") => "Yapay zeka servisi geçici olarak kullanılamıyor. Lütfen tekrar deneyin.",
+            ("tr", "network_error") => "Bağlantı hatası. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.",
+
+            ("de", "empty_response") => "Antwort konnte nicht generiert werden. Bitte versuchen Sie es erneut.",
+            ("de", "no_data") => "Nicht genügend Daten. Bitte füllen Sie Ihr Profil aus.",
+            ("de", "too_complex") => "Verarbeitungsproblem. Bitte versuchen Sie eine einfachere Frage.",
+
+            ("fr", "empty_response") => "Impossible de générer une réponse. Veuillez réessayer.",
+            ("fr", "no_data") => "Données insuffisantes. Veuillez compléter votre profil.",
+            ("fr", "too_complex") => "Problème de traitement. Essayez une question plus simple.",
+
+            ("es", "empty_response") => "No se pudo generar una respuesta. Inténtelo de nuevo.",
+            ("es", "no_data") => "Datos insuficientes. Complete su perfil primero.",
+            ("es", "too_complex") => "Problema de procesamiento. Intente una pregunta más simple.",
+
+            // Default: English fallback for all other languages/error types
+            (_, "empty_response") => "I couldn't generate a response. Please try again.",
+            (_, "no_data") => "I don't have enough data to help with that yet. Please fill out your profile and coach preferences first.",
+            (_, "too_complex") => "I'm having trouble processing your request. Please try a shorter or simpler message.",
+            (_, "timeout") => "AI request timed out. Try a shorter or simpler message.",
+            (_, "ai_error") => "AI service returned an error. Please try again in a moment.",
+            (_, "network_error") => "Could not reach AI service. Please check your connection and try again.",
+            _ => "An unexpected error occurred. Please try again."
+        };
+    }
+
+    /// <summary>
+    /// Public accessor so the controller can get localized error messages too.
+    /// </summary>
+    public static string GetLocalizedError(string userMessage, string errorType)
+    {
+        string lang = LanguageDetector.Detect(userMessage);
+        return GetLocalizedErrorMessage(lang, errorType);
+    }
+
+    // ── Build contents ──────────────────────────────────────────
 
     private static List<GeminiContent> BuildContents(string userMessage, List<ChatMessage>? history)
     {

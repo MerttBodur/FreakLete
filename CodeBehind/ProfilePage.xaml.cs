@@ -48,6 +48,9 @@ public partial class ProfilePage : ContentPage
 	private SportDefinitionResponse? _selectedSport;
 	private string? _sportCatalogLoadError;
 
+	// Static cache so sport catalog survives page re-creation within the same app session
+	private static List<SportDefinitionResponse>? _cachedSportCatalog;
+
 	// Selection state for custom pickers
 	private DateTime _selectedDateOfBirth = DateTime.Today.AddYears(-18);
 	private string? _selectedPosition;
@@ -175,20 +178,15 @@ public partial class ProfilePage : ContentPage
 
 	private async void OnSportSelectorTapped(object? sender, TappedEventArgs e)
 	{
-		if (_sportCatalog.Count == 0)
-		{
-			await LoadSportCatalogAsync(forceReload: true);
-		}
+		// Build items from cache or show loading
+		var items = BuildSportPickerItems();
+		var categories = BuildSportCategories();
 
-		if (_sportCatalog.Count == 0)
-		{
-			ShowError(_sportCatalogLoadError ?? "Sport list could not be loaded. Please try again.");
-			return;
-		}
-
-		var sportNames = _sportCatalog.Select(s => s.Name).ToArray();
-		await Navigation.PushAsync(
-			new OptionPickerPage("Select Sport", sportNames, _selectedSport?.Name, name =>
+		var picker = new OptionPickerPage(
+			"Select Sport",
+			items,
+			_selectedSport?.Name,
+			name =>
 			{
 				var sport = _sportCatalog.FirstOrDefault(s =>
 					string.Equals(s.Name, name, StringComparison.OrdinalIgnoreCase));
@@ -198,7 +196,63 @@ public partial class ProfilePage : ContentPage
 					SetSelectorValue(SportLabel, sport.Name, "Select your sport");
 					UpdatePositionUI(sport, null);
 				}
-			}), true);
+			},
+			categories,
+			async () => await ReloadSportCatalogIntoPickerAsync());
+
+		await Navigation.PushAsync(picker, true);
+
+		// If catalog wasn't loaded yet, load it now into the picker
+		if (_sportCatalog.Count == 0)
+		{
+			picker.ShowLoading();
+			await LoadSportCatalogAsync(forceReload: true);
+
+			if (_sportCatalog.Count == 0)
+			{
+				picker.ShowError(_sportCatalogLoadError ?? "Sport list could not be loaded.");
+			}
+			else
+			{
+				picker.SetItems(BuildSportPickerItems(), BuildSportCategories());
+			}
+		}
+	}
+
+	private List<OptionPickerPage.OptionItem> BuildSportPickerItems()
+	{
+		return _sportCatalog.Select(s => new OptionPickerPage.OptionItem
+		{
+			Text = s.Name,
+			GroupName = s.Category
+		}).ToList();
+	}
+
+	private List<string> BuildSportCategories()
+	{
+		return _sportCatalog
+			.Select(s => s.Category)
+			.Where(c => !string.IsNullOrWhiteSpace(c))
+			.Distinct()
+			.ToList();
+	}
+
+	private async Task ReloadSportCatalogIntoPickerAsync()
+	{
+		await LoadSportCatalogAsync(forceReload: true);
+		// The picker's OnRetryClicked calls this, then we update via navigation re-open
+		// But since we navigate to the picker, we need to find the current page and update it
+		if (Navigation.NavigationStack.LastOrDefault() is OptionPickerPage activePicker)
+		{
+			if (_sportCatalog.Count == 0)
+			{
+				activePicker.ShowError(_sportCatalogLoadError ?? "Sport list could not be loaded.");
+			}
+			else
+			{
+				activePicker.SetItems(BuildSportPickerItems(), BuildSportCategories());
+			}
+		}
 	}
 
 	private async void OnPositionSelectorTapped(object? sender, TappedEventArgs e)
@@ -963,10 +1017,19 @@ public partial class ProfilePage : ContentPage
 	{
 		if (!forceReload && _sportCatalog.Count > 0) return;
 
+		// Use static cache if available
+		if (!forceReload && _cachedSportCatalog is not null && _cachedSportCatalog.Count > 0)
+		{
+			_sportCatalog = _cachedSportCatalog;
+			_sportCatalogLoadError = null;
+			return;
+		}
+
 		var result = await _api.GetSportCatalogAsync();
 		if (result.Success && result.Data is not null)
 		{
 			_sportCatalog = result.Data;
+			_cachedSportCatalog = result.Data;
 			_sportCatalogLoadError = null;
 		}
 		else

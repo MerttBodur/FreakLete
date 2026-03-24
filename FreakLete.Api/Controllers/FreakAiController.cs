@@ -36,22 +36,22 @@ public class FreakAiController : ControllerBase
         catch (InvalidOperationException ex) when (ex.Message.Contains("Gemini API error"))
         {
             _logger.LogError(ex, "Gemini API error for user {UserId}", userId);
-            return StatusCode(502, new { message = "AI service returned an error. Please try again in a moment." });
+            return StatusCode(502, new { message = FreakAiOrchestrator.GetLocalizedError(request.Message, "ai_error") });
         }
         catch (HttpRequestException ex)
         {
             _logger.LogError(ex, "Network error calling Gemini for user {UserId}", userId);
-            return StatusCode(503, new { message = "Could not reach AI service. Please check your connection and try again." });
+            return StatusCode(503, new { message = FreakAiOrchestrator.GetLocalizedError(request.Message, "network_error") });
         }
         catch (TaskCanceledException ex)
         {
             _logger.LogWarning(ex, "Gemini request timed out for user {UserId}", userId);
-            return StatusCode(504, new { message = "AI request timed out. Try a shorter or simpler message." });
+            return StatusCode(504, new { message = FreakAiOrchestrator.GetLocalizedError(request.Message, "timeout") });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected FreakAI error for user {UserId}", userId);
-            return StatusCode(500, new { message = "FreakAI is temporarily unavailable. Please try again." });
+            return StatusCode(500, new { message = FreakAiOrchestrator.GetLocalizedError(request.Message, "ai_error") });
         }
     }
 }
