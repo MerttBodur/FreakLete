@@ -53,6 +53,7 @@ public partial class ProfilePage : ContentPage
 
 	// Selection state for custom pickers
 	private DateTime _selectedDateOfBirth = DateTime.Today.AddYears(-18);
+	private bool _dateOfBirthChanged;
 	private string? _selectedPosition;
 	private string? _selectedGymExperience;
 	private string? _selectedTrainingDays;
@@ -171,6 +172,7 @@ public partial class ProfilePage : ContentPage
 			new DateSelectorPage(_selectedDateOfBirth, date =>
 			{
 				_selectedDateOfBirth = date;
+				_dateOfBirthChanged = true;
 				UpdateDateOfBirthLabel();
 				UpdateAgeLabel(date);
 			}), true);
@@ -421,24 +423,29 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		string dateStr = $"{_selectedDateOfBirth:yyyy-MM-dd}";
-		string sportName = _selectedSport?.Name ?? string.Empty;
-		string position = _selectedPosition ?? string.Empty;
+		// Only include fields the user actually set/changed
+		var profileData = new Dictionary<string, object?>();
 
-		var profileData = new
-		{
-			dateOfBirth = dateStr,
-			weightKg = weight,
-			bodyFatPercentage = bodyFat,
-			sportName,
-			position,
-			gymExperienceLevel = _selectedGymExperience ?? string.Empty
-		};
+		if (_dateOfBirthChanged)
+			profileData["dateOfBirth"] = _selectedDateOfBirth;
+
+		profileData["weightKg"] = weight;
+		profileData["bodyFatPercentage"] = bodyFat;
+
+		if (_selectedSport is not null)
+			profileData["sportName"] = _selectedSport.Name;
+
+		if (_selectedPosition is not null)
+			profileData["position"] = _selectedPosition;
+
+		if (_selectedGymExperience is not null)
+			profileData["gymExperienceLevel"] = _selectedGymExperience;
 
 		var result = await _api.UpdateProfileAsync(profileData);
 		if (result.Success)
 		{
-			UpdateAgeLabel(_selectedDateOfBirth);
+			if (_dateOfBirthChanged)
+				UpdateAgeLabel(_selectedDateOfBirth);
 			ShowSuccess("Profile saved.");
 		}
 		else
@@ -456,18 +463,39 @@ public partial class ProfilePage : ContentPage
 		int? trainingDays = _selectedTrainingDays is not null ? int.Parse(_selectedTrainingDays) : null;
 		int? sessionDuration = _selectedSessionDuration is not null ? int.Parse(_selectedSessionDuration) : null;
 
-		var coachData = new
-		{
-			trainingDaysPerWeek = trainingDays,
-			preferredSessionDurationMinutes = sessionDuration,
-			availableEquipment = EquipmentEditor.Text?.Trim() ?? "",
-			physicalLimitations = PhysicalLimitationsEditor.Text?.Trim() ?? "",
-			injuryHistory = InjuryHistoryEditor.Text?.Trim() ?? "",
-			currentPainPoints = CurrentPainEditor.Text?.Trim() ?? "",
-			primaryTrainingGoal = _selectedPrimaryGoal ?? "",
-			secondaryTrainingGoal = _selectedSecondaryGoal ?? "",
-			dietaryPreference = _selectedDietaryPreference ?? ""
-		};
+		// Only include fields that have actual values
+		var coachData = new Dictionary<string, object?>();
+
+		if (trainingDays.HasValue)
+			coachData["trainingDaysPerWeek"] = trainingDays;
+
+		if (sessionDuration.HasValue)
+			coachData["preferredSessionDurationMinutes"] = sessionDuration;
+
+		string? equipment = EquipmentEditor.Text?.Trim();
+		if (!string.IsNullOrEmpty(equipment))
+			coachData["availableEquipment"] = equipment;
+
+		string? limitations = PhysicalLimitationsEditor.Text?.Trim();
+		if (!string.IsNullOrEmpty(limitations))
+			coachData["physicalLimitations"] = limitations;
+
+		string? injuries = InjuryHistoryEditor.Text?.Trim();
+		if (!string.IsNullOrEmpty(injuries))
+			coachData["injuryHistory"] = injuries;
+
+		string? pain = CurrentPainEditor.Text?.Trim();
+		if (!string.IsNullOrEmpty(pain))
+			coachData["currentPainPoints"] = pain;
+
+		if (_selectedPrimaryGoal is not null)
+			coachData["primaryTrainingGoal"] = _selectedPrimaryGoal;
+
+		if (_selectedSecondaryGoal is not null)
+			coachData["secondaryTrainingGoal"] = _selectedSecondaryGoal;
+
+		if (_selectedDietaryPreference is not null)
+			coachData["dietaryPreference"] = _selectedDietaryPreference;
 
 		var result = await _api.UpdateProfileAsync(coachData);
 		if (result.Success)

@@ -15,11 +15,13 @@ public class AuthController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly TokenService _tokenService;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(AppDbContext db, TokenService tokenService)
+    public AuthController(AppDbContext db, TokenService tokenService, ILogger<AuthController> logger)
     {
         _db = db;
         _tokenService = tokenService;
+        _logger = logger;
     }
 
     [HttpPost("register")]
@@ -111,6 +113,17 @@ public class AuthController : ControllerBase
         var user = await _db.Users.FindAsync(userId);
         if (user is null) return NotFound();
 
+        // Validation
+        if (request.WeightKg.HasValue && (request.WeightKg.Value < 20 || request.WeightKg.Value > 400))
+            return BadRequest(new { message = "Weight must be between 20 and 400 kg." });
+
+        if (request.BodyFatPercentage.HasValue && (request.BodyFatPercentage.Value < 0 || request.BodyFatPercentage.Value > 100))
+            return BadRequest(new { message = "Body fat must be between 0 and 100%." });
+
+        if (request.TrainingDaysPerWeek.HasValue && (request.TrainingDaysPerWeek.Value < 1 || request.TrainingDaysPerWeek.Value > 7))
+            return BadRequest(new { message = "Training days must be between 1 and 7." });
+
+        // Only update fields that are explicitly provided (non-null)
         if (request.FirstName is not null) user.FirstName = request.FirstName;
         if (request.LastName is not null) user.LastName = request.LastName;
         if (request.DateOfBirth.HasValue) user.DateOfBirth = request.DateOfBirth;
@@ -129,8 +142,16 @@ public class AuthController : ControllerBase
         if (request.SecondaryTrainingGoal is not null) user.SecondaryTrainingGoal = request.SecondaryTrainingGoal;
         if (request.DietaryPreference is not null) user.DietaryPreference = request.DietaryPreference;
 
-        await _db.SaveChangesAsync();
-        return NoContent();
+        try
+        {
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "Failed to update profile for user {UserId}", userId);
+            return StatusCode(500, new { message = "Profile could not be saved. Please try again." });
+        }
     }
 
     [Authorize]

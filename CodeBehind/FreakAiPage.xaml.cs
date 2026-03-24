@@ -14,6 +14,30 @@ public partial class FreakAiPage : ContentPage
 	{
 		InitializeComponent();
 		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
+		ApplyLanguage();
+	}
+
+	/// <summary>
+	/// Sets all user-facing strings based on device language.
+	/// </summary>
+	private void ApplyLanguage()
+	{
+		// Quick action buttons
+		BtnGenerateProgram.Text = AppLanguage.QuickGenerateProgram;
+		BtnViewProgram.Text = AppLanguage.QuickViewProgram;
+		BtnAnalyzeTraining.Text = AppLanguage.QuickAnalyzeTraining;
+		BtnNutritionHelp.Text = AppLanguage.QuickNutritionHelp;
+
+		// Welcome card
+		WelcomeTitle.Text = AppLanguage.WelcomeTitle;
+		WelcomeBody.Text = AppLanguage.WelcomeBody;
+		WelcomeHint.Text = AppLanguage.WelcomeHint;
+
+		// Active program card label
+		ActiveProgramLabel.Text = AppLanguage.ActiveProgramLabel;
+
+		// Input placeholder
+		MessageEditor.Placeholder = AppLanguage.InputPlaceholder;
 	}
 
 	protected override async void OnAppearing()
@@ -31,7 +55,8 @@ public partial class FreakAiPage : ContentPage
 			{
 				ActiveProgramCard.IsVisible = true;
 				ActiveProgramName.Text = result.Data.Name;
-				ActiveProgramDetails.Text = $"{result.Data.Goal} · {result.Data.DaysPerWeek} days/week · {result.Data.Weeks.Count} weeks";
+				ActiveProgramDetails.Text = AppLanguage.FormatProgramDetails(
+					result.Data.Goal, result.Data.DaysPerWeek, result.Data.Weeks.Count);
 			}
 			else
 			{
@@ -44,25 +69,19 @@ public partial class FreakAiPage : ContentPage
 		}
 	}
 
+	// ── Quick actions (language-aware prompts) ──────────────
+
 	private void OnGenerateProgramClicked(object? sender, EventArgs e)
-	{
-		SendQuickMessage("Write me a personalized training program based on my profile, goals, equipment, and current performance data.");
-	}
+		=> SendQuickMessage(AppLanguage.PromptGenerateProgram);
 
 	private void OnViewProgramClicked(object? sender, EventArgs e)
-	{
-		SendQuickMessage("Show me my current active training program in detail.");
-	}
+		=> SendQuickMessage(AppLanguage.PromptViewProgram);
 
 	private void OnAnalyzeTrainingClicked(object? sender, EventArgs e)
-	{
-		SendQuickMessage("Analyze my recent training data. What are my strengths, weaknesses, and what should I focus on next?");
-	}
+		=> SendQuickMessage(AppLanguage.PromptAnalyzeTraining);
 
 	private void OnNutritionHelpClicked(object? sender, EventArgs e)
-	{
-		SendQuickMessage("Based on my profile, goals, and training load, give me personalized nutrition guidance.");
-	}
+		=> SendQuickMessage(AppLanguage.PromptNutritionHelp);
 
 	private void SendQuickMessage(string message)
 	{
@@ -121,14 +140,14 @@ public partial class FreakAiPage : ContentPage
 			}
 			else
 			{
-				string error = result.Error ?? "Failed to get response.";
+				string error = result.Error ?? AppLanguage.ErrorNoResponse;
 				AddChatBubble(error, isUser: false);
 			}
 		}
-		catch (Exception ex)
+		catch
 		{
 			HideLoadingIndicator();
-			AddChatBubble($"Connection error: {ex.Message}", isUser: false);
+			AddChatBubble(AppLanguage.ErrorConnectionFailed, isUser: false);
 		}
 		finally
 		{
@@ -142,10 +161,9 @@ public partial class FreakAiPage : ContentPage
 
 	private void ShowLoadingIndicator(bool isHeavyOperation)
 	{
-		LoadingLabel.Text = "FreakAI is thinking...";
+		LoadingLabel.Text = AppLanguage.LoadingDefault;
 		LoadingIndicator.IsVisible = true;
 
-		// Start progressive loading text animation
 		_loadingAnimationCts?.Cancel();
 		_loadingAnimationCts = new CancellationTokenSource();
 		var token = _loadingAnimationCts.Token;
@@ -165,18 +183,8 @@ public partial class FreakAiPage : ContentPage
 		try
 		{
 			string[] phases = isHeavyOperation
-				? [
-					"FreakAI is thinking...",
-					"Analyzing your profile...",
-					"Checking your data...",
-					"Building your program...",
-					"Almost there..."
-				  ]
-				: [
-					"FreakAI is thinking...",
-					"Fetching your data...",
-					"Preparing response..."
-				  ];
+				? AppLanguage.LoadingPhasesHeavy
+				: AppLanguage.LoadingPhasesLight;
 
 			for (int i = 0; i < phases.Length; i++)
 			{
@@ -188,7 +196,6 @@ public partial class FreakAiPage : ContentPage
 						LoadingLabel.Text = phases[i];
 				});
 
-				// Wait progressively longer between phases
 				int delayMs = isHeavyOperation ? 4000 : 3000;
 				await Task.Delay(delayMs, ct);
 			}

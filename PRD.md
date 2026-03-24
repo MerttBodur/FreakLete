@@ -46,6 +46,7 @@ FreakLete bu boslugu kapatmayi hedefler.
 ## 4. Product Vision
 FreakLete'in uzun vadeli hedefi:
 - kullanicinin antrenman verilerini merkezi olarak saklayan
+- veriyi metin yiginlari yerine dashboard, chart, metric tile ve progress card'larla taranabilir hale getiren
 - zaman icinde trendleri grafiklerle gorunur hale getiren
 - canli workout akisinda set bazli veri toplayan
 - zayif noktalarini tespit eden
@@ -75,11 +76,15 @@ Asagidaki basliklar artik roadmap maddesi degil, mevcut urunun parcasidir.
 - CRUD for key records
 
 ### 5.2 Product and UX
-- Text-based eski form hissinden cikilip modern visual UI'a gecildi
+- Text-based eski form hissinden uzaklasan ilk visual refresh tamamlandi
 - Kategori tabanli exercise browser eklendi
 - Strength ve athletic movement'lar ayni katalog yapisinda toplandi
 - Modern custom dialogs eklendi
 - Profile tarafinda native picker / date dialog'lari yerine custom selector akisi kullanilmaya baslandi
+
+Not:
+- Bu iyilestirmeler ilk gecis adimidir
+- Asil hedef halen dashboard-first, graph-first, scan-based UI V2 tasarimidir
 
 ### 5.3 Data and Quality
 - Production PostgreSQL persistence
@@ -158,6 +163,8 @@ Roadmap boyunca su prensipler korunmali:
 - once deterministic recommendation logic, sonra AI
 - once structured metadata, sonra open-ended AI output
 - mobile app offline hissini kaybetmeden cloud'a gecmeli
+- UI; paragraf ve form yogun bir yardimci uygulama gibi degil, scan-based athletic dashboard gibi hissettirmelidir
+- chart, metric tile, badge, weekly strip ve action card gibi gorsel sinyaller ana bilgi tasiyici olmali
 - kullanicidan toplanan her detay kullaniciya gosterilmek zorunda degil; bazi skorlar ic kalite / coaching sinyali olarak arka planda kalabilir
 - FreakAI, veri ve recommendation katmanlarinin ustune kurulan urunun ana intelligence omurgasi olmalidir
 
@@ -268,6 +275,61 @@ Bu faz, urunun sadece "log kaydi" degil, canli antrenman akisini ve zaman icinde
 - FreakAI'in recovery, load, yorgunluk ve progression kararlarini destekler
 - Kullanicinin ilerlemeyi sadece liste degil trend olarak gormesini saglar
 
+## Phase 2B - Dashboard-First UI V2
+Bu faz, mevcut visual refresh'i daha ileri tasiyip urunu text-heavy utility app gorunumunden scan-based performance dashboard deneyimine donusturur.
+
+### Hedef
+- Ana ekranlari daha gorsel, daha taranabilir ve daha az yorucu hale getirmek
+- Grafik, metric tile, progress card ve action surface'leri urunun ana dili yapmak
+- Kullaniciya paragraf okumadan "bugun ne var", "nasil gidiyor", "sirada ne var" sorularinin cevabini vermek
+
+### UI V2 Phase 1 - Shared Design System
+- HeroPanel
+- MetricTile
+- TrendCard
+- ActionTile
+- WeeklyStrip
+- ProgressRingCard
+- WorkoutExerciseCard
+- BadgeChip
+- EmptyStateCard
+- SelectionGridCard
+
+### UI V2 Phase 2 - Analytics and Chart Infrastructure
+- GraphicsView tabanli custom line chart
+- mini sparkline
+- progress ring
+- mini bar trend
+- chart empty / single-point / multi-point state handling
+- bodyweight history icin historical measurement model
+
+### UI V2 Phase 3 - Dashboard Surfaces
+- Home redesign
+- Workout landing redesign
+- Calendar redesign
+- daha kisa hero copy
+- daha guclu action tiles
+- weekly strip ve summary cards
+
+### UI V2 Phase 4 - Deep Workflow Surfaces
+- Calculations redesign
+- Profile'i Overview / Coach / Performance / Goals segmentlerine ayirma
+- NewWorkout'i step-based flow'a donusturme
+- FreakAI'i coach dashboard-first yuzeye tasima
+
+### UI V2 Phase 5 - Visual Selection and Onboarding Surfaces
+- Equipment selection grid
+- goal/focus/equipment gibi secimlerde visual card kullanimi
+- browser-backed selector akisini daha gorsel ve hizli hale getirme
+
+### Basari Kriterleri
+- Ana ekranlarda kullanici uzun aciklama paragraflari okumadan yonunu bulabilir
+- Home gercek bir dashboard hissi verir
+- Profile uzun tek parca form gibi hissettirmez
+- Chart'lar dekoratif degil, ana bilgi tasiyici olur
+- Workout ve program akislarinda image-backed / status-aware kartlar kullanilir
+- Uygulama "tool collection" degil, "training system" gibi hissedilir
+
 ## Phase 3 - Exercise Metadata Engine
 Bu faz roadmap'in en kritik katmanlarindan biridir.
 
@@ -370,7 +432,6 @@ Kullaniciya mini block, microcycle veya direction-level program onerileri sunmak
 
 ## 10. Yapilmis Islerin Roadmapten Cikarilmasi
 Asagidaki basliklar artik "gelecek is" degil:
-- visual UI redesign
 - exercise browser
 - 1RM calculation
 - RSI calculation
@@ -429,13 +490,14 @@ Urunu saglam buyutmek icin onerilen sira:
 
 1. Android release / Play Store cikisi
 2. iOS release hazirligi
-3. Structured athlete profile
-4. Live workout and tracking analytics
-5. Exercise metadata engine
-6. Rule-based recommendation engine
-7. FreakAI intelligence layer
-8. Program builder
+3. Dashboard-first UI V2
+4. Structured athlete profile
+5. Live workout and tracking analytics
+6. Exercise metadata engine
+7. Rule-based recommendation engine
+8. FreakAI intelligence layer
+9. Program builder
 
 ## 15. Net Product Direction
 FreakLete'in bundan sonraki asil hedefi sadece "log tutan bir app" olmak degil;
-athlete-specific, structured-data-driven, trend-aware, recommendation-capable ve uzun vadede FreakAI tarafindan guclendirilen bir performance platformuna donusmektir.
+athlete-specific, dashboard-first, structured-data-driven, trend-aware, recommendation-capable ve uzun vadede FreakAI tarafindan guclendirilen bir performance platformuna donusmektir.

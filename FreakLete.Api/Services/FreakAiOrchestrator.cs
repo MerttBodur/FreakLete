@@ -100,6 +100,10 @@ public class FreakAiOrchestrator
                 if (string.IsNullOrWhiteSpace(text))
                     return GetLocalizedErrorMessage(detectedLang, "no_data");
 
+                // ── Language guard: detect mismatch and retry once ────
+                text = await GuardResponseLanguage(
+                    text, detectedLang, langName, request, timeoutCts.Token);
+
                 return text;
             }
 
@@ -177,6 +181,77 @@ public class FreakAiOrchestrator
             """;
 
         return langDirective + basePrompt;
+    }
+
+    // ── Language guard ────────────────────────────────────────────
+
+    /// <summary>
+    /// Checks if the response language matches the target. If there's an obvious
+    /// mismatch (e.g., target=Turkish but response is in English), does one
+    /// lightweight Gemini call to translate. Returns original text if no mismatch.
+    /// </summary>
+    private async Task<string> GuardResponseLanguage(
+        string responseText,
+        string targetLang,
+        string targetLangName,
+        GeminiRequest originalRequest,
+        CancellationToken ct)
+    {
+        // Only guard for non-English targets (English is the default/fallback)
+        if (targetLang == "en")
+            return responseText;
+
+        // Quick heuristic: check if the response is in the expected language
+        string responseLang = LanguageDetector.Detect(responseText);
+        if (responseLang == targetLang)
+            return responseText;
+
+        _logger.LogWarning(
+            "FreakAI language mismatch: target={Target}, response detected as={Detected}. Attempting translation.",
+            targetLang, responseLang);
+
+        try
+        {
+            var translateRequest = new GeminiRequest
+            {
+                SystemInstruction = new GeminiSystemInstruction
+                {
+                    Parts = [new GeminiPart { Text = $"You are a translator. Translate the following text to {targetLangName}. Keep all formatting, technical terms (exercise names like Bench Press, Squat), and structure intact. Output ONLY the translated text, nothing else." }]
+                },
+                Contents =
+                [
+                    new GeminiContent
+                    {
+                        Role = "user",
+                        Parts = [new GeminiPart { Text = responseText }]
+                    }
+                ],
+                GenerationConfig = new GeminiGenerationConfig
+                {
+                    Temperature = 0.3,
+                    MaxOutputTokens = 2048
+                }
+            };
+
+            var translateResponse = await _gemini.GenerateContentAsync(translateRequest, ct);
+            var translated = translateResponse.Candidates?.FirstOrDefault()?.Content?.Parts
+                .Where(p => !string.IsNullOrWhiteSpace(p.Text))
+                .Select(p => p.Text)
+                .FirstOrDefault();
+
+            if (!string.IsNullOrWhiteSpace(translated))
+            {
+                _logger.LogInformation("FreakAI language guard: successfully translated response to {Lang}", targetLang);
+                return translated;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "FreakAI language guard translation failed, returning original response");
+        }
+
+        // Fallback: return original response if translation fails
+        return responseText;
     }
 
     // ── Localized error messages ────────────────────────────────

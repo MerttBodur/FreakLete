@@ -14,6 +14,7 @@ The current product also includes:
 Long term, `FreakAI` will move beyond its current MVP and become a deeper intelligence layer sitting on top of structured athlete data, exercise metadata, and recommendation logic.
 
 Near-term product direction also includes deeper tracking visibility and session flow improvements:
+- a dashboard-first UI V2 that replaces text-heavy surfaces with charts, metric tiles, progress cards, and stronger visual hierarchy
 - analytics dashboards for PR, bodyweight, and workout consistency trends
 - a live workout mode with set/rest timing
 - internal fatigue scoring to support smarter coaching and recovery decisions
@@ -131,10 +132,15 @@ Automated testing is included. The production backend has also passed end-to-end
 
 - Android Play Store release flow
 - iOS release preparation
+- Dashboard-First UI V2
+  - shared visual primitives such as hero panels, metric tiles, trend cards, weekly strips, and exercise cards
+  - Home, Workout, Calendar, Calculations, Profile, New Workout, and FreakAI surfaces redesigned around scan-first dashboards
+  - visual selection grids for equipment, goals, and other key coach-profile choices
 - Tracking analytics dashboards
   - PR trend line charts
   - bodyweight trend line charts
   - workout count / consistency trend charts
+  - historical body measurement tracking to support bodyweight/body fat charts
 - Live workout mode
   - start workout flow
   - set timer and rest timer flow
