@@ -15,12 +15,15 @@ public class AuthController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly TokenService _tokenService;
+    private readonly AthleteProfileService _athleteProfileService;
     private readonly ILogger<AuthController> _logger;
 
-    public AuthController(AppDbContext db, TokenService tokenService, ILogger<AuthController> logger)
+    public AuthController(AppDbContext db, TokenService tokenService,
+        AthleteProfileService athleteProfileService, ILogger<AuthController> logger)
     {
         _db = db;
         _tokenService = tokenService;
+        _athleteProfileService = athleteProfileService;
         _logger = logger;
     }
 
@@ -103,6 +106,23 @@ public class AuthController : ControllerBase
             SecondaryTrainingGoal = user.SecondaryTrainingGoal,
             DietaryPreference = user.DietaryPreference
         });
+    }
+
+    [Authorize]
+    [HttpPut("profile/athlete")]
+    public async Task<ActionResult<UserProfileResponse>> SaveAthleteProfile(SaveAthleteProfileRequest request)
+    {
+        var userId = User.GetUserId();
+        var result = await _athleteProfileService.SaveAsync(userId, request);
+
+        if (result.User is null)
+            return NotFound();
+
+        if (!result.Success)
+            return BadRequest(new { message = result.Error });
+
+        var response = await _athleteProfileService.BuildProfileResponseAsync(userId, result.User);
+        return Ok(response);
     }
 
     [Authorize]

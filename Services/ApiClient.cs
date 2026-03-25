@@ -78,6 +78,11 @@ public class ApiClient
 		return PutAsync("api/auth/profile", profileData);
 	}
 
+	public Task<ApiResult<UserProfileResponse>> SaveAthleteProfileAsync(SaveAthleteProfileRequest request)
+	{
+		return PutWithResponseAsync<UserProfileResponse>("api/auth/profile/athlete", request);
+	}
+
 	public Task<ApiResult<bool>> DeleteAccountAsync()
 	{
 		return DeleteAsync("api/auth/account");
@@ -245,6 +250,20 @@ public class ApiClient
 		{
 			AttachToken();
 			var response = await _http.PostAsJsonAsync(endpoint, data, JsonOptions);
+			return await HandleResponse<T>(response);
+		}
+		catch (Exception ex)
+		{
+			return ApiResult<T>.Fail($"Bağlantı hatası: {ex.Message}");
+		}
+	}
+
+	private async Task<ApiResult<T>> PutWithResponseAsync<T>(string endpoint, object data)
+	{
+		try
+		{
+			AttachToken();
+			var response = await _http.PutAsJsonAsync(endpoint, data, JsonOptions);
 			return await HandleResponse<T>(response);
 		}
 		catch (Exception ex)
@@ -450,6 +469,18 @@ public class SportDefinitionResponse
 	public string Category { get; set; } = "";
 	public bool HasPositions { get; set; }
 	public List<string> Positions { get; set; } = [];
+}
+
+// ── Athlete Profile Save DTO ────────────────────────────
+
+public class SaveAthleteProfileRequest
+{
+	public DateOnly? DateOfBirth { get; set; }
+	public double? WeightKg { get; set; }
+	public double? BodyFatPercentage { get; set; }
+	public string? SportName { get; set; }
+	public string? Position { get; set; }
+	public string? GymExperienceLevel { get; set; }
 }
 
 // ── FreakAI DTOs ────────────────────────────────────────

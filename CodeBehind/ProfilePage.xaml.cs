@@ -1,5 +1,6 @@
 using FreakLete.Models;
 using FreakLete.Services;
+using FreakLete.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FreakLete;
@@ -51,11 +52,11 @@ public partial class ProfilePage : ContentPage
 	// Static cache so sport catalog survives page re-creation within the same app session
 	private static List<SportDefinitionResponse>? _cachedSportCatalog;
 
-	// Selection state for custom pickers
+	// Athlete profile ViewModel — owns draft state and save logic
+	private AthleteProfileViewModel? _athleteVm;
+
+	// Selection state for custom pickers (athlete fields now delegate to _athleteVm)
 	private DateTime _selectedDateOfBirth = DateTime.Today.AddYears(-18);
-	private bool _dateOfBirthChanged;
-	private string? _selectedPosition;
-	private string? _selectedGymExperience;
 	private string? _selectedTrainingDays;
 	private string? _selectedSessionDuration;
 	private string? _selectedPrimaryGoal;
@@ -103,18 +104,25 @@ public partial class ProfilePage : ContentPage
 		FullNameLabel.Text = $"{_profile.FirstName} {_profile.LastName}";
 		EmailLabel.Text = _profile.Email;
 
-		_selectedDateOfBirth = _profile.DateOfBirth?.ToDateTime(TimeOnly.MinValue) ?? DateTime.Today.AddYears(-18);
-		UpdateDateOfBirthLabel(hasValue: _profile.DateOfBirth.HasValue);
-		UpdateAgeLabel(_profile.DateOfBirth);
-
-		WeightEntry.Text = _profile.WeightKg?.ToString("0.##") ?? string.Empty;
-		BodyFatEntry.Text = _profile.BodyFatPercentage?.ToString("0.##") ?? string.Empty;
-
 		await LoadSportCatalogAsync();
-		SetSportSelection(_profile.SportName, _profile.Position);
 
-		SetSelectorValue(GymExperienceLabel, _profile.GymExperienceLevel, "Select experience level");
-		_selectedGymExperience = string.IsNullOrWhiteSpace(_profile.GymExperienceLevel) ? null : _profile.GymExperienceLevel;
+		// Create or rehydrate the athlete ViewModel
+		_athleteVm = new AthleteProfileViewModel(_api.SaveAthleteProfileAsync, _sportCatalog);
+		_athleteVm.HydrateFromProfile(_profile);
+
+		// Sync UI from ViewModel state
+		_selectedDateOfBirth = _athleteVm.DateOfBirth?.ToDateTime(TimeOnly.MinValue) ?? DateTime.Today.AddYears(-18);
+		UpdateDateOfBirthLabel(hasValue: _athleteVm.DateOfBirth.HasValue);
+		UpdateAgeLabel(_athleteVm.DateOfBirth);
+
+		WeightEntry.Text = _athleteVm.WeightText;
+		BodyFatEntry.Text = _athleteVm.BodyFatText;
+
+		_selectedSport = _athleteVm.SelectedSport;
+		SetSelectorValue(SportLabel, _selectedSport?.Name, "Select your sport");
+		SyncPositionUI();
+
+		SetSelectorValue(GymExperienceLabel, _athleteVm.SelectedGymExperience, "Select experience level");
 
 		WorkoutCountLabel.Text = _profile.TotalWorkouts.ToString();
 		OneRmPrCountLabel.Text = _profile.TotalPrs.ToString();
@@ -180,7 +188,8 @@ public partial class ProfilePage : ContentPage
 			new DateSelectorPage(_selectedDateOfBirth, date =>
 			{
 				_selectedDateOfBirth = date;
-				_dateOfBirthChanged = true;
+				if (_athleteVm is not null)
+					_athleteVm.DateOfBirth = DateOnly.FromDateTime(date);
 				UpdateDateOfBirthLabel();
 				UpdateAgeLabel(DateOnly.FromDateTime(date));
 			}), true);
@@ -203,8 +212,10 @@ public partial class ProfilePage : ContentPage
 				if (sport is not null)
 				{
 					_selectedSport = sport;
+					if (_athleteVm is not null)
+						_athleteVm.SelectedSport = sport;
 					SetSelectorValue(SportLabel, sport.Name, "Select your sport");
-					UpdatePositionUI(sport, null);
+					SyncPositionUI();
 				}
 			},
 			categories,
@@ -269,20 +280,24 @@ public partial class ProfilePage : ContentPage
 	{
 		if (_selectedSport is null || !_selectedSport.HasPositions || _selectedSport.Positions.Count == 0) return;
 
+		var currentPos = _athleteVm?.SelectedPosition;
 		await Navigation.PushAsync(
-			new OptionPickerPage("Select Position", _selectedSport.Positions, _selectedPosition, pos =>
+			new OptionPickerPage("Select Position", _selectedSport.Positions, currentPos, pos =>
 			{
-				_selectedPosition = pos;
+				if (_athleteVm is not null)
+					_athleteVm.SelectedPosition = pos;
 				SetSelectorValue(PositionLabel, pos, "Select your position");
 			}), true);
 	}
 
 	private async void OnGymExperienceTapped(object? sender, TappedEventArgs e)
 	{
+		var current = _athleteVm?.SelectedGymExperience;
 		await Navigation.PushAsync(
-			new OptionPickerPage("Gym Experience", ExperienceLevels, _selectedGymExperience, val =>
+			new OptionPickerPage("Gym Experience", ExperienceLevels, current, val =>
 			{
-				_selectedGymExperience = val;
+				if (_athleteVm is not null)
+					_athleteVm.SelectedGymExperience = val;
 				SetSelectorValue(GymExperienceLabel, val, "Select experience level");
 			}), true);
 	}
@@ -399,49 +414,34 @@ public partial class ProfilePage : ContentPage
 	{
 		ClearStatus();
 
-		if (_profile is null)
+		if (_profile is null || _athleteVm is null)
 		{
 			return;
 		}
 
-		var (isValid, error) = ProfileStateManager.ValidateAthleteFields(
-			WeightEntry.Text, BodyFatEntry.Text);
-		if (!isValid)
+		// Push current UI text into the ViewModel before saving
+		_athleteVm.WeightText = WeightEntry.Text ?? "";
+		_athleteVm.BodyFatText = BodyFatEntry.Text ?? "";
+
+		var success = await _athleteVm.SaveAsync();
+
+		if (success)
 		{
-			ShowError(error!);
-			return;
-		}
-
-		var sportInfo = _selectedSport is not null
-			? new ProfileStateManager.SportInfo
-			{
-				Name = _selectedSport.Name,
-				HasPositions = _selectedSport.HasPositions,
-				Positions = _selectedSport.Positions
-			}
-			: null;
-
-		var profileData = ProfileStateManager.BuildAthletePayload(
-			WeightEntry.Text,
-			BodyFatEntry.Text,
-			_dateOfBirthChanged,
-			_selectedDateOfBirth,
-			sportInfo,
-			_selectedPosition,
-			_selectedGymExperience,
-			_profile.Position);
-
-		var result = await _api.UpdateProfileAsync(profileData);
-		if (result.Success)
-		{
-			_dateOfBirthChanged = false;
+			// Rehydrate UI from the server-confirmed state in the ViewModel
+			_selectedDateOfBirth = _athleteVm.DateOfBirth?.ToDateTime(TimeOnly.MinValue) ?? DateTime.Today.AddYears(-18);
+			UpdateDateOfBirthLabel(hasValue: _athleteVm.DateOfBirth.HasValue);
+			UpdateAgeLabel(_athleteVm.DateOfBirth);
+			WeightEntry.Text = _athleteVm.WeightText;
+			BodyFatEntry.Text = _athleteVm.BodyFatText;
+			_selectedSport = _athleteVm.SelectedSport;
+			SetSelectorValue(SportLabel, _selectedSport?.Name, "Select your sport");
+			SyncPositionUI();
+			SetSelectorValue(GymExperienceLabel, _athleteVm.SelectedGymExperience, "Select experience level");
 			ShowSuccess("Profile saved.");
-			// Re-fetch from server so UI reflects actual persisted state
-			await LoadProfileAsync();
 		}
 		else
 		{
-			ShowError(result.Error ?? "Failed to save profile.");
+			ShowError(_athleteVm.SaveError ?? "Failed to save profile.");
 		}
 	}
 
@@ -1016,42 +1016,14 @@ public partial class ProfilePage : ContentPage
 		}
 	}
 
-	private void SetSportSelection(string sportName, string position)
+	/// <summary>
+	/// Syncs position UI from the athlete ViewModel's state.
+	/// </summary>
+	private void SyncPositionUI()
 	{
-		if (string.IsNullOrWhiteSpace(sportName) || _sportCatalog.Count == 0)
-		{
-			SetSelectorValue(SportLabel, null, "Select your sport");
-			return;
-		}
-
-		var sport = _sportCatalog.FirstOrDefault(s =>
-			string.Equals(s.Name, sportName, StringComparison.OrdinalIgnoreCase));
-
-		if (sport is not null)
-		{
-			_selectedSport = sport;
-			SetSelectorValue(SportLabel, sport.Name, "Select your sport");
-			UpdatePositionUI(sport, position);
-		}
-		else
-		{
-			SetSelectorValue(SportLabel, null, "Select your sport");
-		}
-	}
-
-	private void UpdatePositionUI(SportDefinitionResponse sport, string? currentPosition)
-	{
-		var sportInfo = new ProfileStateManager.SportInfo
-		{
-			Name = sport.Name,
-			HasPositions = sport.HasPositions,
-			Positions = sport.Positions
-		};
-		var (position, showSelector) = ProfileStateManager.ResolvePositionForSport(sportInfo, currentPosition);
-
-		PositionContainer.IsVisible = showSelector;
-		_selectedPosition = position;
-		SetSelectorValue(PositionLabel, _selectedPosition, "Select your position");
+		if (_athleteVm is null) return;
+		PositionContainer.IsVisible = _athleteVm.ShowPositionSelector;
+		SetSelectorValue(PositionLabel, _athleteVm.SelectedPosition, "Select your position");
 	}
 
 	// ── Inner model classes ───────────────────────────────────────────
