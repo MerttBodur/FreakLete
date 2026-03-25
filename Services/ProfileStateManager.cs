@@ -46,8 +46,10 @@ public class ProfileStateManager
 		if (dateOfBirthChanged)
 			data["dateOfBirth"] = DateOnly.FromDateTime(selectedDateOfBirth);
 
-		data["weightKg"] = ParseNullableDouble(weightText);
-		data["bodyFatPercentage"] = ParseNullableDouble(bodyFatText);
+		// Send 0 as explicit "clear" sentinel — the API interprets 0 as "set to null".
+		// A real value is sent as-is. Omitting (null) would mean "don't change".
+		data["weightKg"] = ParseNullableDouble(weightText) ?? 0.0;
+		data["bodyFatPercentage"] = ParseNullableDouble(bodyFatText) ?? 0.0;
 
 		if (selectedSport is not null)
 		{
@@ -143,6 +145,29 @@ public class ProfileStateManager
 		}
 
 		return (null, false);
+	}
+
+	// ── Date of birth display ────────────────────────────
+
+	/// <summary>
+	/// Returns the formatted DOB string, or null if dateOfBirth is not set.
+	/// </summary>
+	public static string? FormatDateOfBirth(DateOnly? dateOfBirth)
+	{
+		return dateOfBirth?.ToDateTime(TimeOnly.MinValue).ToString("dd MMMM yyyy");
+	}
+
+	/// <summary>
+	/// Calculates age from DOB. Returns null if DOB is not set.
+	/// </summary>
+	public static int? CalculateAge(DateOnly? dateOfBirth, DateOnly today)
+	{
+		if (!dateOfBirth.HasValue) return null;
+
+		int age = today.Year - dateOfBirth.Value.Year;
+		if (dateOfBirth.Value > today.AddYears(-age))
+			age--;
+		return age;
 	}
 
 	// ── Helpers ───────────────────────────────────────────

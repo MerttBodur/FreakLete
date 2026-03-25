@@ -104,7 +104,7 @@ public partial class ProfilePage : ContentPage
 		EmailLabel.Text = _profile.Email;
 
 		_selectedDateOfBirth = _profile.DateOfBirth?.ToDateTime(TimeOnly.MinValue) ?? DateTime.Today.AddYears(-18);
-		UpdateDateOfBirthLabel();
+		UpdateDateOfBirthLabel(hasValue: _profile.DateOfBirth.HasValue);
 		UpdateAgeLabel(_profile.DateOfBirth);
 
 		WeightEntry.Text = _profile.WeightKg?.ToString("0.##") ?? string.Empty;
@@ -158,10 +158,18 @@ public partial class ProfilePage : ContentPage
 		}
 	}
 
-	private void UpdateDateOfBirthLabel()
+	private void UpdateDateOfBirthLabel(bool hasValue = true)
 	{
-		DateOfBirthLabel.Text = _selectedDateOfBirth.ToString("dd MMMM yyyy");
-		DateOfBirthLabel.TextColor = Color.FromArgb("#F7F7FB");
+		if (hasValue)
+		{
+			DateOfBirthLabel.Text = _selectedDateOfBirth.ToString("dd MMMM yyyy");
+			DateOfBirthLabel.TextColor = Color.FromArgb("#F7F7FB");
+		}
+		else
+		{
+			DateOfBirthLabel.Text = "Select date of birth";
+			DateOfBirthLabel.TextColor = Color.FromArgb("#B3B2C5");
+		}
 	}
 
 	// ── Custom selector tap handlers ──────────────────────────────────
@@ -805,20 +813,8 @@ public partial class ProfilePage : ContentPage
 
 	private void UpdateAgeLabel(DateOnly? dateOfBirth)
 	{
-		if (!dateOfBirth.HasValue)
-		{
-			AgeLabel.Text = "Age: -";
-			return;
-		}
-
-		var today = DateOnly.FromDateTime(DateTime.Today);
-		int age = today.Year - dateOfBirth.Value.Year;
-		if (dateOfBirth.Value > today.AddYears(-age))
-		{
-			age--;
-		}
-
-		AgeLabel.Text = $"Age: {age}";
+		var age = ProfileStateManager.CalculateAge(dateOfBirth, DateOnly.FromDateTime(DateTime.Today));
+		AgeLabel.Text = age.HasValue ? $"Age: {age}" : "Age: -";
 	}
 
 	private void ShowError(string message)

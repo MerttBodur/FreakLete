@@ -113,11 +113,13 @@ public class AuthController : ControllerBase
         var user = await _db.Users.FindAsync(userId);
         if (user is null) return NotFound();
 
-        // Validation
-        if (request.WeightKg.HasValue && (request.WeightKg.Value < 20 || request.WeightKg.Value > 400))
+        // Validation (0 is the "clear" sentinel — skip range check for it)
+        if (request.WeightKg.HasValue && request.WeightKg.Value != 0
+            && (request.WeightKg.Value < 20 || request.WeightKg.Value > 400))
             return BadRequest(new { message = "Weight must be between 20 and 400 kg." });
 
-        if (request.BodyFatPercentage.HasValue && (request.BodyFatPercentage.Value < 0 || request.BodyFatPercentage.Value > 100))
+        if (request.BodyFatPercentage.HasValue && request.BodyFatPercentage.Value != 0
+            && (request.BodyFatPercentage.Value < 0 || request.BodyFatPercentage.Value > 100))
             return BadRequest(new { message = "Body fat must be between 0 and 100%." });
 
         if (request.TrainingDaysPerWeek.HasValue && (request.TrainingDaysPerWeek.Value < 1 || request.TrainingDaysPerWeek.Value > 7))
@@ -127,8 +129,11 @@ public class AuthController : ControllerBase
         if (request.FirstName is not null) user.FirstName = request.FirstName;
         if (request.LastName is not null) user.LastName = request.LastName;
         if (request.DateOfBirth.HasValue) user.DateOfBirth = request.DateOfBirth;
-        if (request.WeightKg.HasValue) user.WeightKg = request.WeightKg;
-        if (request.BodyFatPercentage.HasValue) user.BodyFatPercentage = request.BodyFatPercentage;
+        // 0 = explicit clear (set to null); positive value = set; null = don't change
+        if (request.WeightKg.HasValue)
+            user.WeightKg = request.WeightKg.Value == 0 ? null : request.WeightKg;
+        if (request.BodyFatPercentage.HasValue)
+            user.BodyFatPercentage = request.BodyFatPercentage.Value == 0 ? null : request.BodyFatPercentage;
         if (request.SportName is not null) user.SportName = request.SportName;
         if (request.Position is not null) user.Position = request.Position;
         if (request.GymExperienceLevel is not null) user.GymExperienceLevel = request.GymExperienceLevel;

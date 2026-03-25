@@ -184,7 +184,6 @@ public class ProfileIntegrationTests : IAsyncLifetime
     [InlineData(19.9)]   // below 20
     [InlineData(400.1)]  // above 400
     [InlineData(-1)]
-    [InlineData(0)]
     public async Task UpdateProfile_InvalidWeight_Returns400(double weight)
     {
         var c = await RegisterAndAuthenticateAsync();
@@ -388,5 +387,90 @@ public class ProfileIntegrationTests : IAsyncLifetime
         var p = await GetProfileJsonAsync(c);
         Assert.Equal(80.0, p.GetProperty("weightKg").GetDouble(), 0.01);
         Assert.Equal("Running", p.GetProperty("sportName").GetString());
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  EXPLICIT CLEAR — sending 0 clears weight/bodyFat to null
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task ClearWeight_SendingZero_SetsToNull()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+
+        // Set weight first
+        var setResp = await c.PutAsJsonAsync("/api/auth/profile", new { weightKg = 80.0 });
+        Assert.Equal(HttpStatusCode.NoContent, setResp.StatusCode);
+
+        var p = await GetProfileJsonAsync(c);
+        Assert.Equal(80.0, p.GetProperty("weightKg").GetDouble(), 0.01);
+
+        // Clear by sending 0
+        var clearResp = await c.PutAsJsonAsync("/api/auth/profile", new { weightKg = 0.0 });
+        Assert.Equal(HttpStatusCode.NoContent, clearResp.StatusCode);
+
+        p = await GetProfileJsonAsync(c);
+        Assert.Equal(JsonValueKind.Null, p.GetProperty("weightKg").ValueKind);
+    }
+
+    [Fact]
+    public async Task ClearBodyFat_SendingZero_SetsToNull()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+
+        // Set body fat first
+        await c.PutAsJsonAsync("/api/auth/profile", new { bodyFatPercentage = 15.0 });
+
+        // Clear by sending 0
+        var clearResp = await c.PutAsJsonAsync("/api/auth/profile", new { bodyFatPercentage = 0.0 });
+        Assert.Equal(HttpStatusCode.NoContent, clearResp.StatusCode);
+
+        var p = await GetProfileJsonAsync(c);
+        Assert.Equal(JsonValueKind.Null, p.GetProperty("bodyFatPercentage").ValueKind);
+    }
+
+    [Fact]
+    public async Task ClearWeight_OtherFieldsPreserved()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+
+        // Set multiple fields
+        await c.PutAsJsonAsync("/api/auth/profile", new
+        {
+            weightKg = 85.0,
+            bodyFatPercentage = 18.0,
+            sportName = "Running"
+        });
+
+        // Clear only weight
+        await c.PutAsJsonAsync("/api/auth/profile", new { weightKg = 0.0 });
+
+        var p = await GetProfileJsonAsync(c);
+        Assert.Equal(JsonValueKind.Null, p.GetProperty("weightKg").ValueKind);
+        Assert.Equal(18.0, p.GetProperty("bodyFatPercentage").GetDouble(), 0.01);
+        Assert.Equal("Running", p.GetProperty("sportName").GetString());
+    }
+
+    [Fact]
+    public async Task ClearBothMetrics_ThenReSet_RoundtripsCorrectly()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+
+        // Set values
+        await c.PutAsJsonAsync("/api/auth/profile", new { weightKg = 75.0, bodyFatPercentage = 12.0 });
+
+        // Clear both
+        await c.PutAsJsonAsync("/api/auth/profile", new { weightKg = 0.0, bodyFatPercentage = 0.0 });
+
+        var p = await GetProfileJsonAsync(c);
+        Assert.Equal(JsonValueKind.Null, p.GetProperty("weightKg").ValueKind);
+        Assert.Equal(JsonValueKind.Null, p.GetProperty("bodyFatPercentage").ValueKind);
+
+        // Re-set with new values
+        await c.PutAsJsonAsync("/api/auth/profile", new { weightKg = 90.0, bodyFatPercentage = 20.0 });
+
+        p = await GetProfileJsonAsync(c);
+        Assert.Equal(90.0, p.GetProperty("weightKg").GetDouble(), 0.01);
+        Assert.Equal(20.0, p.GetProperty("bodyFatPercentage").GetDouble(), 0.01);
     }
 }

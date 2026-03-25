@@ -71,7 +71,7 @@ public class ProfileStateManagerTests
 	}
 
 	[Fact]
-	public void BuildAthletePayload_NullWeight_SendsNull()
+	public void BuildAthletePayload_EmptyWeight_SendsClearSentinel()
 	{
 		var payload = BuildAthletePayload(
 			"", "",
@@ -82,10 +82,9 @@ public class ProfileStateManagerTests
 			selectedGymExperience: null,
 			previousPosition: null);
 
-		Assert.True(payload.ContainsKey("weightKg"));
-		Assert.Null(payload["weightKg"]);
-		Assert.True(payload.ContainsKey("bodyFatPercentage"));
-		Assert.Null(payload["bodyFatPercentage"]);
+		// Empty text → 0.0 sentinel tells API to clear the value
+		Assert.Equal(0.0, payload["weightKg"]);
+		Assert.Equal(0.0, payload["bodyFatPercentage"]);
 	}
 
 	[Fact]
@@ -471,5 +470,86 @@ public class ProfileStateManagerTests
 	public void ParseNullableDouble_InvalidText_ReturnsNull()
 	{
 		Assert.Null(ProfileStateManager.ParseNullableDouble("abc"));
+	}
+
+	// ── Date of birth display ────────────────────────────
+
+	[Fact]
+	public void FormatDateOfBirth_NullDob_ReturnsNull()
+	{
+		Assert.Null(ProfileStateManager.FormatDateOfBirth(null));
+	}
+
+	[Fact]
+	public void FormatDateOfBirth_ValidDob_ReturnsFormattedString()
+	{
+		var dob = new DateOnly(1995, 6, 15);
+		var result = ProfileStateManager.FormatDateOfBirth(dob);
+		Assert.NotNull(result);
+		Assert.Contains("1995", result);
+	}
+
+	[Fact]
+	public void CalculateAge_NullDob_ReturnsNull()
+	{
+		Assert.Null(ProfileStateManager.CalculateAge(null, new DateOnly(2026, 3, 25)));
+	}
+
+	[Fact]
+	public void CalculateAge_ValidDob_ReturnsCorrectAge()
+	{
+		var dob = new DateOnly(2000, 6, 15);
+		var today = new DateOnly(2026, 3, 25);
+		Assert.Equal(25, ProfileStateManager.CalculateAge(dob, today));
+	}
+
+	[Fact]
+	public void CalculateAge_BirthdayNotYetThisYear_SubtractsOne()
+	{
+		var dob = new DateOnly(2000, 12, 25);
+		var today = new DateOnly(2026, 3, 25);
+		Assert.Equal(25, ProfileStateManager.CalculateAge(dob, today));
+	}
+
+	[Fact]
+	public void CalculateAge_ExactBirthday_FullAge()
+	{
+		var dob = new DateOnly(2000, 3, 25);
+		var today = new DateOnly(2026, 3, 25);
+		Assert.Equal(26, ProfileStateManager.CalculateAge(dob, today));
+	}
+
+	// ── Weight/BodyFat clear sentinel ────────────────────
+
+	[Fact]
+	public void BuildAthletePayload_ValidWeight_SendsValue()
+	{
+		var payload = BuildAthletePayload(
+			"80.5", "15.2",
+			dateOfBirthChanged: false,
+			selectedDateOfBirth: DateTime.Today,
+			selectedSport: null,
+			selectedPosition: null,
+			selectedGymExperience: null,
+			previousPosition: null);
+
+		Assert.Equal(80.5, payload["weightKg"]);
+		Assert.Equal(15.2, payload["bodyFatPercentage"]);
+	}
+
+	[Fact]
+	public void BuildAthletePayload_NullWeight_SendsZeroSentinel()
+	{
+		var payload = BuildAthletePayload(
+			null, null,
+			dateOfBirthChanged: false,
+			selectedDateOfBirth: DateTime.Today,
+			selectedSport: null,
+			selectedPosition: null,
+			selectedGymExperience: null,
+			previousPosition: null);
+
+		Assert.Equal(0.0, payload["weightKg"]);
+		Assert.Equal(0.0, payload["bodyFatPercentage"]);
 	}
 }
