@@ -47,14 +47,14 @@ public class AthleteProfileViewModelTests
             bodyFat: 14.2,
             sport: "Soccer",
             position: "Goalkeeper",
-            gym: "Intermediate"));
+            gym: "3-4 years"));
 
         Assert.Equal(new DateOnly(2000, 6, 15), vm.DateOfBirth);
         Assert.Equal(82.5.ToString("0.##"), vm.WeightText);
         Assert.Equal(14.2.ToString("0.##"), vm.BodyFatText);
         Assert.Equal("Soccer", vm.SelectedSport?.Name);
         Assert.Equal("Goalkeeper", vm.SelectedPosition);
-        Assert.Equal("Intermediate", vm.SelectedGymExperience);
+        Assert.Equal("3-4 years", vm.SelectedGymExperience);
         Assert.False(vm.IsDirty);
     }
 
@@ -233,8 +233,8 @@ public class AthleteProfileViewModelTests
     public void ChangingGymExperience_MakesDirty()
     {
         var vm = CreateVm();
-        vm.HydrateFromProfile(MakeProfile(gym: "Beginner"));
-        vm.SelectedGymExperience = "Advanced";
+        vm.HydrateFromProfile(MakeProfile(gym: "< 1 year"));
+        vm.SelectedGymExperience = "5+ years";
         Assert.True(vm.IsDirty);
     }
 
@@ -272,7 +272,7 @@ public class AthleteProfileViewModelTests
     public async Task SaveAsync_Success_RehydratesFromResponse()
     {
         var serverProfile = MakeProfile(
-            weight: 85, bodyFat: 16, sport: "Soccer", position: "Striker", gym: "Advanced");
+            weight: 85, bodyFat: 16, sport: "Soccer", position: "Striker", gym: "5+ years");
 
         var vm = CreateVm(save: _ =>
             Task.FromResult(ApiResult<UserProfileResponse>.Ok(serverProfile)));

@@ -56,7 +56,7 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
             bodyFatPercentage = 14.2,
             sportName = "Basketball",
             position = "Point Guard",
-            gymExperienceLevel = "Intermediate"
+            gymExperienceLevel = "3-4 years"
         };
 
         var resp = await c.PutAsJsonAsync("/api/auth/profile/athlete", payload);
@@ -69,7 +69,7 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
         Assert.Equal(14.2, body.GetProperty("bodyFatPercentage").GetDouble(), 0.01);
         Assert.Equal("Basketball", body.GetProperty("sportName").GetString());
         Assert.Equal("Point Guard", body.GetProperty("position").GetString());
-        Assert.Equal("Intermediate", body.GetProperty("gymExperienceLevel").GetString());
+        Assert.Equal("3-4 years", body.GetProperty("gymExperienceLevel").GetString());
 
         // Verify via GET
         var p = await GetProfileJsonAsync(c);
@@ -78,7 +78,7 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
         Assert.Equal(14.2, p.GetProperty("bodyFatPercentage").GetDouble(), 0.01);
         Assert.Equal("Basketball", p.GetProperty("sportName").GetString());
         Assert.Equal("Point Guard", p.GetProperty("position").GetString());
-        Assert.Equal("Intermediate", p.GetProperty("gymExperienceLevel").GetString());
+        Assert.Equal("3-4 years", p.GetProperty("gymExperienceLevel").GetString());
     }
 
     // ════════════════════════════════════════════════════════════════
@@ -98,7 +98,7 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
             bodyFatPercentage = 15.0,
             sportName = "Soccer",
             position = "Goalkeeper",
-            gymExperienceLevel = "Advanced"
+            gymExperienceLevel = "5+ years"
         });
 
         // Clear all by sending nulls
@@ -355,5 +355,85 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
             weightKg = 80.0
         });
         Assert.Equal(HttpStatusCode.Unauthorized, resp.StatusCode);
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  DATE OF BIRTH VALIDATION
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task SaveAthleteProfile_FutureDateOfBirth_Returns400()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+        var future = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var resp = await c.PutAsJsonAsync("/api/auth/profile/athlete", new
+        {
+            dateOfBirth = future.ToString("yyyy-MM-dd")
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
+        var body = await resp.Content.ReadAsStringAsync();
+        Assert.Contains("future", body, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task SaveAthleteProfile_UnreasonablyOldDob_Returns400()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+        var resp = await c.PutAsJsonAsync("/api/auth/profile/athlete", new
+        {
+            dateOfBirth = "1899-12-31"
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
+        var body = await resp.Content.ReadAsStringAsync();
+        Assert.Contains("unreasonably", body, StringComparison.OrdinalIgnoreCase);
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  GYM EXPERIENCE LEVEL VALIDATION
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task SaveAthleteProfile_InvalidGymExperience_Returns400()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+        var resp = await c.PutAsJsonAsync("/api/auth/profile/athlete", new
+        {
+            gymExperienceLevel = "Super Elite"
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
+        var body = await resp.Content.ReadAsStringAsync();
+        Assert.Contains("Invalid gym experience level", body);
+    }
+
+    [Fact]
+    public async Task SaveAthleteProfile_ValidGymExperience_Accepted()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+        var resp = await c.PutAsJsonAsync("/api/auth/profile/athlete", new
+        {
+            gymExperienceLevel = "1-2 years"
+        });
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        var p = await GetProfileJsonAsync(c);
+        Assert.Equal("1-2 years", p.GetProperty("gymExperienceLevel").GetString());
+    }
+
+    [Fact]
+    public async Task SaveAthleteProfile_NullGymExperience_ClearsValue()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+        // Set first
+        await c.PutAsJsonAsync("/api/auth/profile/athlete", new
+        {
+            gymExperienceLevel = "5+ years"
+        });
+        // Clear
+        var resp = await c.PutAsJsonAsync("/api/auth/profile/athlete", new
+        {
+            gymExperienceLevel = (string?)null
+        });
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        var p = await GetProfileJsonAsync(c);
+        Assert.Equal("", p.GetProperty("gymExperienceLevel").GetString());
     }
 }

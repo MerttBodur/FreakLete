@@ -46,7 +46,6 @@ public partial class ProfilePage : ContentPage
 	private ExerciseCatalogItem? _selectedPerformanceItem;
 	private ExerciseCatalogItem? _selectedGoalItem;
 	private List<SportDefinitionResponse> _sportCatalog = [];
-	private SportDefinitionResponse? _selectedSport;
 	private string? _sportCatalogLoadError;
 
 	// Static cache so sport catalog survives page re-creation within the same app session
@@ -55,13 +54,8 @@ public partial class ProfilePage : ContentPage
 	// Athlete profile ViewModel — owns draft state and save logic
 	private AthleteProfileViewModel? _athleteVm;
 
-	// Selection state for custom pickers (athlete fields now delegate to _athleteVm)
-	private DateTime _selectedDateOfBirth = DateTime.Today.AddYears(-18);
-	private string? _selectedTrainingDays;
-	private string? _selectedSessionDuration;
-	private string? _selectedPrimaryGoal;
-	private string? _selectedSecondaryGoal;
-	private string? _selectedDietaryPreference;
+	// Coach profile ViewModel — owns draft state and save logic
+	private CoachProfileViewModel? _coachVm;
 
 	public ProfilePage()
 	{
@@ -111,15 +105,16 @@ public partial class ProfilePage : ContentPage
 		_athleteVm.HydrateFromProfile(_profile);
 
 		// Sync UI from ViewModel state
-		_selectedDateOfBirth = _athleteVm.DateOfBirth?.ToDateTime(TimeOnly.MinValue) ?? DateTime.Today.AddYears(-18);
-		UpdateDateOfBirthLabel(hasValue: _athleteVm.DateOfBirth.HasValue);
-		UpdateAgeLabel(_athleteVm.DateOfBirth);
+		SyncDateOfBirthUI();
 
+		WeightEntry.TextChanged -= OnWeightTextChanged;
+		BodyFatEntry.TextChanged -= OnBodyFatTextChanged;
 		WeightEntry.Text = _athleteVm.WeightText;
 		BodyFatEntry.Text = _athleteVm.BodyFatText;
+		WeightEntry.TextChanged += OnWeightTextChanged;
+		BodyFatEntry.TextChanged += OnBodyFatTextChanged;
 
-		_selectedSport = _athleteVm.SelectedSport;
-		SetSelectorValue(SportLabel, _selectedSport?.Name, "Select your sport");
+		SetSelectorValue(SportLabel, _athleteVm.SelectedSport?.Name, "Select your sport");
 		SyncPositionUI();
 
 		SetSelectorValue(GymExperienceLabel, _athleteVm.SelectedGymExperience, "Select experience level");
@@ -127,26 +122,10 @@ public partial class ProfilePage : ContentPage
 		WorkoutCountLabel.Text = _profile.TotalWorkouts.ToString();
 		OneRmPrCountLabel.Text = _profile.TotalPrs.ToString();
 
-		// Coach profile fields
-		SetSelectorValue(TrainingDaysLabel, _profile.TrainingDaysPerWeek?.ToString(), "Select days per week");
-		_selectedTrainingDays = _profile.TrainingDaysPerWeek?.ToString();
-
-		SetSelectorValue(SessionDurationLabel, _profile.PreferredSessionDurationMinutes?.ToString(), "Select session duration");
-		_selectedSessionDuration = _profile.PreferredSessionDurationMinutes?.ToString();
-
-		SetSelectorValue(PrimaryGoalLabel, _profile.PrimaryTrainingGoal, "Select your primary goal");
-		_selectedPrimaryGoal = string.IsNullOrWhiteSpace(_profile.PrimaryTrainingGoal) ? null : _profile.PrimaryTrainingGoal;
-
-		SetSelectorValue(SecondaryGoalLabel, _profile.SecondaryTrainingGoal, "Select secondary goal");
-		_selectedSecondaryGoal = string.IsNullOrWhiteSpace(_profile.SecondaryTrainingGoal) ? null : _profile.SecondaryTrainingGoal;
-
-		EquipmentEditor.Text = _profile.AvailableEquipment;
-		InjuryHistoryEditor.Text = _profile.InjuryHistory;
-		CurrentPainEditor.Text = _profile.CurrentPainPoints;
-		PhysicalLimitationsEditor.Text = _profile.PhysicalLimitations;
-
-		SetSelectorValue(DietaryPreferenceLabel, _profile.DietaryPreference, "Select dietary preference");
-		_selectedDietaryPreference = string.IsNullOrWhiteSpace(_profile.DietaryPreference) ? null : _profile.DietaryPreference;
+		// Create or rehydrate the coach ViewModel
+		_coachVm = new CoachProfileViewModel(_api.SaveCoachProfileAsync);
+		_coachVm.HydrateFromProfile(_profile);
+		SyncCoachUI();
 
 		await LoadAthleticPerformancesAsync();
 		await LoadMovementGoalsAsync();
@@ -166,32 +145,29 @@ public partial class ProfilePage : ContentPage
 		}
 	}
 
-	private void UpdateDateOfBirthLabel(bool hasValue = true)
+	private void SyncDateOfBirthUI()
 	{
-		if (hasValue)
-		{
-			DateOfBirthLabel.Text = _selectedDateOfBirth.ToString("dd MMMM yyyy");
-			DateOfBirthLabel.TextColor = Color.FromArgb("#F7F7FB");
-		}
-		else
-		{
-			DateOfBirthLabel.Text = "Select date of birth";
-			DateOfBirthLabel.TextColor = Color.FromArgb("#B3B2C5");
-		}
+		if (_athleteVm is null) return;
+		DateOfBirthLabel.Text = _athleteVm.DateOfBirthDisplay;
+		DateOfBirthLabel.TextColor = _athleteVm.DateOfBirth.HasValue
+			? Color.FromArgb("#F7F7FB")
+			: Color.FromArgb("#B3B2C5");
+		AgeLabel.Text = _athleteVm.AgeDisplay;
 	}
 
 	// ── Custom selector tap handlers ──────────────────────────────────
 
 	private async void OnDateOfBirthTapped(object? sender, TappedEventArgs e)
 	{
+		var initialDate = _athleteVm?.DateOfBirth?.ToDateTime(TimeOnly.MinValue)
+			?? DateTime.Today.AddYears(-18);
+
 		await Navigation.PushAsync(
-			new DateSelectorPage(_selectedDateOfBirth, date =>
+			new DateSelectorPage(initialDate, date =>
 			{
-				_selectedDateOfBirth = date;
 				if (_athleteVm is not null)
 					_athleteVm.DateOfBirth = DateOnly.FromDateTime(date);
-				UpdateDateOfBirthLabel();
-				UpdateAgeLabel(DateOnly.FromDateTime(date));
+				SyncDateOfBirthUI();
 			}), true);
 	}
 
@@ -204,14 +180,13 @@ public partial class ProfilePage : ContentPage
 		var picker = new OptionPickerPage(
 			"Select Sport",
 			items,
-			_selectedSport?.Name,
+			_athleteVm?.SelectedSport?.Name,
 			name =>
 			{
 				var sport = _sportCatalog.FirstOrDefault(s =>
 					string.Equals(s.Name, name, StringComparison.OrdinalIgnoreCase));
 				if (sport is not null)
 				{
-					_selectedSport = sport;
 					if (_athleteVm is not null)
 						_athleteVm.SelectedSport = sport;
 					SetSelectorValue(SportLabel, sport.Name, "Select your sport");
@@ -278,11 +253,12 @@ public partial class ProfilePage : ContentPage
 
 	private async void OnPositionSelectorTapped(object? sender, TappedEventArgs e)
 	{
-		if (_selectedSport is null || !_selectedSport.HasPositions || _selectedSport.Positions.Count == 0) return;
+		var sport = _athleteVm?.SelectedSport;
+		if (sport is null || !sport.HasPositions || sport.Positions.Count == 0) return;
 
 		var currentPos = _athleteVm?.SelectedPosition;
 		await Navigation.PushAsync(
-			new OptionPickerPage("Select Position", _selectedSport.Positions, currentPos, pos =>
+			new OptionPickerPage("Select Position", sport.Positions, currentPos, pos =>
 			{
 				if (_athleteVm is not null)
 					_athleteVm.SelectedPosition = pos;
@@ -305,9 +281,10 @@ public partial class ProfilePage : ContentPage
 	private async void OnTrainingDaysTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Training Days / Week", TrainingDaysOptions, _selectedTrainingDays, val =>
+			new OptionPickerPage("Training Days / Week", TrainingDaysOptions, _coachVm?.SelectedTrainingDays, val =>
 			{
-				_selectedTrainingDays = val;
+				if (_coachVm is not null)
+					_coachVm.SelectedTrainingDays = val;
 				SetSelectorValue(TrainingDaysLabel, val, "Select days per week");
 			}), true);
 	}
@@ -315,9 +292,10 @@ public partial class ProfilePage : ContentPage
 	private async void OnSessionDurationTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Session Duration", SessionDurationOptions, _selectedSessionDuration, val =>
+			new OptionPickerPage("Session Duration", SessionDurationOptions, _coachVm?.SelectedSessionDuration, val =>
 			{
-				_selectedSessionDuration = val;
+				if (_coachVm is not null)
+					_coachVm.SelectedSessionDuration = val;
 				SetSelectorValue(SessionDurationLabel, val, "Select session duration");
 			}), true);
 	}
@@ -325,9 +303,10 @@ public partial class ProfilePage : ContentPage
 	private async void OnPrimaryGoalTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Primary Goal", TrainingGoalOptions, _selectedPrimaryGoal, val =>
+			new OptionPickerPage("Primary Goal", TrainingGoalOptions, _coachVm?.SelectedPrimaryGoal, val =>
 			{
-				_selectedPrimaryGoal = val;
+				if (_coachVm is not null)
+					_coachVm.SelectedPrimaryGoal = val;
 				SetSelectorValue(PrimaryGoalLabel, val, "Select your primary goal");
 			}), true);
 	}
@@ -335,9 +314,10 @@ public partial class ProfilePage : ContentPage
 	private async void OnSecondaryGoalTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Secondary Goal", TrainingGoalOptions, _selectedSecondaryGoal, val =>
+			new OptionPickerPage("Secondary Goal", TrainingGoalOptions, _coachVm?.SelectedSecondaryGoal, val =>
 			{
-				_selectedSecondaryGoal = val;
+				if (_coachVm is not null)
+					_coachVm.SelectedSecondaryGoal = val;
 				SetSelectorValue(SecondaryGoalLabel, val, "Select secondary goal");
 			}), true);
 	}
@@ -345,9 +325,10 @@ public partial class ProfilePage : ContentPage
 	private async void OnDietaryPreferenceTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Dietary Preference", DietaryPreferenceOptions, _selectedDietaryPreference, val =>
+			new OptionPickerPage("Dietary Preference", DietaryPreferenceOptions, _coachVm?.SelectedDietaryPreference, val =>
 			{
-				_selectedDietaryPreference = val;
+				if (_coachVm is not null)
+					_coachVm.SelectedDietaryPreference = val;
 				SetSelectorValue(DietaryPreferenceLabel, val, "Select dietary preference");
 			}), true);
 	}
@@ -410,6 +391,18 @@ public partial class ProfilePage : ContentPage
 
 	// ── Save handlers ─────────────────────────────────────────────────
 
+	private void OnWeightTextChanged(object? sender, TextChangedEventArgs e)
+	{
+		if (_athleteVm is not null)
+			_athleteVm.WeightText = e.NewTextValue ?? "";
+	}
+
+	private void OnBodyFatTextChanged(object? sender, TextChangedEventArgs e)
+	{
+		if (_athleteVm is not null)
+			_athleteVm.BodyFatText = e.NewTextValue ?? "";
+	}
+
 	private async void OnSaveProfileClicked(object? sender, EventArgs e)
 	{
 		ClearStatus();
@@ -419,22 +412,19 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		// Push current UI text into the ViewModel before saving
-		_athleteVm.WeightText = WeightEntry.Text ?? "";
-		_athleteVm.BodyFatText = BodyFatEntry.Text ?? "";
-
 		var success = await _athleteVm.SaveAsync();
 
 		if (success)
 		{
 			// Rehydrate UI from the server-confirmed state in the ViewModel
-			_selectedDateOfBirth = _athleteVm.DateOfBirth?.ToDateTime(TimeOnly.MinValue) ?? DateTime.Today.AddYears(-18);
-			UpdateDateOfBirthLabel(hasValue: _athleteVm.DateOfBirth.HasValue);
-			UpdateAgeLabel(_athleteVm.DateOfBirth);
+			SyncDateOfBirthUI();
+			WeightEntry.TextChanged -= OnWeightTextChanged;
+			BodyFatEntry.TextChanged -= OnBodyFatTextChanged;
 			WeightEntry.Text = _athleteVm.WeightText;
 			BodyFatEntry.Text = _athleteVm.BodyFatText;
-			_selectedSport = _athleteVm.SelectedSport;
-			SetSelectorValue(SportLabel, _selectedSport?.Name, "Select your sport");
+			WeightEntry.TextChanged += OnWeightTextChanged;
+			BodyFatEntry.TextChanged += OnBodyFatTextChanged;
+			SetSelectorValue(SportLabel, _athleteVm.SelectedSport?.Name, "Select your sport");
 			SyncPositionUI();
 			SetSelectorValue(GymExperienceLabel, _athleteVm.SelectedGymExperience, "Select experience level");
 			ShowSuccess("Profile saved.");
@@ -449,29 +439,24 @@ public partial class ProfilePage : ContentPage
 	{
 		ClearStatus();
 
-		if (_profile is null) return;
+		if (_profile is null || _coachVm is null) return;
 
-		var coachData = ProfileStateManager.BuildCoachPayload(
-			_selectedTrainingDays,
-			_selectedSessionDuration,
-			EquipmentEditor.Text?.Trim(),
-			PhysicalLimitationsEditor.Text?.Trim(),
-			InjuryHistoryEditor.Text?.Trim(),
-			CurrentPainEditor.Text?.Trim(),
-			_selectedPrimaryGoal,
-			_selectedSecondaryGoal,
-			_selectedDietaryPreference);
+		// Push text editor values into the VM before saving
+		_coachVm.EquipmentText = EquipmentEditor.Text?.Trim() ?? "";
+		_coachVm.LimitationsText = PhysicalLimitationsEditor.Text?.Trim() ?? "";
+		_coachVm.InjuryHistoryText = InjuryHistoryEditor.Text?.Trim() ?? "";
+		_coachVm.PainPointsText = CurrentPainEditor.Text?.Trim() ?? "";
 
-		var result = await _api.UpdateProfileAsync(coachData);
-		if (result.Success)
+		var success = await _coachVm.SaveAsync();
+
+		if (success)
 		{
+			SyncCoachUI();
 			ShowSuccess("Coach profile saved.");
-			// Re-fetch from server so UI reflects actual persisted state
-			await LoadProfileAsync();
 		}
 		else
 		{
-			ShowError(result.Error ?? "Failed to save coach profile.");
+			ShowError(_coachVm.SaveError ?? "Failed to save coach profile.");
 		}
 	}
 
@@ -811,12 +796,6 @@ public partial class ProfilePage : ContentPage
 		};
 	}
 
-	private void UpdateAgeLabel(DateOnly? dateOfBirth)
-	{
-		var age = ProfileStateManager.CalculateAge(dateOfBirth, DateOnly.FromDateTime(DateTime.Today));
-		AgeLabel.Text = age.HasValue ? $"Age: {age}" : "Age: -";
-	}
-
 	private void ShowError(string message)
 	{
 		StatusLabel.TextColor = Colors.Red;
@@ -1024,6 +1003,23 @@ public partial class ProfilePage : ContentPage
 		if (_athleteVm is null) return;
 		PositionContainer.IsVisible = _athleteVm.ShowPositionSelector;
 		SetSelectorValue(PositionLabel, _athleteVm.SelectedPosition, "Select your position");
+	}
+
+	/// <summary>
+	/// Syncs all coach profile UI from the coach ViewModel's state.
+	/// </summary>
+	private void SyncCoachUI()
+	{
+		if (_coachVm is null) return;
+		SetSelectorValue(TrainingDaysLabel, _coachVm.SelectedTrainingDays, "Select days per week");
+		SetSelectorValue(SessionDurationLabel, _coachVm.SelectedSessionDuration, "Select session duration");
+		SetSelectorValue(PrimaryGoalLabel, _coachVm.SelectedPrimaryGoal, "Select your primary goal");
+		SetSelectorValue(SecondaryGoalLabel, _coachVm.SelectedSecondaryGoal, "Select secondary goal");
+		SetSelectorValue(DietaryPreferenceLabel, _coachVm.SelectedDietaryPreference, "Select dietary preference");
+		EquipmentEditor.Text = _coachVm.EquipmentText;
+		InjuryHistoryEditor.Text = _coachVm.InjuryHistoryText;
+		CurrentPainEditor.Text = _coachVm.PainPointsText;
+		PhysicalLimitationsEditor.Text = _coachVm.LimitationsText;
 	}
 
 	// ── Inner model classes ───────────────────────────────────────────

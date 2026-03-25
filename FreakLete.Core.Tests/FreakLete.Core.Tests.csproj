@@ -30,6 +30,7 @@
     <Compile Include="..\\Services\\CalculationsPageLogic.cs" Link="Linked\\CalculationsPageLogic.cs" />
     <Compile Include="..\\Services\\ProfileStateManager.cs" Link="Linked\\ProfileStateManager.cs" />
     <Compile Include="..\\ViewModels\\AthleteProfileViewModel.cs" Link="Linked\\AthleteProfileViewModel.cs" />
+    <Compile Include="..\\ViewModels\\CoachProfileViewModel.cs" Link="Linked\\CoachProfileViewModel.cs" />
   </ItemGroup>
 
   <ItemGroup>

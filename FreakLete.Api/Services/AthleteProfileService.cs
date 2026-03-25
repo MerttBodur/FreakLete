@@ -9,6 +9,11 @@ public class AthleteProfileService
 {
     private readonly AppDbContext _db;
 
+    private static readonly HashSet<string> AllowedGymExperienceLevels = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "< 1 year", "1-2 years", "3-4 years", "5+ years"
+    };
+
     public AthleteProfileService(AppDbContext db)
     {
         _db = db;
@@ -22,6 +27,16 @@ public class AthleteProfileService
         if (user is null)
             return new SaveResult(false, null, null); // caller returns 404
 
+        // ── Validate date of birth ───────────────────────
+        if (request.DateOfBirth.HasValue)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            if (request.DateOfBirth.Value > today)
+                return new SaveResult(false, "Date of birth cannot be in the future.", user);
+            if (request.DateOfBirth.Value < new DateOnly(1900, 1, 1))
+                return new SaveResult(false, "Date of birth is unreasonably old.", user);
+        }
+
         // ── Validate weight ──────────────────────────────
         if (request.WeightKg.HasValue && (request.WeightKg.Value < 20 || request.WeightKg.Value > 400))
             return new SaveResult(false, "Weight must be between 20 and 400 kg.", user);
@@ -30,6 +45,12 @@ public class AthleteProfileService
         if (request.BodyFatPercentage.HasValue &&
             (request.BodyFatPercentage.Value < 0 || request.BodyFatPercentage.Value > 100))
             return new SaveResult(false, "Body fat must be between 0 and 100%.", user);
+
+        // ── Validate gym experience level ────────────────
+        var normalizedGym = NormalizeEmpty(request.GymExperienceLevel);
+        if (normalizedGym is not null && !AllowedGymExperienceLevels.Contains(normalizedGym))
+            return new SaveResult(false,
+                $"Invalid gym experience level: '{normalizedGym}'. Allowed values: {string.Join(", ", AllowedGymExperienceLevels)}.", user);
 
         // ── Validate sport / position coherence ──────────
         string? resolvedSport = NormalizeEmpty(request.SportName);
@@ -71,7 +92,7 @@ public class AthleteProfileService
         user.BodyFatPercentage = request.BodyFatPercentage;
         user.SportName = resolvedSport ?? string.Empty;
         user.Position = resolvedPosition ?? string.Empty;
-        user.GymExperienceLevel = NormalizeEmpty(request.GymExperienceLevel) ?? string.Empty;
+        user.GymExperienceLevel = normalizedGym ?? string.Empty;
 
         await _db.SaveChangesAsync();
         return new SaveResult(true, null, user);

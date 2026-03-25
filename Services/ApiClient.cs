@@ -83,6 +83,11 @@ public class ApiClient
 		return PutWithResponseAsync<UserProfileResponse>("api/auth/profile/athlete", request);
 	}
 
+	public Task<ApiResult<UserProfileResponse>> SaveCoachProfileAsync(SaveCoachProfileRequest request)
+	{
+		return PutWithResponseAsync<UserProfileResponse>("api/auth/profile/coach", request);
+	}
+
 	public Task<ApiResult<bool>> DeleteAccountAsync()
 	{
 		return DeleteAsync("api/auth/account");
@@ -481,6 +486,21 @@ public class SaveAthleteProfileRequest
 	public string? SportName { get; set; }
 	public string? Position { get; set; }
 	public string? GymExperienceLevel { get; set; }
+}
+
+// ── Coach Profile Save DTO ──────────────────────────────
+
+public class SaveCoachProfileRequest
+{
+	public int? TrainingDaysPerWeek { get; set; }
+	public int? PreferredSessionDurationMinutes { get; set; }
+	public string? PrimaryTrainingGoal { get; set; }
+	public string? SecondaryTrainingGoal { get; set; }
+	public string? DietaryPreference { get; set; }
+	public string? AvailableEquipment { get; set; }
+	public string? PhysicalLimitations { get; set; }
+	public string? InjuryHistory { get; set; }
+	public string? CurrentPainPoints { get; set; }
 }
 
 // ── FreakAI DTOs ────────────────────────────────────────
