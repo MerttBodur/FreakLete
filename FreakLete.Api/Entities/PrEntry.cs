@@ -11,9 +11,9 @@ public class PrEntry
     public int Reps { get; set; }
     public int? RIR { get; set; }
     public double? Metric1Value { get; set; }
-    public string Metric1Unit { get; set; } = string.Empty;
+    public string? Metric1Unit { get; set; }
     public double? Metric2Value { get; set; }
-    public string Metric2Unit { get; set; } = string.Empty;
+    public string? Metric2Unit { get; set; }
     public double? GroundContactTimeMs { get; set; }
     public double? ConcentricTimeSeconds { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

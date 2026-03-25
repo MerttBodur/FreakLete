@@ -50,7 +50,7 @@ public class WorkoutsController : ControllerBase
     {
         var userId = User.GetUserId();
         var workouts = await _db.Workouts
-            .Where(w => w.UserId == userId && w.WorkoutDate.Date == date.Date)
+            .Where(w => w.UserId == userId && w.WorkoutDate.Date == DateTime.SpecifyKind(date, DateTimeKind.Utc).Date)
             .Include(w => w.ExerciseEntries)
             .ToListAsync();
 
@@ -65,7 +65,7 @@ public class WorkoutsController : ControllerBase
         {
             UserId = userId,
             WorkoutName = request.WorkoutName,
-            WorkoutDate = request.WorkoutDate,
+            WorkoutDate = DateTime.SpecifyKind(request.WorkoutDate, DateTimeKind.Utc),
             ExerciseEntries = request.Exercises.Select(e => new ExerciseEntry
             {
                 ExerciseName = e.ExerciseName,
@@ -101,7 +101,7 @@ public class WorkoutsController : ControllerBase
         if (workout is null) return NotFound();
 
         workout.WorkoutName = request.WorkoutName;
-        workout.WorkoutDate = request.WorkoutDate;
+        workout.WorkoutDate = DateTime.SpecifyKind(request.WorkoutDate, DateTimeKind.Utc);
 
         // Remove old exercises and add new ones
         _db.ExerciseEntries.RemoveRange(workout.ExerciseEntries);
