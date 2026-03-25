@@ -200,8 +200,8 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
     {
         var c = await RegisterAndAuthenticateAsync();
 
-        // Set coach fields via the old endpoint
-        await c.PutAsJsonAsync("/api/auth/profile", new
+        // Set coach fields via the typed coach endpoint
+        await c.PutAsJsonAsync("/api/auth/profile/coach", new
         {
             trainingDaysPerWeek = 5,
             preferredSessionDurationMinutes = 90,
@@ -262,8 +262,8 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
     {
         var c = await RegisterAndAuthenticateAsync();
 
-        // Set coach fields
-        await c.PutAsJsonAsync("/api/auth/profile", new
+        // Set coach fields via the typed coach endpoint
+        await c.PutAsJsonAsync("/api/auth/profile/coach", new
         {
             trainingDaysPerWeek = 4,
             primaryTrainingGoal = "Hypertrophy"

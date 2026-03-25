@@ -17,17 +17,14 @@ public class AuthController : ControllerBase
     private readonly TokenService _tokenService;
     private readonly AthleteProfileService _athleteProfileService;
     private readonly CoachProfileService _coachProfileService;
-    private readonly ILogger<AuthController> _logger;
 
     public AuthController(AppDbContext db, TokenService tokenService,
-        AthleteProfileService athleteProfileService, CoachProfileService coachProfileService,
-        ILogger<AuthController> logger)
+        AthleteProfileService athleteProfileService, CoachProfileService coachProfileService)
     {
         _db = db;
         _tokenService = tokenService;
         _athleteProfileService = athleteProfileService;
         _coachProfileService = coachProfileService;
-        _logger = logger;
     }
 
     [HttpPost("register")]
@@ -143,60 +140,6 @@ public class AuthController : ControllerBase
 
         var response = await _coachProfileService.BuildProfileResponseAsync(userId, result.User);
         return Ok(response);
-    }
-
-    [Authorize]
-    [HttpPut("profile")]
-    public async Task<IActionResult> UpdateProfile(UpdateProfileRequest request)
-    {
-        var userId = User.GetUserId();
-        var user = await _db.Users.FindAsync(userId);
-        if (user is null) return NotFound();
-
-        // Validation (0 is the "clear" sentinel — skip range check for it)
-        if (request.WeightKg.HasValue && request.WeightKg.Value != 0
-            && (request.WeightKg.Value < 20 || request.WeightKg.Value > 400))
-            return BadRequest(new { message = "Weight must be between 20 and 400 kg." });
-
-        if (request.BodyFatPercentage.HasValue && request.BodyFatPercentage.Value != 0
-            && (request.BodyFatPercentage.Value < 0 || request.BodyFatPercentage.Value > 100))
-            return BadRequest(new { message = "Body fat must be between 0 and 100%." });
-
-        if (request.TrainingDaysPerWeek.HasValue && (request.TrainingDaysPerWeek.Value < 1 || request.TrainingDaysPerWeek.Value > 7))
-            return BadRequest(new { message = "Training days must be between 1 and 7." });
-
-        // Only update fields that are explicitly provided (non-null)
-        if (request.FirstName is not null) user.FirstName = request.FirstName;
-        if (request.LastName is not null) user.LastName = request.LastName;
-        if (request.DateOfBirth.HasValue) user.DateOfBirth = request.DateOfBirth;
-        // 0 = explicit clear (set to null); positive value = set; null = don't change
-        if (request.WeightKg.HasValue)
-            user.WeightKg = request.WeightKg.Value == 0 ? null : request.WeightKg;
-        if (request.BodyFatPercentage.HasValue)
-            user.BodyFatPercentage = request.BodyFatPercentage.Value == 0 ? null : request.BodyFatPercentage;
-        if (request.SportName is not null) user.SportName = request.SportName;
-        if (request.Position is not null) user.Position = request.Position;
-        if (request.GymExperienceLevel is not null) user.GymExperienceLevel = request.GymExperienceLevel;
-        if (request.TrainingDaysPerWeek.HasValue) user.TrainingDaysPerWeek = request.TrainingDaysPerWeek;
-        if (request.PreferredSessionDurationMinutes.HasValue) user.PreferredSessionDurationMinutes = request.PreferredSessionDurationMinutes;
-        if (request.AvailableEquipment is not null) user.AvailableEquipment = request.AvailableEquipment;
-        if (request.PhysicalLimitations is not null) user.PhysicalLimitations = request.PhysicalLimitations;
-        if (request.InjuryHistory is not null) user.InjuryHistory = request.InjuryHistory;
-        if (request.CurrentPainPoints is not null) user.CurrentPainPoints = request.CurrentPainPoints;
-        if (request.PrimaryTrainingGoal is not null) user.PrimaryTrainingGoal = request.PrimaryTrainingGoal;
-        if (request.SecondaryTrainingGoal is not null) user.SecondaryTrainingGoal = request.SecondaryTrainingGoal;
-        if (request.DietaryPreference is not null) user.DietaryPreference = request.DietaryPreference;
-
-        try
-        {
-            await _db.SaveChangesAsync();
-            return NoContent();
-        }
-        catch (DbUpdateException ex)
-        {
-            _logger.LogError(ex, "Failed to update profile for user {UserId}", userId);
-            return StatusCode(500, new { message = "Profile could not be saved. Please try again." });
-        }
     }
 
     [Authorize]

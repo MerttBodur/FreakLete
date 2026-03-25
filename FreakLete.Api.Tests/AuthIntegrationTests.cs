@@ -118,9 +118,16 @@ public class AuthIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task UpdateProfile_WithoutToken_Returns401()
+    public async Task SaveAthleteProfile_WithoutToken_Returns401()
     {
-        var response = await _client.PutAsJsonAsync("/api/auth/profile", new { firstName = "X" });
+        var response = await _client.PutAsJsonAsync("/api/auth/profile/athlete", new { weightKg = 80.0 });
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SaveCoachProfile_WithoutToken_Returns401()
+    {
+        var response = await _client.PutAsJsonAsync("/api/auth/profile/coach", new { trainingDaysPerWeek = 3 });
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 

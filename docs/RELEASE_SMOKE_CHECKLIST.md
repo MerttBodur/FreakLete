@@ -89,8 +89,9 @@ this checklist covers UI integration and device-specific behavior.
 
 | Area | Automated Tests | What's NOT automated |
 |------|----------------|---------------------|
-| Auth (register/login/401s) | 10 API tests | UI flow, SecureStorage persistence |
-| Profile (CRUD, validation) | 19 API tests | UI binding, reload on app restart |
+| Auth (register/login/401s) | 11 API tests | UI flow, SecureStorage persistence |
+| Athlete Profile (typed endpoint, validation) | 17 API tests | UI binding, reload on app restart |
+| Coach Profile (typed endpoint, validation) | 9 API tests | UI binding, reload on app restart |
 | Workouts (CRUD, isolation) | 16 API tests | UI exercise picker, set editing UX |
 | PRs (CRUD, isolation) | 13 API tests | UI date picker, list sorting |
 | Athletic Performance | 14 API tests | UI filtering UX |

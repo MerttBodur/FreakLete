@@ -128,7 +128,7 @@ Profile details including body metrics and sport background.
 
 Automated testing now has multiple layers:
 - `FreakLete.Core.Tests` covers core/unit logic such as calculations, parsing, catalog rules, and helper behavior
-- `FreakLete.Api.Tests` covers auth/profile API regression scenarios such as roundtrip persistence, partial updates, invalid input rejection, and `DateOfBirth` date-only behavior
+- `FreakLete.Api.Tests` covers auth, athlete profile, and coach profile API regression scenarios including roundtrip persistence, typed endpoint validation, cross-section isolation, and `DateOfBirth` date-only behavior
 - manual smoke testing remains a separate release-verification layer for end-to-end mobile flows
 
 That API regression coverage improves backend confidence, but it does not yet guarantee immediate mobile page-state consistency after profile saves. UI-side refresh and state-sync regressions are still tracked separately.

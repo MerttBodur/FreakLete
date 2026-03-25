@@ -73,11 +73,6 @@ public class ApiClient
 		return GetAsync<UserProfileResponse>("api/auth/profile");
 	}
 
-	public Task<ApiResult<bool>> UpdateProfileAsync(object profileData)
-	{
-		return PutAsync("api/auth/profile", profileData);
-	}
-
 	public Task<ApiResult<UserProfileResponse>> SaveAthleteProfileAsync(SaveAthleteProfileRequest request)
 	{
 		return PutWithResponseAsync<UserProfileResponse>("api/auth/profile/athlete", request);
