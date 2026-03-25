@@ -28,6 +28,7 @@
     <Compile Include="..\\Models\\ExerciseCatalogItem.cs" Link="Linked\\ExerciseCatalogItem.cs" />
     <Compile Include="..\\Services\\ExerciseCatalog.cs" Link="Linked\\ExerciseCatalog.cs" />
     <Compile Include="..\\Services\\CalculationsPageLogic.cs" Link="Linked\\CalculationsPageLogic.cs" />
+    <Compile Include="..\\Services\\ProfileStateManager.cs" Link="Linked\\ProfileStateManager.cs" />
   </ItemGroup>
 
   <ItemGroup>

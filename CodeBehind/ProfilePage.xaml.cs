@@ -396,57 +396,40 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		double? weight = ParseNullableDouble(WeightEntry.Text);
-		double? bodyFat = ParseNullableDouble(BodyFatEntry.Text);
-
-		if (WeightEntry.Text?.Length > 0 && !weight.HasValue)
+		var (isValid, error) = ProfileStateManager.ValidateAthleteFields(
+			WeightEntry.Text, BodyFatEntry.Text);
+		if (!isValid)
 		{
-			ShowError("Weight must be a valid number.");
+			ShowError(error!);
 			return;
 		}
 
-		if (BodyFatEntry.Text?.Length > 0 && !bodyFat.HasValue)
-		{
-			ShowError("Body fat must be a valid number.");
-			return;
-		}
+		var sportInfo = _selectedSport is not null
+			? new ProfileStateManager.SportInfo
+			{
+				Name = _selectedSport.Name,
+				HasPositions = _selectedSport.HasPositions,
+				Positions = _selectedSport.Positions
+			}
+			: null;
 
-		if (weight.HasValue && (weight.Value < 20 || weight.Value > 400))
-		{
-			ShowError("Weight must be between 20 and 400 kg.");
-			return;
-		}
-
-		if (bodyFat.HasValue && (bodyFat.Value < 0 || bodyFat.Value > 100))
-		{
-			ShowError("Body fat must be between 0 and 100.");
-			return;
-		}
-
-		// Only include fields the user actually set/changed
-		var profileData = new Dictionary<string, object?>();
-
-		if (_dateOfBirthChanged)
-			profileData["dateOfBirth"] = DateOnly.FromDateTime(_selectedDateOfBirth);
-
-		profileData["weightKg"] = weight;
-		profileData["bodyFatPercentage"] = bodyFat;
-
-		if (_selectedSport is not null)
-			profileData["sportName"] = _selectedSport.Name;
-
-		if (_selectedPosition is not null)
-			profileData["position"] = _selectedPosition;
-
-		if (_selectedGymExperience is not null)
-			profileData["gymExperienceLevel"] = _selectedGymExperience;
+		var profileData = ProfileStateManager.BuildAthletePayload(
+			WeightEntry.Text,
+			BodyFatEntry.Text,
+			_dateOfBirthChanged,
+			_selectedDateOfBirth,
+			sportInfo,
+			_selectedPosition,
+			_selectedGymExperience,
+			_profile.Position);
 
 		var result = await _api.UpdateProfileAsync(profileData);
 		if (result.Success)
 		{
-			if (_dateOfBirthChanged)
-				UpdateAgeLabel(DateOnly.FromDateTime(_selectedDateOfBirth));
+			_dateOfBirthChanged = false;
 			ShowSuccess("Profile saved.");
+			// Re-fetch from server so UI reflects actual persisted state
+			await LoadProfileAsync();
 		}
 		else
 		{
@@ -460,48 +443,28 @@ public partial class ProfilePage : ContentPage
 
 		if (_profile is null) return;
 
-		int? trainingDays = _selectedTrainingDays is not null ? int.Parse(_selectedTrainingDays) : null;
-		int? sessionDuration = _selectedSessionDuration is not null ? int.Parse(_selectedSessionDuration) : null;
-
-		// Only include fields that have actual values
-		var coachData = new Dictionary<string, object?>();
-
-		if (trainingDays.HasValue)
-			coachData["trainingDaysPerWeek"] = trainingDays;
-
-		if (sessionDuration.HasValue)
-			coachData["preferredSessionDurationMinutes"] = sessionDuration;
-
-		string? equipment = EquipmentEditor.Text?.Trim();
-		if (!string.IsNullOrEmpty(equipment))
-			coachData["availableEquipment"] = equipment;
-
-		string? limitations = PhysicalLimitationsEditor.Text?.Trim();
-		if (!string.IsNullOrEmpty(limitations))
-			coachData["physicalLimitations"] = limitations;
-
-		string? injuries = InjuryHistoryEditor.Text?.Trim();
-		if (!string.IsNullOrEmpty(injuries))
-			coachData["injuryHistory"] = injuries;
-
-		string? pain = CurrentPainEditor.Text?.Trim();
-		if (!string.IsNullOrEmpty(pain))
-			coachData["currentPainPoints"] = pain;
-
-		if (_selectedPrimaryGoal is not null)
-			coachData["primaryTrainingGoal"] = _selectedPrimaryGoal;
-
-		if (_selectedSecondaryGoal is not null)
-			coachData["secondaryTrainingGoal"] = _selectedSecondaryGoal;
-
-		if (_selectedDietaryPreference is not null)
-			coachData["dietaryPreference"] = _selectedDietaryPreference;
+		var coachData = ProfileStateManager.BuildCoachPayload(
+			_selectedTrainingDays,
+			_selectedSessionDuration,
+			EquipmentEditor.Text?.Trim(),
+			PhysicalLimitationsEditor.Text?.Trim(),
+			InjuryHistoryEditor.Text?.Trim(),
+			CurrentPainEditor.Text?.Trim(),
+			_selectedPrimaryGoal,
+			_selectedSecondaryGoal,
+			_selectedDietaryPreference);
 
 		var result = await _api.UpdateProfileAsync(coachData);
 		if (result.Success)
+		{
 			ShowSuccess("Coach profile saved.");
+			// Re-fetch from server so UI reflects actual persisted state
+			await LoadProfileAsync();
+		}
 		else
+		{
 			ShowError(result.Error ?? "Failed to save coach profile.");
+		}
 	}
 
 	// ── Athletic Performance CRUD ─────────────────────────────────────
@@ -831,16 +794,6 @@ public partial class ProfilePage : ContentPage
 
 	// ── Helpers ───────────────────────────────────────────────────────
 
-	private static double? ParseNullableDouble(string? text)
-	{
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return null;
-		}
-
-		return MetricInput.TryParseFlexibleDouble(text, out double value) ? value : null;
-	}
-
 	private static TItem? GetBindingContext<TItem>(object? sender) where TItem : class
 	{
 		return sender switch
@@ -1092,28 +1045,17 @@ public partial class ProfilePage : ContentPage
 
 	private void UpdatePositionUI(SportDefinitionResponse sport, string? currentPosition)
 	{
-		if (sport.HasPositions && sport.Positions.Count > 0)
+		var sportInfo = new ProfileStateManager.SportInfo
 		{
-			PositionContainer.IsVisible = true;
-			_selectedPosition = null;
+			Name = sport.Name,
+			HasPositions = sport.HasPositions,
+			Positions = sport.Positions
+		};
+		var (position, showSelector) = ProfileStateManager.ResolvePositionForSport(sportInfo, currentPosition);
 
-			if (!string.IsNullOrWhiteSpace(currentPosition))
-			{
-				string? match = sport.Positions.FirstOrDefault(p =>
-					string.Equals(p, currentPosition, StringComparison.OrdinalIgnoreCase));
-				if (match is not null)
-				{
-					_selectedPosition = match;
-				}
-			}
-
-			SetSelectorValue(PositionLabel, _selectedPosition, "Select your position");
-		}
-		else
-		{
-			PositionContainer.IsVisible = false;
-			_selectedPosition = null;
-		}
+		PositionContainer.IsVisible = showSelector;
+		_selectedPosition = position;
+		SetSelectorValue(PositionLabel, _selectedPosition, "Select your position");
 	}
 
 	// ── Inner model classes ───────────────────────────────────────────
