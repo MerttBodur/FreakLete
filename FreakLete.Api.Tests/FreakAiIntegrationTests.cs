@@ -428,6 +428,78 @@ public class FreakAiIntegrationTests : IAsyncLifetime
     }
 
     // ════════════════════════════════════════════════════════════════
+    //  MULTI-TURN & CHAINED TOOL SCENARIOS
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task Chat_MultiTurn_AccumulatedHistoryPreserved()
+    {
+        // Simulate a 3-turn conversation where the client sends accumulated history
+        _geminiHandler.SetupTextResponse("Turn 1 reply");
+        var r1 = await _client.PostAsJsonAsync("/api/FreakAi/chat", new
+        {
+            message = "What should I train today?"
+        });
+        r1.EnsureSuccessStatusCode();
+        var b1 = await r1.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("Turn 1 reply", b1.GetProperty("reply").GetString());
+
+        // Turn 2: client sends history from turn 1
+        _geminiHandler.SetupTextResponse("Turn 2 reply with context");
+        var r2 = await _client.PostAsJsonAsync("/api/FreakAi/chat", new
+        {
+            message = "Can you add more detail?",
+            history = new[]
+            {
+                new { role = "user", content = "What should I train today?" },
+                new { role = "model", content = "Turn 1 reply" }
+            }
+        });
+        r2.EnsureSuccessStatusCode();
+        var b2 = await r2.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("Turn 2 reply with context", b2.GetProperty("reply").GetString());
+
+        // Turn 3: client sends full accumulated history
+        _geminiHandler.SetupTextResponse("Turn 3 final recommendation");
+        var r3 = await _client.PostAsJsonAsync("/api/FreakAi/chat", new
+        {
+            message = "Thanks, let's finalize the plan",
+            history = new[]
+            {
+                new { role = "user", content = "What should I train today?" },
+                new { role = "model", content = "Turn 1 reply" },
+                new { role = "user", content = "Can you add more detail?" },
+                new { role = "model", content = "Turn 2 reply with context" }
+            }
+        });
+        r3.EnsureSuccessStatusCode();
+        var b3 = await r3.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("Turn 3 final recommendation", b3.GetProperty("reply").GetString());
+    }
+
+    [Fact]
+    public async Task Chat_ChainedToolCalls_BothToolsExecuteBeforeFinalReply()
+    {
+        // Gemini calls get_user_profile first, then calculate_one_rm, then returns text
+        var calcArgs = JsonSerializer.Deserialize<JsonElement>("""{"weightKg": 80, "reps": 8}""");
+        _geminiHandler.SetupTwoToolCallsThenText(
+            "get_user_profile", null,
+            "calculate_one_rm", calcArgs,
+            "Based on your profile and 1RM of 98.5kg, here's your plan.");
+
+        var response = await _client.PostAsJsonAsync("/api/FreakAi/chat", new
+        {
+            message = "Analyze my strength and create a plan"
+        });
+
+        response.EnsureSuccessStatusCode();
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal(
+            "Based on your profile and 1RM of 98.5kg, here's your plan.",
+            body.GetProperty("reply").GetString());
+    }
+
+    // ════════════════════════════════════════════════════════════════
     //  LOCALIZATION CONSISTENCY
     // ════════════════════════════════════════════════════════════════
 

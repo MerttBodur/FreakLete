@@ -239,8 +239,8 @@ public class ExerciseCatalogIntegrationTests : IAsyncLifetime
         var exercises = await client.GetFromJsonAsync<List<JsonElement>>(
             "/api/ExerciseCatalog/by-category/Chest", JsonOpts);
 
-        Assert.Single(exercises!);
-        Assert.Equal("bench-press", exercises[0].GetProperty("catalogId").GetString());
+        var single = Assert.Single(exercises!);
+        Assert.Equal("bench-press", single.GetProperty("catalogId").GetString());
     }
 
     [Fact]
@@ -264,8 +264,8 @@ public class ExerciseCatalogIntegrationTests : IAsyncLifetime
         var exercises = await client.GetFromJsonAsync<List<JsonElement>>(
             "/api/ExerciseCatalog/search?q=bench", JsonOpts);
 
-        Assert.Single(exercises!);
-        Assert.Equal("bench-press", exercises[0].GetProperty("catalogId").GetString());
+        var single = Assert.Single(exercises!);
+        Assert.Equal("bench-press", single.GetProperty("catalogId").GetString());
     }
 
     [Fact]
@@ -285,8 +285,8 @@ public class ExerciseCatalogIntegrationTests : IAsyncLifetime
         var exercises = await client.GetFromJsonAsync<List<JsonElement>>(
             "/api/ExerciseCatalog/search?q=quadriceps&category=Legs", JsonOpts);
 
-        Assert.Single(exercises!);
-        Assert.Equal("squat", exercises[0].GetProperty("catalogId").GetString());
+        var single = Assert.Single(exercises!);
+        Assert.Equal("squat", single.GetProperty("catalogId").GetString());
     }
 
     [Fact]

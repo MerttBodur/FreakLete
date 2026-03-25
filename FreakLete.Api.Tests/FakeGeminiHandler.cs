@@ -54,6 +54,28 @@ public class FakeGeminiHandler : HttpMessageHandler
     }
 
     /// <summary>
+    /// Configure the handler to return two different tool calls in sequence, then text.
+    /// Round 1: toolName1, Round 2: toolName2, Round 3+: finalText.
+    /// </summary>
+    public void SetupTwoToolCallsThenText(
+        string toolName1, JsonElement? toolArgs1,
+        string toolName2, JsonElement? toolArgs2,
+        string finalText)
+    {
+        int callCount = 0;
+        _handler = (_, _) =>
+        {
+            callCount++;
+            return Task.FromResult(callCount switch
+            {
+                1 => MakeFunctionCallResponse(toolName1, toolArgs1),
+                2 => MakeFunctionCallResponse(toolName2, toolArgs2),
+                _ => MakeGeminiResponse(finalText)
+            });
+        };
+    }
+
+    /// <summary>
     /// Configure the handler to always return function calls (to test max-rounds behavior).
     /// </summary>
     public void SetupInfiniteToolCalls(string toolName)
