@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace FreakLete.Services;
 
-public class ApiClient
+public class ApiClient : IApiClient
 {
 	private readonly HttpClient _http;
 	private readonly UserSession _session;

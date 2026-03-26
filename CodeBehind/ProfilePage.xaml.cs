@@ -38,8 +38,8 @@ public partial class ProfilePage : ContentPage
 		ExerciseCatalog.OlympicLifts
 	];
 
-	private readonly ApiClient _api;
-	private readonly UserSession _session;
+	private readonly IApiClient _api;
+	private readonly ISessionProvider _session;
 	private UserProfileResponse? _profile;
 	private int? _editingPerformanceId;
 	private int? _editingGoalId;
@@ -52,10 +52,10 @@ public partial class ProfilePage : ContentPage
 	private static List<SportDefinitionResponse>? _cachedSportCatalog;
 
 	// Athlete profile ViewModel — owns draft state and save logic
-	private AthleteProfileViewModel? _athleteVm;
+	internal AthleteProfileViewModel? _athleteVm;
 
 	// Coach profile ViewModel — owns draft state and save logic
-	private CoachProfileViewModel? _coachVm;
+	internal CoachProfileViewModel? _coachVm;
 
 	public ProfilePage()
 	{
@@ -66,13 +66,23 @@ public partial class ProfilePage : ContentPage
 		UpdateGoalSelectionUI();
 	}
 
+	/// <summary>Test-only constructor — injects API and session fakes.</summary>
+	internal ProfilePage(IApiClient api, ISessionProvider session)
+	{
+		InitializeComponent();
+		_api = api;
+		_session = session;
+		UpdatePerformanceSelectionUI();
+		UpdateGoalSelectionUI();
+	}
+
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
 		await LoadProfileAsync();
 	}
 
-	private async Task LoadProfileAsync()
+	internal async Task LoadProfileAsync()
 	{
 		if (!_session.IsLoggedIn())
 		{
@@ -403,7 +413,7 @@ public partial class ProfilePage : ContentPage
 			_athleteVm.BodyFatText = e.NewTextValue ?? "";
 	}
 
-	private async void OnSaveProfileClicked(object? sender, EventArgs e)
+	internal async void OnSaveProfileClicked(object? sender, EventArgs e)
 	{
 		ClearStatus();
 
@@ -435,7 +445,7 @@ public partial class ProfilePage : ContentPage
 		}
 	}
 
-	private async void OnSaveCoachProfileClicked(object? sender, EventArgs e)
+	internal async void OnSaveCoachProfileClicked(object? sender, EventArgs e)
 	{
 		ClearStatus();
 

@@ -128,10 +128,10 @@ Profile details including body metrics and sport background.
 
 Automated testing now has multiple layers:
 - `FreakLete.Core.Tests` covers core/unit logic such as calculations, parsing, catalog rules, and helper behavior
-- `FreakLete.Api.Tests` covers auth, athlete profile, and coach profile API regression scenarios including roundtrip persistence, typed endpoint validation, cross-section isolation, and `DateOfBirth` date-only behavior
+- `FreakLete.Api.Tests` covers auth, athlete profile, coach profile, workouts, PR entries, athletic performance, movement goals, exercise catalog, sport catalog, calculations, training programs, and FreakAI controller regression scenarios
 - manual smoke testing remains a separate release-verification layer for end-to-end mobile flows
 
-That API regression coverage improves backend confidence, but it does not yet guarantee immediate mobile page-state consistency after profile saves. UI-side refresh and state-sync regressions are still tracked separately.
+That automated coverage improves backend and core confidence, but it does not yet guarantee real MAUI page behavior. The main remaining gap is real page wiring and emulator/device-level verification for flows such as Profile save behavior.
 
 The production backend has also passed end-to-end smoke tests for auth, profile, workouts, PRs, athletic performance, movement goals, and account deletion.
 
@@ -156,14 +156,10 @@ The production backend has also passed end-to-end smoke tests for auth, profile,
   - calculate total session fatigue in the background
   - classify fatigue internally as low / intermediate / high
   - use this as an internal signal rather than a user-facing score
-- Regression safety expansion
-  - workouts API integration tests
-  - PR entries API integration tests
-  - athletic performance API integration tests
-  - movement goals API integration tests
-  - training program endpoint tests
-  - FreakAI controller tests
-  - mobile profile state consistency tests
+- UI behavior verification expansion
+  - real `ProfilePage` tests that exercise the actual MAUI page flow
+  - emulator/device smoke automation for critical profile save flows
+  - broader page-wiring coverage for other user-facing screens over time
 - Structured athlete profile improvements
 - Training template library and better program browsing
 - Richer exercise metadata and recommendation groundwork
