@@ -1,16 +1,150 @@
 # Release Smoke Checklist
 
-Run this checklist manually before each release to verify end-to-end behavior
-on a real device or emulator. Automated tests cover API contracts and core logic;
-this checklist covers UI integration and device-specific behavior.
+**Test layers before release:**
+- Automated API tests (FreakLete.Api.Tests) - **Blocking**
+- Automated ViewModel tests (FreakLete.Core.Tests) - **Blocking**
+- Manual Android emulator smoke testing - **Blocking** (this is the real verification)
 
-## Prerequisites
+---
 
-- [ ] `dotnet test FreakLete.Core.Tests` — all pass
-- [ ] `dotnet test FreakLete.Api.Tests` — all pass
+## Automated Test Prerequisites
+
+- [ ] `dotnet test FreakLete.Api.Tests` — all pass (blocking)
+- [ ] `dotnet test FreakLete.Core.Tests` — all pass (blocking)
 - [ ] `dotnet build FreakLete.csproj -f net10.0-android` — no errors
-- [ ] API running locally (`dotnet run --project FreakLete.Api`)
-- [ ] Fresh test database (or run against staging)
+
+---
+
+## Android Emulator Smoke Tests (Primary Verification)
+
+Run on Android emulator with a test user account.
+This is the real Profile page verification.
+
+### Test Setup
+
+- [ ] Android emulator running with API 30+ (Pixel 5 or similar)
+- [ ] Fresh test database or staging server
+- [ ] Test account: `testprofile@example.com` / `TestPassword123!`
+
+### Critical Profile Fields to Verify
+
+These fields are the core Profile flow that users interact with:
+
+**Athlete Profile:**
+1. **DateOfBirth** - Date picker from selector
+2. **WeightKg** - Manual entry (numeric input)
+3. **BodyFatPercentage** - Manual entry (numeric input)
+4. **SportName** - Selector (Sport picker)
+5. **Position** - Selector (Position picker, if sport has positions)
+6. **GymExperienceLevel** - Selector (Experience level picker)
+
+**Coach Profile:**
+7. **TrainingDaysPerWeek** - Selector (1-7 days)
+8. **PreferredSessionDurationMinutes** - Selector (30, 45, 60, 75, 90, 120)
+9. **PrimaryTrainingGoal** - Selector (Strength, Hypertrophy, etc.)
+10. **SecondaryTrainingGoal** - Selector (optional)
+11. **DietaryPreference** - Selector (High Protein, Vegan, Keto, etc.)
+12. **AvailableEquipment** - Editor (free text)
+13. **PhysicalLimitations** - Editor (free text)
+14. **InjuryHistory** - Editor (free text)
+15. **CurrentPainPoints** - Editor (free text)
+
+### Test Datasets
+
+Execute the Profile flow with these three datasets:
+
+#### Dataset 1: Low
+```
+DateOfBirth: 2000-01-01
+WeightKg: 50
+BodyFatPercentage: 5
+SportName: Soccer
+Position: Goalkeeper
+GymExperienceLevel: < 1 year
+TrainingDaysPerWeek: 1
+SessionDurationMinutes: 30
+PrimaryTrainingGoal: General Fitness
+SecondaryTrainingGoal: (none)
+DietaryPreference: No preference
+AvailableEquipment: (blank)
+PhysicalLimitations: (blank)
+InjuryHistory: (blank)
+CurrentPainPoints: (blank)
+```
+
+**Steps:**
+- [ ] Form loads empty and renders correctly
+- [ ] Enter minimal values as specified above
+- [ ] Save successfully
+- [ ] Verify toast/success message
+- [ ] Restart app, re-open Profile — fields persist correctly
+
+#### Dataset 2: Typical
+```
+DateOfBirth: 1995-06-15
+WeightKg: 85
+BodyFatPercentage: 15
+SportName: Powerlifting
+Position: (not applicable)
+GymExperienceLevel: 3-4 years
+TrainingDaysPerWeek: 4
+SessionDurationMinutes: 60
+PrimaryTrainingGoal: Strength
+SecondaryTrainingGoal: Hypertrophy
+DietaryPreference: High Protein
+AvailableEquipment: Barbell, Dumbbells, Bench
+PhysicalLimitations: None
+InjuryHistory: None
+CurrentPainPoints: (blank)
+```
+
+**Steps:**
+- [ ] Load from Dataset 1 state
+- [ ] Update all fields to Dataset 2 values
+- [ ] Verify selectors show correct display values
+- [ ] Save successfully
+- [ ] Restart app — verify all fields persisted
+
+#### Dataset 3: High
+```
+DateOfBirth: 1970-12-31
+WeightKg: 150
+BodyFatPercentage: 45
+SportName: Basketball
+Position: Center
+GymExperienceLevel: 5+ years
+TrainingDaysPerWeek: 6
+SessionDurationMinutes: 120
+PrimaryTrainingGoal: Athletic Performance
+SecondaryTrainingGoal: Strength
+DietaryPreference: Vegetarian
+AvailableEquipment: Full range: Barbells, Dumbbells, Benches, Cable Machine, Smith Machine, Adjustable Squat Rack
+PhysicalLimitations: Previous knee injury during basketball
+InjuryHistory: Torn ACL (left knee, 2015); recovered fully with rehab
+CurrentPainPoints: Mild lower back discomfort from previous deadlift injury
+```
+
+**Steps:**
+- [ ] Load from Dataset 2 state
+- [ ] Update all fields, including long text in editors
+- [ ] Verify UI handles long text (proper wrapping, readability)
+- [ ] Save successfully
+- [ ] Restart app — verify all fields persisted exactly
+
+---
+
+## Other Profile-Related Flows
+
+- [ ] Register new account → default profile state
+- [ ] Login → profile loads correctly
+- [ ] Update profile → changes persist
+- [ ] Logout/login → profile still present
+
+---
+
+## Existing Manual Smoke Checklist
+
+Run this checklist manually on Android emulator after the critical Profile flows above.
 
 ---
 
@@ -22,21 +156,12 @@ this checklist covers UI integration and device-specific behavior.
 - [ ] Verify token persists across app restart (SecureStorage)
 - [ ] Attempt login with wrong password — see error message
 
-## Profile
-
-- [ ] View profile after login — fields populated from registration
-- [ ] Update first name, last name, save — changes persist
-- [ ] Update physical stats (height, weight, body fat) — changes persist
-- [ ] Update training preferences (experience level, goals) — changes persist
-- [ ] Kill and reopen app — profile data still loaded
-
 ## Workouts
 
 - [ ] Create a new workout with at least 2 exercises and multiple sets
 - [ ] Verify workout appears in list with correct date
 - [ ] Edit an existing workout — change sets/reps/weight
 - [ ] Delete a workout — confirm it disappears from list
-- [ ] Verify workout data does not leak between users (if multi-user testing)
 
 ## PR (Personal Records)
 
@@ -44,7 +169,6 @@ this checklist covers UI integration and device-specific behavior.
 - [ ] Verify PR appears in list
 - [ ] Edit a PR — change weight or reps
 - [ ] Delete a PR — confirm removal
-- [ ] Verify PRs are scoped to the logged-in user
 
 ## Athletic Performance
 

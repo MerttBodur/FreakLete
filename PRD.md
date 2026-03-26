@@ -95,8 +95,8 @@ Not:
 - `FreakLete.Core.Tests` ile core logic / calculations / parsing / rules coverage
 - `FreakLete.Api.Tests` ile auth, profile, workouts, PRs, athletic performance, movement goals, exercise catalog, sport catalog, calculations, training programs ve FreakAI controller coverage
 - Typed athlete/coach profile endpoint'leri, roundtrip persistence, invalid input rejection, cross-section isolation ve `DateOfBirth` date-only behavior dogrulanmis durumda
-- API regression coverage backend persistence guveni sagliyor, ancak gercek MAUI page wiring ve emulator/device davranisini tek basina garanti etmiyor
-- Mevcut ana eksik alan, real page behavior coverage ve emulator/device smoke automation'dir
+- API regression coverage backend persistence guveni sagliyor; real UI flows manual Android smoke testing ile dogrulanir
+- Mevcut test stratejisi: FreakLete.Api.Tests ve FreakLete.Core.Tests (blocking), plus manual Android emulator smoke testing (real verification)
 
 ### 5.4 Production Validation
 - Railway production backend canli
@@ -225,7 +225,7 @@ Handwritten profile alanlarini structured browser / picker sistemine cevirmek.
 - Structured athlete profile model
 
 ### Ornek Alanlar
-- Sport: Football, Basketball, Volleyball, Track and Field vb.
+- Sport: Soccer, Basketball, Volleyball, Sprinting vb.
 - Position: QB, RB, WR, OL, DL vb.
 - Target quality: explosiveness, max strength, reactive ability, acceleration vb.
 - Target metric: squat, vertical jump, broad jump, 40y dash vb.
@@ -350,8 +350,6 @@ Bu fazin amaci, uygulamanin yalnizca build alan degil, regression'a dayanikli bi
 - Training program endpoint regression tests
 - FreakAI controller / error-path tests
 - Mobile profile save/state consistency tests
-- Real MAUI page behavior tests
-- Emulator/device smoke automation
 
 ### Neden Onemli
 - API roundtrip coverage tek basina yeterli degil; kullanicinin "saved" gorup sonra eski state'e donmesi gibi mobile-state bug'lari ayrica ele alinmali
@@ -361,7 +359,7 @@ Bu fazin amaci, uygulamanin yalnizca build alan degil, regression'a dayanikli bi
 ### Guncel Durum
 - API regression expansion'in buyuk kismi tamamlanmistir
 - Workouts, PRs, athletic performance, movement goals, training programs ve FreakAI controller test coverage repo icinde mevcuttur
-- Bu fazin kalan kritik isi, real page behavior ve emulator/device seviyesindeki verification katmanidir
+- Real user-facing verification manual Android emulator smoke testing ile yapilir
 
 ## Phase 3 - Exercise Metadata Engine
 Bu faz roadmap'in en kritik katmanlarindan biridir.

@@ -2,6 +2,7 @@
 
 bin/
 obj/
+out/
 
 # User-specific files
 
@@ -36,6 +37,7 @@ Thumbs.db
 
 # Android
 
+.android/
 *.apk
 *.ap_
 

@@ -1,8 +1,8 @@
 namespace FreakLete.Services;
 
 /// <summary>
-/// Session operations used by ProfilePage. Enables page-behavior testing
-/// without MAUI Preferences/SecureStorage.
+/// Session abstraction providing login state and sign-out operations.
+/// Decouples UI pages from MAUI Preferences and SecureStorage implementation details.
 /// </summary>
 public interface ISessionProvider
 {

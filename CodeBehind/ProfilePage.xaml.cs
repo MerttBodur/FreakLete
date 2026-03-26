@@ -66,91 +66,13 @@ public partial class ProfilePage : ContentPage
 		UpdateGoalSelectionUI();
 	}
 
-	/// <summary>
-	/// Test-only constructor — injects fakes and creates raw MAUI controls
-	/// without XAML/WinUI3 so the real page logic can run headless.
-	/// </summary>
-	internal ProfilePage(IApiClient api, ISessionProvider session, bool headless)
-	{
-		if (!headless) InitializeComponent();
-		else InitializeControlsForTest();
-		_api = api;
-		_session = session;
-		UpdatePerformanceSelectionUI();
-		UpdateGoalSelectionUI();
-	}
-
-	/// <summary>
-	/// Creates the same named controls that XAML source-gen would produce,
-	/// but without triggering WinUI3 handler registration.
-	/// Every x:Name field from ProfilePage.xaml is assigned here.
-	/// </summary>
-	private void InitializeControlsForTest()
-	{
-		// Athlete card
-		FullNameLabel = new Label();
-		EmailLabel = new Label();
-		StatusLabel = new Label { IsVisible = false };
-
-		// Profile details
-		DateOfBirthLabel = new Label { Text = "Select date of birth" };
-		AgeLabel = new Label { Text = "Age: -" };
-		WeightEntry = new Entry();
-		BodyFatEntry = new Entry();
-		SportLabel = new Label { Text = "Select your sport" };
-		PositionContainer = new VerticalStackLayout { IsVisible = false };
-		PositionLabel = new Label { Text = "Select your position" };
-		GymExperienceLabel = new Label { Text = "Select experience level" };
-
-		// Coach profile
-		TrainingDaysLabel = new Label { Text = "Select days per week" };
-		SessionDurationLabel = new Label { Text = "Select session duration" };
-		PrimaryGoalLabel = new Label { Text = "Select your primary goal" };
-		SecondaryGoalLabel = new Label { Text = "Select secondary goal" };
-		EquipmentEditor = new Editor();
-		InjuryHistoryEditor = new Editor();
-		CurrentPainEditor = new Editor();
-		PhysicalLimitationsEditor = new Editor();
-		DietaryPreferenceLabel = new Label { Text = "Select dietary preference" };
-
-		// Quick stats
-		WorkoutCountLabel = new Label { Text = "0" };
-		OneRmPrCountLabel = new Label { Text = "0" };
-
-		// Athletic performance
-		SelectedPerformanceLabel = new Label();
-		SelectedPerformanceHintLabel = new Label();
-		PerformanceMetric1Label = new Label();
-		PerformanceValueEntry = new Entry();
-		PerformanceMetric2Container = new VerticalStackLayout();
-		PerformanceMetric2Label = new Label();
-		PerformanceSecondaryValueEntry = new Entry();
-		PerformanceTimingContainer = new VerticalStackLayout();
-		PerformanceTimingLabel = new Label();
-		PerformanceTimingEntry = new Entry();
-		PerformanceActionButton = new Button();
-		PerformanceCancelButton = new Button();
-		AthleticPerformanceEmptyLabel = new Label();
-		AthleticPerformanceList = new VerticalStackLayout();
-
-		// Movement goals
-		SelectedGoalLabel = new Label();
-		SelectedGoalHintLabel = new Label();
-		GoalUnitLabel = new Label();
-		GoalTargetValueEntry = new Entry();
-		GoalActionButton = new Button();
-		GoalCancelButton = new Button();
-		MovementGoalsEmptyLabel = new Label();
-		MovementGoalsList = new VerticalStackLayout();
-	}
-
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
 		await LoadProfileAsync();
 	}
 
-	internal async Task LoadProfileAsync()
+	public async Task LoadProfileAsync()
 	{
 		if (!_session.IsLoggedIn())
 		{

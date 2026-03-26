@@ -3,18 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreakLete", "..\FreakLete.csproj", "{F7B6B410-319E-413D-BD79-E1986BEEE6C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreakLete", "FreakLete.csproj", "{F7B6B410-319E-413D-BD79-E1986BEEE6C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreakLete.Core", "..\FreakLete.Core\FreakLete.Core.csproj", "{C5852C81-BEC8-4D13-9051-608F62C4A942}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreakLete.Core", "FreakLete.Core\FreakLete.Core.csproj", "{C5852C81-BEC8-4D13-9051-608F62C4A942}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreakLete.Core.Tests", "..\FreakLete.Core.Tests\FreakLete.Core.Tests.csproj", "{DAF16A6B-7AEC-4502-8EE4-CC78BEFDEC71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreakLete.Core.Tests", "FreakLete.Core.Tests\FreakLete.Core.Tests.csproj", "{DAF16A6B-7AEC-4502-8EE4-CC78BEFDEC71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreakLete.Api", "..\FreakLete.Api\FreakLete.Api.csproj", "{B84879F1-52B8-458A-94BF-73450138A7F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreakLete.Api", "FreakLete.Api\FreakLete.Api.csproj", "{B84879F1-52B8-458A-94BF-73450138A7F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreakLete.Api.Tests", "..\FreakLete.Api.Tests\FreakLete.Api.Tests.csproj", "{43A60D41-19BD-4E04-931D-BD74471BF63C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreakLete.Api.Tests", "FreakLete.Api.Tests\FreakLete.Api.Tests.csproj", "{43A60D41-19BD-4E04-931D-BD74471BF63C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreakLete.Page.Tests", "..\FreakLete.Page.Tests\FreakLete.Page.Tests.csproj", "{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}"
-EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,18 +84,7 @@ Global
 		{43A60D41-19BD-4E04-931D-BD74471BF63C}.Release|x64.Build.0 = Release|Any CPU
 		{43A60D41-19BD-4E04-931D-BD74471BF63C}.Release|x86.ActiveCfg = Release|Any CPU
 		{43A60D41-19BD-4E04-931D-BD74471BF63C}.Release|x86.Build.0 = Release|Any CPU
-		{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}.Debug|x64.Build.0 = Debug|Any CPU
-		{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}.Debug|x86.Build.0 = Debug|Any CPU
-		{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}.Release|x64.ActiveCfg = Release|Any CPU
-		{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}.Release|x64.Build.0 = Release|Any CPU
-		{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}.Release|x86.ActiveCfg = Release|Any CPU
-		{C1CA9AD5-3BD9-4CDA-8382-7BA2A2E62DD3}.Release|x86.Build.0 = Release|Any CPU
+
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

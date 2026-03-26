@@ -1,8 +1,8 @@
 namespace FreakLete.Services;
 
 /// <summary>
-/// Surface of ApiClient used by ProfilePage. Enables page-behavior testing
-/// without a real HTTP backend.
+/// API client abstraction for profile and performance data operations.
+/// Decouples ProfilePage and other clients from direct HTTP backend dependency.
 /// </summary>
 public interface IApiClient
 {

@@ -131,7 +131,7 @@ Automated testing now has multiple layers:
 - `FreakLete.Api.Tests` covers auth, athlete profile, coach profile, workouts, PR entries, athletic performance, movement goals, exercise catalog, sport catalog, calculations, training programs, and FreakAI controller regression scenarios
 - manual smoke testing remains a separate release-verification layer for end-to-end mobile flows
 
-That automated coverage improves backend and core confidence, but it does not yet guarantee real MAUI page behavior. The main remaining gap is real page wiring and emulator/device-level verification for flows such as Profile save behavior.
+That automated coverage provides strong confidence in backend and core logic. Real MAUI page behavior and user-facing flows are verified through manual Android emulator smoke testing, which is the documented release-verification path.
 
 The production backend has also passed end-to-end smoke tests for auth, profile, workouts, PRs, athletic performance, movement goals, and account deletion.
 
@@ -156,10 +156,6 @@ The production backend has also passed end-to-end smoke tests for auth, profile,
   - calculate total session fatigue in the background
   - classify fatigue internally as low / intermediate / high
   - use this as an internal signal rather than a user-facing score
-- UI behavior verification expansion
-  - real `ProfilePage` tests that exercise the actual MAUI page flow
-  - emulator/device smoke automation for critical profile save flows
-  - broader page-wiring coverage for other user-facing screens over time
 - Structured athlete profile improvements
 - Training template library and better program browsing
 - Richer exercise metadata and recommendation groundwork

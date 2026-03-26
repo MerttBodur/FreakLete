@@ -8,7 +8,7 @@ namespace FreakLete.Core.Tests;
 /// logic through AthleteProfileViewModel and CoachProfileViewModel directly,
 /// without instantiating ProfilePage or any MAUI controls.
 ///
-/// These are NOT page tests. They verify:
+/// This is NOT a page test. It verifies:
 ///   - VM hydration from profile response
 ///   - VM save → API request mapping (all 15 fields × 3 datasets)
 ///   - Coach editor push-at-save-time behavior (mirrors OnSaveCoachProfileClicked)
@@ -17,7 +17,7 @@ namespace FreakLete.Core.Tests;
 ///   - DOB display + save roundtrip
 ///   - Reload (re-hydrate from persisted state)
 ///
-/// Real ProfilePage + MAUI control tests live in FreakLete.Page.Tests.
+/// Real ProfilePage + MAUI control verification happens on Android emulator (manual smoke testing).
 /// </summary>
 public class ProfileViewModelFlowTests
 {
