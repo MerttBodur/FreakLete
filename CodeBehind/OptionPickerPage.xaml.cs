@@ -4,7 +4,7 @@ namespace FreakLete;
 
 public partial class OptionPickerPage : ContentPage
 {
-	private readonly Action<string> _onSelected;
+	private readonly Func<string, Task> _onSelected;
 	private readonly Func<Task>? _onRetry;
 	private readonly string? _currentSelection;
 
@@ -28,7 +28,7 @@ public partial class OptionPickerPage : ContentPage
 		string title,
 		IEnumerable<string> options,
 		string? currentSelection,
-		Action<string> onSelected)
+		Func<string, Task> onSelected)
 		: this(title, options.Select(o => new OptionItem { Text = o }), currentSelection, onSelected, null, null)
 	{
 	}
@@ -40,7 +40,7 @@ public partial class OptionPickerPage : ContentPage
 		string title,
 		IEnumerable<OptionItem> items,
 		string? currentSelection,
-		Action<string> onSelected,
+		Func<string, Task> onSelected,
 		IEnumerable<string>? categories,
 		Func<Task>? onRetry)
 	{
@@ -255,7 +255,7 @@ public partial class OptionPickerPage : ContentPage
 		if (sender is not Border border || border.BindingContext is not OptionItem item)
 			return;
 
-		_onSelected(item.Text);
+		await _onSelected(item.Text);
 		await Navigation.PopAsync(true);
 	}
 

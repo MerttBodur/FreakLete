@@ -182,10 +182,11 @@ public partial class ProfilePage : ContentPage
 				SyncDateOfBirthUI();
 				
 				// Autosave the change
-				await SaveAthleteFieldAsync();
+				var success = await SaveAthleteFieldAsync();
 				
-				// Prevent OnAppearing from reloading and overwriting our change
-				_skipNextProfileReload = true;
+				// Prevent OnAppearing from reloading only if save succeeded
+				if (success)
+					_skipNextProfileReload = true;
 			}), true);
 	}
 
@@ -211,10 +212,11 @@ public partial class ProfilePage : ContentPage
 					SyncPositionUI();
 					
 					// Autosave the change
-					await SaveAthleteFieldAsync();
+					var success = await SaveAthleteFieldAsync();
 					
-					// Prevent OnAppearing from reloading and overwriting our change
-					_skipNextProfileReload = true;
+					// Prevent OnAppearing from reloading only if save succeeded
+					if (success)
+						_skipNextProfileReload = true;
 				}
 			},
 			categories,
@@ -289,10 +291,11 @@ public partial class ProfilePage : ContentPage
 				SetSelectorValue(PositionLabel, pos, "Select your position");
 				
 				// Autosave the change
-				await SaveAthleteFieldAsync();
+				var success = await SaveAthleteFieldAsync();
 				
-				// Prevent OnAppearing from reloading and overwriting our change
-				_skipNextProfileReload = true;
+				// Prevent OnAppearing from reloading only if save succeeded
+				if (success)
+					_skipNextProfileReload = true;
 			}), true);
 	}
 
@@ -306,10 +309,11 @@ public partial class ProfilePage : ContentPage
 					_athleteVm.SelectedGymExperience = val;
 				SetSelectorValue(GymExperienceLabel, val, "Select experience level");
 				
-				// Autosave the change
-				await SaveAthleteFieldAsync();
+				var success = await SaveAthleteFieldAsync();
 				
-				// Prevent OnAppearing from reloading and overwriting our change
+				// Prevent OnAppearing from reloading only if save succeeded
+				if (success)
+					// Prevent OnAppearing from reloading and overwriting our change
 				_skipNextProfileReload = true;
 			}), true);
 	}
@@ -317,55 +321,90 @@ public partial class ProfilePage : ContentPage
 	private async void OnTrainingDaysTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Training Days / Week", TrainingDaysOptions, _coachVm?.SelectedTrainingDays, val =>
+			new OptionPickerPage("Training Days / Week", TrainingDaysOptions, _coachVm?.SelectedTrainingDays, async val =>
 			{
 				if (_coachVm is not null)
 					_coachVm.SelectedTrainingDays = val;
 				SetSelectorValue(TrainingDaysLabel, val, "Select days per week");
+				
+				// Autosave the change
+				var success = await SaveCoachFieldAsync();
+				
+				// Prevent OnAppearing from reloading only if save succeeded
+				if (success)
+					_skipNextProfileReload = true;
 			}), true);
 	}
 
 	private async void OnSessionDurationTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Session Duration", SessionDurationOptions, _coachVm?.SelectedSessionDuration, val =>
+			new OptionPickerPage("Session Duration", SessionDurationOptions, _coachVm?.SelectedSessionDuration, async val =>
 			{
 				if (_coachVm is not null)
 					_coachVm.SelectedSessionDuration = val;
 				SetSelectorValue(SessionDurationLabel, val, "Select session duration");
+				
+				// Autosave the change
+				var success = await SaveCoachFieldAsync();
+				
+				// Prevent OnAppearing from reloading only if save succeeded
+				if (success)
+					_skipNextProfileReload = true;
 			}), true);
 	}
 
 	private async void OnPrimaryGoalTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Primary Goal", TrainingGoalOptions, _coachVm?.SelectedPrimaryGoal, val =>
+			new OptionPickerPage("Primary Goal", TrainingGoalOptions, _coachVm?.SelectedPrimaryGoal, async val =>
 			{
 				if (_coachVm is not null)
 					_coachVm.SelectedPrimaryGoal = val;
 				SetSelectorValue(PrimaryGoalLabel, val, "Select your primary goal");
+				
+				// Autosave the change
+				var success = await SaveCoachFieldAsync();
+				
+				// Prevent OnAppearing from reloading only if save succeeded
+				if (success)
+					_skipNextProfileReload = true;
 			}), true);
 	}
 
 	private async void OnSecondaryGoalTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Secondary Goal", TrainingGoalOptions, _coachVm?.SelectedSecondaryGoal, val =>
+			new OptionPickerPage("Secondary Goal", TrainingGoalOptions, _coachVm?.SelectedSecondaryGoal, async val =>
 			{
 				if (_coachVm is not null)
 					_coachVm.SelectedSecondaryGoal = val;
 				SetSelectorValue(SecondaryGoalLabel, val, "Select secondary goal");
+				
+				// Autosave the change
+				var success = await SaveCoachFieldAsync();
+				
+				// Prevent OnAppearing from reloading only if save succeeded
+				if (success)
+					_skipNextProfileReload = true;
 			}), true);
 	}
 
 	private async void OnDietaryPreferenceTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Dietary Preference", DietaryPreferenceOptions, _coachVm?.SelectedDietaryPreference, val =>
+			new OptionPickerPage("Dietary Preference", DietaryPreferenceOptions, _coachVm?.SelectedDietaryPreference, async val =>
 			{
 				if (_coachVm is not null)
 					_coachVm.SelectedDietaryPreference = val;
 				SetSelectorValue(DietaryPreferenceLabel, val, "Select dietary preference");
+				
+				// Autosave the change
+				var success = await SaveCoachFieldAsync();
+				
+				// Prevent OnAppearing from reloading only if save succeeded
+				if (success)
+					_skipNextProfileReload = true;
 			}), true);
 	}
 
@@ -499,6 +538,22 @@ public partial class ProfilePage : ContentPage
 		return success;
 	}
 
+	/// <summary>
+	/// Autosave for coach profile changes. Shows errors but not success spam.
+	/// Returns true if save succeeded (for callers that need to know).
+	/// </summary>
+	private async Task<bool> SaveCoachFieldAsync()
+	{
+		if (_coachVm is null) return false;
+
+		var success = await _coachVm.SaveAsync();
+		if (!success)
+		{
+			ShowError(_coachVm.SaveError ?? "Failed to save coach profile.");
+		}
+		return success;
+	}
+
 	internal async void OnSaveCoachProfileClicked(object? sender, EventArgs e)
 	{
 		ClearStatus();
@@ -526,6 +581,34 @@ public partial class ProfilePage : ContentPage
 		{
 			ShowError(_coachVm.SaveError ?? "Failed to save coach profile.");
 		}
+	}
+
+	private async void OnEquipmentEditorUnfocused(object? sender, FocusEventArgs e)
+	{
+		if (_coachVm is null) return;
+		_coachVm.EquipmentText = EquipmentEditor.Text?.Trim() ?? "";
+		await SaveCoachFieldAsync();
+	}
+
+	private async void OnPhysicalLimitationsEditorUnfocused(object? sender, FocusEventArgs e)
+	{
+		if (_coachVm is null) return;
+		_coachVm.LimitationsText = PhysicalLimitationsEditor.Text?.Trim() ?? "";
+		await SaveCoachFieldAsync();
+	}
+
+	private async void OnInjuryHistoryEditorUnfocused(object? sender, FocusEventArgs e)
+	{
+		if (_coachVm is null) return;
+		_coachVm.InjuryHistoryText = InjuryHistoryEditor.Text?.Trim() ?? "";
+		await SaveCoachFieldAsync();
+	}
+
+	private async void OnCurrentPainEditorUnfocused(object? sender, FocusEventArgs e)
+	{
+		if (_coachVm is null) return;
+		_coachVm.PainPointsText = CurrentPainEditor.Text?.Trim() ?? "";
+		await SaveCoachFieldAsync();
 	}
 
 	// ── Athletic Performance CRUD ─────────────────────────────────────

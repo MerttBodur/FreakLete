@@ -2,7 +2,7 @@ namespace FreakLete;
 
 public partial class DateSelectorPage : ContentPage
 {
-	private readonly Action<DateTime> _onSelected;
+	private readonly Func<DateTime, Task> _onSelected;
 	private int _selectedYear;
 	private int _selectedMonth;
 	private int _selectedDay;
@@ -10,7 +10,7 @@ public partial class DateSelectorPage : ContentPage
 	private static readonly string[] MonthNames =
 		["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-	public DateSelectorPage(DateTime currentDate, Action<DateTime> onSelected)
+	public DateSelectorPage(DateTime currentDate, Func<DateTime, Task> onSelected)
 	{
 		InitializeComponent();
 		_onSelected = onSelected;
@@ -142,7 +142,7 @@ public partial class DateSelectorPage : ContentPage
 
 	private async void OnDoneClicked(object? sender, EventArgs e)
 	{
-		_onSelected(new DateTime(_selectedYear, _selectedMonth, _selectedDay));
+		await _onSelected(new DateTime(_selectedYear, _selectedMonth, _selectedDay));
 		await Navigation.PopAsync(true);
 	}
 

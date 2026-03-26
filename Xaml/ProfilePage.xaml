@@ -190,7 +190,8 @@
                                 Placeholder="e.g. Full gym, Barbell, Dumbbells, Pull-up bar, Bands..."
                                 AutoSize="TextChanges"
                                 MaxLength="1000"
-                                HeightRequest="60" />
+                                HeightRequest="60"
+                                Unfocused="OnEquipmentEditorUnfocused" />
 
                         <Label Text="Injury History"
                                Style="{StaticResource BodyMuted}" />
@@ -198,7 +199,8 @@
                                 Placeholder="e.g. ACL reconstruction 2023 left knee, chronic shoulder impingement..."
                                 AutoSize="TextChanges"
                                 MaxLength="1000"
-                                HeightRequest="60" />
+                                HeightRequest="60"
+                                Unfocused="OnInjuryHistoryEditorUnfocused" />
 
                         <Label Text="Current Pain Points"
                                Style="{StaticResource BodyMuted}" />
@@ -206,7 +208,8 @@
                                 Placeholder="e.g. Mild right knee discomfort during deep squats..."
                                 AutoSize="TextChanges"
                                 MaxLength="1000"
-                                HeightRequest="60" />
+                                HeightRequest="60"
+                                Unfocused="OnCurrentPainEditorUnfocused" />
 
                         <Label Text="Physical Limitations"
                                Style="{StaticResource BodyMuted}" />
@@ -214,7 +217,8 @@
                                 Placeholder="e.g. Limited overhead mobility, can't do behind-neck movements..."
                                 AutoSize="TextChanges"
                                 MaxLength="1000"
-                                HeightRequest="60" />
+                                HeightRequest="60"
+                                Unfocused="OnPhysicalLimitationsEditorUnfocused" />
 
                         <Label Text="Dietary Preference (optional)"
                                Style="{StaticResource BodyMuted}" />
@@ -230,8 +234,6 @@
                                    FontSize="15" />
                         </Border>
 
-                        <Button Text="Save Coach Profile"
-                                Clicked="OnSaveCoachProfileClicked" />
                     </VerticalStackLayout>
                 </Border>
 
