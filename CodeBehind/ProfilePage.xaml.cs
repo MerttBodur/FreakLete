@@ -57,6 +57,10 @@ public partial class ProfilePage : ContentPage
 	// Coach profile ViewModel — owns draft state and save logic
 	internal CoachProfileViewModel? _coachVm;
 
+	// Guard to prevent reload-overwrite bug: when returning from selector pages,
+	// skip the next OnAppearing()->LoadProfileAsync() to preserve local selections
+	private bool _skipNextProfileReload;
+
 	public ProfilePage()
 	{
 		InitializeComponent();
@@ -69,6 +73,14 @@ public partial class ProfilePage : ContentPage
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
+		
+		// Skip if returning from a selector page (athlete auto-save handles persistence)
+		if (_skipNextProfileReload)
+		{
+			_skipNextProfileReload = false;
+			return;
+		}
+		
 		await LoadProfileAsync();
 	}
 
@@ -163,11 +175,17 @@ public partial class ProfilePage : ContentPage
 			?? DateTime.Today.AddYears(-18);
 
 		await Navigation.PushAsync(
-			new DateSelectorPage(initialDate, date =>
+			new DateSelectorPage(initialDate, async date =>
 			{
 				if (_athleteVm is not null)
 					_athleteVm.DateOfBirth = DateOnly.FromDateTime(date);
 				SyncDateOfBirthUI();
+				
+				// Autosave the change
+				await SaveAthleteFieldAsync();
+				
+				// Prevent OnAppearing from reloading and overwriting our change
+				_skipNextProfileReload = true;
 			}), true);
 	}
 
@@ -181,7 +199,7 @@ public partial class ProfilePage : ContentPage
 			"Select Sport",
 			items,
 			_athleteVm?.SelectedSport?.Name,
-			name =>
+			async name =>
 			{
 				var sport = _sportCatalog.FirstOrDefault(s =>
 					string.Equals(s.Name, name, StringComparison.OrdinalIgnoreCase));
@@ -191,6 +209,12 @@ public partial class ProfilePage : ContentPage
 						_athleteVm.SelectedSport = sport;
 					SetSelectorValue(SportLabel, sport.Name, "Select your sport");
 					SyncPositionUI();
+					
+					// Autosave the change
+					await SaveAthleteFieldAsync();
+					
+					// Prevent OnAppearing from reloading and overwriting our change
+					_skipNextProfileReload = true;
 				}
 			},
 			categories,
@@ -258,11 +282,17 @@ public partial class ProfilePage : ContentPage
 
 		var currentPos = _athleteVm?.SelectedPosition;
 		await Navigation.PushAsync(
-			new OptionPickerPage("Select Position", sport.Positions, currentPos, pos =>
+			new OptionPickerPage("Select Position", sport.Positions, currentPos, async pos =>
 			{
 				if (_athleteVm is not null)
 					_athleteVm.SelectedPosition = pos;
 				SetSelectorValue(PositionLabel, pos, "Select your position");
+				
+				// Autosave the change
+				await SaveAthleteFieldAsync();
+				
+				// Prevent OnAppearing from reloading and overwriting our change
+				_skipNextProfileReload = true;
 			}), true);
 	}
 
@@ -270,11 +300,17 @@ public partial class ProfilePage : ContentPage
 	{
 		var current = _athleteVm?.SelectedGymExperience;
 		await Navigation.PushAsync(
-			new OptionPickerPage("Gym Experience", ExperienceLevels, current, val =>
+			new OptionPickerPage("Gym Experience", ExperienceLevels, current, async val =>
 			{
 				if (_athleteVm is not null)
 					_athleteVm.SelectedGymExperience = val;
 				SetSelectorValue(GymExperienceLabel, val, "Select experience level");
+				
+				// Autosave the change
+				await SaveAthleteFieldAsync();
+				
+				// Prevent OnAppearing from reloading and overwriting our change
+				_skipNextProfileReload = true;
 			}), true);
 	}
 
@@ -403,6 +439,18 @@ public partial class ProfilePage : ContentPage
 			_athleteVm.BodyFatText = e.NewTextValue ?? "";
 	}
 
+	private async void OnWeightUnfocused(object? sender, FocusEventArgs e)
+	{
+		// Autosave when user leaves the weight field
+		await SaveAthleteFieldAsync();
+	}
+
+	private async void OnBodyFatUnfocused(object? sender, FocusEventArgs e)
+	{
+		// Autosave when user leaves the body fat field
+		await SaveAthleteFieldAsync();
+	}
+
 	internal async void OnSaveProfileClicked(object? sender, EventArgs e)
 	{
 		ClearStatus();
@@ -433,6 +481,22 @@ public partial class ProfilePage : ContentPage
 		{
 			ShowError(_athleteVm.SaveError ?? "Failed to save profile.");
 		}
+	}
+
+	/// <summary>
+	/// Autosave for athlete profile changes. Shows errors but not success spam.
+	/// Returns true if save succeeded (for callers that need to know).
+	/// </summary>
+	private async Task<bool> SaveAthleteFieldAsync()
+	{
+		if (_athleteVm is null) return false;
+
+		var success = await _athleteVm.SaveAsync();
+		if (!success)
+		{
+			ShowError(_athleteVm.SaveError ?? "Failed to save athlete profile.");
+		}
+		return success;
 	}
 
 	internal async void OnSaveCoachProfileClicked(object? sender, EventArgs e)

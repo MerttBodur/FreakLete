@@ -60,7 +60,8 @@
                                        Style="{StaticResource BodyMuted}" />
                                 <Entry x:Name="WeightEntry"
                                        Placeholder="Example: 82.5"
-                                       Keyboard="Numeric" />
+                                       Keyboard="Numeric"
+                                       Unfocused="OnWeightUnfocused" />
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1"
                                                  Spacing="8">
@@ -68,7 +69,8 @@
                                        Style="{StaticResource BodyMuted}" />
                                 <Entry x:Name="BodyFatEntry"
                                        Placeholder="Example: 12.5"
-                                       Keyboard="Numeric" />
+                                       Keyboard="Numeric"
+                                       Unfocused="OnBodyFatUnfocused" />
                             </VerticalStackLayout>
                         </Grid>
 
@@ -117,9 +119,6 @@
                                    TextColor="{StaticResource TextSecondary}"
                                    FontSize="15" />
                         </Border>
-
-                        <Button Text="Save"
-                                Clicked="OnSaveProfileClicked" />
                     </VerticalStackLayout>
                 </Border>
 
