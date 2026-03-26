@@ -519,7 +519,11 @@ public partial class ProfilePage : ContentPage
 
 		if (_profile is null || _coachVm is null) return;
 
-		// Push text editor values into the VM before saving
+		// INTENTIONAL: Editor controls use save-time push (not live TextChanged sync).
+		// Editors contain multi-line free text — pushing on every keystroke would
+		// trigger VM dirty tracking and validation noise. The VM sees editor values
+		// only when the user explicitly taps Save.
+		// Tested by: ProfilePageTests.RealPage_CoachEditors_PushedAtSaveTime_NotBefore
 		_coachVm.EquipmentText = EquipmentEditor.Text?.Trim() ?? "";
 		_coachVm.LimitationsText = PhysicalLimitationsEditor.Text?.Trim() ?? "";
 		_coachVm.InjuryHistoryText = InjuryHistoryEditor.Text?.Trim() ?? "";

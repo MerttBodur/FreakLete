@@ -4,27 +4,22 @@ using FreakLete.ViewModels;
 namespace FreakLete.Core.Tests;
 
 /// <summary>
-/// Page-flow tests that exercise the exact same code paths as ProfilePage:
-///   LoadProfile → create VMs → hydrate → user edits → save → rehydrate → reload.
+/// ViewModel-level profile flow tests. These test the save/load/roundtrip
+/// logic through AthleteProfileViewModel and CoachProfileViewModel directly,
+/// without instantiating ProfilePage or any MAUI controls.
 ///
-/// These use an in-memory profile store (FakeProfileStore) that simulates the
-/// real server: athlete save mutates only athlete fields, coach save mutates
-/// only coach fields. Reload returns the latest persisted state.
+/// These are NOT page tests. They verify:
+///   - VM hydration from profile response
+///   - VM save → API request mapping (all 15 fields × 3 datasets)
+///   - Coach editor push-at-save-time behavior (mirrors OnSaveCoachProfileClicked)
+///   - Cross-section isolation (athlete save ≠ coach mutation)
+///   - Position visibility toggling
+///   - DOB display + save roundtrip
+///   - Reload (re-hydrate from persisted state)
 ///
-/// Coverage:
-///   - All 15 profile fields through 3 datasets (min, avg, max)
-///   - Coach editor push-at-save-time behavior (matches OnSaveCoachProfileClicked)
-///   - Cross-section isolation (athlete save ≠ coach mutation, vice versa)
-///   - Full save → reload roundtrip
-///   - Position visibility for sports with/without positions
-///   - DOB display through save flow
-///
-/// What is NOT covered here (Phase 2 — emulator):
-///   - Real MAUI control instantiation (requires WinUI3/Android host)
-///   - MAUI data binding and resource resolution
-///   - Touch/tap gesture propagation
+/// Real ProfilePage + MAUI control tests live in FreakLete.Page.Tests.
 /// </summary>
-public class ProfilePageFlowTests
+public class ProfileViewModelFlowTests
 {
     // ── Sport catalog ─────────────────────────────────────────────────
 

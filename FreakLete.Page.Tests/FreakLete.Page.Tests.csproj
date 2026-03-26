@@ -17,6 +17,7 @@
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<NoWarn>$(NoWarn);CS0436</NoWarn>
 
 		<!-- No MAUI XAML source gen needed — we have no MAUI XAML files, only WinUI3 App.xaml -->
 	</PropertyGroup>
@@ -29,6 +30,11 @@
 
 	<ItemGroup>
 		<Using Include="Xunit" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- WinUI App.xaml is compiled by the WinUI toolchain; exclude from MAUI XAML source-gen to avoid duplicate InitializeComponent -->
+		<MauiXaml Remove="Platforms\Windows\App.xaml" />
 	</ItemGroup>
 
 
