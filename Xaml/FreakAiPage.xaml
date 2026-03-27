@@ -133,7 +133,7 @@
                         BackgroundColor="Transparent" />
                 <ImageButton Grid.Column="1"
                              x:Name="SendButton"
-                             Source="nav_home.svg"
+                             Source="icon_send.svg"
                              BackgroundColor="{StaticResource Accent}"
                              WidthRequest="40"
                              HeightRequest="40"

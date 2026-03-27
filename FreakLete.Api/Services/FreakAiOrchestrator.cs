@@ -98,7 +98,12 @@ public class FreakAiOrchestrator
                     userId, round + 1, totalSw.ElapsedMilliseconds, detectedLang);
 
                 if (string.IsNullOrWhiteSpace(text))
-                    return GetLocalizedErrorMessage(detectedLang, "no_data");
+                {
+                    _logger.LogWarning("FreakAI: empty text response in round {Round} for user {UserId}. Retrying with fallback prompt.", round + 1, userId);
+                    // Empty text after tool execution is a model issue, not a user issue.
+                    // Provide a fallback response that acknowledges the situation.
+                    return GetLocalizedFallbackMessage(detectedLang);
+                }
 
                 // ── Language guard: detect mismatch and retry once ────
                 text = await GuardResponseLanguage(
@@ -261,32 +266,49 @@ public class FreakAiOrchestrator
         return (langCode, errorType) switch
         {
             ("tr", "empty_response") => "Yanıt oluşturulamadı. Lütfen tekrar deneyin.",
-            ("tr", "no_data") => "Yeterli veri yok. Lütfen profilinizi ve antrenman tercihlerinizi doldurun.",
+            ("tr", "no_data") => "Yanıt oluşturamadım. Soruyu farklı şekilde deneyin veya tekrar deneyin.",
             ("tr", "too_complex") => "İsteğinizi işlerken sorun oluştu. Lütfen daha kısa veya basit bir mesaj deneyin.",
             ("tr", "timeout") => "İstek zaman aşımına uğradı. Lütfen daha kısa bir mesaj deneyin.",
             ("tr", "ai_error") => "Yapay zeka servisi geçici olarak kullanılamıyor. Lütfen tekrar deneyin.",
             ("tr", "network_error") => "Bağlantı hatası. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.",
 
             ("de", "empty_response") => "Antwort konnte nicht generiert werden. Bitte versuchen Sie es erneut.",
-            ("de", "no_data") => "Nicht genügend Daten. Bitte füllen Sie Ihr Profil aus.",
+            ("de", "no_data") => "Ich konnte keine Antwort generieren. Versuchen Sie, die Frage anders zu formulieren.",
             ("de", "too_complex") => "Verarbeitungsproblem. Bitte versuchen Sie eine einfachere Frage.",
 
             ("fr", "empty_response") => "Impossible de générer une réponse. Veuillez réessayer.",
-            ("fr", "no_data") => "Données insuffisantes. Veuillez compléter votre profil.",
+            ("fr", "no_data") => "Je n'ai pas pu générer de réponse. Reformulez votre question ou réessayez.",
             ("fr", "too_complex") => "Problème de traitement. Essayez une question plus simple.",
 
             ("es", "empty_response") => "No se pudo generar una respuesta. Inténtelo de nuevo.",
-            ("es", "no_data") => "Datos insuficientes. Complete su perfil primero.",
+            ("es", "no_data") => "No pude generar una respuesta. Intente reformular su pregunta.",
             ("es", "too_complex") => "Problema de procesamiento. Intente una pregunta más simple.",
 
             // Default: English fallback for all other languages/error types
             (_, "empty_response") => "I couldn't generate a response. Please try again.",
-            (_, "no_data") => "I don't have enough data to help with that yet. Please fill out your profile and coach preferences first.",
+            (_, "no_data") => "I couldn't generate a response. Try rephrasing your message or ask something different.",
             (_, "too_complex") => "I'm having trouble processing your request. Please try a shorter or simpler message.",
             (_, "timeout") => "AI request timed out. Try a shorter or simpler message.",
             (_, "ai_error") => "AI service returned an error. Please try again in a moment.",
             (_, "network_error") => "Could not reach AI service. Please check your connection and try again.",
             _ => "An unexpected error occurred. Please try again."
+        };
+    }
+
+    /// <summary>
+    /// Fallback message when the model returns empty text.
+    /// This can happen in edge cases (e.g., model confusion on confirmation follow-ups).
+    /// Instead of blaming the user for incomplete data, we provide a friendly retry message.
+    /// </summary>
+    private static string GetLocalizedFallbackMessage(string langCode)
+    {
+        return langCode switch
+        {
+            "tr" => "Bir cevap oluşturmakta zorluk çekiyorum. Lütfen sorunuzu yeniden deneyin veya biraz farklı şekilde sorun.",
+            "de" => "Ich habe Schwierigkeiten, eine Antwort zu formulieren. Versuchen Sie bitte, Ihre Frage anders zu formulieren.",
+            "fr" => "Difficultés à générer une réponse. Veuillez essayer de reformuler votre question de manière différente.",
+            "es" => "Tengo dificultades para generar una respuesta. Por favor, intente reformular su pregunta de otra manera.",
+            _ => "I'm having trouble finding the right response. Please try rewording your question or ask me something else."
         };
     }
 

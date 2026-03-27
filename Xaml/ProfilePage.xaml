@@ -186,12 +186,18 @@
 
                         <Label Text="Available Equipment"
                                Style="{StaticResource BodyMuted}" />
-                        <Editor x:Name="EquipmentEditor"
-                                Placeholder="e.g. Full gym, Barbell, Dumbbells, Pull-up bar, Bands..."
-                                AutoSize="TextChanges"
-                                MaxLength="1000"
-                                HeightRequest="60"
-                                Unfocused="OnEquipmentEditorUnfocused" />
+                        <Border x:Name="EquipmentSelector"
+                                Style="{StaticResource CardBorder}"
+                                BackgroundColor="{StaticResource Surface}"
+                                Padding="16">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnEquipmentSelectorTapped" />
+                            </Border.GestureRecognizers>
+                            <Label x:Name="EquipmentLabel"
+                                   Text="Select equipment access"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   FontSize="15" />
+                        </Border>
 
                         <Label Text="Injury History"
                                Style="{StaticResource BodyMuted}" />

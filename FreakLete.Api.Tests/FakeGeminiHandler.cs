@@ -99,12 +99,45 @@ public class FakeGeminiHandler : HttpMessageHandler
     }
 
     /// <summary>
-    /// Configure the handler to return a candidate with only whitespace text.
+    /// Configure the handler to return a blank text response.
     /// </summary>
     public void SetupBlankTextResponse()
     {
         _handler = (_, _) =>
         {
+            var response = new GeminiResponse
+            {
+                Candidates =
+                [
+                    new GeminiCandidate
+                    {
+                        Content = new GeminiContent
+                        {
+                            Role = "model",
+                            Parts = [new GeminiPart { Text = "   " }]
+                        }
+                    }
+                ]
+            };
+            return Task.FromResult(MakeHttpResponse(HttpStatusCode.OK, response));
+        };
+    }
+
+    /// <summary>
+    /// Configure handler to call a tool first, then return blank text.
+    /// Simulates the confirmation/follow-up failure where second message with history gets no response.
+    /// </summary>
+    public void SetupToolCallThenBlank(string toolName, JsonElement? toolArgs)
+    {
+        int callCount = 0;
+        _handler = (_, _) =>
+        {
+            callCount++;
+            if (callCount == 1)
+            {
+                return Task.FromResult(MakeFunctionCallResponse(toolName, toolArgs));
+            }
+            // Second request returns blank — reproduces the confirmation follow-up failure
             var response = new GeminiResponse
             {
                 Candidates =

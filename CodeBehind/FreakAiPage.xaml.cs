@@ -219,6 +219,14 @@ public partial class FreakAiPage : ContentPage
 
 	private void AddChatBubble(string text, bool isUser)
 	{
+		var label = new Label
+		{
+			Text = "", // Start empty for typing animation
+			FontSize = 14,
+			TextColor = Colors.White,
+			LineBreakMode = LineBreakMode.WordWrap
+		};
+
 		var bubble = new Border
 		{
 			BackgroundColor = isUser
@@ -232,16 +240,46 @@ public partial class FreakAiPage : ContentPage
 				? new Thickness(48, 0, 0, 0)
 				: new Thickness(0, 0, 48, 0),
 			HorizontalOptions = isUser ? LayoutOptions.End : LayoutOptions.Start,
-			Content = new Label
-			{
-				Text = text,
-				FontSize = 14,
-				TextColor = Colors.White,
-				LineBreakMode = LineBreakMode.WordWrap
-			}
+			Content = label
 		};
 
 		ChatContainer.Children.Add(bubble);
+
+		// For user messages, set text immediately. For assistant, reveal progressively
+		if (isUser)
+		{
+			label.Text = text;
+		}
+		else
+		{
+			// Assistant message: progressive reveal (typing effect)
+			_ = RevealTextProgressively(label, text);
+		}
+	}
+
+	private async Task RevealTextProgressively(Label label, string fullText)
+	{
+		// Progressive reveal: faster for short messages, slower for longer ones
+		// This avoids fake delays for quick responses
+		int delayMs = fullText.Length > 200 ? 15 : 0; // Only animate if text is substantial
+
+		if (delayMs == 0)
+		{
+			// Short response: just set it
+			label.Text = fullText;
+		}
+		else
+		{
+			// Longer response: reveal character by character
+			label.Text = "";
+			for (int i = 0; i < fullText.Length; i++)
+			{
+				label.Text = fullText.Substring(0, i + 1);
+				await Task.Delay(delayMs);
+			}
+		}
+
+		await ScrollToBottom();
 	}
 
 	private async Task ScrollToBottom()

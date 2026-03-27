@@ -111,11 +111,68 @@ public class FreakAiToolExecutor
         var user = await _db.Users.FindAsync(userId);
         if (user is null) return Err("User not found");
 
+        var equipmentType = user.AvailableEquipment?.Trim() ?? "";
+        var mapping = MapEquipmentAccess(equipmentType);
+
         return Json(new
         {
-            user.AvailableEquipment,
-            hasEquipmentInfo = !string.IsNullOrWhiteSpace(user.AvailableEquipment)
+            equipmentType,
+            hasEquipmentInfo = !string.IsNullOrWhiteSpace(equipmentType),
+            accessLevel = mapping.AccessLevel,
+            inferredEquipmentTags = mapping.EquipmentTags,
+            inferredCapabilities = mapping.Capabilities
         });
+    }
+
+    /// <summary>
+    /// Maps canonical equipment access types to structured equipment capabilities.
+    /// Helps FreakAI understand what exercises and methodologies are feasible.
+    /// </summary>
+    private (string AccessLevel, string[] EquipmentTags, string[] Capabilities) MapEquipmentAccess(string equipmentType)
+    {
+        return equipmentType switch
+        {
+            "Home" => (
+                "home_setup",
+                new[] { "dumbbells", "resistance_bands", "bodyweight", "mat" },
+                new[] { "bodyweight_strength", "dumbbell_work", "mobility", "core_training" }
+            ),
+            "Local Gym" => (
+                "basic_gym",
+                new[] { "dumbbells", "barbells", "benches", "squat_racks", "cable_machine", "cardio" },
+                new[] { "barbell_strength", "full_body_training", "heavy_lifting", "progressive_overload", "athletic_performance" }
+            ),
+            "Commercial Gym" => (
+                "full_commercial",
+                new[] { "barbells", "dumbbells", "benches", "squat_racks", "cable_machine", "smith_machine", "leg_press", "cardio", "accessories" },
+                new[] { "comprehensive_strength", "hypertrophy_training", "power_development", "athletic_conditioning", "sport_specific_prep" }
+            ),
+            "Powerlifting Gym" => (
+                "powerlifting_focused",
+                new[] { "competition_barbells", "competition_plates", "squat_rack", "bench_press", "deadlift_platform", "specialty_barbells", "chains", "bands" },
+                new[] { "competition_lift_training", "max_strength_development", "load_progression", "technique_refinement", "meet_prep" }
+            ),
+            "CrossFit Gym" => (
+                "crossfit_facility",
+                new[] { "barbells", "kettlebells", "dumbbells", "wall_balls", "rowing_machine", "rig", "plyo_boxes", "assault_bike", "rower", "pull_up_bar" },
+                new[] { "metabolic_conditioning", "functional_fitness", "power_development", "high_intensity", "gymnastics_skills", "olympic_lift_variations" }
+            ),
+            "Weightlifting Gym" => (
+                "olympic_focused",
+                new[] { "competition_barbells", "bumper_plates", "lifting_platform", "power_rack", "blocks", "pulleys" },
+                new[] { "olympic_lift_training", "technical_perfection", "power_development", "speed_strength", "snatch_clean_jerk_training" }
+            ),
+            "Athlete Performance Gym" => (
+                "performance_facility",
+                new[] { "barbells", "dumbbells", "plyo_boxes", "sport_equipment", "force_plate", "agility_ladder", "timing_gates", "sled_push", "medicine_balls", "pull_up_bar" },
+                new[] { "athletic_development", "power_training", "sport_specific_skills", "speed_agility", "explosive_strength", "performance_metrics" }
+            ),
+            _ => (
+                "unspecified",
+                new[] { "basic_equipment" },
+                new[] { "general_training" }
+            )
+        };
     }
 
     private async Task<string> GetPhysicalLimitations(int userId)

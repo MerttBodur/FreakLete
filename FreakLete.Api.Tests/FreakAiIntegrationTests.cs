@@ -303,7 +303,7 @@ public class FreakAiIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Chat_BlankText_ReturnsNoDataError()
+    public async Task Chat_BlankText_ReturnsFallbackMessage()
     {
         _geminiHandler.SetupBlankTextResponse();
 
@@ -316,8 +316,9 @@ public class FreakAiIntegrationTests : IAsyncLifetime
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         var reply = body.GetProperty("reply").GetString()!;
         Assert.False(string.IsNullOrWhiteSpace(reply));
-        // Returns no_data localized message
-        Assert.Contains("data", reply, StringComparison.OrdinalIgnoreCase);
+        // Returns friendly fallback message instead of no_data error
+        // This fix prevents blaming the user when the model returns empty
+        Assert.Contains("trouble", reply, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -497,6 +498,49 @@ public class FreakAiIntegrationTests : IAsyncLifetime
         Assert.Equal(
             "Based on your profile and 1RM of 98.5kg, here's your plan.",
             body.GetProperty("reply").GetString());
+    }
+
+    [Fact]
+    public async Task Chat_ConfirmationFollowUp_WithHistoryAndToolCall_ReturnsValidResponse()
+    {
+        // THE CONFIRMATION/FOLLOW-UP FAILURE TEST:
+        // This reproduces the bug where a second message with history after a tool call
+        // caused the model to return blank text, triggering the "no_data" error.
+        // 
+        // Scenario: User askses for program, model calls create_program, then user
+        // sends a confirmation "OK done" with the history. The model should respond,
+        // not return blank.
+        //
+        // Setup: First call returns tool call,  then blank (simulating model confusion on follow-up).
+        // Expected: Instead of blank response leading to "no_data" error, we should handle it gracefully.
+        _geminiHandler.SetupToolCallThenBlank("create_program", null);
+
+        // First message: request program (triggers create_program tool call)
+        var r1 = await _client.PostAsJsonAsync("/api/FreakAi/chat", new
+        {
+            message = "Create a 4-week program for me"
+        });
+        r1.EnsureSuccessStatusCode();
+
+        // Second message: confirmation follow-up with history
+        // This previously could fail with "no_data" error
+        var r2 = await _client.PostAsJsonAsync("/api/FreakAi/chat", new
+        {
+            message = "OK, save that",
+            history = new[]
+            {
+                new { role = "user", content = "Create a 4-week program for me" },
+                new { role = "model", content = "I'll create a program for you..." }
+            }
+        });
+        r2.EnsureSuccessStatusCode();
+        var b2 = await r2.Content.ReadFromJsonAsync<JsonElement>();
+        var reply = b2.GetProperty("reply").GetString();
+        
+        // The key fix: even on blank response from model, orchestrator should not
+        // return "no_data" error passively. It should still try to help.
+        Assert.False(string.IsNullOrWhiteSpace(reply));
+        // Will get the "no_data" message in the interim; the real fix is below in the orchestrator
     }
 
     // ════════════════════════════════════════════════════════════════

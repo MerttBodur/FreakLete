@@ -29,6 +29,16 @@ public partial class ProfilePage : ContentPage
 		"Vegan", "Pescatarian", "Keto / Low Carb", "Mediterranean",
 		"Intermittent Fasting", "Halal", "Kosher"
 	];
+	private static readonly string[] EquipmentAccessOptions =
+	[
+		"Home",
+		"Local Gym",
+		"Commercial Gym",
+		"Powerlifting Gym",
+		"CrossFit Gym",
+		"Weightlifting Gym",
+		"Athlete Performance Gym"
+	];
 
 	private static readonly string[] AthleticCategories =
 	[
@@ -408,6 +418,24 @@ public partial class ProfilePage : ContentPage
 			}), true);
 	}
 
+	private async void OnEquipmentSelectorTapped(object? sender, TappedEventArgs e)
+	{
+		await Navigation.PushAsync(
+			new OptionPickerPage("Equipment Access", EquipmentAccessOptions, _coachVm?.EquipmentText, async val =>
+			{
+				if (_coachVm is not null)
+					_coachVm.EquipmentText = val;
+				SetSelectorValue(EquipmentLabel, val, "Select equipment access");
+				
+				// Autosave the change
+				var success = await SaveCoachFieldAsync();
+				
+				// Prevent OnAppearing from reloading only if save succeeded
+				if (success)
+					_skipNextProfileReload = true;
+			}), true);
+	}
+
 	// ── Data loading ──────────────────────────────────────────────────
 
 	private async Task LoadAthleticPerformancesAsync()
@@ -565,7 +593,7 @@ public partial class ProfilePage : ContentPage
 		// trigger VM dirty tracking and validation noise. The VM sees editor values
 		// only when the user explicitly taps Save.
 		// Tested by: ProfilePageTests.RealPage_CoachEditors_PushedAtSaveTime_NotBefore
-		_coachVm.EquipmentText = EquipmentEditor.Text?.Trim() ?? "";
+		// Equipment is now a selector (autosaves automatically) — no manual push needed
 		_coachVm.LimitationsText = PhysicalLimitationsEditor.Text?.Trim() ?? "";
 		_coachVm.InjuryHistoryText = InjuryHistoryEditor.Text?.Trim() ?? "";
 		_coachVm.PainPointsText = CurrentPainEditor.Text?.Trim() ?? "";
@@ -581,13 +609,6 @@ public partial class ProfilePage : ContentPage
 		{
 			ShowError(_coachVm.SaveError ?? "Failed to save coach profile.");
 		}
-	}
-
-	private async void OnEquipmentEditorUnfocused(object? sender, FocusEventArgs e)
-	{
-		if (_coachVm is null) return;
-		_coachVm.EquipmentText = EquipmentEditor.Text?.Trim() ?? "";
-		await SaveCoachFieldAsync();
 	}
 
 	private async void OnPhysicalLimitationsEditorUnfocused(object? sender, FocusEventArgs e)
@@ -1167,7 +1188,7 @@ public partial class ProfilePage : ContentPage
 		SetSelectorValue(PrimaryGoalLabel, _coachVm.SelectedPrimaryGoal, "Select your primary goal");
 		SetSelectorValue(SecondaryGoalLabel, _coachVm.SelectedSecondaryGoal, "Select secondary goal");
 		SetSelectorValue(DietaryPreferenceLabel, _coachVm.SelectedDietaryPreference, "Select dietary preference");
-		EquipmentEditor.Text = _coachVm.EquipmentText;
+		SetSelectorValue(EquipmentLabel, _coachVm.EquipmentText, "Select equipment access");
 		InjuryHistoryEditor.Text = _coachVm.InjuryHistoryText;
 		CurrentPainEditor.Text = _coachVm.PainPointsText;
 		PhysicalLimitationsEditor.Text = _coachVm.LimitationsText;
