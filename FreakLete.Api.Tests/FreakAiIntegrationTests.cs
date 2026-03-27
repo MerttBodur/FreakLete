@@ -606,9 +606,14 @@ public class FreakAiIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task Chat_NoProfileData_StillAnswersQuestion_WithPersonalizationHint()
     {
-        // PRODUCT RULE TEST: User with NO profile data asks a valid question.
-        // FreakAI must not refuse to answer or gate behind "fill your profile first".
-        // Instead: answer the question AND mention how more profile data would help.
+        // TEST: Sparse-profile regression coverage for the CORE PRODUCT RULE.
+        // Setup: No profile data, user asks a question, orchestrator sends the rule in system prompt.
+        // What we verify:
+        // - System prompt contains "CORE PRODUCT RULE: Default is to help" (direct capture/verification)
+        // - Response handling doesn't use gatekeeping language
+        // - Reply pattern includes personalization hint suggestion
+        // Note: This uses a fake model response, so it verifies prompt inclusion and output handling,
+        // not real-model behavior under the rule. Real rule compliance requires live testing.
         
         _geminiHandler.SetupTextResponse(
             "For general training, focus on compound movements. If I knew your sport and goals, I could tailor this specifically.");
@@ -616,37 +621,38 @@ public class FreakAiIntegrationTests : IAsyncLifetime
         var response = await _client.PostAsJsonAsync("/api/FreakAi/chat", new
         {
             message = "What exercises should I do for overall strength?"
-            // No profile data passed — user has empty profile
         });
 
         response.EnsureSuccessStatusCode();
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         var reply = body.GetProperty("reply").GetString()!;
 
-        // Key assertions for the product rule:
-        // 1. Response is not empty (we answered)
+        // Assertion 1: Response is not empty
         Assert.False(string.IsNullOrWhiteSpace(reply));
         
-        // 2. Response does NOT contain gatekeeping language
+        // Assertion 2: Response does NOT contain blocking/gatekeeping language
         Assert.DoesNotContain("fill your profile", reply, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("need your data", reply, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("can't help", reply, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("can't answer", reply, StringComparison.OrdinalIgnoreCase);
         
-        // 3. Response mentions how more data would help (natural personalization hint)
-        // The fake response includes "If I knew" which is the pattern for personalization hints
+        // Assertion 3: Response includes personalization hint pattern
         Assert.Contains("if i knew", reply, StringComparison.OrdinalIgnoreCase);
         
-        // 4. CRITICAL: Verify the system prompt actually contains the CORE PRODUCT RULE
-        // This proves the prompt direction is actually being sent to Gemini, not just claimed
+        // Assertion 4: Directly verify the system prompt contains the CORE PRODUCT RULE
+        // This proves the prompt text is actually being sent in the Gemini request
         _geminiHandler.AssertSystemPromptIncludesCoreProductRule();
     }
 
     [Fact]
     public async Task Chat_PartialProfileData_GivesHelpfulAnswer_AndSuggestsWhatWouldImproveIt()
     {
-        // PRODUCT RULE TEST: User with PARTIAL profile data (e.g., only sport, no equipment).
-        // FreakAI should give useful advice based on available data, THEN mention what else would help.
+        // TEST: Sparse-profile regression coverage for partial data scenarios.
+        // What we verify:
+        // - System prompt includes the rule (direct capture)
+        // - Output handling includes personalization hint
+        // - No blocking language in response
+        // Note: Using fake response to verify handler behavior, not real Gemini compliance.
         
         _geminiHandler.SetupTextResponse(
             "As a soccer player, focus on lateral explosiveness and deceleration strength. " +
@@ -661,27 +667,30 @@ public class FreakAiIntegrationTests : IAsyncLifetime
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         var reply = body.GetProperty("reply").GetString()!;
 
-        // Key assertions:
-        // 1. Response gives practical advice (not just "I need more data")
+        // Assertion 1: Response includes practical advice (not blocking)
         Assert.Contains("soccer", reply, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("strength", reply, StringComparison.OrdinalIgnoreCase);
         
-        // 2. Response does NOT blame missing data
+        // Assertion 2: No blame for missing data in response
         Assert.DoesNotContain("without your data", reply, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("complete your profile", reply, StringComparison.OrdinalIgnoreCase);
         
-        // 3. Response naturally mentions what additional data would help
+        // Assertion 3: Includes personalization hint
         Assert.Contains("if i knew", reply, StringComparison.OrdinalIgnoreCase);
         
-        // 4. Verify the system prompt contains the product rule
+        // Assertion 4: Verify system prompt includes the rule
         _geminiHandler.AssertSystemPromptIncludesCoreProductRule();
     }
 
     [Fact]
     public async Task Chat_FullProfileData_PersonalizesAdvice()
     {
-        // PRODUCT RULE TEST: User with FULL profile data.
-        // FreakAI should give deeply personalized advice using all available context.
+        // TEST: Full profile data scenario with tool call.
+        // What we verify:
+        // - Tool call is executed (simulated with fake handler)
+        // - Response shows use of specific data
+        // - System prompt contains the rule
+        // Note: Fake response simulates Gemini behavior; tool execution is real.
         
         _geminiHandler.SetupToolCallThenText(
             "get_user_profile", null,
@@ -699,29 +708,30 @@ public class FreakAiIntegrationTests : IAsyncLifetime
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         var reply = body.GetProperty("reply").GetString()!;
 
-        // Key assertions:
-        // 1. Response is specific to profile (sport, role, weight, equipment)
+        // Assertion 1: Response is non-empty
         Assert.NotNull(reply);
         Assert.False(string.IsNullOrWhiteSpace(reply));
         
-        // 2. Response uses data (mentions specific details)
+        // Assertion 2: Response includes specific profile details (simulated in fake response)
         Assert.Contains("goalkeeper", reply, StringComparison.OrdinalIgnoreCase);
         
-        // 3. Response is actionable and prescriptive (not vague)
+        // Assertion 3: Contains prescriptive guidance
         Assert.Contains("bounds", reply, StringComparison.OrdinalIgnoreCase);
         
-        // 4. Verify the system prompt contains the product rule
+        // Assertion 4: Verify system prompt includes the rule
         _geminiHandler.AssertSystemPromptIncludesCoreProductRule();
     }
 
     [Fact]
     public async Task Chat_SparseProfile_NoBlockingErrorMessages()
     {
-        // PRODUCT RULE TEST: Verify that even when the model returns a response
-        // based on sparse/missing data, the orchestrator's error fallbacks do NOT
-        // use language that blames the user for incomplete profile.
+        // TEST: Error-path behavior on blank response.
+        // What we verify:
+        // - Orchestrator error fallback doesn't blame missing profile
+        // - System prompt rule is present even on error
+        // Note: Simulated blank response to test fallback language safety.
         
-        // Simulate blank response (edge case where model is confused)
+        // Simulate blank response (edge case where model returns empty)
         _geminiHandler.SetupBlankTextResponse();
 
         var response = await _client.PostAsJsonAsync("/api/FreakAi/chat", new
@@ -733,17 +743,18 @@ public class FreakAiIntegrationTests : IAsyncLifetime
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         var reply = body.GetProperty("reply").GetString()!;
 
-        // Even on error, message should be friendly and NOT blame missing profile
+        // Assertion 1: Error message is non-empty
         Assert.False(string.IsNullOrWhiteSpace(reply));
+        
+        // Assertion 2: Error message does NOT blame missing profile data
         Assert.DoesNotContain("profile", reply, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("data", reply, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("fill in", reply, StringComparison.OrdinalIgnoreCase);
         
-        // Should suggest a retry, not a workaround (e.g., "fill your profile")
+        // Assertion 3: Error message suggests retry, not workaround
         Assert.Contains("try", reply, StringComparison.OrdinalIgnoreCase);
         
-        // Verify the system prompt contains the product rule
-        // Even on error paths, the prompt should be present and enforcing the rule
+        // Assertion 4: Verify system prompt contains the rule (direct capture)
         _geminiHandler.AssertSystemPromptIncludesCoreProductRule();
     }
 }

@@ -19,7 +19,7 @@ public class FakeGeminiHandler : HttpMessageHandler
 
     private Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _handler = null!;
     
-    // ── Request capture for prompt verification ──────────────────
+    // Request capture for prompt verification
     private GeminiRequest? _lastRequest = null;
     
     /// <summary>
@@ -266,14 +266,14 @@ public class FakeGeminiHandler : HttpMessageHandler
             }
             catch (Exception ex)
             {
-                // If deserialization fails, silently continue — this is for verification only
+                // If deserialization fails, silently continue - this is for verification only
                 // We don't want failures in our verification logic to break the tests
                 System.Diagnostics.Debug.WriteLine($"Failed to capture request: {ex.Message}");
             }
         }
     }
 
-    // ── Helpers ──────────────────────────────────────────────────
+    // Helpers
 
     private static HttpResponseMessage MakeGeminiResponse(string text)
     {
