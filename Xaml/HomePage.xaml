@@ -43,9 +43,69 @@
                                     StatLabel="Latest PR" />
                 </Grid>
 
-                <!-- Weekly Activity Card - using shared BarChartCard foundation -->
+                <!-- Weekly Activity Card -->
                 <local:BarChartCard x:Name="WeeklyActivityCard"
                                     Title="This Week" />
+
+                <!-- Featured/Focus Section -->
+                <Border Style="{StaticResource CardBorder}"
+                        Padding="0"
+                        StrokeThickness="2"
+                        Stroke="{StaticResource Accent}">
+                    <VerticalStackLayout Spacing="12" Padding="16">
+                        <Label x:Name="FeaturedTitleLabel"
+                               FontSize="16"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextPrimary}"
+                               Text="Latest Workout" />
+
+                        <!-- Featured Content -->
+                        <VerticalStackLayout x:Name="FeaturedContentLayout"
+                                           Spacing="8">
+                            <Label x:Name="FeaturedWorkoutNameLabel"
+                                   FontSize="14"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   Text="No recent workouts" />
+
+                            <HorizontalStackLayout Spacing="16">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label FontSize="10"
+                                           TextColor="{StaticResource TextSecondary}"
+                                           Text="Date" />
+                                    <Label x:Name="FeaturedDateLabel"
+                                           FontSize="12"
+                                           FontFamily="OpenSansSemibold"
+                                           TextColor="{StaticResource TextPrimary}"
+                                           Text="-" />
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Spacing="2">
+                                    <Label FontSize="10"
+                                           TextColor="{StaticResource TextSecondary}"
+                                           Text="Exercises" />
+                                    <Label x:Name="FeaturedExerciseCountLabel"
+                                           FontSize="12"
+                                           FontFamily="OpenSansSemibold"
+                                           TextColor="{StaticResource TextPrimary}"
+                                           Text="-" />
+                                </VerticalStackLayout>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+
+                        <!-- View Details Button -->
+                        <Button x:Name="FeaturedViewButton"
+                                Text="View Details"
+                                BackgroundColor="{StaticResource Accent}"
+                                TextColor="White"
+                                CornerRadius="6"
+                                Padding="12,8"
+                                FontSize="12"
+                                FontFamily="OpenSansSemibold"
+                                Clicked="OnViewFeaturedWorkoutClicked"
+                                IsVisible="False" />
+                    </VerticalStackLayout>
+                </Border>
 
                 <!-- Quick Actions -->
                 <HorizontalStackLayout Spacing="8">

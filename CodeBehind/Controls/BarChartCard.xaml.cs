@@ -1,15 +1,25 @@
 namespace FreakLete;
 
+public class ChartItem
+{
+	public string Label { get; set; } = string.Empty;
+	public double Value { get; set; }
+	public double HeightInPixels { get; set; }
+}
+
 public partial class BarChartCard : ContentView
 {
 	public static readonly BindableProperty TitleProperty =
 		BindableProperty.Create(nameof(Title), typeof(string), typeof(BarChartCard), string.Empty, propertyChanged: OnPropertyChanged);
 
-	public static readonly BindableProperty DataProperty =
-		BindableProperty.Create(nameof(Data), typeof(System.Collections.IEnumerable), typeof(BarChartCard), null, propertyChanged: OnPropertyChanged);
+	public static readonly BindableProperty ItemsProperty =
+		BindableProperty.Create(nameof(Items), typeof(List<ChartItem>), typeof(BarChartCard), null, propertyChanged: OnPropertyChanged);
 
 	public static readonly BindableProperty MaxValueProperty =
-		BindableProperty.Create(nameof(MaxValue), typeof(int), typeof(BarChartCard), 100, propertyChanged: OnPropertyChanged);
+		BindableProperty.Create(nameof(MaxValue), typeof(double), typeof(BarChartCard), 10d, propertyChanged: OnPropertyChanged);
+
+	public static readonly BindableProperty SummaryTextProperty =
+		BindableProperty.Create(nameof(SummaryText), typeof(string), typeof(BarChartCard), string.Empty, propertyChanged: OnPropertyChanged);
 
 	public string Title
 	{
@@ -17,16 +27,22 @@ public partial class BarChartCard : ContentView
 		set => SetValue(TitleProperty, value);
 	}
 
-	public System.Collections.IEnumerable Data
+	public List<ChartItem> Items
 	{
-		get => (System.Collections.IEnumerable)GetValue(DataProperty);
-		set => SetValue(DataProperty, value);
+		get => (List<ChartItem>)GetValue(ItemsProperty);
+		set => SetValue(ItemsProperty, value);
 	}
 
-	public int MaxValue
+	public double MaxValue
 	{
-		get => (int)GetValue(MaxValueProperty);
+		get => (double)GetValue(MaxValueProperty);
 		set => SetValue(MaxValueProperty, value);
+	}
+
+	public string SummaryText
+	{
+		get => (string)GetValue(SummaryTextProperty);
+		set => SetValue(SummaryTextProperty, value);
 	}
 
 	public BarChartCard()
@@ -44,5 +60,28 @@ public partial class BarChartCard : ContentView
 	private void ApplyState()
 	{
 		TitleLabel.Text = Title;
+
+		if (FindByName("SummaryLabel") is Label summaryLabel)
+		{
+			summaryLabel.Text = SummaryText;
+		}
+
+		if (Items == null || Items.Count == 0)
+		{
+			return;
+		}
+
+		double maxItemValue = Items.Max(item => item.Value);
+		if (maxItemValue > MaxValue)
+		{
+			MaxValue = maxItemValue;
+		}
+
+		double effectiveMax = Math.Max(MaxValue, 1);
+
+		foreach (var item in Items)
+		{
+			item.HeightInPixels = (item.Value / effectiveMax) * 80;
+		}
 	}
 }

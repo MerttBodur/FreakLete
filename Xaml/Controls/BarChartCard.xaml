@@ -1,49 +1,40 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="FreakLete.BarChartCard">
+             x:Class="FreakLete.BarChartCard"
+             x:Name="BarChartCardView">
 
 	<Border Style="{StaticResource CardBorder}">
 		<VerticalStackLayout Spacing="16" Padding="16">
 			<Label x:Name="TitleLabel"
 			       FontSize="18"
 			       FontFamily="OpenSansSemibold"
-		       TextColor="{StaticResource TextPrimary}" />
+			       TextColor="{StaticResource TextPrimary}" />
 			<VerticalStackLayout x:Name="ChartContainer"
 			                     Spacing="12">
-			<!-- Weekly Activity Grid -->
-			<Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="4" HeightRequest="100">
-				<!-- Days of week activity bars -->
-				<VerticalStackLayout Grid.Column="0">
-					<BoxView BackgroundColor="{StaticResource Primary}" CornerRadius="3" HeightRequest="0" />
-					<Label FontSize="9" TextColor="{StaticResource TextSecondary}" Text="Mon" HorizontalOptions="Center" />
-				</VerticalStackLayout>
-				<VerticalStackLayout Grid.Column="1">
-					<BoxView BackgroundColor="{StaticResource Primary}" CornerRadius="3" HeightRequest="0" />
-					<Label FontSize="9" TextColor="{StaticResource TextSecondary}" Text="Tue" HorizontalOptions="Center" />
-				</VerticalStackLayout>
-				<VerticalStackLayout Grid.Column="2">
-					<BoxView BackgroundColor="{StaticResource Primary}" CornerRadius="3" HeightRequest="0" />
-					<Label FontSize="9" TextColor="{StaticResource TextSecondary}" Text="Wed" HorizontalOptions="Center" />
-				</VerticalStackLayout>
-				<VerticalStackLayout Grid.Column="3">
-					<BoxView BackgroundColor="{StaticResource Primary}" CornerRadius="3" HeightRequest="0" />
-					<Label FontSize="9" TextColor="{StaticResource TextSecondary}" Text="Thu" HorizontalOptions="Center" />
-				</VerticalStackLayout>
-				<VerticalStackLayout Grid.Column="4">
-					<BoxView BackgroundColor="{StaticResource Primary}" CornerRadius="3" HeightRequest="0" />
-					<Label FontSize="9" TextColor="{StaticResource TextSecondary}" Text="Fri" HorizontalOptions="Center" />
-				</VerticalStackLayout>
-				<VerticalStackLayout Grid.Column="5">
-					<BoxView BackgroundColor="{StaticResource Primary}" CornerRadius="3" HeightRequest="0" />
-					<Label FontSize="9" TextColor="{StaticResource TextSecondary}" Text="Sat" HorizontalOptions="Center" />
-				</VerticalStackLayout>
-				<VerticalStackLayout Grid.Column="6">
-					<BoxView BackgroundColor="{StaticResource Primary}" CornerRadius="3" HeightRequest="0" />
-					<Label FontSize="9" TextColor="{StaticResource TextSecondary}" Text="Sun" HorizontalOptions="Center" />
-				</VerticalStackLayout>
-			</Grid>
-			<Label FontSize="11" TextColor="{StaticResource TextSecondary}" Text="0 workouts this week" />
+				<!-- Dynamic Chart using BindableLayout -->
+				<ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+					<HorizontalStackLayout Spacing="8" Padding="0,0,0,0" BindableLayout.ItemsSource="{Binding Items, Source={x:Reference BarChartCardView}}">
+						<BindableLayout.ItemTemplate>
+							<DataTemplate>
+								<VerticalStackLayout Spacing="4" WidthRequest="40">
+									<BoxView BackgroundColor="{StaticResource Primary}"
+									         CornerRadius="3"
+									         HeightRequest="{Binding HeightInPixels}"
+									         WidthRequest="32" />
+									<Label Text="{Binding Label}"
+									       FontSize="9"
+									       TextColor="{StaticResource TextSecondary}"
+									       HorizontalOptions="Center" />
+								</VerticalStackLayout>
+							</DataTemplate>
+						</BindableLayout.ItemTemplate>
+					</HorizontalStackLayout>
+				</ScrollView>
+				<Label x:Name="SummaryLabel"
+				       FontSize="11"
+				       TextColor="{StaticResource TextSecondary}"
+				       Text="" />
 			</VerticalStackLayout>
 		</VerticalStackLayout>
 	</Border>
