@@ -57,7 +57,7 @@ public partial class WorkoutPage : ContentPage
 				}
 			}
 
-			SessionsThisWeekTile.StatValue = workoutsThisWeek.ToString();
+			SessionsCountLabel.Text = workoutsThisWeek.ToString();
 		}
 		catch
 		{
