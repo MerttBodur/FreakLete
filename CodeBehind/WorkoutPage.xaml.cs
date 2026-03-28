@@ -35,10 +35,12 @@ public partial class WorkoutPage : ContentPage
 					_templates.Add(template);
 				}
 				NoTemplatesLabel.IsVisible = _templates.Count == 0;
+				ProgramCountLabel.Text = _templates.Count.ToString();
 			}
 			else
 			{
 				NoTemplatesLabel.IsVisible = true;
+				ProgramCountLabel.Text = "0";
 			}
 
 			// Load this week's workouts for stat
@@ -62,6 +64,8 @@ public partial class WorkoutPage : ContentPage
 		catch
 		{
 			NoTemplatesLabel.IsVisible = true;
+			SessionsCountLabel.Text = "0";
+			ProgramCountLabel.Text = "0";
 		}
 	}
 
