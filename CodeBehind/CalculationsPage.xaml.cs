@@ -36,8 +36,70 @@ public partial class CalculationsPage : ContentPage
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
+		await LoadProgressDashboardAsync();
 		await LoadSavedPrEntriesAsync();
 		RefreshSavedPrList();
+	}
+
+	private async Task LoadProgressDashboardAsync()
+	{
+		try
+		{
+			// Load PR entries
+			var prResult = await _api.GetPrEntriesAsync();
+			if (prResult.Success && prResult.Data is not null && prResult.Data.Count > 0)
+			{
+				// Display latest PR
+				var latestPr = prResult.Data.First();
+				LatestPrExerciseLabel.Text = latestPr.ExerciseName ?? "No PR recorded";
+				
+				if (latestPr.TrackingMode == "Strength")
+				{
+					LatestPrWeightLabel.Text = $"{latestPr.Weight} kg";
+					LatestPrRepsLabel.Text = latestPr.Reps.ToString();
+				}
+				else
+				{
+					LatestPrWeightLabel.Text = $"{latestPr.Metric1Value} {latestPr.Metric1Unit}";
+					LatestPrRepsLabel.Text = "-";
+				}
+				
+				LatestPrDateLabel.Text = latestPr.CreatedAt.ToString("MMM dd, yyyy");
+
+				// Populate PR progress chart with strength movement history (ordered by date)
+				var strengthPrs = prResult.Data
+					.Where(p => p.TrackingMode == "Strength" && p.Weight > 0)
+					.OrderBy(p => p.CreatedAt)
+					.TakeLast(10)
+					.ToList();
+
+				var chartData = new List<LineChartCard.ChartDataPoint>();
+				foreach (var pr in strengthPrs)
+				{
+					chartData.Add(new LineChartCard.ChartDataPoint
+					{
+						Label = pr.CreatedAt.ToString("MMM d"),
+						Value = pr.Weight
+					});
+				}
+
+				PrHistoryChart.Data = chartData;
+			}
+			else
+			{
+				LatestPrExerciseLabel.Text = "No PR recorded yet";
+				LatestPrWeightLabel.Text = "- kg";
+				LatestPrRepsLabel.Text = "-";
+				LatestPrDateLabel.Text = "-";
+				PrHistoryChart.Data = null;
+			}
+		}
+		catch
+		{
+			// Graceful fallback
+			LatestPrExerciseLabel.Text = "Unable to load PR data";
+			PrHistoryChart.Data = null;
+		}
 	}
 
 	private void OnOneRmTabClicked(object? sender, EventArgs e)

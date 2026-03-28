@@ -9,21 +9,97 @@
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Padding="24,18,24,24"
-                                 Spacing="18">
+                                 Spacing="20">
 
-                <local:TopHeader Title="Calculations" />
+                <!-- Page Title & Line -->
+                <VerticalStackLayout Spacing="8">
+                    <Label FontSize="12"
+                           FontFamily="OpenSansRegular"
+                           TextColor="{StaticResource TextSecondary}"
+                           Text="Your Progress" />
+                    <Label FontSize="24"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextPrimary}"
+                           Text="Calculations" />
+                </VerticalStackLayout>
 
-                <Border Style="{StaticResource AccentCardBorder}">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="PERFORMANCE TOOLS"
-                               Style="{StaticResource Eyebrow}" />
-                        <Label Text="Estimate strength, store PRs, and check reactive performance in one place."
-                               Style="{StaticResource Headline}"
-                               HorizontalTextAlignment="Start" />
-                        <Label Text="Use the tabs below to switch between 1RM and RSI without leaving the page."
-                               Style="{StaticResource BodyMuted}" />
+                <!-- Exercise Selection Chips -->
+                <VerticalStackLayout Spacing="8">
+                    <Label FontSize="12"
+                           FontFamily="OpenSansRegular"
+                           TextColor="{StaticResource TextSecondary}"
+                           Text="Select movement" />
+                    <HorizontalStackLayout Spacing="8" Padding="0">
+                        <Button x:Name="BrowseStrengthButton"
+                                Text="Browse Exercises"
+                                BackgroundColor="{StaticResource Accent}"
+                                TextColor="White"
+                                CornerRadius="6"
+                                Padding="12,8"
+                                FontSize="12"
+                                HorizontalOptions="FillAndExpand"
+                                Clicked="OnChooseStrengthExerciseClicked" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- Latest PR / Current Metric Card -->
+                <Border Style="{StaticResource CardBorder}"
+                        Padding="0"
+                        StrokeThickness="2"
+                        Stroke="{StaticResource Accent}">
+                    <VerticalStackLayout Spacing="12" Padding="16">
+                        <Label x:Name="LatestPrExerciseLabel"
+                               Text="No PR recorded"
+                               FontSize="18"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextPrimary}" />
+                        <HorizontalStackLayout Spacing="16">
+                            <VerticalStackLayout Spacing="4">
+                                <Label FontSize="10"
+                                       TextColor="{StaticResource TextSecondary}"
+                                       Text="Weight" />
+                                <Label x:Name="LatestPrWeightLabel"
+                                       FontSize="22"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource Success}"
+                                       Text="- kg" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Spacing="4">
+                                <Label FontSize="10"
+                                       TextColor="{StaticResource TextSecondary}"
+                                       Text="Reps" />
+                                <Label x:Name="LatestPrRepsLabel"
+                                       FontSize="22"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       Text="-" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                                <Label FontSize="10"
+                                       TextColor="{StaticResource TextSecondary}"
+                                       Text="Date"
+                                       HorizontalTextAlignment="End" />
+                                <Label x:Name="LatestPrDateLabel"
+                                       FontSize="12"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       Text="-"
+                                       HorizontalTextAlignment="End" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>
+
+                <!-- Progress Graph Area - PR History Chart -->
+                <local:LineChartCard x:Name="PrHistoryChart"
+                                     Title="PR Progress"
+                                     MaxValue="250" />
+
+                <!-- Calculator Sections - Start -->
+                <Label FontSize="12"
+                       FontFamily="OpenSansRegular"
+                       TextColor="{StaticResource TextSecondary}"
+                       Text="Strength &amp; Athletic Tools"
+                       Margin="0,8,0,0" />
 
                 <Border Style="{StaticResource CardBorder}"
                         Padding="8">

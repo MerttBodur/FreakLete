@@ -4,17 +4,19 @@
              x:Class="FreakLete.LineChartCard">
 
 	<Border Style="{StaticResource CardBorder}">
-		<VerticalStackLayout Spacing="16" Padding="16">
+		<VerticalStackLayout Spacing="12" Padding="16">
 			<Label x:Name="TitleLabel"
-			       FontSize="18"
+			       FontSize="16"
 			       FontFamily="OpenSansSemibold"
 			       TextColor="{StaticResource TextPrimary}"
 			       IsVisible="False" />
-			<VerticalStackLayout x:Name="ChartContainer"
-			                     HeightRequest="200"
-			                     VerticalOptions="Center">
-				<!-- Empty state: ready for data binding -->
-			</VerticalStackLayout>
+			<ScrollView>
+				<VerticalStackLayout x:Name="ChartContainer"
+				                     Spacing="0"
+				                     Padding="0">
+					<!-- Chart content rendered dynamically -->
+				</VerticalStackLayout>
+			</ScrollView>
 		</VerticalStackLayout>
 	</Border>
 
