@@ -41,25 +41,22 @@ public partial class HomePage : ContentPage
 		}
 
 		var profile = profileResult.Data;
-		HeroPanelView.Eyebrow = $"WELCOME, {profile.FirstName.ToUpperInvariant()}";
-		WorkoutMetric.Value = profile.TotalWorkouts.ToString();
+		UserNameLabel.Text = $"{profile.FirstName}";
+		
+		// Update dashboard stat tiles
+		WorkoutCountTile.StatValue = profile.TotalWorkouts.ToString();
+		StreakTile.StatValue = "0"; // Placeholder - would need streak endpoint
 
-		var perfResult = await _api.GetAthleticPerformancesAsync();
-		AthleticMetric.Value = perfResult.Success && perfResult.Data is not null
-			? perfResult.Data.Count.ToString()
-			: "0";
-
+		// Latest PR tile
 		var prResult = await _api.GetPrEntriesAsync();
 		if (prResult.Success && prResult.Data is not null && prResult.Data.Count > 0)
 		{
 			var latest = prResult.Data[0]; // API returns ordered by CreatedAt desc
-			LatestPrLabel.Text = latest.TrackingMode == "Strength"
-				? $"{latest.ExerciseName}: {latest.Weight} x {latest.Reps}"
-				: $"{latest.ExerciseName}: {latest.Metric1Value:0.##} {latest.Metric1Unit}";
+			LatestPrTile.StatValue = $"{latest.Weight}";
 		}
 		else
 		{
-			LatestPrLabel.Text = "No PR saved yet.";
+			LatestPrTile.StatValue = "-";
 		}
 	}
 

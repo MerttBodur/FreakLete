@@ -6,90 +6,96 @@
     <Border Style="{StaticResource CardBorder}"
             BackgroundColor="{StaticResource SurfaceRaised}"
             Stroke="{StaticResource SurfaceBorder}"
-            Padding="18,12"
+            Padding="8,8"
             Margin="14,0,14,10"
             StrokeShape="RoundRectangle 26">
-        <Grid ColumnDefinitions="*,*,*,*,*">
-            <VerticalStackLayout Grid.Column="0" Spacing="4" HorizontalOptions="Center">
-                <ImageButton x:Name="HomeButton"
-                             Source="nav_home.svg"
-                             BackgroundColor="Transparent"
-                             WidthRequest="22"
-                             HeightRequest="22"
-                             Clicked="OnHomeClicked" />
-                <BoxView x:Name="HomeIndicator"
-                         WidthRequest="16"
-                         HeightRequest="4"
-                         CornerRadius="2"
-                         Color="{StaticResource Accent}"
-                         IsVisible="False"
-                         HorizontalOptions="Center" />
-            </VerticalStackLayout>
+        <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="4">
+            <!-- Home Tab -->
+            <Border Grid.Column="0"
+                    x:Name="HomePill"
+                    StrokeShape="RoundRectangle 18"
+                    BackgroundColor="Transparent"
+                    Padding="12,8"
+                    HorizontalOptions="Center">
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <ImageButton x:Name="HomeButton"
+                                 Source="nav_home.svg"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="22"
+                                 HeightRequest="22"
+                                 Clicked="OnHomeClicked" />
+                </VerticalStackLayout>
+            </Border>
 
-            <VerticalStackLayout Grid.Column="1" Spacing="4" HorizontalOptions="Center">
-                <ImageButton x:Name="WorkoutButton"
-                             Source="nav_dumbbell.svg"
-                             BackgroundColor="Transparent"
-                             WidthRequest="22"
-                             HeightRequest="22"
-                             Clicked="OnWorkoutClicked" />
-                <BoxView x:Name="WorkoutIndicator"
-                         WidthRequest="16"
-                         HeightRequest="4"
-                         CornerRadius="2"
-                         Color="{StaticResource Accent}"
-                         IsVisible="False"
-                         HorizontalOptions="Center" />
-            </VerticalStackLayout>
+            <!-- Workout Tab -->
+            <Border Grid.Column="1"
+                    x:Name="WorkoutPill"
+                    StrokeShape="RoundRectangle 18"
+                    BackgroundColor="Transparent"
+                    Padding="12,8"
+                    HorizontalOptions="Center">
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <ImageButton x:Name="WorkoutButton"
+                                 Source="nav_dumbbell.svg"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="22"
+                                 HeightRequest="22"
+                                 Clicked="OnWorkoutClicked" />
+                </VerticalStackLayout>
+            </Border>
 
-            <VerticalStackLayout Grid.Column="2" Spacing="4" HorizontalOptions="Center">
-                <ImageButton x:Name="FreakAiButton"
-                             Source="nav_notebook.svg"
-                             BackgroundColor="Transparent"
-                             WidthRequest="22"
-                             HeightRequest="22"
-                             Clicked="OnFreakAiClicked" />
-                <BoxView x:Name="FreakAiIndicator"
-                         WidthRequest="16"
-                         HeightRequest="4"
-                         CornerRadius="2"
-                         Color="{StaticResource Accent}"
-                         IsVisible="False"
-                         HorizontalOptions="Center" />
-            </VerticalStackLayout>
+            <!-- FreakAI Tab -->
+            <Border Grid.Column="2"
+                    x:Name="FreakAiPill"
+                    StrokeShape="RoundRectangle 18"
+                    BackgroundColor="Transparent"
+                    Padding="12,8"
+                    HorizontalOptions="Center">
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <ImageButton x:Name="FreakAiButton"
+                                 Source="nav_notebook.svg"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="22"
+                                 HeightRequest="22"
+                                 Clicked="OnFreakAiClicked" />
+                </VerticalStackLayout>
+            </Border>
 
-            <VerticalStackLayout Grid.Column="3" Spacing="4" HorizontalOptions="Center">
-                <ImageButton x:Name="CalculationsButton"
-                             Source="nav_notebook.svg"
-                             BackgroundColor="Transparent"
-                             WidthRequest="22"
-                             HeightRequest="22"
-                             Clicked="OnCalculationsClicked" />
-                <BoxView x:Name="CalculationsIndicator"
-                         WidthRequest="16"
-                         HeightRequest="4"
-                         CornerRadius="2"
-                         Color="{StaticResource Accent}"
-                         IsVisible="False"
-                         HorizontalOptions="Center" />
-            </VerticalStackLayout>
+            <!-- Calculations Tab -->
+            <Border Grid.Column="3"
+                    x:Name="CalculationsPill"
+                    StrokeShape="RoundRectangle 18"
+                    BackgroundColor="Transparent"
+                    Padding="12,8"
+                    HorizontalOptions="Center">
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <ImageButton x:Name="CalculationsButton"
+                                 Source="nav_notebook.svg"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="22"
+                                 HeightRequest="22"
+                                 Clicked="OnCalculationsClicked" />
+                </VerticalStackLayout>
+            </Border>
 
-            <VerticalStackLayout Grid.Column="4" Spacing="4" HorizontalOptions="Center">
-                <ImageButton x:Name="ProfileButton"
-                             Source="nav_profile.svg"
-                             BackgroundColor="Transparent"
-                             WidthRequest="22"
-                             HeightRequest="22"
-                             Clicked="OnProfileClicked" />
-                <BoxView x:Name="ProfileIndicator"
-                         WidthRequest="16"
-                         HeightRequest="4"
-                         CornerRadius="2"
-                         Color="{StaticResource Accent}"
-                         IsVisible="False"
-                         HorizontalOptions="Center" />
-            </VerticalStackLayout>
+            <!-- Profile Tab -->
+            <Border Grid.Column="4"
+                    x:Name="ProfilePill"
+                    StrokeShape="RoundRectangle 18"
+                    BackgroundColor="Transparent"
+                    Padding="12,8"
+                    HorizontalOptions="Center">
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <ImageButton x:Name="ProfileButton"
+                                 Source="nav_profile.svg"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="22"
+                                 HeightRequest="22"
+                                 Clicked="OnProfileClicked" />
+                </VerticalStackLayout>
+            </Border>
         </Grid>
     </Border>
 
 </ContentView>
+

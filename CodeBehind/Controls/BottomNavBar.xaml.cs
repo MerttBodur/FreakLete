@@ -40,12 +40,17 @@ public partial class BottomNavBar : ContentView
 
 	private void UpdateIndicators()
 	{
-		HomeIndicator.IsVisible = ActiveTab == HomeTab;
-		WorkoutIndicator.IsVisible = ActiveTab == WorkoutTab;
-		FreakAiIndicator.IsVisible = ActiveTab == FreakAiTab;
-		CalculationsIndicator.IsVisible = ActiveTab == CalculationsTab;
-		ProfileIndicator.IsVisible = ActiveTab == ProfileTab;
+		// Get the Primary color from resources, default to purple if not available
+		var primaryColor = (Application.Current?.Resources["Primary"] as Color) ?? Colors.Purple;
+		
+		// Update pill backgrounds
+		HomePill.BackgroundColor = ActiveTab == HomeTab ? primaryColor : Colors.Transparent;
+		WorkoutPill.BackgroundColor = ActiveTab == WorkoutTab ? primaryColor : Colors.Transparent;
+		FreakAiPill.BackgroundColor = ActiveTab == FreakAiTab ? primaryColor : Colors.Transparent;
+		CalculationsPill.BackgroundColor = ActiveTab == CalculationsTab ? primaryColor : Colors.Transparent;
+		ProfilePill.BackgroundColor = ActiveTab == ProfileTab ? primaryColor : Colors.Transparent;
 
+		// Update icon opacity for visual feedback
 		HomeButton.Opacity = ActiveTab == HomeTab ? 1 : 0.55;
 		WorkoutButton.Opacity = ActiveTab == WorkoutTab ? 1 : 0.55;
 		FreakAiButton.Opacity = ActiveTab == FreakAiTab ? 1 : 0.55;

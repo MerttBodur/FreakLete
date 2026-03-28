@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FreakLete.ProfileHeroCard">
+
+	<Border x:Name="HeroBorder"
+	        StrokeShape="RoundRectangle 24"
+	        StrokeThickness="1"
+	        Stroke="{StaticResource SurfaceBorder}"
+	        MinimumHeightRequest="280"
+	        Padding="0">
+		<Grid RowDefinitions="*" ColumnDefinitions="*">
+			<Image x:Name="BackgroundImage"
+			       Aspect="AspectFill"
+			       IsVisible="False"
+			       Grid.Row="0"
+			       Grid.Column="0" />
+			<BoxView BackgroundColor="#99000000"
+			         Grid.Row="0"
+			         Grid.Column="0" />
+			<VerticalStackLayout Spacing="16"
+			                     Padding="18"
+			                     VerticalOptions="End"
+			                     Grid.Row="0"
+			                     Grid.Column="0">
+				<HorizontalStackLayout Spacing="12" VerticalOptions="End">
+					<Border WidthRequest="60"
+					        HeightRequest="60"
+					        StrokeShape="RoundRectangle 30"
+					        BackgroundColor="{StaticResource Accent}"
+					        StrokeThickness="2"
+					        Stroke="{StaticResource Primary}"
+					        Padding="0">
+						<Image x:Name="AvatarImage"
+						       Aspect="AspectFill" />
+					</Border>
+					<VerticalStackLayout Spacing="4" VerticalOptions="End">
+						<Label x:Name="NameLabel"
+						       FontSize="24"
+						       FontFamily="OpenSansSemibold"
+						       TextColor="{StaticResource TextPrimary}" />
+						<Label x:Name="SubtitleLabel"
+						       Style="{StaticResource BodyMuted}"
+						       TextColor="{StaticResource TextSecondary}"
+						       IsVisible="False" />
+					</VerticalStackLayout>
+				</HorizontalStackLayout>
+			</VerticalStackLayout>
+		</Grid>
+	</Border>
+
+</ContentView>
