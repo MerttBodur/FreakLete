@@ -34,47 +34,48 @@
                         StrokeThickness="2"
                         BackgroundColor="{StaticResource AccentSoft}"
                         Padding="0"
-                        MinimumHeightRequest="160">
+                        MinimumHeightRequest="168">
                     <Grid Padding="0" RowDefinitions="Auto,*">
-                        <!-- Top visual bar with accent -->
+                        <!-- Top gradient bar with accent -->
                         <BoxView Grid.Row="0"
                                 BackgroundColor="{StaticResource Accent}"
-                                HeightRequest="4"
-                                Opacity="0.3" />
+                                HeightRequest="6" />
                         
-                        <!-- Content area with strong hierarchy -->
-                        <VerticalStackLayout Grid.Row="1"
-                                           Padding="24,24,24,24"
-                                           Spacing="14"
-                                           VerticalOptions="FillAndExpand">
-                            <!-- Badge -->
-                            <Label FontSize="10"
-                                   FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource AccentGlow}"
-                                   Text="READY TO TRAIN"
-                                   CharacterSpacing="1.5" />
-                            
-                            <!-- Strong Headline -->
-                            <Label FontSize="28"
-                                   FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource TextPrimary}"
-                                   LineBreakMode="WordWrap"
-                                   LineHeight="1.1">
-                                <Label.Text>Start your session</Label.Text>
-                            </Label>
+                        <!-- Content area with strong hierarchy and gradient depth -->
+                        <Grid Grid.Row="1" Padding="0">
+                            <BoxView BackgroundColor="{StaticResource AccentSoft}" />
+                            <VerticalStackLayout Padding="28,20,28,20"
+                                               Spacing="16"
+                                               VerticalOptions="FillAndExpand">
+                                <!-- Badge with subtle background -->
+                                <Label FontSize="11"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource AccentGlow}"
+                                       Text="READY TO TRAIN"
+                                       CharacterSpacing="1.8" />
+                                
+                                <!-- Strong Headline - More Visual Weight -->
+                                <Label FontSize="30"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       LineBreakMode="WordWrap"
+                                       LineHeight="1.1">
+                                    <Label.Text>Start your session</Label.Text>
+                                </Label>
 
-                            <!-- CTA Button - Full Width, Prominent -->
-                            <Button x:Name="StartWorkoutButton"
-                                    Text="Begin Workout"
-                                    BackgroundColor="{StaticResource Accent}"
-                                    TextColor="White"
-                                    Padding="24,16"
-                                    CornerRadius="14"
-                                    FontSize="16"
-                                    FontFamily="OpenSansSemibold"
-                                    Clicked="OnOpenNewWorkoutClicked"
-                                    HorizontalOptions="FillAndExpand" />
-                        </VerticalStackLayout>
+                                <!-- CTA Button - Full Width, Premium Style -->
+                                <Button x:Name="StartWorkoutButton"
+                                        Text="Begin Workout"
+                                        BackgroundColor="{StaticResource Accent}"
+                                        TextColor="White"
+                                        Padding="24,18"
+                                        CornerRadius="16"
+                                        FontSize="16"
+                                        FontFamily="OpenSansSemibold"
+                                        Clicked="OnOpenNewWorkoutClicked"
+                                        HorizontalOptions="FillAndExpand" />
+                            </VerticalStackLayout>
+                        </Grid>
                     </Grid>
                 </Border>
 
@@ -82,21 +83,29 @@
                 <Grid ColumnDefinitions="*,*" 
                       ColumnSpacing="12">
                     
-                    <!-- Quick Builder -->
+                    <!-- Quick Builder - Mini Hero Surface -->
                     <Border Grid.Column="0"
                             StrokeShape="RoundRectangle 18"
                             Stroke="{StaticResource Accent}"
-                            StrokeThickness="1"
+                            StrokeThickness="2"
                             BackgroundColor="{StaticResource AccentSoft}"
-                            Opacity="0.5"
-                            Padding="16">
-                        <VerticalStackLayout Spacing="10" VerticalOptions="Center" HorizontalOptions="Center">
-                            <Label FontSize="28"
-                                   FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource Accent}"
-                                   Text="+"
-                                   HorizontalOptions="Center" />
-                            <Label FontSize="14"
+                            Padding="0">
+                        <VerticalStackLayout Padding="20,18,20,18" Spacing="12" VerticalOptions="Center" HorizontalOptions="Center">
+                            <!-- Icon with Premium Border Circle -->
+                            <Border StrokeShape="RoundRectangle 14"
+                                    Stroke="{StaticResource Accent}"
+                                    StrokeThickness="2"
+                                    BackgroundColor="Transparent"
+                                    Padding="8"
+                                    HorizontalOptions="Center">
+                                <Label FontSize="20"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource Accent}"
+                                       Text="+"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+                            <Label FontSize="15"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}"
                                    Text="Quick Add"
@@ -107,20 +116,29 @@
                         </Border.GestureRecognizers>
                     </Border>
 
-                    <!-- Calendar Access -->
+                    <!-- Calendar Access - Premium Surface -->
                     <Border Grid.Column="1"
                             StrokeShape="RoundRectangle 18"
-                            Stroke="{StaticResource SurfaceBorder}"
-                            StrokeThickness="1"
-                            BackgroundColor="{StaticResource SurfaceStrong}"
-                            Padding="16">
-                        <VerticalStackLayout Spacing="10" VerticalOptions="Center" HorizontalOptions="Center">
-                            <Label FontSize="24"
-                                   FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource Accent}"
-                                   Text="📅"
-                                   HorizontalOptions="Center" />
-                            <Label FontSize="14"
+                            Stroke="{StaticResource Accent}"
+                            StrokeThickness="2"
+                            BackgroundColor="{StaticResource AccentSoft}"
+                            Padding="0">
+                        <VerticalStackLayout Padding="20,18,20,18" Spacing="12" VerticalOptions="Center" HorizontalOptions="Center">
+                            <!-- Calendar Icon with Border Circle -->
+                            <Border StrokeShape="RoundRectangle 14"
+                                    Stroke="{StaticResource Accent}"
+                                    StrokeThickness="2"
+                                    BackgroundColor="Transparent"
+                                    Padding="8"
+                                    HorizontalOptions="Center">
+                                <Label FontSize="20"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource Accent}"
+                                       Text="📅"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+                            <Label FontSize="15"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}"
                                    Text="Calendar"
@@ -209,70 +227,70 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Border StrokeShape="RoundRectangle 18"
-                                    Stroke="{StaticResource SurfaceBorder}"
+                                    Stroke="{StaticResource Accent}"
                                     StrokeThickness="1"
                                     BackgroundColor="{StaticResource SurfaceRaised}"
-                                    Padding="0">
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="0" Padding="0" MinimumHeightRequest="88">
-                                    <!-- Left Content Area -->
+                                    Padding="0"
+                                    MinimumHeightRequest="100">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="0" Padding="0">
+                                    <!-- Left Content Area - Rich Hierarchy -->
                                     <VerticalStackLayout Grid.Column="0" 
-                                                        Padding="20,16,18,16"
-                                                        Spacing="10"
+                                                        Padding="24,18,20,18"
+                                                        Spacing="12"
                                                         VerticalOptions="Center">
-                                        <!-- Program Name - Bold, Clear -->
+                                        <!-- Program Name - Bold Primary -->
                                         <Label Text="{Binding Name}"
-                                               FontSize="17"
+                                               FontSize="18"
                                                FontFamily="OpenSansSemibold"
                                                TextColor="{StaticResource TextPrimary}"
                                                LineBreakMode="TailTruncation" />
                                         
-                                        <!-- Goal + Frequency -->
-                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="16" RowSpacing="0">
-                                            <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                        <!-- Goal + Frequency - Better Visual Separation -->
+                                        <Grid ColumnDefinitions="*,1,*" ColumnSpacing="16" RowSpacing="0">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="4">
                                                 <Label FontSize="9"
                                                        FontFamily="OpenSansSemibold"
-                                                       TextColor="{StaticResource TextSecondary}"
-                                                       CharacterSpacing="0.4"
+                                                       TextColor="{StaticResource Accent}"
+                                                       CharacterSpacing="0.6"
                                                        Text="GOAL" />
                                                 <Label Text="{Binding Goal}"
-                                                       FontSize="13"
-                                                       FontFamily="OpenSansRegular"
+                                                       FontSize="14"
+                                                       FontFamily="OpenSansSemibold"
                                                        TextColor="{StaticResource TextPrimary}"
                                                        LineBreakMode="TailTruncation" />
                                             </VerticalStackLayout>
 
-                                            <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                            <BoxView Grid.Column="1"
+                                                    BackgroundColor="{StaticResource SurfaceBorder}"
+                                                    WidthRequest="1"
+                                                    Opacity="0.3" />
+
+                                            <VerticalStackLayout Grid.Column="2" Spacing="4">
                                                 <Label FontSize="9"
                                                        FontFamily="OpenSansSemibold"
-                                                       TextColor="{StaticResource TextSecondary}"
-                                                       CharacterSpacing="0.4"
+                                                       TextColor="{StaticResource Accent}"
+                                                       CharacterSpacing="0.6"
                                                        Text="FREQUENCY" />
-                                                <Label Text="{Binding DaysPerWeek, StringFormat='{0}d/wk'}"
-                                                       FontSize="13"
-                                                       FontFamily="OpenSansRegular"
+                                                <Label Text="{Binding DaysPerWeek, StringFormat='{0}x/week'}"
+                                                       FontSize="14"
+                                                       FontFamily="OpenSansSemibold"
                                                        TextColor="{StaticResource TextPrimary}" />
                                             </VerticalStackLayout>
                                         </Grid>
                                     </VerticalStackLayout>
 
-                                    <!-- Right: Premium Accent Bar with Icon -->
-                                    <VerticalStackLayout Grid.Column="1"
-                                                        BackgroundColor="{StaticResource Accent}"
-                                                        WidthRequest="60"
-                                                        Spacing="0"
-                                                        VerticalOptions="FillAndExpand"
-                                                        HorizontalOptions="Fill"
-                                                        Padding="0">
-                                        <Grid BackgroundColor="{StaticResource Accent}" 
-                                              Padding="0">
-                                            <Label Text="→"
-                                                   FontSize="24"
-                                                   FontFamily="OpenSansSemibold"
-                                                   TextColor="White"
-                                                   HorizontalOptions="Center"
-                                                   VerticalOptions="Center" />
-                                        </Grid>
-                                    </VerticalStackLayout>
+                                    <!-- Right: Premium Accent Bar with Chevron Icon -->
+                                    <Grid Grid.Column="1"
+                                          BackgroundColor="{StaticResource Accent}"
+                                          WidthRequest="56"
+                                          Padding="0">
+                                        <Label Text="▸"
+                                               FontSize="22"
+                                               FontFamily="OpenSansSemibold"
+                                               TextColor="White"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center" />
+                                    </Grid>
                                 </Grid>
                             </Border>
                         </DataTemplate>
