@@ -2,6 +2,7 @@ using System.Text;
 using FreakLete.Models;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui.Controls.Shapes;
 
 namespace FreakLete;
 
@@ -22,6 +23,9 @@ public partial class CalculationsPage : ContentPage
 	private ExerciseCatalogItem? _selectedStrengthExerciseItem;
 	private ExerciseCatalogItem? _selectedPrExerciseItem;
 	private int? _editingPrEntryId;
+	private List<PrEntryResponse> _allPrEntries = [];
+	private List<ExerciseGroup> _exerciseGroups = [];
+	private ExerciseGroup? _selectedExerciseGroup;
 
 	public CalculationsPage()
 	{
@@ -45,60 +49,293 @@ public partial class CalculationsPage : ContentPage
 	{
 		try
 		{
-			// Load PR entries
 			var prResult = await _api.GetPrEntriesAsync();
 			if (prResult.Success && prResult.Data is not null && prResult.Data.Count > 0)
 			{
-				// Display latest PR
-				var latestPr = prResult.Data.First();
-				LatestPrExerciseLabel.Text = latestPr.ExerciseName ?? "No PR recorded";
-				
-				if (latestPr.TrackingMode == "Strength")
-				{
-					LatestPrWeightLabel.Text = $"{latestPr.Weight} kg";
-					LatestPrRepsLabel.Text = latestPr.Reps.ToString();
-				}
-				else
-				{
-					LatestPrWeightLabel.Text = $"{latestPr.Metric1Value} {latestPr.Metric1Unit}";
-					LatestPrRepsLabel.Text = "-";
-				}
-				
-				LatestPrDateLabel.Text = latestPr.CreatedAt.ToString("MMM dd, yyyy");
+				_allPrEntries = prResult.Data;
 
-				// Populate PR progress chart with strength movement history (ordered by date)
-				var strengthPrs = prResult.Data
-					.Where(p => p.TrackingMode == "Strength" && p.Weight > 0)
-					.OrderBy(p => p.CreatedAt)
-					.TakeLast(10)
+				// Group by ExerciseName + ExerciseCategory, order by most recent
+				_exerciseGroups = _allPrEntries
+					.GroupBy(p => new { p.ExerciseName, p.ExerciseCategory })
+					.Select(g => new ExerciseGroup
+					{
+						ExerciseName = g.Key.ExerciseName,
+						ExerciseCategory = g.Key.ExerciseCategory,
+						Entries = g.OrderBy(e => e.CreatedAt).ToList(),
+						MostRecent = g.Max(e => e.CreatedAt)
+					})
+					.OrderByDescending(g => g.MostRecent)
 					.ToList();
 
-				var chartData = new List<LineChartCard.ChartDataPoint>();
-				foreach (var pr in strengthPrs)
-				{
-					chartData.Add(new LineChartCard.ChartDataPoint
-					{
-						Label = pr.CreatedAt.ToString("MMM d"),
-						Value = pr.Weight
-					});
-				}
+				BuildExerciseChips();
 
-				PrHistoryChart.Data = chartData;
+				// Preselect the most recent group
+				_selectedExerciseGroup = _exerciseGroups.FirstOrDefault();
+				UpdateExerciseChipSelection();
+				UpdateHeroAndChart();
+
+				EmptyDashboardCard.IsVisible = false;
 			}
 			else
 			{
-				LatestPrExerciseLabel.Text = "No PR recorded yet";
-				LatestPrWeightLabel.Text = "- kg";
-				LatestPrRepsLabel.Text = "-";
-				LatestPrDateLabel.Text = "-";
-				PrHistoryChart.Data = null;
+				_allPrEntries = [];
+				_exerciseGroups = [];
+				ExerciseChipsContainer.Children.Clear();
+				EmptyDashboardCard.IsVisible = true;
+				HeroPrCard.IsVisible = false;
+				ChartCard.IsVisible = false;
 			}
 		}
 		catch
 		{
-			// Graceful fallback
-			LatestPrExerciseLabel.Text = "Unable to load PR data";
-			PrHistoryChart.Data = null;
+			EmptyDashboardCard.IsVisible = true;
+			HeroPrCard.IsVisible = false;
+			ChartCard.IsVisible = false;
+		}
+	}
+
+	private void BuildExerciseChips()
+	{
+		ExerciseChipsContainer.Children.Clear();
+
+		foreach (var group in _exerciseGroups)
+		{
+			bool isActive = _selectedExerciseGroup is not null
+				&& _selectedExerciseGroup.ExerciseName == group.ExerciseName
+				&& _selectedExerciseGroup.ExerciseCategory == group.ExerciseCategory;
+
+			var chip = CreateExerciseChip(group.ExerciseName, isActive);
+
+			chip.GestureRecognizers.Add(new TapGestureRecognizer
+			{
+				Command = new Command(() =>
+				{
+					_selectedExerciseGroup = group;
+					UpdateExerciseChipSelection();
+					UpdateHeroAndChart();
+				})
+			});
+
+			ExerciseChipsContainer.Children.Add(chip);
+		}
+	}
+
+	private Border CreateExerciseChip(string text, bool isActive)
+	{
+		var accentSoft = GetDashColor("AccentSoft", "#2F2346");
+		var surfaceRaised = GetDashColor("SurfaceRaised", "#1D1828");
+		var accent = GetDashColor("Accent", "#8B5CF6");
+		var surfaceBorder = GetDashColor("SurfaceBorder", "#342D46");
+
+		var chip = new Border
+		{
+			StrokeShape = new RoundRectangle { CornerRadius = 14 },
+			BackgroundColor = isActive ? accentSoft : surfaceRaised,
+			Stroke = new SolidColorBrush(isActive ? accent : surfaceBorder),
+			StrokeThickness = 1,
+			Padding = new Thickness(14, 7)
+		};
+
+		chip.Content = new Label
+		{
+			Text = text,
+			FontSize = 12,
+			FontFamily = "OpenSansSemibold",
+			TextColor = isActive
+				? GetDashColor("AccentGlow", "#A78BFA")
+				: GetDashColor("TextSecondary", "#B3B2C5")
+		};
+
+		return chip;
+	}
+
+	private void UpdateExerciseChipSelection()
+	{
+		int index = 0;
+		foreach (var group in _exerciseGroups)
+		{
+			if (index >= ExerciseChipsContainer.Children.Count) break;
+			bool isActive = _selectedExerciseGroup is not null
+				&& _selectedExerciseGroup.ExerciseName == group.ExerciseName
+				&& _selectedExerciseGroup.ExerciseCategory == group.ExerciseCategory;
+
+			var chip = (Border)ExerciseChipsContainer.Children[index];
+			var accentSoft = GetDashColor("AccentSoft", "#2F2346");
+			var surfaceRaised = GetDashColor("SurfaceRaised", "#1D1828");
+			var accent = GetDashColor("Accent", "#8B5CF6");
+			var surfaceBorder = GetDashColor("SurfaceBorder", "#342D46");
+
+			chip.BackgroundColor = isActive ? accentSoft : surfaceRaised;
+			chip.Stroke = new SolidColorBrush(isActive ? accent : surfaceBorder);
+
+			if (chip.Content is Label label)
+			{
+				label.TextColor = isActive
+					? GetDashColor("AccentGlow", "#A78BFA")
+					: GetDashColor("TextSecondary", "#B3B2C5");
+			}
+
+			index++;
+		}
+	}
+
+	private void UpdateHeroAndChart()
+	{
+		if (_selectedExerciseGroup is null || _selectedExerciseGroup.Entries.Count == 0)
+		{
+			HeroPrCard.IsVisible = false;
+			ChartCard.IsVisible = false;
+			return;
+		}
+
+		var entries = _selectedExerciseGroup.Entries;
+		var best = entries.First();
+		bool isStrength = best.TrackingMode == "Strength";
+
+		// Find best value
+		if (isStrength)
+		{
+			best = entries.OrderByDescending(e => e.Weight).First();
+			HeroPrExerciseLabel.Text = _selectedExerciseGroup.ExerciseName.ToUpperInvariant();
+			HeroPrStrengthLabel.Text = "MAXIMUM LOAD (KG)";
+			HeroPrValueLabel.Text = $"{best.Weight} kg";
+		}
+		else
+		{
+			best = entries.OrderByDescending(e => e.Metric1Value ?? 0).First();
+			HeroPrExerciseLabel.Text = _selectedExerciseGroup.ExerciseName.ToUpperInvariant();
+			HeroPrStrengthLabel.Text = $"{best.Metric1Unit?.ToUpperInvariant() ?? "VALUE"}";
+			HeroPrValueLabel.Text = $"{best.Metric1Value:0.##} {best.Metric1Unit}";
+		}
+
+		HeroPrDateLabel.Text = $"Best PR: {best.CreatedAt:MMM dd, yyyy}";
+		HeroPrCard.IsVisible = true;
+
+		// Chart: up to last 6 points
+		var chartPoints = entries.TakeLast(6).ToList();
+		if (chartPoints.Count >= 2)
+		{
+			var points = chartPoints.Select(e => new ChartPoint
+			{
+				Date = e.CreatedAt,
+				Value = isStrength ? e.Weight : (e.Metric1Value ?? 0)
+			}).ToList();
+
+			var span = points.Last().Date - points.First().Date;
+			bool useMonthLabels = span.TotalDays > 45;
+
+			var drawable = new PrLineChartDrawable(points, useMonthLabels);
+			PrChartView.Drawable = drawable;
+			PrChartView.Invalidate();
+			ChartTitleLabel.Text = $"{_selectedExerciseGroup.ExerciseName} Progress";
+			ChartCard.IsVisible = true;
+		}
+		else
+		{
+			ChartCard.IsVisible = false;
+		}
+	}
+
+	private static Color GetDashColor(string key, string fallback)
+	{
+		if (Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color)
+			return color;
+		return Color.FromArgb(fallback);
+	}
+
+	private sealed class ExerciseGroup
+	{
+		public string ExerciseName { get; set; } = "";
+		public string ExerciseCategory { get; set; } = "";
+		public List<PrEntryResponse> Entries { get; set; } = [];
+		public DateTime MostRecent { get; set; }
+	}
+
+	private sealed class ChartPoint
+	{
+		public DateTime Date { get; set; }
+		public double Value { get; set; }
+	}
+
+	private sealed class PrLineChartDrawable : IDrawable
+	{
+		private readonly List<ChartPoint> _points;
+		private readonly bool _useMonthLabels;
+
+		public PrLineChartDrawable(List<ChartPoint> points, bool useMonthLabels)
+		{
+			_points = points;
+			_useMonthLabels = useMonthLabels;
+		}
+
+		public void Draw(ICanvas canvas, RectF dirtyRect)
+		{
+			if (_points.Count < 2) return;
+
+			float w = dirtyRect.Width;
+			float h = dirtyRect.Height;
+			float padLeft = 10;
+			float padRight = 10;
+			float padTop = 10;
+			float padBottom = 30;
+			float chartW = w - padLeft - padRight;
+			float chartH = h - padTop - padBottom;
+
+			double minVal = _points.Min(p => p.Value);
+			double maxVal = _points.Max(p => p.Value);
+			if (Math.Abs(maxVal - minVal) < 0.01) { minVal -= 1; maxVal += 1; }
+
+			var pts = new PointF[_points.Count];
+			for (int i = 0; i < _points.Count; i++)
+			{
+				float x = padLeft + (chartW * i / (_points.Count - 1));
+				float y = padTop + chartH - (float)(((_points[i].Value - minVal) / (maxVal - minVal)) * chartH);
+				pts[i] = new PointF(x, y);
+			}
+
+			// Draw area fill
+			var areaPath = new PathF();
+			areaPath.MoveTo(pts[0].X, padTop + chartH);
+			foreach (var pt in pts)
+				areaPath.LineTo(pt.X, pt.Y);
+			areaPath.LineTo(pts[^1].X, padTop + chartH);
+			areaPath.Close();
+
+			canvas.SetFillPaint(new LinearGradientPaint(
+				new[] {
+					new PaintGradientStop(0f, Color.FromArgb("#8B5CF6").WithAlpha(0.3f)),
+					new PaintGradientStop(1f, Color.FromArgb("#8B5CF6").WithAlpha(0.02f))
+				},
+				new Point(0, 0), new Point(0, 1)), dirtyRect);
+			canvas.FillPath(areaPath);
+
+			// Draw line
+			canvas.StrokeColor = Color.FromArgb("#A78BFA");
+			canvas.StrokeSize = 2.5f;
+			canvas.StrokeLineCap = LineCap.Round;
+			canvas.StrokeLineJoin = LineJoin.Round;
+
+			var linePath = new PathF();
+			linePath.MoveTo(pts[0].X, pts[0].Y);
+			for (int i = 1; i < pts.Length; i++)
+				linePath.LineTo(pts[i].X, pts[i].Y);
+			canvas.DrawPath(linePath);
+
+			// Draw dots
+			canvas.FillColor = Color.FromArgb("#A78BFA");
+			foreach (var pt in pts)
+				canvas.FillCircle(pt.X, pt.Y, 4);
+
+			// Draw labels
+			canvas.FontSize = 10;
+			canvas.FontColor = Color.FromArgb("#B3B2C5");
+			for (int i = 0; i < _points.Count; i++)
+			{
+				string label = _useMonthLabels
+					? _points[i].Date.ToString("MMM")
+					: _points[i].Date.ToString("MMM d");
+				canvas.DrawString(label, pts[i].X - 20, padTop + chartH + 6, 40, 20, HorizontalAlignment.Center, VerticalAlignment.Top);
+			}
 		}
 	}
 

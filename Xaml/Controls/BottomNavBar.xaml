@@ -3,99 +3,161 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FreakLete.BottomNavBar">
 
-    <Border Style="{StaticResource CardBorder}"
-            BackgroundColor="{StaticResource SurfaceRaised}"
+    <Border BackgroundColor="{StaticResource Surface}"
             Stroke="{StaticResource SurfaceBorder}"
-            Padding="8,8"
-            Margin="14,0,14,10"
+            StrokeThickness="1"
+            Padding="10,10"
+            Margin="16,0,16,14"
             StrokeShape="RoundRectangle 26">
+        <Border.Shadow>
+            <Shadow Brush="#000000"
+                    Radius="20"
+                    Opacity="0.35"
+                    Offset="0,4" />
+        </Border.Shadow>
         <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="4">
+
             <!-- Home Tab -->
             <Border Grid.Column="0"
                     x:Name="HomePill"
-                    StrokeShape="RoundRectangle 18"
+                    StrokeShape="RoundRectangle 20"
+                    StrokeThickness="0"
+                    Stroke="Transparent"
                     BackgroundColor="Transparent"
-                    Padding="12,8"
+                    Padding="14,8"
                     HorizontalOptions="Center">
-                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-                    <ImageButton x:Name="HomeButton"
-                                 Source="nav_home.svg"
-                                 BackgroundColor="Transparent"
-                                 WidthRequest="22"
-                                 HeightRequest="22"
-                                 Clicked="OnHomeClicked" />
+                <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
+                    <Image x:Name="HomeIcon"
+                           Source="nav_home.svg"
+                           WidthRequest="24"
+                           HeightRequest="24"
+                           HorizontalOptions="Center" />
+                    <Label x:Name="HomeLabel"
+                           Text="Home"
+                           FontSize="10"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="False" />
                 </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnHomeClicked" />
+                </Border.GestureRecognizers>
             </Border>
 
             <!-- Workout Tab -->
             <Border Grid.Column="1"
                     x:Name="WorkoutPill"
-                    StrokeShape="RoundRectangle 18"
+                    StrokeShape="RoundRectangle 20"
+                    StrokeThickness="0"
+                    Stroke="Transparent"
                     BackgroundColor="Transparent"
-                    Padding="12,8"
+                    Padding="14,8"
                     HorizontalOptions="Center">
-                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-                    <ImageButton x:Name="WorkoutButton"
-                                 Source="nav_dumbbell.svg"
-                                 BackgroundColor="Transparent"
-                                 WidthRequest="22"
-                                 HeightRequest="22"
-                                 Clicked="OnWorkoutClicked" />
+                <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
+                    <Image x:Name="WorkoutIcon"
+                           Source="nav_dumbbell.svg"
+                           WidthRequest="24"
+                           HeightRequest="24"
+                           HorizontalOptions="Center" />
+                    <Label x:Name="WorkoutLabel"
+                           Text="Workout"
+                           FontSize="10"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="False" />
                 </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnWorkoutClicked" />
+                </Border.GestureRecognizers>
             </Border>
 
             <!-- FreakAI Tab -->
             <Border Grid.Column="2"
                     x:Name="FreakAiPill"
-                    StrokeShape="RoundRectangle 18"
+                    StrokeShape="RoundRectangle 20"
+                    StrokeThickness="0"
+                    Stroke="Transparent"
                     BackgroundColor="Transparent"
-                    Padding="12,8"
+                    Padding="14,8"
                     HorizontalOptions="Center">
-                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-                    <ImageButton x:Name="FreakAiButton"
-                                 Source="nav_notebook.svg"
-                                 BackgroundColor="Transparent"
-                                 WidthRequest="22"
-                                 HeightRequest="22"
-                                 Clicked="OnFreakAiClicked" />
+                <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
+                    <Image x:Name="FreakAiIcon"
+                           Source="nav_notebook.svg"
+                           WidthRequest="24"
+                           HeightRequest="24"
+                           HorizontalOptions="Center" />
+                    <Label x:Name="FreakAiLabel"
+                           Text="FreakAI"
+                           FontSize="10"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="False" />
                 </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnFreakAiClicked" />
+                </Border.GestureRecognizers>
             </Border>
 
             <!-- Calculations Tab -->
             <Border Grid.Column="3"
                     x:Name="CalculationsPill"
-                    StrokeShape="RoundRectangle 18"
+                    StrokeShape="RoundRectangle 20"
+                    StrokeThickness="0"
+                    Stroke="Transparent"
                     BackgroundColor="Transparent"
-                    Padding="12,8"
+                    Padding="14,8"
                     HorizontalOptions="Center">
-                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-                    <ImageButton x:Name="CalculationsButton"
-                                 Source="nav_notebook.svg"
-                                 BackgroundColor="Transparent"
-                                 WidthRequest="22"
-                                 HeightRequest="22"
-                                 Clicked="OnCalculationsClicked" />
+                <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
+                    <Image x:Name="CalculationsIcon"
+                           Source="nav_plates.svg"
+                           WidthRequest="24"
+                           HeightRequest="24"
+                           HorizontalOptions="Center" />
+                    <Label x:Name="CalculationsLabel"
+                           Text="Calc"
+                           FontSize="10"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="False" />
                 </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCalculationsClicked" />
+                </Border.GestureRecognizers>
             </Border>
 
             <!-- Profile Tab -->
             <Border Grid.Column="4"
                     x:Name="ProfilePill"
-                    StrokeShape="RoundRectangle 18"
+                    StrokeShape="RoundRectangle 20"
+                    StrokeThickness="0"
+                    Stroke="Transparent"
                     BackgroundColor="Transparent"
-                    Padding="12,8"
+                    Padding="14,8"
                     HorizontalOptions="Center">
-                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-                    <ImageButton x:Name="ProfileButton"
-                                 Source="nav_profile.svg"
-                                 BackgroundColor="Transparent"
-                                 WidthRequest="22"
-                                 HeightRequest="22"
-                                 Clicked="OnProfileClicked" />
+                <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
+                    <Image x:Name="ProfileIcon"
+                           Source="nav_profile.svg"
+                           WidthRequest="24"
+                           HeightRequest="24"
+                           HorizontalOptions="Center" />
+                    <Label x:Name="ProfileLabel"
+                           Text="Profile"
+                           FontSize="10"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="False" />
                 </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnProfileClicked" />
+                </Border.GestureRecognizers>
             </Border>
+
         </Grid>
     </Border>
 
 </ContentView>
-

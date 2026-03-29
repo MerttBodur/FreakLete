@@ -40,77 +40,68 @@ public partial class BottomNavBar : ContentView
 
 	private void UpdateIndicators()
 	{
-		// Get the Primary color from resources, default to purple if not available
-		var primaryColor = (Application.Current?.Resources["Primary"] as Color) ?? Colors.Purple;
-		
-		// Update pill backgrounds
-		HomePill.BackgroundColor = ActiveTab == HomeTab ? primaryColor : Colors.Transparent;
-		WorkoutPill.BackgroundColor = ActiveTab == WorkoutTab ? primaryColor : Colors.Transparent;
-		FreakAiPill.BackgroundColor = ActiveTab == FreakAiTab ? primaryColor : Colors.Transparent;
-		CalculationsPill.BackgroundColor = ActiveTab == CalculationsTab ? primaryColor : Colors.Transparent;
-		ProfilePill.BackgroundColor = ActiveTab == ProfileTab ? primaryColor : Colors.Transparent;
+		var accentSoft = (Application.Current?.Resources["AccentSoft"] as Color) ?? Color.FromArgb("#2F2346");
+		var accentGlow = (Application.Current?.Resources["AccentGlow"] as Color) ?? Color.FromArgb("#A78BFA");
+		var textSecondary = (Application.Current?.Resources["TextSecondary"] as Color) ?? Color.FromArgb("#B3B2C5");
 
-		// Update icon opacity for visual feedback
-		HomeButton.Opacity = ActiveTab == HomeTab ? 1 : 0.55;
-		WorkoutButton.Opacity = ActiveTab == WorkoutTab ? 1 : 0.55;
-		FreakAiButton.Opacity = ActiveTab == FreakAiTab ? 1 : 0.55;
-		CalculationsButton.Opacity = ActiveTab == CalculationsTab ? 1 : 0.55;
-		ProfileButton.Opacity = ActiveTab == ProfileTab ? 1 : 0.55;
+		UpdateTab(HomePill, HomeIcon, HomeLabel, ActiveTab == HomeTab, accentSoft, accentGlow, textSecondary);
+		UpdateTab(WorkoutPill, WorkoutIcon, WorkoutLabel, ActiveTab == WorkoutTab, accentSoft, accentGlow, textSecondary);
+		UpdateTab(FreakAiPill, FreakAiIcon, FreakAiLabel, ActiveTab == FreakAiTab, accentSoft, accentGlow, textSecondary);
+		UpdateTab(CalculationsPill, CalculationsIcon, CalculationsLabel, ActiveTab == CalculationsTab, accentSoft, accentGlow, textSecondary);
+		UpdateTab(ProfilePill, ProfileIcon, ProfileLabel, ActiveTab == ProfileTab, accentSoft, accentGlow, textSecondary);
 	}
 
-	private async void OnHomeClicked(object? sender, EventArgs e)
+	private static void UpdateTab(Border pill, Image icon, Label label, bool isActive, Color accentSoft, Color accentGlow, Color textSecondary)
+	{
+		pill.BackgroundColor = isActive ? accentSoft : Colors.Transparent;
+		icon.Opacity = isActive ? 1 : 0.5;
+		label.IsVisible = isActive;
+		label.TextColor = isActive ? accentGlow : textSecondary;
+	}
+
+	private async void OnHomeClicked(object? sender, TappedEventArgs e)
 	{
 		if (sender is VisualElement element)
-		{
 			await AnimatePressAsync(element);
-		}
 
 		await TabNavigationHelper.SwitchToTabAsync(() => new HomePage());
 	}
 
-	private async void OnWorkoutClicked(object? sender, EventArgs e)
+	private async void OnWorkoutClicked(object? sender, TappedEventArgs e)
 	{
 		if (sender is VisualElement element)
-		{
 			await AnimatePressAsync(element);
-		}
 
 		await TabNavigationHelper.SwitchToTabAsync(() => new WorkoutPage());
 	}
 
-	private async void OnFreakAiClicked(object? sender, EventArgs e)
+	private async void OnFreakAiClicked(object? sender, TappedEventArgs e)
 	{
 		if (sender is VisualElement element)
-		{
 			await AnimatePressAsync(element);
-		}
 
 		await TabNavigationHelper.SwitchToTabAsync(() => new FreakAiPage());
 	}
 
-	private async void OnCalculationsClicked(object? sender, EventArgs e)
+	private async void OnCalculationsClicked(object? sender, TappedEventArgs e)
 	{
 		if (sender is VisualElement element)
-		{
 			await AnimatePressAsync(element);
-		}
 
 		await TabNavigationHelper.SwitchToTabAsync(() => new CalculationsPage());
 	}
 
-	private async void OnProfileClicked(object? sender, EventArgs e)
+	private async void OnProfileClicked(object? sender, TappedEventArgs e)
 	{
 		if (sender is VisualElement element)
-		{
 			await AnimatePressAsync(element);
-		}
 
 		await TabNavigationHelper.SwitchToTabAsync(() => new ProfilePage());
 	}
 
 	private static async Task AnimatePressAsync(VisualElement element)
 	{
-		await element.ScaleToAsync(0.88, 70, Easing.CubicOut);
+		await element.ScaleToAsync(0.90, 70, Easing.CubicOut);
 		await element.ScaleToAsync(1, 110, Easing.CubicIn);
 	}
 }

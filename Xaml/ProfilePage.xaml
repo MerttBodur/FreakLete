@@ -11,23 +11,121 @@
             <VerticalStackLayout Padding="24,18,24,24"
                                  Spacing="18">
 
-                <local:TopHeader Title="Profile" />
-
-                <Border Style="{StaticResource AccentCardBorder}">
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="ATHLETE PROFILE"
-                               Style="{StaticResource Eyebrow}" />
-                        <Label x:Name="FullNameLabel"
-                               Text="Your Name"
-                               Style="{StaticResource Headline}"
-                               HorizontalTextAlignment="Start" />
-                        <Label x:Name="EmailLabel"
-                               Style="{StaticResource BodyMuted}" />
+                <!-- Centered Hero Identity -->
+                <VerticalStackLayout Spacing="10" HorizontalOptions="Center" Margin="0,8,0,0">
+                    <!-- Initials Avatar Ring -->
+                    <Border x:Name="AvatarRing"
+                            StrokeShape="RoundRectangle 40"
+                            Stroke="{StaticResource Accent}"
+                            StrokeThickness="2"
+                            BackgroundColor="{StaticResource AccentSoft}"
+                            WidthRequest="80"
+                            HeightRequest="80"
+                            HorizontalOptions="Center">
+                        <Label x:Name="InitialsLabel"
+                               Text="?"
+                               FontSize="28"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource AccentGlow}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </Border>
+                    <Label x:Name="FullNameLabel"
+                           Text="Your Name"
+                           FontSize="24"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextPrimary}"
+                           HorizontalTextAlignment="Center" />
+                    <Label x:Name="EmailLabel"
+                           FontSize="13"
+                           FontFamily="OpenSansRegular"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Center" />
+                    <!-- Status chip -->
+                    <Border x:Name="StatusChip"
+                            StrokeShape="RoundRectangle 10"
+                            BackgroundColor="{StaticResource SurfaceRaised}"
+                            Stroke="{StaticResource SurfaceBorder}"
+                            Padding="12,5"
+                            HorizontalOptions="Center"
+                            IsVisible="False">
                         <Label x:Name="StatusLabel"
-                               FontSize="13"
-                               IsVisible="False" />
-                    </VerticalStackLayout>
-                </Border>
+                               FontSize="11"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextSecondary}" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Stats Row -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" Margin="0,6,0,0">
+                    <Border Grid.Column="0"
+                            StrokeShape="RoundRectangle 16"
+                            Stroke="{StaticResource SurfaceBorder}"
+                            BackgroundColor="{StaticResource SurfaceRaised}"
+                            Padding="14,12">
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                            <Label x:Name="WorkoutCountLabel"
+                                   FontSize="24"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   HorizontalTextAlignment="Center"
+                                   Text="0" />
+                            <Label FontSize="10"
+                                   FontFamily="OpenSansRegular"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   HorizontalTextAlignment="Center"
+                                   Text="Workouts" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1"
+                            StrokeShape="RoundRectangle 16"
+                            Stroke="{StaticResource SurfaceBorder}"
+                            BackgroundColor="{StaticResource SurfaceRaised}"
+                            Padding="14,12">
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                            <Label x:Name="OneRmPrCountLabel"
+                                   FontSize="24"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   HorizontalTextAlignment="Center"
+                                   Text="0" />
+                            <Label FontSize="10"
+                                   FontFamily="OpenSansRegular"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   HorizontalTextAlignment="Center"
+                                   Text="Saved PRs" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2"
+                            StrokeShape="RoundRectangle 16"
+                            Stroke="{StaticResource SurfaceBorder}"
+                            BackgroundColor="{StaticResource SurfaceRaised}"
+                            Padding="14,12">
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                            <Label x:Name="AthleticRecordsCountLabel"
+                                   FontSize="24"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   HorizontalTextAlignment="Center"
+                                   Text="0" />
+                            <Label FontSize="10"
+                                   FontFamily="OpenSansRegular"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   HorizontalTextAlignment="Center"
+                                   Text="Athletic Records" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Highlights Section -->
+                <VerticalStackLayout x:Name="HighlightsSection" Spacing="10">
+                    <Label FontSize="18"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextPrimary}"
+                           Text="Highlights"
+                           Margin="0,4,0,0" />
+                    <VerticalStackLayout x:Name="HighlightsContainer" Spacing="8" />
+                </VerticalStackLayout>
 
                 <Border Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
@@ -243,42 +341,7 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Style="{StaticResource CardBorder}">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Quick Stats"
-                               Style="{StaticResource SubHeadline}"
-                               HorizontalTextAlignment="Start" />
-
-                        <Grid ColumnDefinitions="*,*"
-                              ColumnSpacing="10">
-                            <Border Grid.Column="0"
-                                    Style="{StaticResource CardBorder}"
-                                    BackgroundColor="{StaticResource SurfaceRaised}"
-                                    Padding="12">
-                                <VerticalStackLayout Spacing="4">
-                                    <Label Text="Workouts"
-                                           Style="{StaticResource BodyMuted}" />
-                                    <Label x:Name="WorkoutCountLabel"
-                                           Text="0"
-                                           FontSize="22" />
-                                </VerticalStackLayout>
-                            </Border>
-
-                            <Border Grid.Column="1"
-                                    Style="{StaticResource CardBorder}"
-                                    BackgroundColor="{StaticResource SurfaceRaised}"
-                                    Padding="12">
-                                <VerticalStackLayout Spacing="4">
-                                    <Label Text="Saved PRs"
-                                           Style="{StaticResource BodyMuted}" />
-                                    <Label x:Name="OneRmPrCountLabel"
-                                           Text="0"
-                                           FontSize="22" />
-                                </VerticalStackLayout>
-                            </Border>
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
+                <!-- Athlete Profile Section Header -->
 
                 <Border Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">

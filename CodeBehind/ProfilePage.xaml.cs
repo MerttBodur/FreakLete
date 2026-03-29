@@ -2,6 +2,7 @@ using FreakLete.Models;
 using FreakLete.Services;
 using FreakLete.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui.Controls.Shapes;
 
 namespace FreakLete;
 
@@ -120,6 +121,16 @@ public partial class ProfilePage : ContentPage
 		FullNameLabel.Text = $"{_profile.FirstName} {_profile.LastName}";
 		EmailLabel.Text = _profile.Email;
 
+		// Initials avatar
+		var fi = string.IsNullOrWhiteSpace(_profile.FirstName) ? "" : _profile.FirstName[..1];
+		var li = string.IsNullOrWhiteSpace(_profile.LastName) ? "" : _profile.LastName[..1];
+		InitialsLabel.Text = $"{fi}{li}".ToUpperInvariant();
+
+		// Status chip
+		StatusChip.IsVisible = true;
+		StatusLabel.Text = "MEMBER";
+		StatusLabel.IsVisible = true;
+
 		await LoadSportCatalogAsync();
 
 		// Create or rehydrate the athlete ViewModel
@@ -149,8 +160,120 @@ public partial class ProfilePage : ContentPage
 		_coachVm.HydrateFromProfile(_profile);
 		SyncCoachUI();
 
-		await LoadAthleticPerformancesAsync();
-		await LoadMovementGoalsAsync();
+		var perfTask = LoadAthleticPerformancesAsync();
+		var goalsTask = LoadMovementGoalsAsync();
+		await Task.WhenAll(perfTask, goalsTask);
+
+		// Athletic records count
+		var perfResult = await _api.GetAthleticPerformancesAsync();
+		int athleticCount = perfResult.Success && perfResult.Data is not null ? perfResult.Data.Count : 0;
+		AthleticRecordsCountLabel.Text = athleticCount.ToString();
+
+		// Movement goals count for highlights
+		var goalsResult = await _api.GetMovementGoalsAsync();
+		int goalCount = goalsResult.Success && goalsResult.Data is not null ? goalsResult.Data.Count : 0;
+
+		BuildHighlights(_profile.TotalWorkouts, _profile.TotalPrs, athleticCount, goalCount);
+	}
+
+	private void BuildHighlights(int totalWorkouts, int totalPrs, int athleticCount, int goalCount)
+	{
+		HighlightsContainer.Children.Clear();
+
+		var milestones = new List<(string title, string subtitle, bool achieved)>
+		{
+			("First Workout", "Completed your first workout", totalWorkouts >= 1),
+			("First PR", "Recorded your first personal record", totalPrs >= 1),
+			("Consistent", "Completed 10+ workouts", totalWorkouts >= 10),
+			("Performance Logged", "Logged athletic performance data", athleticCount >= 1),
+			("Goal Setter", "Set at least one movement goal", goalCount >= 1)
+		};
+
+		var achieved = milestones.Where(m => m.achieved).ToList();
+
+		if (achieved.Count == 0)
+		{
+			var emptyCard = new Border
+			{
+				StrokeShape = new RoundRectangle { CornerRadius = 16 },
+				BackgroundColor = GetProfileColor("SurfaceRaised", "#1D1828"),
+				Stroke = new SolidColorBrush(GetProfileColor("SurfaceBorder", "#342D46")),
+				StrokeThickness = 1,
+				Padding = new Thickness(20, 16)
+			};
+			emptyCard.Content = new Label
+			{
+				Text = "No highlights yet. Complete a workout or save a PR to get started!",
+				FontSize = 13,
+				FontFamily = "OpenSansRegular",
+				TextColor = GetProfileColor("TextSecondary", "#B3B2C5"),
+				HorizontalTextAlignment = TextAlignment.Center
+			};
+			HighlightsContainer.Children.Add(emptyCard);
+			return;
+		}
+
+		foreach (var (title, subtitle, _) in achieved)
+		{
+			var card = new Border
+			{
+				StrokeShape = new RoundRectangle { CornerRadius = 16 },
+				BackgroundColor = GetProfileColor("SurfaceRaised", "#1D1828"),
+				Stroke = new SolidColorBrush(GetProfileColor("SurfaceBorder", "#342D46")),
+				StrokeThickness = 1,
+				Padding = new Thickness(16, 12)
+			};
+
+			var row = new HorizontalStackLayout { Spacing = 12 };
+
+			var checkBorder = new Border
+			{
+				StrokeShape = new RoundRectangle { CornerRadius = 14 },
+				BackgroundColor = GetProfileColor("AccentSoft", "#2F2346"),
+				Stroke = new SolidColorBrush(Colors.Transparent),
+				WidthRequest = 28,
+				HeightRequest = 28,
+				VerticalOptions = LayoutOptions.Center
+			};
+			checkBorder.Content = new Label
+			{
+				Text = "\u2713",
+				FontSize = 14,
+				FontFamily = "OpenSansSemibold",
+				TextColor = GetProfileColor("AccentGlow", "#A78BFA"),
+				HorizontalOptions = LayoutOptions.Center,
+				VerticalOptions = LayoutOptions.Center
+			};
+
+			var textStack = new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center };
+			textStack.Children.Add(new Label
+			{
+				Text = title,
+				FontSize = 14,
+				FontFamily = "OpenSansSemibold",
+				TextColor = GetProfileColor("TextPrimary", "#F7F7FB")
+			});
+			textStack.Children.Add(new Label
+			{
+				Text = subtitle,
+				FontSize = 11,
+				FontFamily = "OpenSansRegular",
+				TextColor = GetProfileColor("TextSecondary", "#B3B2C5")
+			});
+
+			row.Children.Add(checkBorder);
+			row.Children.Add(textStack);
+			card.Content = row;
+
+			HighlightsContainer.Children.Add(card);
+		}
+	}
+
+	private static Color GetProfileColor(string key, string fallback)
+	{
+		if (Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color)
+			return color;
+		return Color.FromArgb(fallback);
 	}
 
 	private static void SetSelectorValue(Label label, string? value, string placeholder)

@@ -11,88 +11,102 @@
             <VerticalStackLayout Padding="24,18,24,24"
                                  Spacing="20">
 
-                <!-- Page Title & Line -->
-                <VerticalStackLayout Spacing="8">
-                    <Label FontSize="12"
-                           FontFamily="OpenSansRegular"
-                           TextColor="{StaticResource TextSecondary}"
-                           Text="Your Progress" />
-                    <Label FontSize="24"
+                <!-- Page Title -->
+                <VerticalStackLayout Spacing="4">
+                    <Label FontSize="32"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimary}"
-                           Text="Calculations" />
-                </VerticalStackLayout>
-
-                <!-- Exercise Selection Chips -->
-                <VerticalStackLayout Spacing="8">
-                    <Label FontSize="12"
+                           Text="Progress" />
+                    <Label FontSize="14"
                            FontFamily="OpenSansRegular"
                            TextColor="{StaticResource TextSecondary}"
-                           Text="Select movement" />
-                    <HorizontalStackLayout Spacing="8" Padding="0">
-                        <Button x:Name="BrowseStrengthButton"
-                                Text="Browse Exercises"
-                                BackgroundColor="{StaticResource Accent}"
-                                TextColor="White"
-                                CornerRadius="6"
-                                Padding="12,8"
-                                FontSize="12"
-                                HorizontalOptions="FillAndExpand"
-                                Clicked="OnChooseStrengthExerciseClicked" />
-                    </HorizontalStackLayout>
+                           Text="Track your personal records" />
                 </VerticalStackLayout>
 
-                <!-- Latest PR / Current Metric Card -->
-                <Border Style="{StaticResource CardBorder}"
-                        Padding="0"
-                        StrokeThickness="2"
-                        Stroke="{StaticResource Accent}">
-                    <VerticalStackLayout Spacing="12" Padding="16">
-                        <Label x:Name="LatestPrExerciseLabel"
-                               Text="No PR recorded"
-                               FontSize="18"
+                <!-- Exercise Selection Chips (horizontal scroll) -->
+                <ScrollView x:Name="ExerciseChipsScroll"
+                            Orientation="Horizontal"
+                            HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout x:Name="ExerciseChipsContainer"
+                                           Spacing="8" />
+                </ScrollView>
+
+                <!-- Empty Dashboard State -->
+                <Border x:Name="EmptyDashboardCard"
+                        StrokeShape="RoundRectangle 20"
+                        Stroke="{StaticResource SurfaceBorder}"
+                        BackgroundColor="{StaticResource SurfaceRaised}"
+                        Padding="24,28"
+                        IsVisible="False">
+                    <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Label FontSize="18"
                                FontFamily="OpenSansSemibold"
-                               TextColor="{StaticResource TextPrimary}" />
-                        <HorizontalStackLayout Spacing="16">
-                            <VerticalStackLayout Spacing="4">
-                                <Label FontSize="10"
-                                       TextColor="{StaticResource TextSecondary}"
-                                       Text="Weight" />
-                                <Label x:Name="LatestPrWeightLabel"
-                                       FontSize="22"
-                                       FontFamily="OpenSansSemibold"
-                                       TextColor="{StaticResource Success}"
-                                       Text="- kg" />
-                            </VerticalStackLayout>
-                            <VerticalStackLayout Spacing="4">
-                                <Label FontSize="10"
-                                       TextColor="{StaticResource TextSecondary}"
-                                       Text="Reps" />
-                                <Label x:Name="LatestPrRepsLabel"
-                                       FontSize="22"
-                                       FontFamily="OpenSansSemibold"
-                                       TextColor="{StaticResource TextPrimary}"
-                                       Text="-" />
-                            </VerticalStackLayout>
-                            <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
-                                <Label FontSize="10"
-                                       TextColor="{StaticResource TextSecondary}"
-                                       Text="Date"
-                                       HorizontalTextAlignment="End" />
-                                <Label x:Name="LatestPrDateLabel"
-                                       FontSize="12"
-                                       TextColor="{StaticResource TextPrimary}"
-                                       Text="-"
-                                       HorizontalTextAlignment="End" />
-                            </VerticalStackLayout>
-                        </HorizontalStackLayout>
+                               TextColor="{StaticResource TextPrimary}"
+                               Text="No PRs recorded yet"
+                               HorizontalTextAlignment="Center" />
+                        <Label FontSize="14"
+                               FontFamily="OpenSansRegular"
+                               TextColor="{StaticResource TextSecondary}"
+                               Text="Save a personal record below to see your progress here"
+                               HorizontalTextAlignment="Center"
+                               LineBreakMode="WordWrap" />
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Progress Graph Area - PR History Chart -->
-                <local:LineChartCard x:Name="PrHistoryChart"
-                                     Title="PR Progress"
-                                     MaxValue="250" />
+                <!-- Hero PR Card -->
+                <Border x:Name="HeroPrCard"
+                        StrokeShape="RoundRectangle 24"
+                        StrokeThickness="1"
+                        Stroke="{StaticResource Primary}"
+                        Padding="0"
+                        IsVisible="False">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="{StaticResource AccentSoft}" Offset="0.0" />
+                            <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <VerticalStackLayout Padding="24,22" Spacing="8">
+                        <Label x:Name="HeroPrExerciseLabel"
+                               FontSize="11"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource AccentGlow}"
+                               CharacterSpacing="1.5" />
+                        <Label x:Name="HeroPrStrengthLabel"
+                               FontSize="11"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextSecondary}"
+                               CharacterSpacing="0.5" />
+                        <Label x:Name="HeroPrValueLabel"
+                               FontSize="42"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextPrimary}"
+                               LineHeight="1.0" />
+                        <Label x:Name="HeroPrDateLabel"
+                               FontSize="12"
+                               FontFamily="OpenSansRegular"
+                               TextColor="{StaticResource TextSecondary}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Real Line/Area Chart -->
+                <Border x:Name="ChartCard"
+                        StrokeShape="RoundRectangle 20"
+                        Stroke="{StaticResource SurfaceBorder}"
+                        BackgroundColor="{StaticResource SurfaceRaised}"
+                        Padding="16,14"
+                        IsVisible="False">
+                    <VerticalStackLayout Spacing="10">
+                        <Label x:Name="ChartTitleLabel"
+                               FontSize="14"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextPrimary}"
+                               Text="PR Progress" />
+                        <GraphicsView x:Name="PrChartView"
+                                      HeightRequest="180"
+                                      HorizontalOptions="FillAndExpand" />
+                    </VerticalStackLayout>
+                </Border>
 
                 <!-- Calculator Sections - Start -->
                 <Label FontSize="12"

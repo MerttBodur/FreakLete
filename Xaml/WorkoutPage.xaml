@@ -9,166 +9,171 @@
 
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
-            <VerticalStackLayout Padding="16,12,16,24"
-                                 Spacing="18">
+            <VerticalStackLayout Padding="20,16,20,24"
+                                 Spacing="20">
 
-                <!-- Page Title -->
-                <HorizontalStackLayout Spacing="12" VerticalOptions="Start">
+                <!-- Page Header -->
+                <VerticalStackLayout Spacing="4">
                     <Label FontSize="32"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimary}"
-                           Text="Workout"
-                           HorizontalOptions="FillAndExpand" />
-                    <ImageButton x:Name="HeaderCalendarButton"
-                                Source="calendar_icon.svg"
-                                Clicked="OnHeaderCalendarClicked"
-                                WidthRequest="44"
-                                HeightRequest="44"
-                                BackgroundColor="Transparent"
-                                Aspect="AspectFit" />
-                </HorizontalStackLayout>
+                           Text="Programs" />
+                    <Label FontSize="14"
+                           FontFamily="OpenSansRegular"
+                           TextColor="{StaticResource TextSecondary}"
+                           Text="Your training plans" />
+                </VerticalStackLayout>
 
-                <!-- Hero Card: Premium Workout Building -->
-                <Border StrokeShape="RoundRectangle 24"
-                        Stroke="{StaticResource Accent}"
-                        StrokeThickness="2"
-                        BackgroundColor="{StaticResource AccentSoft}"
+                <!-- Hero Card: Active Program -->
+                <Border x:Name="HeroProgramCard"
+                        StrokeShape="RoundRectangle 24"
+                        StrokeThickness="1"
+                        Stroke="{StaticResource Primary}"
                         Padding="0"
-                        MinimumHeightRequest="168">
-                    <Grid Padding="0" RowDefinitions="Auto,*">
-                        <!-- Top gradient bar with accent -->
-                        <BoxView Grid.Row="0"
-                                BackgroundColor="{StaticResource Accent}"
-                                HeightRequest="6" />
-                        
-                        <!-- Content area with strong hierarchy and gradient depth -->
-                        <Grid Grid.Row="1" Padding="0">
-                            <BoxView BackgroundColor="{StaticResource AccentSoft}" />
-                            <VerticalStackLayout Padding="28,20,28,20"
-                                               Spacing="16"
-                                               VerticalOptions="FillAndExpand">
-                                <!-- Badge with subtle background -->
-                                <Label FontSize="11"
-                                       FontFamily="OpenSansSemibold"
-                                       TextColor="{StaticResource AccentGlow}"
-                                       Text="READY TO TRAIN"
-                                       CharacterSpacing="1.8" />
-                                
-                                <!-- Strong Headline - More Visual Weight -->
-                                <Label FontSize="30"
-                                       FontFamily="OpenSansSemibold"
-                                       TextColor="{StaticResource TextPrimary}"
-                                       LineBreakMode="WordWrap"
-                                       LineHeight="1.1">
-                                    <Label.Text>Start your session</Label.Text>
-                                </Label>
+                        IsVisible="False">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="{StaticResource AccentSoft}" Offset="0.0" />
+                            <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <VerticalStackLayout Padding="24,22" Spacing="14">
+                        <Label FontSize="11"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource AccentGlow}"
+                               Text="ACTIVE PROGRAM"
+                               CharacterSpacing="1.5" />
+                        <Label x:Name="HeroProgramName"
+                               FontSize="26"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextPrimary}"
+                               LineBreakMode="WordWrap"
+                               LineHeight="1.1" />
+                        <Label x:Name="HeroProgramGoal"
+                               FontSize="14"
+                               FontFamily="OpenSansRegular"
+                               TextColor="{StaticResource TextSecondary}" />
 
-                                <!-- CTA Button - Full Width, Premium Style -->
-                                <Button x:Name="StartWorkoutButton"
-                                        Text="Begin Workout"
-                                        BackgroundColor="{StaticResource Accent}"
-                                        TextColor="White"
-                                        Padding="24,18"
-                                        CornerRadius="16"
-                                        FontSize="16"
-                                        FontFamily="OpenSansSemibold"
-                                        Clicked="OnOpenNewWorkoutClicked"
-                                        HorizontalOptions="FillAndExpand" />
-                            </VerticalStackLayout>
-                        </Grid>
-                    </Grid>
+                        <!-- Stat pills row -->
+                        <HorizontalStackLayout Spacing="8" Margin="0,4,0,0">
+                            <Border x:Name="HeroFrequencyPill"
+                                    StrokeShape="RoundRectangle 12"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Stroke="{StaticResource SurfaceBorder}"
+                                    Padding="10,5">
+                                <Label x:Name="HeroFrequencyLabel"
+                                       FontSize="12"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource TextPrimary}" />
+                            </Border>
+                            <Border x:Name="HeroDurationPill"
+                                    StrokeShape="RoundRectangle 12"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Stroke="{StaticResource SurfaceBorder}"
+                                    Padding="10,5"
+                                    IsVisible="False">
+                                <Label x:Name="HeroDurationLabel"
+                                       FontSize="12"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource TextPrimary}" />
+                            </Border>
+                            <Border x:Name="HeroWeeklyPill"
+                                    StrokeShape="RoundRectangle 12"
+                                    BackgroundColor="{StaticResource AccentSoft}"
+                                    Stroke="Transparent"
+                                    Padding="10,5">
+                                <Label x:Name="HeroWeeklyLabel"
+                                       FontSize="12"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource AccentGlow}" />
+                            </Border>
+                        </HorizontalStackLayout>
+
+                        <!-- CTA -->
+                        <Button Text="Start Workout"
+                                BackgroundColor="{StaticResource Accent}"
+                                TextColor="White"
+                                Padding="24,16"
+                                CornerRadius="16"
+                                FontSize="16"
+                                FontFamily="OpenSansSemibold"
+                                Clicked="OnHeroStartWorkoutClicked"
+                                HorizontalOptions="FillAndExpand"
+                                Margin="0,4,0,0" />
+                    </VerticalStackLayout>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnHeroCardTapped" />
+                    </Border.GestureRecognizers>
                 </Border>
 
-                <!-- Secondary Actions Row - Visual Emphasis -->
-                <Grid ColumnDefinitions="*,*" 
-                      ColumnSpacing="12">
-                    
-                    <!-- Quick Builder - Mini Hero Surface -->
-                    <Border Grid.Column="0"
-                            StrokeShape="RoundRectangle 18"
-                            Stroke="{StaticResource Accent}"
-                            StrokeThickness="2"
-                            BackgroundColor="{StaticResource AccentSoft}"
-                            Padding="0">
-                        <VerticalStackLayout Padding="20,18,20,18" Spacing="12" VerticalOptions="Center" HorizontalOptions="Center">
-                            <!-- Icon with Premium Border Circle -->
-                            <Border StrokeShape="RoundRectangle 14"
-                                    Stroke="{StaticResource Accent}"
-                                    StrokeThickness="2"
-                                    BackgroundColor="Transparent"
-                                    Padding="8"
-                                    HorizontalOptions="Center">
-                                <Label FontSize="20"
-                                       FontFamily="OpenSansSemibold"
-                                       TextColor="{StaticResource Accent}"
-                                       Text="+"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center" />
-                            </Border>
-                            <Label FontSize="15"
-                                   FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource TextPrimary}"
-                                   Text="Quick Add"
-                                   HorizontalTextAlignment="Center" />
-                        </VerticalStackLayout>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnOpenNewWorkoutClicked" />
-                        </Border.GestureRecognizers>
-                    </Border>
+                <!-- Empty Hero: No Active Program -->
+                <Border x:Name="EmptyHeroCard"
+                        StrokeShape="RoundRectangle 24"
+                        StrokeThickness="1"
+                        Stroke="{StaticResource SurfaceBorder}"
+                        BackgroundColor="{StaticResource SurfaceRaised}"
+                        Padding="0"
+                        IsVisible="True">
+                    <VerticalStackLayout Padding="24,28" Spacing="14"
+                                         HorizontalOptions="Center">
+                        <Label FontSize="11"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource AccentGlow}"
+                               Text="GET STARTED"
+                               CharacterSpacing="1.5"
+                               HorizontalTextAlignment="Center" />
+                        <Label FontSize="22"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextPrimary}"
+                               Text="No active program"
+                               HorizontalTextAlignment="Center" />
+                        <Label FontSize="14"
+                               FontFamily="OpenSansRegular"
+                               TextColor="{StaticResource TextSecondary}"
+                               Text="Create a training program with FreakAI or start a quick workout"
+                               HorizontalTextAlignment="Center"
+                               LineBreakMode="WordWrap"
+                               MaxLines="2" />
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
+                            <Button Grid.Column="0"
+                                    Text="FreakAI"
+                                    BackgroundColor="{StaticResource Accent}"
+                                    TextColor="White"
+                                    Padding="16,14"
+                                    CornerRadius="14"
+                                    FontSize="14"
+                                    FontFamily="OpenSansSemibold"
+                                    Clicked="OnGoToFreakAiClicked" />
+                            <Button Grid.Column="1"
+                                    Text="Quick Workout"
+                                    BackgroundColor="{StaticResource SurfaceStrong}"
+                                    TextColor="{StaticResource TextPrimary}"
+                                    Padding="16,14"
+                                    CornerRadius="14"
+                                    FontSize="14"
+                                    FontFamily="OpenSansSemibold"
+                                    Clicked="OnOpenNewWorkoutClicked" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
 
-                    <!-- Calendar Access - Premium Surface -->
-                    <Border Grid.Column="1"
-                            StrokeShape="RoundRectangle 18"
-                            Stroke="{StaticResource Accent}"
-                            StrokeThickness="2"
-                            BackgroundColor="{StaticResource AccentSoft}"
-                            Padding="0">
-                        <VerticalStackLayout Padding="20,18,20,18" Spacing="12" VerticalOptions="Center" HorizontalOptions="Center">
-                            <!-- Calendar Icon with Border Circle -->
-                            <Border StrokeShape="RoundRectangle 14"
-                                    Stroke="{StaticResource Accent}"
-                                    StrokeThickness="2"
-                                    BackgroundColor="Transparent"
-                                    Padding="8"
-                                    HorizontalOptions="Center">
-                                <Label FontSize="20"
-                                       FontFamily="OpenSansSemibold"
-                                       TextColor="{StaticResource Accent}"
-                                       Text="📅"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center" />
-                            </Border>
-                            <Label FontSize="15"
-                                   FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource TextPrimary}"
-                                   Text="Calendar"
-                                   HorizontalTextAlignment="Center" />
-                        </VerticalStackLayout>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnOpenCalendarPageClicked" />
-                        </Border.GestureRecognizers>
-                    </Border>
-                </Grid>
-
-                <!-- Stats Row: Real Dashboard Metrics -->
-                <Grid ColumnDefinitions="*,*" 
-                      ColumnSpacing="12">
-                    
-                    <!-- Sessions This Week - Real Data -->
+                <!-- Stats Row -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                     <Border Grid.Column="0"
                             StrokeShape="RoundRectangle 16"
                             Stroke="{StaticResource SurfaceBorder}"
                             StrokeThickness="1"
                             BackgroundColor="{StaticResource SurfaceRaised}"
-                            Padding="16">
-                        <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                            Padding="16,14">
+                        <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
                             <Label FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextSecondary}"
                                    CharacterSpacing="0.5"
-                                   Text="THIS WEEK" />
+                                   Text="THIS WEEK"
+                                   HorizontalTextAlignment="Center" />
                             <Label x:Name="SessionsCountLabel"
-                                   FontSize="32"
+                                   FontSize="28"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}"
                                    Text="0"
@@ -181,21 +186,21 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <!-- Available Programs Count - Real Data -->
                     <Border Grid.Column="1"
                             StrokeShape="RoundRectangle 16"
                             Stroke="{StaticResource Accent}"
                             StrokeThickness="1"
                             BackgroundColor="{StaticResource AccentSoft}"
-                            Padding="16">
-                        <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                            Padding="16,14">
+                        <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
                             <Label FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource AccentGlow}"
                                    CharacterSpacing="0.5"
-                                   Text="PROGRAMS" />
+                                   Text="PROGRAMS"
+                                   HorizontalTextAlignment="Center" />
                             <Label x:Name="ProgramCountLabel"
-                                   FontSize="32"
+                                   FontSize="28"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}"
                                    Text="0"
@@ -209,102 +214,179 @@
                     </Border>
                 </Grid>
 
-                <!-- Training Programs Section Header -->
-                <VerticalStackLayout Spacing="2" Margin="0,8,0,0">
+                <!-- Goal Filter Chips -->
+                <ScrollView x:Name="GoalChipsScroll"
+                            Orientation="Horizontal"
+                            HorizontalScrollBarVisibility="Never"
+                            IsVisible="False">
+                    <HorizontalStackLayout x:Name="GoalChipsContainer"
+                                           Spacing="8" />
+                </ScrollView>
+
+                <!-- Recommended Workouts Section -->
+                <VerticalStackLayout x:Name="RecommendedSection"
+                                     Spacing="12"
+                                     IsVisible="False">
                     <Label FontSize="18"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimary}"
-                           Text="Training Programs" />
+                           Text="Recommended Workouts" />
+                    <VerticalStackLayout x:Name="RecommendedCardsContainer"
+                                         Spacing="12" />
                 </VerticalStackLayout>
 
-                <!-- Training Templates - Premium Design -->
-                <CollectionView x:Name="TemplatesCollectionView"
-                                SelectionMode="Single">
+                <!-- Section Header -->
+                <Label FontSize="18"
+                       FontFamily="OpenSansSemibold"
+                       TextColor="{StaticResource TextPrimary}"
+                       Text="All Programs"
+                       Margin="0,4,0,0" />
+
+                <!-- Program Cards -->
+                <CollectionView x:Name="ProgramsCollectionView"
+                                SelectionMode="None">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical"
-                                         ItemSpacing="10" />
+                                           ItemSpacing="12" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border StrokeShape="RoundRectangle 18"
-                                    Stroke="{StaticResource Accent}"
+                            <Border StrokeShape="RoundRectangle 20"
+                                    Stroke="{StaticResource SurfaceBorder}"
                                     StrokeThickness="1"
                                     BackgroundColor="{StaticResource SurfaceRaised}"
-                                    Padding="0"
-                                    MinimumHeightRequest="100">
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="0" Padding="0">
-                                    <!-- Left Content Area - Rich Hierarchy -->
-                                    <VerticalStackLayout Grid.Column="0" 
-                                                        Padding="24,18,20,18"
-                                                        Spacing="12"
-                                                        VerticalOptions="Center">
-                                        <!-- Program Name - Bold Primary -->
-                                        <Label Text="{Binding Name}"
-                                               FontSize="18"
-                                               FontFamily="OpenSansSemibold"
-                                               TextColor="{StaticResource TextPrimary}"
+                                    Padding="0">
+                                <Grid RowDefinitions="Auto,Auto" Padding="0">
+                                    <!-- Top: Program info -->
+                                    <VerticalStackLayout Grid.Row="0"
+                                                         Padding="20,18,20,14"
+                                                         Spacing="10">
+                                        <HorizontalStackLayout Spacing="10">
+                                            <Label Text="{Binding Name}"
+                                                   FontSize="17"
+                                                   FontFamily="OpenSansSemibold"
+                                                   TextColor="{StaticResource TextPrimary}"
+                                                   LineBreakMode="TailTruncation"
+                                                   HorizontalOptions="FillAndExpand" />
+                                            <!-- Status pill -->
+                                            <Border StrokeShape="RoundRectangle 10"
+                                                    BackgroundColor="{StaticResource AccentSoft}"
+                                                    Stroke="Transparent"
+                                                    Padding="10,4"
+                                                    VerticalOptions="Center">
+                                                <Label Text="{Binding Status}"
+                                                       FontSize="10"
+                                                       FontFamily="OpenSansSemibold"
+                                                       TextColor="{StaticResource AccentGlow}" />
+                                            </Border>
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding Goal}"
+                                               FontSize="13"
+                                               FontFamily="OpenSansRegular"
+                                               TextColor="{StaticResource TextSecondary}"
                                                LineBreakMode="TailTruncation" />
-                                        
-                                        <!-- Goal + Frequency - Better Visual Separation -->
-                                        <Grid ColumnDefinitions="*,1,*" ColumnSpacing="16" RowSpacing="0">
-                                            <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                                <Label FontSize="9"
-                                                       FontFamily="OpenSansSemibold"
-                                                       TextColor="{StaticResource Accent}"
-                                                       CharacterSpacing="0.6"
-                                                       Text="GOAL" />
-                                                <Label Text="{Binding Goal}"
-                                                       FontSize="14"
-                                                       FontFamily="OpenSansSemibold"
-                                                       TextColor="{StaticResource TextPrimary}"
-                                                       LineBreakMode="TailTruncation" />
-                                            </VerticalStackLayout>
-
-                                            <BoxView Grid.Column="1"
-                                                    BackgroundColor="{StaticResource SurfaceBorder}"
-                                                    WidthRequest="1"
-                                                    Opacity="0.3" />
-
-                                            <VerticalStackLayout Grid.Column="2" Spacing="4">
-                                                <Label FontSize="9"
-                                                       FontFamily="OpenSansSemibold"
-                                                       TextColor="{StaticResource Accent}"
-                                                       CharacterSpacing="0.6"
-                                                       Text="FREQUENCY" />
-                                                <Label Text="{Binding DaysPerWeek, StringFormat='{0}x/week'}"
-                                                       FontSize="14"
-                                                       FontFamily="OpenSansSemibold"
-                                                       TextColor="{StaticResource TextPrimary}" />
-                                            </VerticalStackLayout>
-                                        </Grid>
                                     </VerticalStackLayout>
 
-                                    <!-- Right: Premium Accent Bar with Chevron Icon -->
-                                    <Grid Grid.Column="1"
-                                          BackgroundColor="{StaticResource Accent}"
-                                          WidthRequest="56"
-                                          Padding="0">
-                                        <Label Text="▸"
-                                               FontSize="22"
+                                    <!-- Bottom: Metadata bar -->
+                                    <Grid Grid.Row="1"
+                                          BackgroundColor="{StaticResource Surface}"
+                                          Padding="20,10"
+                                          ColumnDefinitions="Auto,*,Auto">
+                                        <Label Grid.Column="0"
+                                               Text="{Binding DaysPerWeek, StringFormat='{0}x/week'}"
+                                               FontSize="12"
                                                FontFamily="OpenSansSemibold"
-                                               TextColor="White"
-                                               HorizontalOptions="Center"
+                                               TextColor="{StaticResource TextSecondary}"
+                                               VerticalOptions="Center" />
+                                        <Label Grid.Column="2"
+                                               Text="View Details >"
+                                               FontSize="12"
+                                               FontFamily="OpenSansSemibold"
+                                               TextColor="{StaticResource AccentGlow}"
                                                VerticalOptions="Center" />
                                     </Grid>
                                 </Grid>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnProgramCardTapped" />
+                                </Border.GestureRecognizers>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                <!-- Empty State for Templates -->
-                <Label x:Name="NoTemplatesLabel"
-                       Text="No training templates available"
+                <!-- Empty State -->
+                <Label x:Name="NoProgramsLabel"
+                       Text="No training programs yet"
                        FontSize="14"
                        TextColor="{StaticResource TextSecondary}"
                        HorizontalTextAlignment="Center"
                        IsVisible="False"
-                       Margin="0,20,0,0" />
+                       Margin="0,8,0,0" />
+
+                <!-- Quick Actions Row -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Border Grid.Column="0"
+                            StrokeShape="RoundRectangle 18"
+                            Stroke="{StaticResource SurfaceBorder}"
+                            StrokeThickness="1"
+                            BackgroundColor="{StaticResource SurfaceRaised}"
+                            Padding="0">
+                        <VerticalStackLayout Padding="18,16" Spacing="10"
+                                             VerticalOptions="Center"
+                                             HorizontalOptions="Center">
+                            <Border StrokeShape="RoundRectangle 12"
+                                    BackgroundColor="{StaticResource AccentSoft}"
+                                    Stroke="Transparent"
+                                    Padding="8"
+                                    HorizontalOptions="Center">
+                                <Label FontSize="18"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource AccentGlow}"
+                                       Text="+"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+                            <Label FontSize="14"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   Text="Quick Add"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnOpenNewWorkoutClicked" />
+                        </Border.GestureRecognizers>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            StrokeShape="RoundRectangle 18"
+                            Stroke="{StaticResource SurfaceBorder}"
+                            StrokeThickness="1"
+                            BackgroundColor="{StaticResource SurfaceRaised}"
+                            Padding="0">
+                        <VerticalStackLayout Padding="18,16" Spacing="10"
+                                             VerticalOptions="Center"
+                                             HorizontalOptions="Center">
+                            <Border StrokeShape="RoundRectangle 12"
+                                    BackgroundColor="{StaticResource AccentSoft}"
+                                    Stroke="Transparent"
+                                    Padding="8"
+                                    HorizontalOptions="Center">
+                                <Image Source="calendar_icon.svg"
+                                       WidthRequest="18"
+                                       HeightRequest="18"
+                                       HorizontalOptions="Center" />
+                            </Border>
+                            <Label FontSize="14"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   Text="Calendar"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnOpenCalendarPageClicked" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </Grid>
 
             </VerticalStackLayout>
         </ScrollView>
