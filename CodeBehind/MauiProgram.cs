@@ -1,4 +1,5 @@
 using FreakLete.Services;
+using Microcharts.Maui;
 using Microsoft.Extensions.Logging;
 
 namespace FreakLete;
@@ -12,6 +13,7 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
+			.UseMicrocharts()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

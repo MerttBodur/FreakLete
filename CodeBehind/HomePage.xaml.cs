@@ -1,5 +1,7 @@
+using FreakLete.Models;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui.Controls.Shapes;
 
 namespace FreakLete;
 
@@ -7,7 +9,11 @@ public partial class HomePage : ContentPage
 {
 	private readonly ApiClient _api;
 	private readonly UserSession _session;
-	private WorkoutResponse? _latestWorkout;
+
+	private string _exercise1Name = "Bench Press";
+	private string _exercise2Name = "Squat";
+	private List<WorkoutResponse>? _allWorkouts;
+	private int _pickingExerciseSlot; // 0 = not picking, 1 = picking ex1, 2 = picking ex2
 
 	public HomePage()
 	{
@@ -19,6 +25,16 @@ public partial class HomePage : ContentPage
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
+
+		// If returning from exercise picker for exercise 2
+		if (_pickingExerciseSlot == 2)
+		{
+			await Navigation.PushAsync(
+				new ExercisePickerPage("Egzersiz 2 Seç", ExerciseCatalog.Categories, OnComparisonExercisePicked), true);
+			return;
+		}
+
+		_pickingExerciseSlot = 0;
 		await LoadHomeDataAsync();
 	}
 
@@ -43,147 +59,217 @@ public partial class HomePage : ContentPage
 		}
 
 		var profile = profileResult.Data;
-		UserNameLabel.Text = $"{profile.FirstName}";
-		
-		// Update dashboard stat tiles
-		WorkoutCountTile.StatValue = profile.TotalWorkouts.ToString();
-		StreakTile.StatValue = "0"; // Placeholder - would need streak endpoint
+		UserNameLabel.Text = profile.FirstName;
+		WorkoutCountLabel.Text = profile.TotalWorkouts.ToString();
 
-		// Load PR entries for latest PR stat
-		var prResult = await _api.GetPrEntriesAsync();
-		if (prResult.Success && prResult.Data is not null && prResult.Data.Count > 0)
+		// Load workouts and training programs in parallel
+		var workoutsTask = _api.GetWorkoutsAsync();
+		var programsTask = _api.GetTrainingProgramsAsync();
+
+		await Task.WhenAll(workoutsTask, programsTask);
+
+		// Process comparison chart
+		var workoutResult = workoutsTask.Result;
+		if (workoutResult.Success && workoutResult.Data is not null)
 		{
-			var latest = prResult.Data[0]; // API returns ordered by CreatedAt desc
-			LatestPrTile.StatValue = $"{latest.Weight}";
+			_allWorkouts = workoutResult.Data;
+			UpdateComparisonChart();
 		}
-		else
+
+		// Process quick workouts
+		var programsResult = programsTask.Result;
+		if (programsResult.Success && programsResult.Data is not null)
 		{
-			LatestPrTile.StatValue = "-";
+			BuildQuickWorkoutCards(programsResult.Data);
 		}
-
-		// Build weekly activity chart data
-		await LoadWeeklyActivityAsync();
-
-		// Load and display featured workout
-		await LoadFeaturedWorkoutAsync();
 	}
 
-	private async Task LoadWeeklyActivityAsync()
+	private void UpdateComparisonChart()
 	{
-		try
+		if (_allWorkouts is null || _allWorkouts.Count == 0)
 		{
-			var weeklyItems = new List<ChartItem>();
-			var today = DateTime.Now.Date;
-			double maxActivityValue = 0;
+			ComparisonChart.Exercise1Name = _exercise1Name;
+			ComparisonChart.Exercise2Name = _exercise2Name;
+			return;
+		}
 
-			// Get workouts for past 7 days
-			var workoutCounts = new Dictionary<string, int>();
-			string[] dayLabels = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+		var today = DateTime.Now.Date;
+		var exercise1Data = new List<float>();
+		var exercise2Data = new List<float>();
+		var dayLabels = new List<string>();
 
-			for (int i = 6; i >= 0; i--)
+		string[] turkishDayAbbr = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
+
+		for (int i = 6; i >= 0; i--)
+		{
+			var targetDate = today.AddDays(-i);
+			dayLabels.Add(turkishDayAbbr[(int)targetDate.DayOfWeek]);
+
+			float max1 = 0, max2 = 0;
+
+			var dayWorkouts = _allWorkouts
+				.Where(w => w.WorkoutDate.Date == targetDate);
+
+			foreach (var workout in dayWorkouts)
 			{
-				var targetDate = today.AddDays(-i);
-				var dayLabel = dayLabels[(int)targetDate.DayOfWeek == 0 ? 6 : ((int)targetDate.DayOfWeek - 1)];
-
-				var workoutResult = await _api.GetWorkoutsByDateAsync(targetDate);
-				int count = 0;
-
-				if (workoutResult.Success && workoutResult.Data is not null)
+				if (workout.Exercises is null) continue;
+				foreach (var ex in workout.Exercises)
 				{
-					count = workoutResult.Data.Count;
+					if (string.Equals(ex.ExerciseName, _exercise1Name, StringComparison.OrdinalIgnoreCase)
+						&& ex.Metric1Value.HasValue)
+						max1 = Math.Max(max1, (float)ex.Metric1Value.Value);
+
+					if (string.Equals(ex.ExerciseName, _exercise2Name, StringComparison.OrdinalIgnoreCase)
+						&& ex.Metric1Value.HasValue)
+						max2 = Math.Max(max2, (float)ex.Metric1Value.Value);
 				}
+			}
 
-				weeklyItems.Add(new ChartItem
+			exercise1Data.Add(max1);
+			exercise2Data.Add(max2);
+		}
+
+		ComparisonChart.Exercise1Name = _exercise1Name;
+		ComparisonChart.Exercise2Name = _exercise2Name;
+		ComparisonChart.Exercise1Data = exercise1Data;
+		ComparisonChart.Exercise2Data = exercise2Data;
+		ComparisonChart.Exercise1Delta = CalculateDelta(exercise1Data);
+		ComparisonChart.Exercise2Delta = CalculateDelta(exercise2Data);
+		ComparisonChart.DayLabels = dayLabels;
+	}
+
+	private static string CalculateDelta(List<float> data)
+	{
+		float firstNonZero = data.FirstOrDefault(v => v > 0);
+		float last = data.LastOrDefault(v => v > 0);
+		if (firstNonZero <= 0 || last <= 0) return "-";
+		float diff = last - firstNonZero;
+		return diff >= 0 ? $"+{diff:0}kg" : $"{diff:0}kg";
+	}
+
+	private async void OnChangeComparisonExercisesClicked(object? sender, EventArgs e)
+	{
+		_pickingExerciseSlot = 1;
+		await Navigation.PushAsync(
+			new ExercisePickerPage("Egzersiz 1 Seç", ExerciseCatalog.Categories, OnComparisonExercisePicked), true);
+	}
+
+	private void OnComparisonExercisePicked(ExerciseCatalogItem item)
+	{
+		if (_pickingExerciseSlot == 1)
+		{
+			_exercise1Name = item.Name;
+			_pickingExerciseSlot = 2;
+		}
+		else if (_pickingExerciseSlot == 2)
+		{
+			_exercise2Name = item.Name;
+			_pickingExerciseSlot = 0;
+			MainThread.BeginInvokeOnMainThread(UpdateComparisonChart);
+		}
+	}
+
+	private void BuildQuickWorkoutCards(List<TrainingProgramListResponse> programs)
+	{
+		QuickWorkoutsLayout.Children.Clear();
+
+		foreach (var program in programs.Take(6))
+		{
+			var card = new Border
+			{
+				WidthRequest = 180,
+				StrokeShape = new RoundRectangle { CornerRadius = 18 },
+				Stroke = (Color)Application.Current!.Resources["SurfaceBorder"],
+				StrokeThickness = 1,
+				Padding = 0,
+				Background = new LinearGradientBrush
 				{
-					Label = dayLabel,
-					Value = count
+					StartPoint = new Point(0, 0),
+					EndPoint = new Point(1, 1),
+					GradientStops =
+					{
+						new GradientStop { Color = (Color)Application.Current.Resources["SurfaceRaised"], Offset = 0 },
+						new GradientStop { Color = (Color)Application.Current.Resources["Surface"], Offset = 1 }
+					}
+				}
+			};
+
+			var stack = new VerticalStackLayout { Spacing = 0 };
+
+			// Image placeholder area
+			var imagePlaceholder = new Border
+			{
+				HeightRequest = 90,
+				BackgroundColor = (Color)Application.Current.Resources["SurfaceStrong"],
+				StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(18, 18, 0, 0) },
+				Stroke = new SolidColorBrush(Colors.Transparent),
+				Padding = 12,
+				Content = new Label
+				{
+					Text = "🏋️",
+					FontSize = 28,
+					HorizontalOptions = LayoutOptions.Center,
+					VerticalOptions = LayoutOptions.Center
+				}
+			};
+			stack.Children.Add(imagePlaceholder);
+
+			var textStack = new VerticalStackLayout
+			{
+				Padding = new Thickness(14, 10, 14, 14),
+				Spacing = 4
+			};
+
+			textStack.Children.Add(new Label
+			{
+				Text = program.Name,
+				FontSize = 14,
+				FontFamily = "OpenSansSemibold",
+				TextColor = (Color)Application.Current.Resources["TextPrimary"],
+				LineBreakMode = LineBreakMode.TailTruncation,
+				MaxLines = 1
+			});
+
+			textStack.Children.Add(new Label
+			{
+				Text = $"{program.DaysPerWeek} gün/hafta",
+				FontSize = 11,
+				FontFamily = "OpenSansRegular",
+				TextColor = (Color)Application.Current.Resources["TextSecondary"]
+			});
+
+			if (!string.IsNullOrEmpty(program.Goal))
+			{
+				textStack.Children.Add(new Label
+				{
+					Text = program.Goal,
+					FontSize = 11,
+					FontFamily = "OpenSansRegular",
+					TextColor = (Color)Application.Current.Resources["TextMuted"],
+					LineBreakMode = LineBreakMode.TailTruncation,
+					MaxLines = 1
 				});
-
-				if (count > maxActivityValue)
-					maxActivityValue = count;
 			}
 
-			// Set chart properties with real data only
-			WeeklyActivityCard.MaxValue = maxActivityValue > 0 ? maxActivityValue : 1;
-			WeeklyActivityCard.Items = weeklyItems;
+			stack.Children.Add(textStack);
+			card.Content = stack;
 
-			// Show honest summary: zero workouts or actual count
-			int totalWorkouts = weeklyItems.Sum(x => (int)x.Value);
-			if (totalWorkouts == 0)
-			{
-				WeeklyActivityCard.SummaryText = "No workouts this week yet";
-			}
-			else
-			{
-				WeeklyActivityCard.SummaryText = $"{totalWorkouts} workout{(totalWorkouts != 1 ? "s" : "")} this week";
-			}
-		}
-		catch
-		{
-			// Show empty state on error
-			WeeklyActivityCard.Items = new List<ChartItem>();
-			WeeklyActivityCard.MaxValue = 1;
-			WeeklyActivityCard.SummaryText = "Unable to load activity";
+			var tap = new TapGestureRecognizer();
+			int programId = program.Id;
+			tap.Tapped += async (s, e) => await OnQuickWorkoutTapped(programId);
+			card.GestureRecognizers.Add(tap);
+
+			QuickWorkoutsLayout.Children.Add(card);
 		}
 	}
 
-	private async Task LoadFeaturedWorkoutAsync()
+	private async Task OnQuickWorkoutTapped(int programId)
 	{
-		try
-		{
-			// Get all workouts, sort by date descending
-			var workoutResult = await _api.GetWorkoutsAsync();
-
-			if (workoutResult.Success && workoutResult.Data is not null && workoutResult.Data.Count > 0)
-			{
-				// Get the most recent workout
-				_latestWorkout = workoutResult.Data
-					.OrderByDescending(w => w.WorkoutDate)
-					.FirstOrDefault();
-
-				if (_latestWorkout is not null)
-				{
-					// Update featured section
-					FeaturedWorkoutNameLabel.Text = _latestWorkout.WorkoutName ?? "Untitled Workout";
-					FeaturedDateLabel.Text = _latestWorkout.WorkoutDate.ToString("MMM dd, yyyy");
-					FeaturedExerciseCountLabel.Text = _latestWorkout.Exercises?.Count.ToString() ?? "0";
-					FeaturedViewButton.IsVisible = true;
-					
-					return;
-				}
-			}
-
-			// No workouts found
-			FeaturedWorkoutNameLabel.Text = "No recent workouts";
-			FeaturedDateLabel.Text = "-";
-			FeaturedExerciseCountLabel.Text = "-";
-			FeaturedViewButton.IsVisible = false;
-		}
-		catch
-		{
-			// Show placeholder on error
-			FeaturedWorkoutNameLabel.Text = "Unable to load";
-			FeaturedDateLabel.Text = "-";
-			FeaturedExerciseCountLabel.Text = "-";
-			FeaturedViewButton.IsVisible = false;
-		}
+		await Navigation.PushAsync(new ProgramDetailPage(programId), true);
 	}
 
 	private async void OnStartWorkoutClicked(object? sender, EventArgs e)
 	{
 		await Navigation.PushAsync(new WorkoutPage(), true);
-	}
-
-	private async void OnOpenCalculationsClicked(object? sender, EventArgs e)
-	{
-		await Navigation.PushAsync(new CalculationsPage(), true);
-	}
-
-	private async void OnViewFeaturedWorkoutClicked(object? sender, EventArgs e)
-	{
-		if (_latestWorkout is not null)
-		{
-			await Navigation.PushAsync(new WorkoutPage(), true);
-		}
 	}
 }
