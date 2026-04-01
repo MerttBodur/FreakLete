@@ -14,6 +14,7 @@ public partial class HomePage : ContentPage
 	private string _exercise2Name = "Squat";
 	private List<WorkoutResponse>? _allWorkouts;
 	private int _pickingExerciseSlot; // 0 = not picking, 1 = picking ex1, 2 = picking ex2
+	private bool _showingStarterTemplates;
 
 	public HomePage()
 	{
@@ -76,11 +77,21 @@ public partial class HomePage : ContentPage
 			UpdateComparisonChart();
 		}
 
-		// Process quick workouts
+		// Process quick workouts — fallback to starter templates if user has none
 		var programsResult = programsTask.Result;
-		if (programsResult.Success && programsResult.Data is not null)
+		if (programsResult.Success && programsResult.Data is not null && programsResult.Data.Count > 0)
 		{
+			_showingStarterTemplates = false;
 			BuildQuickWorkoutCards(programsResult.Data);
+		}
+		else
+		{
+			var starterResult = await _api.GetStarterTemplatesAsync();
+			if (starterResult.Success && starterResult.Data is not null && starterResult.Data.Count > 0)
+			{
+				_showingStarterTemplates = true;
+				BuildQuickWorkoutCards(starterResult.Data);
+			}
 		}
 	}
 
@@ -256,16 +267,17 @@ public partial class HomePage : ContentPage
 
 			var tap = new TapGestureRecognizer();
 			int programId = program.Id;
-			tap.Tapped += async (s, e) => await OnQuickWorkoutTapped(programId);
+			bool isStarter = _showingStarterTemplates;
+			tap.Tapped += async (s, e) => await OnQuickWorkoutTapped(programId, isStarter);
 			card.GestureRecognizers.Add(tap);
 
 			QuickWorkoutsLayout.Children.Add(card);
 		}
 	}
 
-	private async Task OnQuickWorkoutTapped(int programId)
+	private async Task OnQuickWorkoutTapped(int programId, bool isStarterTemplate)
 	{
-		await Navigation.PushAsync(new ProgramDetailPage(programId), true);
+		await Navigation.PushAsync(new ProgramDetailPage(programId, isStarterTemplate), true);
 	}
 
 	private async void OnStartWorkoutClicked(object? sender, EventArgs e)

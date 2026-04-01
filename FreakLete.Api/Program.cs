@@ -38,6 +38,7 @@ builder.Services.AddScoped<FreakAiToolExecutor>();
 builder.Services.AddScoped<FreakAiOrchestrator>();
 builder.Services.AddScoped<AthleteProfileService>();
 builder.Services.AddScoped<CoachProfileService>();
+builder.Services.AddScoped<StarterTemplateSeedService>();
 
 // Gemini AI — key from user-secrets (local) or env var Gemini__ApiKey (Railway)
 var geminiApiKey = builder.Configuration["Gemini:ApiKey"]
@@ -65,6 +66,9 @@ if (!app.Environment.IsEnvironment("Testing"))
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
+
+    var seeder = scope.ServiceProvider.GetRequiredService<StarterTemplateSeedService>();
+    await seeder.SeedAsync();
 }
 
 if (app.Environment.IsDevelopment())

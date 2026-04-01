@@ -218,6 +218,23 @@ public class ApiClient : IApiClient
 		return GetAsync<TrainingProgramResponse>($"api/trainingprogram/{id}");
 	}
 
+	// ── Starter Templates ───────────────────────────────
+
+	public Task<ApiResult<List<TrainingProgramListResponse>>> GetStarterTemplatesAsync()
+	{
+		return GetAsync<List<TrainingProgramListResponse>>("api/trainingprogram/starter");
+	}
+
+	public Task<ApiResult<TrainingProgramResponse>> GetStarterTemplateByIdAsync(int id)
+	{
+		return GetAsync<TrainingProgramResponse>($"api/trainingprogram/starter/{id}");
+	}
+
+	public Task<ApiResult<TrainingProgramResponse>> CloneStarterTemplateAsync(int id)
+	{
+		return PostAsync<TrainingProgramResponse>($"api/trainingprogram/starter/{id}/clone", new { });
+	}
+
 	// ── HTTP helpers ────────────────────────────────────
 
 	private void AttachToken()
@@ -537,6 +554,7 @@ public class TrainingProgramResponse
 	public string Notes { get; set; } = "";
 	public DateTime CreatedAt { get; set; }
 	public DateTime UpdatedAt { get; set; }
+	public bool IsStarterTemplate { get; set; }
 	public List<ProgramWeekResponse> Weeks { get; set; } = [];
 }
 

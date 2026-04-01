@@ -2,6 +2,7 @@
 
 ## Read This First
 Before every update, task, or code change, read this file first.
+If prompt deep enough, turn on thinking mode and apply changes.
 
 Do not start implementing anything until you have read:
 1. this `CLAUDE.md`

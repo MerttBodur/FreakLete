@@ -7,11 +7,13 @@ public partial class ProgramDetailPage : ContentPage
 {
 	private readonly ApiClient _api;
 	private readonly int _programId;
+	private readonly bool _isStarterTemplate;
 
-	public ProgramDetailPage(int programId)
+	public ProgramDetailPage(int programId, bool isStarterTemplate = false)
 	{
 		InitializeComponent();
 		_programId = programId;
+		_isStarterTemplate = isStarterTemplate;
 		_api = App.Current!.Handler.MauiContext!.Services.GetRequiredService<ApiClient>();
 	}
 
@@ -23,7 +25,10 @@ public partial class ProgramDetailPage : ContentPage
 
 	private async Task LoadProgramAsync()
 	{
-		var result = await _api.GetProgramByIdAsync(_programId);
+		var result = _isStarterTemplate
+			? await _api.GetStarterTemplateByIdAsync(_programId)
+			: await _api.GetProgramByIdAsync(_programId);
+
 		if (!result.Success || result.Data is null)
 		{
 			await Navigation.PopAsync();
@@ -49,12 +54,22 @@ public partial class ProgramDetailPage : ContentPage
 
 		if (!string.IsNullOrWhiteSpace(program.Status))
 		{
-			StatusBadgeLabel.Text = program.Status.ToUpperInvariant();
-			StatusBadge.IsVisible = true;
+			if (_isStarterTemplate)
+			{
+				StatusBadgeLabel.Text = "TEMPLATE";
+				StatusBadge.IsVisible = true;
+				var accentSoft = (Application.Current?.Resources["AccentSoft"] as Color) ?? Color.FromArgb("#2F2346");
+				StatusBadge.BackgroundColor = accentSoft;
+			}
+			else
+			{
+				StatusBadgeLabel.Text = program.Status.ToUpperInvariant();
+				StatusBadge.IsVisible = true;
 
-			var accentSoft = (Application.Current?.Resources["AccentSoft"] as Color) ?? Color.FromArgb("#2F2346");
-			var successSoft = (Application.Current?.Resources["SuccessSoft"] as Color) ?? Color.FromArgb("#0D2818");
-			StatusBadge.BackgroundColor = program.Status == "active" ? successSoft : accentSoft;
+				var accentSoft = (Application.Current?.Resources["AccentSoft"] as Color) ?? Color.FromArgb("#2F2346");
+				var successSoft = (Application.Current?.Resources["SuccessSoft"] as Color) ?? Color.FromArgb("#0D2818");
+				StatusBadge.BackgroundColor = program.Status == "active" ? successSoft : accentSoft;
+			}
 		}
 
 		// Stats
@@ -66,6 +81,12 @@ public partial class ProgramDetailPage : ContentPage
 		ExercisesCountLabel.Text = totalExercises.ToString();
 
 		BuildWeekStructure(program.Weeks);
+
+		// Update CTA for starter templates
+		if (_isStarterTemplate)
+		{
+			StartWorkoutButton.Text = "Bu Template'i Kullan";
+		}
 	}
 
 	private void BuildWeekStructure(List<ProgramWeekResponse> weeks)
@@ -252,6 +273,28 @@ public partial class ProgramDetailPage : ContentPage
 
 	private async void OnStartWorkoutClicked(object? sender, EventArgs e)
 	{
+		if (_isStarterTemplate)
+		{
+			StartWorkoutButton.IsEnabled = false;
+			StartWorkoutButton.Text = "Kopyalanıyor...";
+
+			var result = await _api.CloneStarterTemplateAsync(_programId);
+			if (result.Success && result.Data is not null)
+			{
+				// Navigate to the cloned program detail (now user-owned)
+				var clonedPage = new ProgramDetailPage(result.Data.Id);
+				Navigation.InsertPageBefore(clonedPage, this);
+				await Navigation.PopAsync(true);
+			}
+			else
+			{
+				StartWorkoutButton.IsEnabled = true;
+				StartWorkoutButton.Text = "Bu Template'i Kullan";
+				await DisplayAlertAsync("Hata", result.Error ?? "Template kopyalanamadı", "Tamam");
+			}
+			return;
+		}
+
 		await Navigation.PushAsync(new NewWorkoutPage(), true);
 	}
 }

@@ -161,6 +161,7 @@ public class AppDbContext : DbContext
         {
             e.HasKey(p => p.Id);
             e.HasIndex(p => p.UserId);
+            e.HasIndex(p => p.IsStarterTemplate);
             e.HasOne(p => p.User)
              .WithMany(u => u.TrainingPrograms)
              .HasForeignKey(p => p.UserId)

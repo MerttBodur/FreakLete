@@ -12,6 +12,7 @@ public partial class WorkoutPage : ContentPage
 	private List<TrainingProgramListResponse> _allPrograms = [];
 	private List<RecommendedProgramInfo> _recommendedPrograms = [];
 	private string? _selectedGoalFilter;
+	private bool _showingStarterTemplates;
 
 	public WorkoutPage()
 	{
@@ -42,21 +43,37 @@ public partial class WorkoutPage : ContentPage
 
 			await Task.WhenAll(programsTask, activeTask, Task.WhenAll(weeklyTasks));
 
-			// Process program list
+			// Process program list — fallback to starter templates if user has none
 			var templatesResult = programsTask.Result;
-			if (templatesResult.Success && templatesResult.Data is not null)
+			_showingStarterTemplates = false;
+
+			if (templatesResult.Success && templatesResult.Data is not null && templatesResult.Data.Count > 0)
 			{
 				_programs.Clear();
 				foreach (var program in templatesResult.Data)
 					_programs.Add(program);
 
-				NoProgramsLabel.IsVisible = _programs.Count == 0;
+				NoProgramsLabel.IsVisible = false;
 				ProgramCountLabel.Text = _programs.Count.ToString();
 			}
 			else
 			{
-				NoProgramsLabel.IsVisible = true;
-				ProgramCountLabel.Text = "0";
+				var starterResult = await _api.GetStarterTemplatesAsync();
+				if (starterResult.Success && starterResult.Data is not null && starterResult.Data.Count > 0)
+				{
+					_showingStarterTemplates = true;
+					_programs.Clear();
+					foreach (var program in starterResult.Data)
+						_programs.Add(program);
+
+					NoProgramsLabel.IsVisible = false;
+					ProgramCountLabel.Text = "0";
+				}
+				else
+				{
+					NoProgramsLabel.IsVisible = true;
+					ProgramCountLabel.Text = "0";
+				}
 			}
 
 			// Process active program
@@ -94,9 +111,7 @@ public partial class WorkoutPage : ContentPage
 			HeroWeeklyLabel.Text = $"{workoutsThisWeek} this week";
 
 			// Build recommendations: exclude active program, take up to 4
-			_allPrograms = templatesResult.Success && templatesResult.Data is not null
-				? templatesResult.Data.ToList()
-				: [];
+			_allPrograms = _programs.ToList();
 
 			var candidates = _allPrograms
 				.Where(p => _activeProgram is null || p.Id != _activeProgram.Id)
@@ -106,7 +121,11 @@ public partial class WorkoutPage : ContentPage
 			// Load full details for recommended programs in parallel
 			if (candidates.Count > 0)
 			{
-				var detailTasks = candidates.Select(c => _api.GetProgramByIdAsync(c.Id)).ToArray();
+				var detailTasks = candidates.Select(c =>
+					_showingStarterTemplates
+						? _api.GetStarterTemplateByIdAsync(c.Id)
+						: _api.GetProgramByIdAsync(c.Id)
+				).ToArray();
 				await Task.WhenAll(detailTasks);
 
 				_recommendedPrograms = candidates.Select((c, i) =>
@@ -310,7 +329,7 @@ public partial class WorkoutPage : ContentPage
 		{
 			Command = new Command(async () =>
 			{
-				await Navigation.PushAsync(new ProgramDetailPage(rec.Id), true);
+				await Navigation.PushAsync(new ProgramDetailPage(rec.Id, _showingStarterTemplates), true);
 			})
 		});
 
@@ -375,7 +394,7 @@ public partial class WorkoutPage : ContentPage
 
 		if (element.BindingContext is not TrainingProgramListResponse program) return;
 
-		await Navigation.PushAsync(new ProgramDetailPage(program.Id), true);
+		await Navigation.PushAsync(new ProgramDetailPage(program.Id, _showingStarterTemplates), true);
 	}
 
 	private async void OnOpenNewWorkoutClicked(object? sender, EventArgs e)
