@@ -4,26 +4,52 @@
              x:Class="FreakLete.BarChartCard"
              x:Name="BarChartCardView">
 
-	<Border Style="{StaticResource CardBorder}">
-		<VerticalStackLayout Spacing="16" Padding="16">
-			<Label x:Name="TitleLabel"
-			       FontSize="18"
-			       FontFamily="OpenSansSemibold"
-			       TextColor="{StaticResource TextPrimary}" />
+	<Border StrokeShape="RoundRectangle 20"
+	        Stroke="{StaticResource SurfaceBorder}"
+	        StrokeThickness="1"
+	        Padding="0">
+		<Border.Background>
+			<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+				<GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+				<GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+			</LinearGradientBrush>
+		</Border.Background>
+		<VerticalStackLayout Spacing="14" Padding="18,16">
+			<HorizontalStackLayout Spacing="8">
+				<Label x:Name="TitleLabel"
+				       FontSize="16"
+				       FontFamily="OpenSansSemibold"
+				       TextColor="{StaticResource TextPrimary}" />
+				<Label x:Name="SummaryLabel"
+				       FontSize="12"
+				       FontFamily="OpenSansRegular"
+				       TextColor="{StaticResource TextSecondary}"
+				       VerticalOptions="Center"
+				       Text="" />
+			</HorizontalStackLayout>
 			<VerticalStackLayout x:Name="ChartContainer"
-			                     Spacing="12">
-				<!-- Dynamic Chart using BindableLayout -->
+			                     Spacing="0">
 				<ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-					<HorizontalStackLayout Spacing="8" Padding="0,0,0,0" BindableLayout.ItemsSource="{Binding Items, Source={x:Reference BarChartCardView}}">
+					<HorizontalStackLayout Spacing="6" Padding="0" BindableLayout.ItemsSource="{Binding Items, Source={x:Reference BarChartCardView}}">
 						<BindableLayout.ItemTemplate>
 							<DataTemplate>
-								<VerticalStackLayout Spacing="4" WidthRequest="40">
-									<BoxView BackgroundColor="{StaticResource Primary}"
-									         CornerRadius="3"
-									         HeightRequest="{Binding HeightInPixels}"
-									         WidthRequest="32" />
+								<VerticalStackLayout Spacing="6" WidthRequest="38">
+									<Border StrokeShape="RoundRectangle 4"
+									        Stroke="Transparent"
+									        HeightRequest="{Binding HeightInPixels}"
+									        WidthRequest="28"
+									        HorizontalOptions="Center"
+									        Padding="0">
+										<Border.Background>
+											<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+												<GradientStop Color="{StaticResource AccentGlow}" Offset="0.0" />
+												<GradientStop Color="{StaticResource Accent}" Offset="1.0" />
+											</LinearGradientBrush>
+										</Border.Background>
+									</Border>
 									<Label Text="{Binding Label}"
 									       FontSize="9"
+									       FontFamily="OpenSansSemibold"
 									       TextColor="{StaticResource TextSecondary}"
 									       HorizontalOptions="Center" />
 								</VerticalStackLayout>
@@ -31,10 +57,6 @@
 						</BindableLayout.ItemTemplate>
 					</HorizontalStackLayout>
 				</ScrollView>
-				<Label x:Name="SummaryLabel"
-				       FontSize="11"
-				       TextColor="{StaticResource TextSecondary}"
-				       Text="" />
 			</VerticalStackLayout>
 		</VerticalStackLayout>
 	</Border>

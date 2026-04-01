@@ -58,6 +58,8 @@ public partial class ProfilePage : ContentPage
 	private ExerciseCatalogItem? _selectedGoalItem;
 	private List<SportDefinitionResponse> _sportCatalog = [];
 	private string? _sportCatalogLoadError;
+	private int _lastAthleticCount;
+	private int _lastGoalCount;
 
 	// Static cache so sport catalog survives page re-creation within the same app session
 	private static List<SportDefinitionResponse>? _cachedSportCatalog;
@@ -126,10 +128,23 @@ public partial class ProfilePage : ContentPage
 		var li = string.IsNullOrWhiteSpace(_profile.LastName) ? "" : _profile.LastName[..1];
 		InitialsLabel.Text = $"{fi}{li}".ToUpperInvariant();
 
-		// Status chip
-		StatusChip.IsVisible = true;
-		StatusLabel.Text = "MEMBER";
-		StatusLabel.IsVisible = true;
+		// Status chip — derived from real gym experience or sport context
+		string? chipText = !string.IsNullOrWhiteSpace(_profile.GymExperienceLevel)
+			? _profile.GymExperienceLevel.ToUpperInvariant()
+			: !string.IsNullOrWhiteSpace(_profile.SportName)
+				? _profile.SportName.ToUpperInvariant()
+				: null;
+
+		if (chipText is not null)
+		{
+			StatusChip.IsVisible = true;
+			StatusLabel.Text = chipText;
+			StatusLabel.IsVisible = true;
+		}
+		else
+		{
+			StatusChip.IsVisible = false;
+		}
 
 		await LoadSportCatalogAsync();
 
@@ -160,20 +175,69 @@ public partial class ProfilePage : ContentPage
 		_coachVm.HydrateFromProfile(_profile);
 		SyncCoachUI();
 
-		var perfTask = LoadAthleticPerformancesAsync();
-		var goalsTask = LoadMovementGoalsAsync();
-		await Task.WhenAll(perfTask, goalsTask);
+		// Load athletic performances and goals in parallel, capture counts
+		var perfResultTask = _api.GetAthleticPerformancesAsync();
+		var goalsResultTask = _api.GetMovementGoalsAsync();
+		await Task.WhenAll(perfResultTask, goalsResultTask);
 
-		// Athletic records count
-		var perfResult = await _api.GetAthleticPerformancesAsync();
-		int athleticCount = perfResult.Success && perfResult.Data is not null ? perfResult.Data.Count : 0;
-		AthleticRecordsCountLabel.Text = athleticCount.ToString();
+		var perfResult = perfResultTask.Result;
+		var goalsResult = goalsResultTask.Result;
 
-		// Movement goals count for highlights
-		var goalsResult = await _api.GetMovementGoalsAsync();
-		int goalCount = goalsResult.Success && goalsResult.Data is not null ? goalsResult.Data.Count : 0;
+		// Populate lists
+		if (perfResult.Success && perfResult.Data is not null)
+		{
+			var items = perfResult.Data.Select(entry => new AthleticPerformanceListItem
+			{
+				Id = entry.Id,
+				MovementName = entry.MovementName,
+				MovementCategory = entry.MovementCategory,
+				Value = entry.Value,
+				Unit = entry.Unit,
+				SecondaryValue = entry.SecondaryValue,
+				SecondaryUnit = entry.SecondaryUnit,
+				GroundContactTimeMs = entry.GroundContactTimeMs,
+				ConcentricTimeSeconds = entry.ConcentricTimeSeconds,
+				RecordedAt = entry.RecordedAt,
+				Text = FormatAthleticPerformanceText(entry)
+			}).ToList();
 
-		BuildHighlights(_profile.TotalWorkouts, _profile.TotalPrs, athleticCount, goalCount);
+			BindableLayout.SetItemsSource(AthleticPerformanceList, items);
+			AthleticPerformanceEmptyLabel.IsVisible = items.Count == 0;
+		}
+		else
+		{
+			AthleticPerformanceEmptyLabel.IsVisible = true;
+		}
+
+		if (goalsResult.Success && goalsResult.Data is not null)
+		{
+			var items = goalsResult.Data.Select(goal => new MovementGoalListItem
+			{
+				Id = goal.Id,
+				MovementName = goal.MovementName,
+				MovementCategory = goal.MovementCategory,
+				GoalMetricLabel = goal.GoalMetricLabel,
+				TargetValue = goal.TargetValue,
+				Unit = goal.Unit,
+				Text = string.IsNullOrWhiteSpace(goal.GoalMetricLabel)
+					? $"{goal.MovementName}: {goal.TargetValue:0.##} {goal.Unit}"
+					: $"{goal.MovementName}: {goal.GoalMetricLabel} {goal.TargetValue:0.##} {goal.Unit}"
+			}).ToList();
+
+			BindableLayout.SetItemsSource(MovementGoalsList, items);
+			MovementGoalsEmptyLabel.IsVisible = items.Count == 0;
+		}
+		else
+		{
+			MovementGoalsEmptyLabel.IsVisible = true;
+		}
+
+		_lastAthleticCount = perfResult.Success && perfResult.Data is not null ? perfResult.Data.Count : 0;
+		_lastGoalCount = goalsResult.Success && goalsResult.Data is not null ? goalsResult.Data.Count : 0;
+
+		AthleticRecordsCountLabel.Text = _lastAthleticCount.ToString();
+
+		BuildHighlights(_profile.TotalWorkouts, _profile.TotalPrs, _lastAthleticCount, _lastGoalCount);
 	}
 
 	private void BuildHighlights(int totalWorkouts, int totalPrs, int athleticCount, int goalCount)
@@ -217,28 +281,33 @@ public partial class ProfilePage : ContentPage
 		{
 			var card = new Border
 			{
-				StrokeShape = new RoundRectangle { CornerRadius = 16 },
-				BackgroundColor = GetProfileColor("SurfaceRaised", "#1D1828"),
-				Stroke = new SolidColorBrush(GetProfileColor("SurfaceBorder", "#342D46")),
+				StrokeShape = new RoundRectangle { CornerRadius = 18 },
+				Stroke = new SolidColorBrush(GetProfileColor("AccentSoft", "#2F2346")),
 				StrokeThickness = 1,
-				Padding = new Thickness(16, 12)
+				Padding = new Thickness(18, 14),
+				Background = new LinearGradientBrush(
+				[
+					new GradientStop(GetProfileColor("AccentSoft", "#2F2346"), 0.0f),
+					new GradientStop(GetProfileColor("Surface", "#100D1A"), 1.0f)
+				], new Point(0, 0), new Point(1, 1))
 			};
 
-			var row = new HorizontalStackLayout { Spacing = 12 };
+			var row = new HorizontalStackLayout { Spacing = 14 };
 
 			var checkBorder = new Border
 			{
-				StrokeShape = new RoundRectangle { CornerRadius = 14 },
-				BackgroundColor = GetProfileColor("AccentSoft", "#2F2346"),
-				Stroke = new SolidColorBrush(Colors.Transparent),
-				WidthRequest = 28,
-				HeightRequest = 28,
+				StrokeShape = new RoundRectangle { CornerRadius = 16 },
+				BackgroundColor = GetProfileColor("Accent", "#8B5CF6").WithAlpha(0.2f),
+				Stroke = new SolidColorBrush(GetProfileColor("Accent", "#8B5CF6").WithAlpha(0.4f)),
+				StrokeThickness = 1,
+				WidthRequest = 32,
+				HeightRequest = 32,
 				VerticalOptions = LayoutOptions.Center
 			};
 			checkBorder.Content = new Label
 			{
 				Text = "\u2713",
-				FontSize = 14,
+				FontSize = 15,
 				FontFamily = "OpenSansSemibold",
 				TextColor = GetProfileColor("AccentGlow", "#A78BFA"),
 				HorizontalOptions = LayoutOptions.Center,
@@ -249,14 +318,14 @@ public partial class ProfilePage : ContentPage
 			textStack.Children.Add(new Label
 			{
 				Text = title,
-				FontSize = 14,
+				FontSize = 15,
 				FontFamily = "OpenSansSemibold",
 				TextColor = GetProfileColor("TextPrimary", "#F7F7FB")
 			});
 			textStack.Children.Add(new Label
 			{
 				Text = subtitle,
-				FontSize = 11,
+				FontSize = 12,
 				FontFamily = "OpenSansRegular",
 				TextColor = GetProfileColor("TextSecondary", "#B3B2C5")
 			});
@@ -267,6 +336,14 @@ public partial class ProfilePage : ContentPage
 
 			HighlightsContainer.Children.Add(card);
 		}
+	}
+
+	private void RefreshTopSummary()
+	{
+		AthleticRecordsCountLabel.Text = _lastAthleticCount.ToString();
+
+		if (_profile is not null)
+			BuildHighlights(_profile.TotalWorkouts, _profile.TotalPrs, _lastAthleticCount, _lastGoalCount);
 	}
 
 	private static Color GetProfileColor(string key, string fallback)
@@ -567,6 +644,8 @@ public partial class ProfilePage : ContentPage
 		if (!result.Success || result.Data is null)
 		{
 			AthleticPerformanceEmptyLabel.IsVisible = true;
+			_lastAthleticCount = 0;
+			RefreshTopSummary();
 			return;
 		}
 
@@ -587,6 +666,8 @@ public partial class ProfilePage : ContentPage
 
 		BindableLayout.SetItemsSource(AthleticPerformanceList, items);
 		AthleticPerformanceEmptyLabel.IsVisible = items.Count == 0;
+		_lastAthleticCount = items.Count;
+		RefreshTopSummary();
 	}
 
 	private async Task LoadMovementGoalsAsync()
@@ -595,6 +676,8 @@ public partial class ProfilePage : ContentPage
 		if (!result.Success || result.Data is null)
 		{
 			MovementGoalsEmptyLabel.IsVisible = true;
+			_lastGoalCount = 0;
+			RefreshTopSummary();
 			return;
 		}
 
@@ -613,6 +696,8 @@ public partial class ProfilePage : ContentPage
 
 		BindableLayout.SetItemsSource(MovementGoalsList, items);
 		MovementGoalsEmptyLabel.IsVisible = items.Count == 0;
+		_lastGoalCount = items.Count;
+		RefreshTopSummary();
 	}
 
 	// ── Save handlers ─────────────────────────────────────────────────

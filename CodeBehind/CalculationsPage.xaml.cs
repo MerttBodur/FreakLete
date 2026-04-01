@@ -204,28 +204,36 @@ public partial class CalculationsPage : ContentPage
 		{
 			best = entries.OrderByDescending(e => e.Metric1Value ?? 0).First();
 			HeroPrExerciseLabel.Text = _selectedExerciseGroup.ExerciseName.ToUpperInvariant();
-			HeroPrStrengthLabel.Text = $"{best.Metric1Unit?.ToUpperInvariant() ?? "VALUE"}";
+
+			// Resolve real metric label from exercise catalog
+			var catalogItem = ExerciseCatalog.GetByNameAndCategory(
+				_selectedExerciseGroup.ExerciseName, _selectedExerciseGroup.ExerciseCategory);
+			string metricLabel = catalogItem is not null
+				? $"{catalogItem.PrimaryLabel} ({catalogItem.PrimaryUnit})".ToUpperInvariant()
+				: !string.IsNullOrWhiteSpace(best.Metric1Unit)
+					? $"BEST ({best.Metric1Unit.ToUpperInvariant()})"
+					: "BEST VALUE";
+			HeroPrStrengthLabel.Text = metricLabel;
 			HeroPrValueLabel.Text = $"{best.Metric1Value:0.##} {best.Metric1Unit}";
 		}
 
 		HeroPrDateLabel.Text = $"Best PR: {best.CreatedAt:MMM dd, yyyy}";
 		HeroPrCard.IsVisible = true;
 
-		// Chart: up to last 6 points
+		// Chart: up to last 6 points, require at least 2 for a line
 		var chartPoints = entries.TakeLast(6).ToList();
-		if (chartPoints.Count >= 2)
+		var points = chartPoints.Select(e => new ChartPoint
 		{
-			var points = chartPoints.Select(e => new ChartPoint
-			{
-				Date = e.CreatedAt,
-				Value = isStrength ? e.Weight : (e.Metric1Value ?? 0)
-			}).ToList();
+			Date = e.CreatedAt,
+			Value = isStrength ? e.Weight : (e.Metric1Value ?? 0)
+		}).ToList();
 
+		if (points.Count >= 2)
+		{
 			var span = points.Last().Date - points.First().Date;
 			bool useMonthLabels = span.TotalDays > 45;
 
-			var drawable = new PrLineChartDrawable(points, useMonthLabels);
-			PrChartView.Drawable = drawable;
+			PrChartView.Drawable = new PrLineChartDrawable(points, useMonthLabels);
 			PrChartView.Invalidate();
 			ChartTitleLabel.Text = $"{_selectedExerciseGroup.ExerciseName} Progress";
 			ChartCard.IsVisible = true;
@@ -274,23 +282,40 @@ public partial class CalculationsPage : ContentPage
 
 			float w = dirtyRect.Width;
 			float h = dirtyRect.Height;
-			float padLeft = 10;
-			float padRight = 10;
-			float padTop = 10;
-			float padBottom = 30;
+			float padLeft = 44;
+			float padRight = 14;
+			float padTop = 14;
+			float padBottom = 32;
 			float chartW = w - padLeft - padRight;
 			float chartH = h - padTop - padBottom;
 
 			double minVal = _points.Min(p => p.Value);
 			double maxVal = _points.Max(p => p.Value);
-			if (Math.Abs(maxVal - minVal) < 0.01) { minVal -= 1; maxVal += 1; }
+			double margin = (maxVal - minVal) * 0.1;
+			if (margin < 1) margin = 1;
+			minVal -= margin;
+			maxVal += margin;
 
 			var pts = new PointF[_points.Count];
 			for (int i = 0; i < _points.Count; i++)
 			{
 				float x = padLeft + (chartW * i / (_points.Count - 1));
-				float y = padTop + chartH - (float)(((_points[i].Value - minVal) / (maxVal - minVal)) * chartH);
+				float y = padTop + chartH - (float)((((_points[i].Value - minVal) / (maxVal - minVal))) * chartH);
 				pts[i] = new PointF(x, y);
+			}
+
+			// Draw horizontal grid lines + Y-axis labels
+			canvas.FontSize = 9;
+			canvas.FontColor = Color.FromArgb("#5A5474");
+			canvas.StrokeColor = Color.FromArgb("#2A2540");
+			canvas.StrokeSize = 1;
+			for (int g = 0; g <= 3; g++)
+			{
+				float ratio = g / 3f;
+				float gy = padTop + chartH - (ratio * chartH);
+				double val = minVal + ratio * (maxVal - minVal);
+				canvas.DrawLine(padLeft, gy, padLeft + chartW, gy);
+				canvas.DrawString($"{val:0.#}", 0, gy - 8, padLeft - 4, 16, HorizontalAlignment.Right, VerticalAlignment.Center);
 			}
 
 			// Draw area fill
@@ -302,10 +327,10 @@ public partial class CalculationsPage : ContentPage
 			areaPath.Close();
 
 			canvas.SetFillPaint(new LinearGradientPaint(
-				new[] {
-					new PaintGradientStop(0f, Color.FromArgb("#8B5CF6").WithAlpha(0.3f)),
+				[
+					new PaintGradientStop(0f, Color.FromArgb("#8B5CF6").WithAlpha(0.25f)),
 					new PaintGradientStop(1f, Color.FromArgb("#8B5CF6").WithAlpha(0.02f))
-				},
+				],
 				new Point(0, 0), new Point(0, 1)), dirtyRect);
 			canvas.FillPath(areaPath);
 
@@ -321,12 +346,18 @@ public partial class CalculationsPage : ContentPage
 				linePath.LineTo(pts[i].X, pts[i].Y);
 			canvas.DrawPath(linePath);
 
-			// Draw dots
-			canvas.FillColor = Color.FromArgb("#A78BFA");
+			// Draw dots with outer glow ring
 			foreach (var pt in pts)
+			{
+				canvas.FillColor = Color.FromArgb("#8B5CF6").WithAlpha(0.2f);
+				canvas.FillCircle(pt.X, pt.Y, 8);
+				canvas.FillColor = Color.FromArgb("#A78BFA");
 				canvas.FillCircle(pt.X, pt.Y, 4);
+				canvas.FillColor = Colors.White;
+				canvas.FillCircle(pt.X, pt.Y, 1.5f);
+			}
 
-			// Draw labels
+			// Draw X-axis labels
 			canvas.FontSize = 10;
 			canvas.FontColor = Color.FromArgb("#B3B2C5");
 			for (int i = 0; i < _points.Count; i++)
@@ -334,7 +365,7 @@ public partial class CalculationsPage : ContentPage
 				string label = _useMonthLabels
 					? _points[i].Date.ToString("MMM")
 					: _points[i].Date.ToString("MMM d");
-				canvas.DrawString(label, pts[i].X - 20, padTop + chartH + 6, 40, 20, HorizontalAlignment.Center, VerticalAlignment.Top);
+				canvas.DrawString(label, pts[i].X - 22, padTop + chartH + 8, 44, 20, HorizontalAlignment.Center, VerticalAlignment.Top);
 			}
 		}
 	}
@@ -545,6 +576,7 @@ public partial class CalculationsPage : ContentPage
 		}
 
 		ResetPrSaveMode();
+		await LoadProgressDashboardAsync();
 		await LoadSavedPrEntriesAsync();
 		RefreshSavedPrList();
 	}
@@ -674,6 +706,7 @@ public partial class CalculationsPage : ContentPage
 			ResetPrSaveMode();
 		}
 
+		await LoadProgressDashboardAsync();
 		await LoadSavedPrEntriesAsync();
 		RefreshSavedPrList();
 		ShowSuccess(PrStatusLabel, "Saved PR deleted.");

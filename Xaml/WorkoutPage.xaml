@@ -14,11 +14,11 @@
 
                 <!-- Page Header -->
                 <VerticalStackLayout Spacing="4">
-                    <Label FontSize="32"
+                    <Label FontSize="28"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimary}"
                            Text="Programs" />
-                    <Label FontSize="14"
+                    <Label FontSize="13"
                            FontFamily="OpenSansRegular"
                            TextColor="{StaticResource TextSecondary}"
                            Text="Your training plans" />
@@ -26,9 +26,8 @@
 
                 <!-- Hero Card: Active Program -->
                 <Border x:Name="HeroProgramCard"
-                        StrokeShape="RoundRectangle 24"
+                        StrokeShape="RoundRectangle 22"
                         StrokeThickness="1"
-                        Stroke="{StaticResource Primary}"
                         Padding="0"
                         IsVisible="False">
                     <Border.Background>
@@ -37,27 +36,33 @@
                             <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
                         </LinearGradientBrush>
                     </Border.Background>
-                    <VerticalStackLayout Padding="24,22" Spacing="14">
+                    <Border.Stroke>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="{StaticResource Accent}" Offset="0.0" />
+                            <GradientStop Color="{StaticResource AccentSoft}" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Stroke>
+                    <VerticalStackLayout Padding="22,20" Spacing="12">
                         <Label FontSize="11"
                                FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource AccentGlow}"
                                Text="ACTIVE PROGRAM"
                                CharacterSpacing="1.5" />
                         <Label x:Name="HeroProgramName"
-                               FontSize="26"
+                               FontSize="24"
                                FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource TextPrimary}"
                                LineBreakMode="WordWrap"
                                LineHeight="1.1" />
                         <Label x:Name="HeroProgramGoal"
-                               FontSize="14"
+                               FontSize="13"
                                FontFamily="OpenSansRegular"
                                TextColor="{StaticResource TextSecondary}" />
 
                         <!-- Stat pills row -->
-                        <HorizontalStackLayout Spacing="8" Margin="0,4,0,0">
+                        <HorizontalStackLayout Spacing="8" Margin="0,2,0,0">
                             <Border x:Name="HeroFrequencyPill"
-                                    StrokeShape="RoundRectangle 12"
+                                    StrokeShape="RoundRectangle 10"
                                     BackgroundColor="{StaticResource SurfaceRaised}"
                                     Stroke="{StaticResource SurfaceBorder}"
                                     Padding="10,5">
@@ -67,7 +72,7 @@
                                        TextColor="{StaticResource TextPrimary}" />
                             </Border>
                             <Border x:Name="HeroDurationPill"
-                                    StrokeShape="RoundRectangle 12"
+                                    StrokeShape="RoundRectangle 10"
                                     BackgroundColor="{StaticResource SurfaceRaised}"
                                     Stroke="{StaticResource SurfaceBorder}"
                                     Padding="10,5"
@@ -78,7 +83,7 @@
                                        TextColor="{StaticResource TextPrimary}" />
                             </Border>
                             <Border x:Name="HeroWeeklyPill"
-                                    StrokeShape="RoundRectangle 12"
+                                    StrokeShape="RoundRectangle 10"
                                     BackgroundColor="{StaticResource AccentSoft}"
                                     Stroke="Transparent"
                                     Padding="10,5">
@@ -93,9 +98,9 @@
                         <Button Text="Start Workout"
                                 BackgroundColor="{StaticResource Accent}"
                                 TextColor="White"
-                                Padding="24,16"
-                                CornerRadius="16"
-                                FontSize="16"
+                                Padding="24,14"
+                                CornerRadius="14"
+                                FontSize="15"
                                 FontFamily="OpenSansSemibold"
                                 Clicked="OnHeroStartWorkoutClicked"
                                 HorizontalOptions="FillAndExpand"
@@ -108,13 +113,18 @@
 
                 <!-- Empty Hero: No Active Program -->
                 <Border x:Name="EmptyHeroCard"
-                        StrokeShape="RoundRectangle 24"
+                        StrokeShape="RoundRectangle 22"
                         StrokeThickness="1"
                         Stroke="{StaticResource SurfaceBorder}"
-                        BackgroundColor="{StaticResource SurfaceRaised}"
                         Padding="0"
                         IsVisible="True">
-                    <VerticalStackLayout Padding="24,28" Spacing="14"
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                            <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <VerticalStackLayout Padding="22,26" Spacing="12"
                                          HorizontalOptions="Center">
                         <Label FontSize="11"
                                FontFamily="OpenSansSemibold"
@@ -122,12 +132,12 @@
                                Text="GET STARTED"
                                CharacterSpacing="1.5"
                                HorizontalTextAlignment="Center" />
-                        <Label FontSize="22"
+                        <Label FontSize="20"
                                FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource TextPrimary}"
                                Text="No active program"
                                HorizontalTextAlignment="Center" />
-                        <Label FontSize="14"
+                        <Label FontSize="13"
                                FontFamily="OpenSansRegular"
                                TextColor="{StaticResource TextSecondary}"
                                Text="Create a training program with FreakAI or start a quick workout"
@@ -139,7 +149,7 @@
                                     Text="FreakAI"
                                     BackgroundColor="{StaticResource Accent}"
                                     TextColor="White"
-                                    Padding="16,14"
+                                    Padding="16,12"
                                     CornerRadius="14"
                                     FontSize="14"
                                     FontFamily="OpenSansSemibold"
@@ -148,7 +158,7 @@
                                     Text="Quick Workout"
                                     BackgroundColor="{StaticResource SurfaceStrong}"
                                     TextColor="{StaticResource TextPrimary}"
-                                    Padding="16,14"
+                                    Padding="16,12"
                                     CornerRadius="14"
                                     FontSize="14"
                                     FontFamily="OpenSansSemibold"
@@ -158,14 +168,19 @@
                 </Border>
 
                 <!-- Stats Row -->
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                     <Border Grid.Column="0"
-                            StrokeShape="RoundRectangle 16"
+                            StrokeShape="RoundRectangle 18"
                             Stroke="{StaticResource SurfaceBorder}"
                             StrokeThickness="1"
-                            BackgroundColor="{StaticResource SurfaceRaised}"
                             Padding="16,14">
-                        <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
                             <Label FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextSecondary}"
@@ -173,9 +188,9 @@
                                    Text="THIS WEEK"
                                    HorizontalTextAlignment="Center" />
                             <Label x:Name="SessionsCountLabel"
-                                   FontSize="28"
+                                   FontSize="26"
                                    FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource TextPrimary}"
+                                   TextColor="{StaticResource AccentGlow}"
                                    Text="0"
                                    HorizontalTextAlignment="Center" />
                             <Label FontSize="10"
@@ -187,12 +202,19 @@
                     </Border>
 
                     <Border Grid.Column="1"
-                            StrokeShape="RoundRectangle 16"
-                            Stroke="{StaticResource Accent}"
+                            StrokeShape="RoundRectangle 18"
                             StrokeThickness="1"
-                            BackgroundColor="{StaticResource AccentSoft}"
                             Padding="16,14">
-                        <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource AccentSoft}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Stroke>
+                            <SolidColorBrush Color="{StaticResource Accent}" />
+                        </Border.Stroke>
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
                             <Label FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource AccentGlow}"
@@ -200,7 +222,7 @@
                                    Text="PROGRAMS"
                                    HorizontalTextAlignment="Center" />
                             <Label x:Name="ProgramCountLabel"
-                                   FontSize="28"
+                                   FontSize="26"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}"
                                    Text="0"
@@ -230,9 +252,9 @@
                     <Label FontSize="18"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimary}"
-                           Text="Recommended Workouts" />
+                           Text="Recommended" />
                     <VerticalStackLayout x:Name="RecommendedCardsContainer"
-                                         Spacing="12" />
+                                         Spacing="10" />
                 </VerticalStackLayout>
 
                 <!-- Section Header -->
@@ -240,30 +262,35 @@
                        FontFamily="OpenSansSemibold"
                        TextColor="{StaticResource TextPrimary}"
                        Text="All Programs"
-                       Margin="0,4,0,0" />
+                       Margin="0,2,0,0" />
 
                 <!-- Program Cards -->
                 <CollectionView x:Name="ProgramsCollectionView"
                                 SelectionMode="None">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical"
-                                           ItemSpacing="12" />
+                                           ItemSpacing="10" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Border StrokeShape="RoundRectangle 20"
                                     Stroke="{StaticResource SurfaceBorder}"
                                     StrokeThickness="1"
-                                    BackgroundColor="{StaticResource SurfaceRaised}"
                                     Padding="0">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
                                 <Grid RowDefinitions="Auto,Auto" Padding="0">
                                     <!-- Top: Program info -->
                                     <VerticalStackLayout Grid.Row="0"
-                                                         Padding="20,18,20,14"
-                                                         Spacing="10">
+                                                         Padding="18,16,18,12"
+                                                         Spacing="8">
                                         <HorizontalStackLayout Spacing="10">
                                             <Label Text="{Binding Name}"
-                                                   FontSize="17"
+                                                   FontSize="16"
                                                    FontFamily="OpenSansSemibold"
                                                    TextColor="{StaticResource TextPrimary}"
                                                    LineBreakMode="TailTruncation"
@@ -281,30 +308,33 @@
                                             </Border>
                                         </HorizontalStackLayout>
                                         <Label Text="{Binding Goal}"
-                                               FontSize="13"
+                                               FontSize="12"
                                                FontFamily="OpenSansRegular"
                                                TextColor="{StaticResource TextSecondary}"
                                                LineBreakMode="TailTruncation" />
                                     </VerticalStackLayout>
 
                                     <!-- Bottom: Metadata bar -->
-                                    <Grid Grid.Row="1"
-                                          BackgroundColor="{StaticResource Surface}"
-                                          Padding="20,10"
-                                          ColumnDefinitions="Auto,*,Auto">
-                                        <Label Grid.Column="0"
-                                               Text="{Binding DaysPerWeek, StringFormat='{0}x/week'}"
-                                               FontSize="12"
-                                               FontFamily="OpenSansSemibold"
-                                               TextColor="{StaticResource TextSecondary}"
-                                               VerticalOptions="Center" />
-                                        <Label Grid.Column="2"
-                                               Text="View Details >"
-                                               FontSize="12"
-                                               FontFamily="OpenSansSemibold"
-                                               TextColor="{StaticResource AccentGlow}"
-                                               VerticalOptions="Center" />
-                                    </Grid>
+                                    <Border Grid.Row="1"
+                                            StrokeShape="RoundRectangle 0,0,20,20"
+                                            BackgroundColor="{StaticResource Surface}"
+                                            Stroke="Transparent"
+                                            Padding="18,10">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <Label Grid.Column="0"
+                                                   Text="{Binding DaysPerWeek, StringFormat='{0}x/week'}"
+                                                   FontSize="12"
+                                                   FontFamily="OpenSansSemibold"
+                                                   TextColor="{StaticResource TextSecondary}"
+                                                   VerticalOptions="Center" />
+                                            <Label Grid.Column="2"
+                                                   Text="View Details"
+                                                   FontSize="12"
+                                                   FontFamily="OpenSansSemibold"
+                                                   TextColor="{StaticResource AccentGlow}"
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+                                    </Border>
                                 </Grid>
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnProgramCardTapped" />
@@ -324,20 +354,26 @@
                        Margin="0,8,0,0" />
 
                 <!-- Quick Actions Row -->
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                     <Border Grid.Column="0"
                             StrokeShape="RoundRectangle 18"
                             Stroke="{StaticResource SurfaceBorder}"
                             StrokeThickness="1"
-                            BackgroundColor="{StaticResource SurfaceRaised}"
                             Padding="0">
-                        <VerticalStackLayout Padding="18,16" Spacing="10"
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <VerticalStackLayout Padding="16,14" Spacing="8"
                                              VerticalOptions="Center"
                                              HorizontalOptions="Center">
                             <Border StrokeShape="RoundRectangle 12"
                                     BackgroundColor="{StaticResource AccentSoft}"
                                     Stroke="Transparent"
-                                    Padding="8"
+                                    WidthRequest="36"
+                                    HeightRequest="36"
                                     HorizontalOptions="Center">
                                 <Label FontSize="18"
                                        FontFamily="OpenSansSemibold"
@@ -346,7 +382,7 @@
                                        HorizontalOptions="Center"
                                        VerticalOptions="Center" />
                             </Border>
-                            <Label FontSize="14"
+                            <Label FontSize="13"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}"
                                    Text="Quick Add"
@@ -361,22 +397,28 @@
                             StrokeShape="RoundRectangle 18"
                             Stroke="{StaticResource SurfaceBorder}"
                             StrokeThickness="1"
-                            BackgroundColor="{StaticResource SurfaceRaised}"
                             Padding="0">
-                        <VerticalStackLayout Padding="18,16" Spacing="10"
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <VerticalStackLayout Padding="16,14" Spacing="8"
                                              VerticalOptions="Center"
                                              HorizontalOptions="Center">
                             <Border StrokeShape="RoundRectangle 12"
                                     BackgroundColor="{StaticResource AccentSoft}"
                                     Stroke="Transparent"
-                                    Padding="8"
+                                    WidthRequest="36"
+                                    HeightRequest="36"
                                     HorizontalOptions="Center">
                                 <Image Source="calendar_icon.svg"
                                        WidthRequest="18"
                                        HeightRequest="18"
                                        HorizontalOptions="Center" />
                             </Border>
-                            <Label FontSize="14"
+                            <Label FontSize="13"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}"
                                    Text="Calendar"

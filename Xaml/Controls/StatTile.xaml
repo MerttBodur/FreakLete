@@ -3,23 +3,34 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FreakLete.StatTile">
 
-	<Border Style="{StaticResource CardBorder}">
-		<VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+	<Border StrokeShape="RoundRectangle 18"
+	        Stroke="{StaticResource SurfaceBorder}"
+	        StrokeThickness="1"
+	        Padding="14,16">
+		<Border.Background>
+			<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+				<GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+				<GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+			</LinearGradientBrush>
+		</Border.Background>
+		<VerticalStackLayout Spacing="6" HorizontalOptions="Center">
 			<HorizontalStackLayout Spacing="4" HorizontalOptions="Center">
 				<Label x:Name="StatValueLabel"
-				       FontSize="32"
+				       FontSize="28"
 				       FontFamily="OpenSansSemibold"
-				       TextColor="{StaticResource TextPrimary}" />
+				       TextColor="{StaticResource AccentGlow}" />
 				<Label x:Name="TrendIconLabel"
-				       FontSize="24"
+				       FontSize="20"
 				       TextColor="{StaticResource Success}"
 				       VerticalOptions="Center"
 				       IsVisible="False" />
 			</HorizontalStackLayout>
 			<Label x:Name="StatLabelLabel"
-			       Style="{StaticResource BodyMuted}"
+			       FontSize="11"
+			       FontFamily="OpenSansSemibold"
 			       TextColor="{StaticResource TextSecondary}"
-			       HorizontalTextAlignment="Center" />
+			       HorizontalTextAlignment="Center"
+			       CharacterSpacing="0.3" />
 		</VerticalStackLayout>
 	</Border>
 

@@ -108,12 +108,17 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Divider -->
+                <BoxView HeightRequest="1"
+                         Color="{StaticResource SurfaceBorder}"
+                         Margin="0,6,0,0" />
+
                 <!-- Calculator Sections - Start -->
-                <Label FontSize="12"
-                       FontFamily="OpenSansRegular"
-                       TextColor="{StaticResource TextSecondary}"
+                <Label FontSize="18"
+                       FontFamily="OpenSansSemibold"
+                       TextColor="{StaticResource TextPrimary}"
                        Text="Strength &amp; Athletic Tools"
-                       Margin="0,8,0,0" />
+                       Margin="0,4,0,0" />
 
                 <Border Style="{StaticResource CardBorder}"
                         Padding="8">

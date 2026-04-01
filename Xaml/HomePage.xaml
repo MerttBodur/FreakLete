@@ -4,126 +4,231 @@
              xmlns:local="clr-namespace:FreakLete"
              x:Class="FreakLete.HomePage"
              NavigationPage.HasNavigationBar="False"
-             Title="">
+             Title=""
+             BackgroundColor="{StaticResource Background}">
 
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
-            <VerticalStackLayout Padding="24,16,24,20" Spacing="20">
+            <VerticalStackLayout Padding="20,16,20,24" Spacing="20">
 
                 <!-- Compact Identity Row -->
-                <HorizontalStackLayout Spacing="12" VerticalOptions="Start">
-                    <VerticalStackLayout Spacing="2" HorizontalOptions="FillAndExpand">
+                <Grid ColumnDefinitions="*,Auto" Padding="0,4,0,0">
+                    <VerticalStackLayout Spacing="2">
                         <Label FontSize="12"
-                               FontFamily="OpenSansRegular"
+                               FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource TextSecondary}"
-                               Text="Welcome back" />
+                               Text="WELCOME BACK"
+                               CharacterSpacing="1" />
                         <Label x:Name="UserNameLabel"
-                               FontSize="20"
+                               FontSize="24"
                                FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource TextPrimary}"
                                Text="User" />
                     </VerticalStackLayout>
-                </HorizontalStackLayout>
+                    <!-- Avatar circle -->
+                    <Border Grid.Column="1"
+                            StrokeShape="RoundRectangle 22"
+                            WidthRequest="44"
+                            HeightRequest="44"
+                            Padding="0"
+                            VerticalOptions="Center">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource Accent}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource AccentGlow}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Stroke>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource Accent}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource AccentGlow}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Stroke>
+                        <Label x:Name="AvatarInitialsLabel"
+                               FontSize="16"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               Text="" />
+                    </Border>
+                </Grid>
 
-                <!-- Stats Dashboard Grid - 3 columns with compact tiles -->
-                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                <!-- Stats Dashboard Grid - 3 columns -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
                     <local:StatTile Grid.Column="0"
                                     x:Name="WorkoutCountTile"
                                     StatValue="0"
                                     StatLabel="Workouts" />
 
                     <local:StatTile Grid.Column="1"
-                                    x:Name="StreakTile"
+                                    x:Name="PrCountTile"
                                     StatValue="0"
-                                    StatLabel="Streak" />
+                                    StatLabel="PRs" />
 
                     <local:StatTile Grid.Column="2"
-                                    x:Name="LatestPrTile"
-                                    StatValue="-"
-                                    StatLabel="Latest PR" />
+                                    x:Name="StreakTile"
+                                    StatValue="0"
+                                    StatLabel="This Week" />
                 </Grid>
 
                 <!-- Weekly Activity Card -->
                 <local:BarChartCard x:Name="WeeklyActivityCard"
-                                    Title="This Week" />
+                                    Title="Weekly Activity" />
 
-                <!-- Featured/Focus Section -->
-                <Border Style="{StaticResource CardBorder}"
-                        Padding="0"
-                        StrokeThickness="2"
-                        Stroke="{StaticResource Accent}">
-                    <VerticalStackLayout Spacing="12" Padding="16">
+                <!-- Featured/Latest Workout Hero -->
+                <Border x:Name="FeaturedCard"
+                        StrokeShape="RoundRectangle 22"
+                        StrokeThickness="1"
+                        Padding="0">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="{StaticResource AccentSoft}" Offset="0.0" />
+                            <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.Stroke>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="{StaticResource Accent}" Offset="0.0" />
+                            <GradientStop Color="{StaticResource AccentSoft}" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Stroke>
+                    <VerticalStackLayout Spacing="12" Padding="20,18">
                         <Label x:Name="FeaturedTitleLabel"
-                               FontSize="16"
+                               FontSize="11"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource AccentGlow}"
+                               Text="LATEST WORKOUT"
+                               CharacterSpacing="1.5" />
+
+                        <Label x:Name="FeaturedWorkoutNameLabel"
+                               FontSize="20"
                                FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource TextPrimary}"
-                               Text="Latest Workout" />
+                               Text="No recent workouts"
+                               LineBreakMode="WordWrap" />
 
-                        <!-- Featured Content -->
-                        <VerticalStackLayout x:Name="FeaturedContentLayout"
-                                           Spacing="8">
-                            <Label x:Name="FeaturedWorkoutNameLabel"
-                                   FontSize="14"
-                                   FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource TextPrimary}"
-                                   Text="No recent workouts" />
-
-                            <HorizontalStackLayout Spacing="16">
-                                <VerticalStackLayout Spacing="2">
-                                    <Label FontSize="10"
-                                           TextColor="{StaticResource TextSecondary}"
-                                           Text="Date" />
-                                    <Label x:Name="FeaturedDateLabel"
-                                           FontSize="12"
-                                           FontFamily="OpenSansSemibold"
-                                           TextColor="{StaticResource TextPrimary}"
-                                           Text="-" />
-                                </VerticalStackLayout>
-
-                                <VerticalStackLayout Spacing="2">
-                                    <Label FontSize="10"
-                                           TextColor="{StaticResource TextSecondary}"
-                                           Text="Exercises" />
+                        <HorizontalStackLayout Spacing="12"
+                                               x:Name="FeaturedMetaRow">
+                            <Border StrokeShape="RoundRectangle 10"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Stroke="{StaticResource SurfaceBorder}"
+                                    Padding="10,5">
+                                <Label x:Name="FeaturedDateLabel"
+                                       FontSize="12"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       Text="-" />
+                            </Border>
+                            <Border StrokeShape="RoundRectangle 10"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Stroke="{StaticResource SurfaceBorder}"
+                                    Padding="10,5">
+                                <HorizontalStackLayout Spacing="4">
                                     <Label x:Name="FeaturedExerciseCountLabel"
                                            FontSize="12"
                                            FontFamily="OpenSansSemibold"
                                            TextColor="{StaticResource TextPrimary}"
                                            Text="-" />
-                                </VerticalStackLayout>
-                            </HorizontalStackLayout>
-                        </VerticalStackLayout>
+                                    <Label FontSize="12"
+                                           FontFamily="OpenSansRegular"
+                                           TextColor="{StaticResource TextSecondary}"
+                                           Text="exercises" />
+                                </HorizontalStackLayout>
+                            </Border>
+                        </HorizontalStackLayout>
 
-                        <!-- View Details Button -->
                         <Button x:Name="FeaturedViewButton"
-                                Text="View Details"
+                                Text="View Workout"
                                 BackgroundColor="{StaticResource Accent}"
                                 TextColor="White"
-                                CornerRadius="6"
-                                Padding="12,8"
-                                FontSize="12"
+                                CornerRadius="14"
+                                Padding="20,12"
+                                FontSize="14"
                                 FontFamily="OpenSansSemibold"
                                 Clicked="OnViewFeaturedWorkoutClicked"
-                                IsVisible="False" />
+                                IsVisible="False"
+                                HorizontalOptions="FillAndExpand"
+                                Margin="0,4,0,0" />
                     </VerticalStackLayout>
                 </Border>
 
                 <!-- Quick Actions -->
-                <HorizontalStackLayout Spacing="8">
-                    <Button Text="Start Workout"
-                            BackgroundColor="{StaticResource Primary}"
-                            TextColor="White"
-                            CornerRadius="6"
-                            Padding="16,10"
-                            HorizontalOptions="FillAndExpand"
-                            Clicked="OnStartWorkoutClicked" />
-                    <Button Text="Calculations"
-                            BackgroundColor="{StaticResource Accent}"
-                            TextColor="White"
-                            CornerRadius="6"
-                            Padding="16,10"
-                            HorizontalOptions="FillAndExpand"
-                            Clicked="OnOpenCalculationsClicked" />
-                </HorizontalStackLayout>
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Border Grid.Column="0"
+                            StrokeShape="RoundRectangle 18"
+                            Stroke="{StaticResource SurfaceBorder}"
+                            StrokeThickness="1"
+                            Padding="0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <VerticalStackLayout Padding="16,18" Spacing="10"
+                                             HorizontalOptions="Center">
+                            <Border StrokeShape="RoundRectangle 14"
+                                    BackgroundColor="{StaticResource AccentSoft}"
+                                    Stroke="Transparent"
+                                    WidthRequest="40"
+                                    HeightRequest="40"
+                                    HorizontalOptions="Center">
+                                <Label FontSize="20"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource AccentGlow}"
+                                       Text="+"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+                            <Label FontSize="13"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   Text="Start Workout"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnStartWorkoutClicked" />
+                        </Border.GestureRecognizers>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            StrokeShape="RoundRectangle 18"
+                            Stroke="{StaticResource SurfaceBorder}"
+                            StrokeThickness="1"
+                            Padding="0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <VerticalStackLayout Padding="16,18" Spacing="10"
+                                             HorizontalOptions="Center">
+                            <Border StrokeShape="RoundRectangle 14"
+                                    BackgroundColor="{StaticResource AccentSoft}"
+                                    Stroke="Transparent"
+                                    WidthRequest="40"
+                                    HeightRequest="40"
+                                    HorizontalOptions="Center">
+                                <Label FontSize="18"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource AccentGlow}"
+                                       Text="PR"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+                            <Label FontSize="13"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   Text="Calculations"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnOpenCalculationsClicked" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </Grid>
 
             </VerticalStackLayout>
         </ScrollView>

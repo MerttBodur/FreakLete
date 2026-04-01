@@ -31,7 +31,7 @@
                 </Border.GestureRecognizers>
             </Border>
             <Label Text="Program Details"
-                   FontSize="20"
+                   FontSize="18"
                    FontFamily="OpenSansSemibold"
                    TextColor="{StaticResource TextPrimary}"
                    VerticalOptions="Center" />
@@ -42,9 +42,8 @@
             <VerticalStackLayout Padding="20,8,20,24" Spacing="20">
 
                 <!-- Program Header Card -->
-                <Border StrokeShape="RoundRectangle 24"
+                <Border StrokeShape="RoundRectangle 22"
                         StrokeThickness="1"
-                        Stroke="{StaticResource Primary}"
                         Padding="0">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -52,52 +51,74 @@
                             <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
                         </LinearGradientBrush>
                     </Border.Background>
-                    <VerticalStackLayout Padding="24,22" Spacing="12">
-                        <Label FontSize="11"
-                               FontFamily="OpenSansSemibold"
-                               TextColor="{StaticResource AccentGlow}"
-                               Text="TRAINING PROGRAM"
-                               CharacterSpacing="1.5" />
+                    <Border.Stroke>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="{StaticResource Accent}" Offset="0.0" />
+                            <GradientStop Color="{StaticResource AccentSoft}" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Stroke>
+                    <VerticalStackLayout Padding="22,20" Spacing="10">
+                        <HorizontalStackLayout Spacing="10">
+                            <Label FontSize="11"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource AccentGlow}"
+                                   Text="TRAINING PROGRAM"
+                                   CharacterSpacing="1.5"
+                                   VerticalOptions="Center" />
+                            <!-- Status badge inline -->
+                            <Border x:Name="StatusBadge"
+                                    StrokeShape="RoundRectangle 10"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Stroke="Transparent"
+                                    Padding="10,4"
+                                    VerticalOptions="Center"
+                                    IsVisible="False">
+                                <Label x:Name="StatusBadgeLabel"
+                                       FontSize="10"
+                                       FontFamily="OpenSansSemibold"
+                                       TextColor="{StaticResource TextSecondary}" />
+                            </Border>
+                        </HorizontalStackLayout>
                         <Label x:Name="ProgramNameLabel"
-                               FontSize="28"
+                               FontSize="26"
                                FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource TextPrimary}"
                                LineBreakMode="WordWrap"
                                LineHeight="1.1" />
                         <Label x:Name="ProgramDescriptionLabel"
-                               FontSize="14"
+                               FontSize="13"
                                FontFamily="OpenSansRegular"
                                TextColor="{StaticResource TextSecondary}"
                                LineBreakMode="WordWrap"
                                MaxLines="4" />
 
                         <!-- Metadata pills -->
-                        <HorizontalStackLayout Spacing="8" Margin="0,6,0,0">
+                        <HorizontalStackLayout Spacing="8" Margin="0,4,0,0">
                             <Border x:Name="GoalPill"
-                                    StrokeShape="RoundRectangle 12"
+                                    StrokeShape="RoundRectangle 10"
                                     BackgroundColor="{StaticResource AccentSoft}"
                                     Stroke="Transparent"
-                                    Padding="12,6">
+                                    Padding="12,5">
                                 <Label x:Name="GoalPillLabel"
                                        FontSize="12"
                                        FontFamily="OpenSansSemibold"
                                        TextColor="{StaticResource AccentGlow}" />
                             </Border>
                             <Border x:Name="FrequencyPill"
-                                    StrokeShape="RoundRectangle 12"
+                                    StrokeShape="RoundRectangle 10"
                                     BackgroundColor="{StaticResource SurfaceRaised}"
                                     Stroke="{StaticResource SurfaceBorder}"
-                                    Padding="12,6">
+                                    Padding="12,5">
                                 <Label x:Name="FrequencyPillLabel"
                                        FontSize="12"
                                        FontFamily="OpenSansSemibold"
                                        TextColor="{StaticResource TextPrimary}" />
                             </Border>
                             <Border x:Name="DurationPill"
-                                    StrokeShape="RoundRectangle 12"
+                                    StrokeShape="RoundRectangle 10"
                                     BackgroundColor="{StaticResource SurfaceRaised}"
                                     Stroke="{StaticResource SurfaceBorder}"
-                                    Padding="12,6"
+                                    Padding="12,5"
                                     IsVisible="False">
                                 <Label x:Name="DurationPillLabel"
                                        FontSize="12"
@@ -105,83 +126,89 @@
                                        TextColor="{StaticResource TextPrimary}" />
                             </Border>
                         </HorizontalStackLayout>
-
-                        <!-- Status badge -->
-                        <Border x:Name="StatusBadge"
-                                StrokeShape="RoundRectangle 10"
-                                BackgroundColor="{StaticResource SurfaceRaised}"
-                                Stroke="Transparent"
-                                Padding="10,5"
-                                HorizontalOptions="Start"
-                                IsVisible="False">
-                            <Label x:Name="StatusBadgeLabel"
-                                   FontSize="11"
-                                   FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource TextSecondary}" />
-                        </Border>
                     </VerticalStackLayout>
                 </Border>
 
                 <!-- Stats Row -->
                 <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
                     <Border Grid.Column="0"
-                            StrokeShape="RoundRectangle 16"
+                            StrokeShape="RoundRectangle 18"
                             Stroke="{StaticResource SurfaceBorder}"
-                            BackgroundColor="{StaticResource SurfaceRaised}"
                             Padding="14,12">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
                         <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
                             <Label x:Name="WeeksCountLabel"
                                    FontSize="24"
                                    FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource TextPrimary}"
+                                   TextColor="{StaticResource AccentGlow}"
                                    HorizontalTextAlignment="Center"
                                    Text="0" />
                             <Label FontSize="10"
-                                   FontFamily="OpenSansRegular"
+                                   FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextSecondary}"
                                    HorizontalTextAlignment="Center"
                                    Text="Weeks" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="1"
-                            StrokeShape="RoundRectangle 16"
+                            StrokeShape="RoundRectangle 18"
                             Stroke="{StaticResource SurfaceBorder}"
-                            BackgroundColor="{StaticResource SurfaceRaised}"
                             Padding="14,12">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
                         <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
                             <Label x:Name="SessionsCountLabel"
                                    FontSize="24"
                                    FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource TextPrimary}"
+                                   TextColor="{StaticResource AccentGlow}"
                                    HorizontalTextAlignment="Center"
                                    Text="0" />
                             <Label FontSize="10"
-                                   FontFamily="OpenSansRegular"
+                                   FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextSecondary}"
                                    HorizontalTextAlignment="Center"
                                    Text="Sessions" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="2"
-                            StrokeShape="RoundRectangle 16"
+                            StrokeShape="RoundRectangle 18"
                             Stroke="{StaticResource SurfaceBorder}"
-                            BackgroundColor="{StaticResource SurfaceRaised}"
                             Padding="14,12">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
                         <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
                             <Label x:Name="ExercisesCountLabel"
                                    FontSize="24"
                                    FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource TextPrimary}"
+                                   TextColor="{StaticResource AccentGlow}"
                                    HorizontalTextAlignment="Center"
                                    Text="0" />
                             <Label FontSize="10"
-                                   FontFamily="OpenSansRegular"
+                                   FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextSecondary}"
                                    HorizontalTextAlignment="Center"
                                    Text="Exercises" />
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
+
+                <!-- Divider -->
+                <BoxView HeightRequest="1"
+                         Color="{StaticResource SurfaceBorder}"
+                         Margin="0,2" />
 
                 <!-- Program Structure Container (built dynamically) -->
                 <VerticalStackLayout x:Name="WeeksContainer" Spacing="20" />
@@ -191,18 +218,23 @@
 
         <!-- Sticky Bottom CTA -->
         <Border Grid.Row="2"
-                BackgroundColor="{StaticResource SurfaceRaised}"
+                StrokeShape="RoundRectangle 0"
                 Stroke="{StaticResource SurfaceBorder}"
-                StrokeThickness="1,0,0,0"
-                Padding="20,14,20,18"
-                StrokeShape="RoundRectangle 0">
+                StrokeThickness="1"
+                Padding="20,12,20,18">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                    <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Background>
             <Button x:Name="StartWorkoutButton"
                     Text="Start Workout"
                     BackgroundColor="{StaticResource Accent}"
                     TextColor="White"
-                    Padding="24,16"
-                    CornerRadius="16"
-                    FontSize="16"
+                    Padding="24,14"
+                    CornerRadius="14"
+                    FontSize="15"
                     FontFamily="OpenSansSemibold"
                     Clicked="OnStartWorkoutClicked"
                     HorizontalOptions="FillAndExpand" />
