@@ -209,7 +209,7 @@ public partial class HomePage : ContentPage
 			var stack = new VerticalStackLayout { Spacing = 0 };
 
 			// Image area with overlay
-			var imageArea = new Grid { HeightRequest = 90 };
+			var imageArea = new Grid { HeightRequest = 90, WidthRequest = 180 };
 			imageArea.Clip = new RoundRectangleGeometry(new CornerRadius(18, 18, 0, 0),
 				new Rect(0, 0, 180, 90));
 

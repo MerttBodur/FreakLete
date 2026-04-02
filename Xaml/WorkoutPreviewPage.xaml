@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FreakLete.WorkoutPreviewPage"
+             NavigationPage.HasNavigationBar="False"
+             Title="Antrenman Özeti"
+             BackgroundColor="{StaticResource Background}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Top Bar -->
+        <HorizontalStackLayout Grid.Row="0"
+                               Padding="16,14,16,8"
+                               Spacing="12"
+                               VerticalOptions="Center">
+            <Label Text="Antrenman Özeti"
+                   FontSize="18"
+                   FontFamily="OpenSansSemibold"
+                   TextColor="{StaticResource TextPrimary}"
+                   VerticalOptions="Center" />
+        </HorizontalStackLayout>
+
+        <!-- Main Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,8,20,24" Spacing="16">
+
+                <!-- Summary card -->
+                <Border StrokeShape="RoundRectangle 18"
+                        BackgroundColor="{StaticResource SurfaceRaised}"
+                        Stroke="{StaticResource SurfaceBorder}"
+                        StrokeThickness="1"
+                        Padding="18,16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label x:Name="SummaryNameLabel"
+                               FontSize="18"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextPrimary}" />
+                        <Label x:Name="SummaryDateLabel"
+                               FontSize="13"
+                               FontFamily="OpenSansRegular"
+                               TextColor="{StaticResource TextSecondary}" />
+                        <Label x:Name="SummaryDurationLabel"
+                               FontSize="13"
+                               FontFamily="OpenSansRegular"
+                               TextColor="{StaticResource AccentGlow}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Error label -->
+                <Label x:Name="ErrorLabel"
+                       FontSize="12"
+                       TextColor="{StaticResource Error}"
+                       IsVisible="False" />
+
+                <!-- Exercises list (read-only) -->
+                <VerticalStackLayout x:Name="ExercisesContainer" Spacing="10" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom: Go Back + Save -->
+        <Border Grid.Row="2"
+                StrokeShape="RoundRectangle 0"
+                Stroke="{StaticResource SurfaceBorder}"
+                StrokeThickness="1"
+                Padding="20,12,20,18">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                    <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid ColumnDefinitions="*,12,*">
+                <Button x:Name="GoBackButton"
+                        Grid.Column="0"
+                        Text="Geri Dön"
+                        BackgroundColor="{StaticResource SurfaceRaised}"
+                        TextColor="{StaticResource TextPrimary}"
+                        BorderColor="{StaticResource SurfaceBorder}"
+                        BorderWidth="1"
+                        Padding="16,14"
+                        CornerRadius="14"
+                        FontSize="14"
+                        FontFamily="OpenSansSemibold"
+                        Clicked="OnGoBackClicked"
+                        HorizontalOptions="FillAndExpand" />
+                <Button x:Name="SaveButton"
+                        Grid.Column="2"
+                        Text="Kaydet"
+                        BackgroundColor="{StaticResource Accent}"
+                        TextColor="White"
+                        Padding="16,14"
+                        CornerRadius="14"
+                        FontSize="14"
+                        FontFamily="OpenSansSemibold"
+                        Clicked="OnSaveClicked"
+                        HorizontalOptions="FillAndExpand" />
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FreakLete.AddWorkoutFromProgramPage"
+             NavigationPage.HasNavigationBar="False"
+             Title="Antrenman Ekle"
+             BackgroundColor="{StaticResource Background}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Top Bar -->
+        <HorizontalStackLayout Grid.Row="0"
+                               Padding="16,14,16,8"
+                               Spacing="12"
+                               VerticalOptions="Center">
+            <Border StrokeShape="RoundRectangle 14"
+                    BackgroundColor="{StaticResource SurfaceRaised}"
+                    Stroke="{StaticResource SurfaceBorder}"
+                    StrokeThickness="1"
+                    Padding="10,8"
+                    HeightRequest="40"
+                    WidthRequest="40">
+                <Label Text="&#x2190;"
+                       FontSize="18"
+                       FontFamily="OpenSansSemibold"
+                       TextColor="{StaticResource TextPrimary}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnBackClicked" />
+                </Border.GestureRecognizers>
+            </Border>
+            <Label Text="Antrenman Ekle"
+                   FontSize="18"
+                   FontFamily="OpenSansSemibold"
+                   TextColor="{StaticResource TextPrimary}"
+                   VerticalOptions="Center" />
+        </HorizontalStackLayout>
+
+        <!-- Main Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,8,20,24" Spacing="16">
+
+                <!-- Workout name -->
+                <Label x:Name="WorkoutNameLabel"
+                       FontSize="16"
+                       FontFamily="OpenSansSemibold"
+                       TextColor="{StaticResource TextPrimary}" />
+
+                <!-- Date picker -->
+                <HorizontalStackLayout Spacing="10">
+                    <Label Text="Tarih:"
+                           FontSize="14"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource TextSecondary}"
+                           VerticalOptions="Center" />
+                    <DatePicker x:Name="WorkoutDatePicker"
+                                TextColor="{StaticResource TextPrimary}"
+                                BackgroundColor="{StaticResource SurfaceRaised}" />
+                </HorizontalStackLayout>
+
+                <!-- Error label -->
+                <Label x:Name="ErrorLabel"
+                       FontSize="12"
+                       TextColor="{StaticResource Error}"
+                       IsVisible="False" />
+
+                <!-- Exercises container (built dynamically) -->
+                <VerticalStackLayout x:Name="ExercisesContainer" Spacing="12" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom Save Button -->
+        <Border Grid.Row="2"
+                StrokeShape="RoundRectangle 0"
+                Stroke="{StaticResource SurfaceBorder}"
+                StrokeThickness="1"
+                Padding="20,12,20,18">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                    <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Button x:Name="SaveButton"
+                    Text="Kaydet"
+                    BackgroundColor="{StaticResource Accent}"
+                    TextColor="White"
+                    Padding="24,14"
+                    CornerRadius="14"
+                    FontSize="15"
+                    FontFamily="OpenSansSemibold"
+                    Clicked="OnSaveClicked"
+                    HorizontalOptions="FillAndExpand" />
+        </Border>
+
+    </Grid>
+
+</ContentPage>

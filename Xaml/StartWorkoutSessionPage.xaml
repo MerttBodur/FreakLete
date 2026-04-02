@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FreakLete.StartWorkoutSessionPage"
+             NavigationPage.HasNavigationBar="False"
+             Title="Antrenman"
+             BackgroundColor="{StaticResource Background}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Top Bar with Timer -->
+        <Grid Grid.Row="0" Padding="16,14,16,8" ColumnDefinitions="Auto,*,Auto">
+            <Border Grid.Column="0"
+                    StrokeShape="RoundRectangle 14"
+                    BackgroundColor="{StaticResource SurfaceRaised}"
+                    Stroke="{StaticResource SurfaceBorder}"
+                    StrokeThickness="1"
+                    Padding="10,8"
+                    HeightRequest="40"
+                    WidthRequest="40">
+                <Label Text="&#x2190;"
+                       FontSize="18"
+                       FontFamily="OpenSansSemibold"
+                       TextColor="{StaticResource TextPrimary}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnBackClicked" />
+                </Border.GestureRecognizers>
+            </Border>
+            <Label Grid.Column="1"
+                   x:Name="TimerLabel"
+                   Text="00:00"
+                   FontSize="22"
+                   FontFamily="OpenSansSemibold"
+                   TextColor="{StaticResource AccentGlow}"
+                   HorizontalTextAlignment="Center"
+                   VerticalOptions="Center" />
+            <!-- Rest timer indicator -->
+            <Label Grid.Column="2"
+                   x:Name="RestTimerLabel"
+                   Text=""
+                   FontSize="14"
+                   FontFamily="OpenSansSemibold"
+                   TextColor="{StaticResource Warning}"
+                   VerticalOptions="Center"
+                   IsVisible="False" />
+        </Grid>
+
+        <!-- Main Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,8,20,24" Spacing="16">
+
+                <Label x:Name="WorkoutNameLabel"
+                       FontSize="16"
+                       FontFamily="OpenSansSemibold"
+                       TextColor="{StaticResource TextPrimary}" />
+
+                <Label x:Name="ErrorLabel"
+                       FontSize="12"
+                       TextColor="{StaticResource Error}"
+                       IsVisible="False" />
+
+                <!-- Exercises container (built dynamically) -->
+                <VerticalStackLayout x:Name="ExercisesContainer" Spacing="12" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom Bar: Rest + Finish -->
+        <Border Grid.Row="2"
+                StrokeShape="RoundRectangle 0"
+                Stroke="{StaticResource SurfaceBorder}"
+                StrokeThickness="1"
+                Padding="20,12,20,18">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
+                    <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid ColumnDefinitions="*,12,*">
+                <Button x:Name="RestButton"
+                        Grid.Column="0"
+                        Text="Dinlenme Başlat"
+                        BackgroundColor="{StaticResource SurfaceRaised}"
+                        TextColor="{StaticResource TextPrimary}"
+                        BorderColor="{StaticResource SurfaceBorder}"
+                        BorderWidth="1"
+                        Padding="16,14"
+                        CornerRadius="14"
+                        FontSize="14"
+                        FontFamily="OpenSansSemibold"
+                        Clicked="OnRestClicked"
+                        HorizontalOptions="FillAndExpand" />
+                <Button x:Name="FinishButton"
+                        Grid.Column="2"
+                        Text="Bitir"
+                        BackgroundColor="{StaticResource Accent}"
+                        TextColor="White"
+                        Padding="16,14"
+                        CornerRadius="14"
+                        FontSize="14"
+                        FontFamily="OpenSansSemibold"
+                        Clicked="OnFinishClicked"
+                        HorizontalOptions="FillAndExpand" />
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

@@ -1,3 +1,4 @@
+using FreakLete.Helpers;
 using FreakLete.Services;
 using Microsoft.Maui.Controls.Shapes;
 
@@ -8,6 +9,7 @@ public partial class ProgramDetailPage : ContentPage
 	private readonly ApiClient _api;
 	private readonly int _programId;
 	private readonly bool _isStarterTemplate;
+	private TrainingProgramResponse? _program;
 
 	public ProgramDetailPage(int programId, bool isStarterTemplate = false)
 	{
@@ -36,6 +38,7 @@ public partial class ProgramDetailPage : ContentPage
 		}
 
 		var program = result.Data;
+		_program = program;
 
 		ProgramNameLabel.Text = program.Name;
 		ProgramDescriptionLabel.Text = program.Description;
@@ -82,10 +85,18 @@ public partial class ProgramDetailPage : ContentPage
 
 		BuildWeekStructure(program.Weeks);
 
-		// Update CTA for starter templates
+		// Toggle bottom buttons: templates get single "Başla", user-owned get two buttons
 		if (_isStarterTemplate)
 		{
-			StartWorkoutButton.Text = "Başla";
+			StartWorkoutButton.IsVisible = true;
+			AddWorkoutButton.IsVisible = false;
+			StartLiveWorkoutButton.IsVisible = false;
+		}
+		else
+		{
+			StartWorkoutButton.IsVisible = false;
+			AddWorkoutButton.IsVisible = true;
+			StartLiveWorkoutButton.IsVisible = true;
 		}
 	}
 
@@ -271,6 +282,17 @@ public partial class ProgramDetailPage : ContentPage
 		await Navigation.PopAsync(true);
 	}
 
+	private async void OnAddWorkoutClicked(object? sender, EventArgs e)
+	{
+		if (_program is null) return;
+
+		var session = await SessionPickerHelper.PickSessionAsync(this, _program);
+		if (session is null) return;
+
+		await Navigation.PushAsync(
+			new AddWorkoutFromProgramPage(_program.Name, session.DisplayName, session.Session), true);
+	}
+
 	private async void OnStartWorkoutClicked(object? sender, EventArgs e)
 	{
 		if (_isStarterTemplate)
@@ -281,7 +303,6 @@ public partial class ProgramDetailPage : ContentPage
 			var result = await _api.CloneStarterTemplateAsync(_programId);
 			if (result.Success && result.Data is not null)
 			{
-				// Navigate to the cloned program detail (now user-owned)
 				var clonedPage = new ProgramDetailPage(result.Data.Id);
 				Navigation.InsertPageBefore(clonedPage, this);
 				await Navigation.PopAsync(true);
@@ -290,11 +311,17 @@ public partial class ProgramDetailPage : ContentPage
 			{
 				StartWorkoutButton.IsEnabled = true;
 				StartWorkoutButton.Text = "Başla";
-				await DisplayAlertAsync("Hata", result.Error ?? "Template kopyalanamadı", "Tamam");
+				await DisplayAlert("Hata", result.Error ?? "Template kopyalanamadı", "Tamam");
 			}
 			return;
 		}
 
-		await Navigation.PushAsync(new NewWorkoutPage(), true);
+		if (_program is null) return;
+
+		var session = await SessionPickerHelper.PickSessionAsync(this, _program);
+		if (session is null) return;
+
+		await Navigation.PushAsync(
+			new StartWorkoutSessionPage(_program.Name, session.DisplayName, session.Session), true);
 	}
 }

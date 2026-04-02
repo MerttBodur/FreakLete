@@ -4,8 +4,8 @@ public static class WorkoutImageResolver
 {
     private static readonly Dictionary<string, string> TemplateImageMap = new(StringComparer.OrdinalIgnoreCase)
     {
-        // Add entries here when image assets are placed in Resources/Images/
-        // Example: { "Full Body Foundation 3-Day", "workout_fullbody.png" },
+        { "Full Body Foundation 3-Day", "workout_fullbody_foundation" },
+        { "In-Season Maintenance 2-Day", "workout_inseason_maintenance" },
     };
 
     /// <summary>
