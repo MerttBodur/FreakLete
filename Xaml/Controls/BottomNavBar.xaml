@@ -24,13 +24,13 @@
                     StrokeThickness="0"
                     Stroke="Transparent"
                     BackgroundColor="Transparent"
-                    Padding="14,8"
+                    Padding="16,10"
                     HorizontalOptions="Center">
                 <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
                     <Image x:Name="HomeIcon"
                            Source="nav_home.svg"
-                           WidthRequest="24"
-                           HeightRequest="24"
+                           WidthRequest="28"
+                           HeightRequest="28"
                            HorizontalOptions="Center" />
                     <Label x:Name="HomeLabel"
                            Text="Home"
@@ -52,13 +52,13 @@
                     StrokeThickness="0"
                     Stroke="Transparent"
                     BackgroundColor="Transparent"
-                    Padding="14,8"
+                    Padding="16,10"
                     HorizontalOptions="Center">
                 <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
                     <Image x:Name="WorkoutIcon"
                            Source="nav_dumbbell.svg"
-                           WidthRequest="24"
-                           HeightRequest="24"
+                           WidthRequest="28"
+                           HeightRequest="28"
                            HorizontalOptions="Center" />
                     <Label x:Name="WorkoutLabel"
                            Text="Workout"
@@ -80,13 +80,13 @@
                     StrokeThickness="0"
                     Stroke="Transparent"
                     BackgroundColor="Transparent"
-                    Padding="14,8"
+                    Padding="16,10"
                     HorizontalOptions="Center">
                 <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
                     <Image x:Name="FreakAiIcon"
                            Source="nav_notebook.svg"
-                           WidthRequest="24"
-                           HeightRequest="24"
+                           WidthRequest="28"
+                           HeightRequest="28"
                            HorizontalOptions="Center" />
                     <Label x:Name="FreakAiLabel"
                            Text="FreakAI"
@@ -108,13 +108,13 @@
                     StrokeThickness="0"
                     Stroke="Transparent"
                     BackgroundColor="Transparent"
-                    Padding="14,8"
+                    Padding="16,10"
                     HorizontalOptions="Center">
                 <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
                     <Image x:Name="CalculationsIcon"
                            Source="nav_plates.svg"
-                           WidthRequest="24"
-                           HeightRequest="24"
+                           WidthRequest="28"
+                           HeightRequest="28"
                            HorizontalOptions="Center" />
                     <Label x:Name="CalculationsLabel"
                            Text="Calc"
@@ -136,13 +136,13 @@
                     StrokeThickness="0"
                     Stroke="Transparent"
                     BackgroundColor="Transparent"
-                    Padding="14,8"
+                    Padding="16,10"
                     HorizontalOptions="Center">
                 <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
                     <Image x:Name="ProfileIcon"
                            Source="nav_profile.svg"
-                           WidthRequest="24"
-                           HeightRequest="24"
+                           WidthRequest="28"
+                           HeightRequest="28"
                            HorizontalOptions="Center" />
                     <Label x:Name="ProfileLabel"
                            Text="Profile"

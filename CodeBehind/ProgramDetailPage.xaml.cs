@@ -85,7 +85,7 @@ public partial class ProgramDetailPage : ContentPage
 		// Update CTA for starter templates
 		if (_isStarterTemplate)
 		{
-			StartWorkoutButton.Text = "Bu Template'i Kullan";
+			StartWorkoutButton.Text = "Başla";
 		}
 	}
 
@@ -289,7 +289,7 @@ public partial class ProgramDetailPage : ContentPage
 			else
 			{
 				StartWorkoutButton.IsEnabled = true;
-				StartWorkoutButton.Text = "Bu Template'i Kullan";
+				StartWorkoutButton.Text = "Başla";
 				await DisplayAlertAsync("Hata", result.Error ?? "Template kopyalanamadı", "Tamam");
 			}
 			return;

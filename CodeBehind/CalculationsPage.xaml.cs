@@ -192,13 +192,21 @@ public partial class CalculationsPage : ContentPage
 		var best = entries.First();
 		bool isStrength = best.TrackingMode == "Strength";
 
+		double SafeEstimated1Rm(PrEntryResponse e)
+		{
+			if (e.Weight <= 0 || e.Reps <= 0)
+				return e.Weight;
+			return CalculationService.CalculateOneRm(e.Weight, e.Reps, e.RIR ?? 0);
+		}
+
 		// Find best value
 		if (isStrength)
 		{
-			best = entries.OrderByDescending(e => e.Weight).First();
+			best = entries.OrderByDescending(e => SafeEstimated1Rm(e)).First();
 			HeroPrExerciseLabel.Text = _selectedExerciseGroup.ExerciseName.ToUpperInvariant();
-			HeroPrStrengthLabel.Text = "MAXIMUM LOAD (KG)";
-			HeroPrValueLabel.Text = $"{best.Weight} kg";
+			HeroPrStrengthLabel.Text = "ESTIMATED 1RM (KG)";
+			var estimated1Rm = SafeEstimated1Rm(best);
+			HeroPrValueLabel.Text = $"{estimated1Rm:0.#} kg";
 		}
 		else
 		{
@@ -225,7 +233,7 @@ public partial class CalculationsPage : ContentPage
 		var points = chartPoints.Select(e => new ChartPoint
 		{
 			Date = e.CreatedAt,
-			Value = isStrength ? e.Weight : (e.Metric1Value ?? 0)
+			Value = isStrength ? SafeEstimated1Rm(e) : (e.Metric1Value ?? 0)
 		}).ToList();
 
 		if (points.Count >= 2)

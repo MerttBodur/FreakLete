@@ -1,3 +1,4 @@
+using FreakLete.Helpers;
 using FreakLete.Models;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -207,23 +208,46 @@ public partial class HomePage : ContentPage
 
 			var stack = new VerticalStackLayout { Spacing = 0 };
 
-			// Image placeholder area
-			var imagePlaceholder = new Border
+			// Image area with overlay
+			var imageArea = new Grid { HeightRequest = 90 };
+			imageArea.Clip = new RoundRectangleGeometry(new CornerRadius(18, 18, 0, 0),
+				new Rect(0, 0, 180, 90));
+
+			var imageName = WorkoutImageResolver.GetImageForProgram(program.Name);
+			if (imageName is not null)
 			{
-				HeightRequest = 90,
-				BackgroundColor = (Color)Application.Current.Resources["SurfaceStrong"],
-				StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(18, 18, 0, 0) },
-				Stroke = new SolidColorBrush(Colors.Transparent),
-				Padding = 12,
-				Content = new Label
+				imageArea.Children.Add(new Image
+				{
+					Source = imageName,
+					Aspect = Aspect.AspectFill,
+					HorizontalOptions = LayoutOptions.Fill,
+					VerticalOptions = LayoutOptions.Fill
+				});
+				imageArea.Children.Add(new BoxView
+				{
+					Color = Colors.Black,
+					Opacity = 0.35,
+					HorizontalOptions = LayoutOptions.Fill,
+					VerticalOptions = LayoutOptions.Fill
+				});
+			}
+			else
+			{
+				imageArea.Children.Add(new BoxView
+				{
+					BackgroundColor = (Color)Application.Current.Resources["SurfaceStrong"],
+					HorizontalOptions = LayoutOptions.Fill,
+					VerticalOptions = LayoutOptions.Fill
+				});
+				imageArea.Children.Add(new Label
 				{
 					Text = "🏋️",
 					FontSize = 28,
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.Center
-				}
-			};
-			stack.Children.Add(imagePlaceholder);
+				});
+			}
+			stack.Children.Add(imageArea);
 
 			var textStack = new VerticalStackLayout
 			{
