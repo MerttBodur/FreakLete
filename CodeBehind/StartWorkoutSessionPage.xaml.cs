@@ -60,12 +60,20 @@ public partial class StartWorkoutSessionPage : ContentPage
 		ExercisesContainer.Children.Clear();
 		_rowData.Clear();
 
-		foreach (var pe in _session.Exercises.OrderBy(e => e.Order))
+		var exercises = _session.Exercises ?? [];
+		foreach (var pe in exercises.OrderBy(e => e.Order))
 		{
-			var prefilled = ProgramExerciseConverter.Convert(pe);
-			var (view, data) = ExerciseInputRowBuilder.Build(pe, prefilled);
-			_rowData.Add(data);
-			ExercisesContainer.Children.Add(view);
+			try
+			{
+				var prefilled = ProgramExerciseConverter.Convert(pe);
+				var (view, data) = ExerciseInputRowBuilder.Build(pe, prefilled);
+				_rowData.Add(data);
+				ExercisesContainer.Children.Add(view);
+			}
+			catch
+			{
+				// Skip exercises that fail to convert rather than crashing
+			}
 		}
 	}
 

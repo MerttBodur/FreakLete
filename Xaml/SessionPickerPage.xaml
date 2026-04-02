@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FreakLete.SessionPickerPage"
+             NavigationPage.HasNavigationBar="False"
+             Title="Seans Seç"
+             BackgroundColor="{StaticResource Background}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Top Bar -->
+        <HorizontalStackLayout Grid.Row="0"
+                               Padding="16,14,16,8"
+                               Spacing="12"
+                               VerticalOptions="Center">
+            <Border StrokeShape="RoundRectangle 14"
+                    BackgroundColor="{StaticResource SurfaceRaised}"
+                    Stroke="{StaticResource SurfaceBorder}"
+                    StrokeThickness="1"
+                    Padding="10,8"
+                    HeightRequest="40"
+                    WidthRequest="40">
+                <Label Text="&#x2190;"
+                       FontSize="18"
+                       FontFamily="OpenSansSemibold"
+                       TextColor="{StaticResource TextPrimary}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCancelClicked" />
+                </Border.GestureRecognizers>
+            </Border>
+            <Label Text="Seans Seç"
+                   FontSize="18"
+                   FontFamily="OpenSansSemibold"
+                   TextColor="{StaticResource TextPrimary}"
+                   VerticalOptions="Center" />
+        </HorizontalStackLayout>
+
+        <!-- Session Cards -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout x:Name="SessionsContainer"
+                                 Padding="20,8,20,24"
+                                 Spacing="12" />
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

@@ -15,9 +15,11 @@ public static class SessionPickerHelper
 	public static List<SessionOption> FlattenSessions(TrainingProgramResponse program)
 	{
 		var options = new List<SessionOption>();
-		foreach (var week in program.Weeks.OrderBy(w => w.WeekNumber))
+		var weeks = program.Weeks ?? [];
+		foreach (var week in weeks.OrderBy(w => w.WeekNumber))
 		{
-			foreach (var session in week.Sessions.OrderBy(s => s.DayNumber))
+			var sessions = week.Sessions ?? [];
+			foreach (var session in sessions.OrderBy(s => s.DayNumber))
 			{
 				string label = !string.IsNullOrWhiteSpace(session.SessionName)
 					? $"Week {week.WeekNumber} - {session.SessionName}"
@@ -39,7 +41,7 @@ public static class SessionPickerHelper
 	}
 
 	/// <summary>
-	/// Shows a session picker if multiple sessions exist, auto-picks if only one.
+	/// Shows a custom session picker if multiple sessions exist, auto-picks if only one.
 	/// Returns null if cancelled or no sessions available.
 	/// </summary>
 	public static async Task<SessionOption?> PickSessionAsync(Page page, TrainingProgramResponse program)
@@ -48,10 +50,9 @@ public static class SessionPickerHelper
 		if (options.Count == 0) return null;
 		if (options.Count == 1) return options[0];
 
-		var labels = options.Select(o => o.DisplayName).ToArray();
-		string? chosen = await page.DisplayActionSheet("Seans Seç", "İptal", null, labels);
-		if (string.IsNullOrEmpty(chosen) || chosen == "İptal") return null;
-
-		return options.FirstOrDefault(o => o.DisplayName == chosen);
+		var tcs = new TaskCompletionSource<SessionOption?>();
+		var pickerPage = new SessionPickerPage(options, tcs);
+		await page.Navigation.PushAsync(pickerPage, true);
+		return await tcs.Task;
 	}
 }
