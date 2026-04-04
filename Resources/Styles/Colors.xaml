@@ -29,6 +29,7 @@
     <Color x:Key="EditSoft">#24203A</Color>
     <Color x:Key="TopBar">#161125</Color>
     <Color x:Key="Warning">#F59E0B</Color>
+    <Color x:Key="Error">#EF4444</Color>
     <Color x:Key="SuccessSoft">#0D2818</Color>
     <Color x:Key="WarningSoft">#2A1F06</Color>
     <Color x:Key="InfoSoft">#0D1B2A</Color>
