@@ -233,16 +233,20 @@ public partial class HomePage : ContentPage
 			}
 			else
 			{
+				var fallbackHex = WorkoutImageResolver.GetFallbackColor(program.Name);
 				imageArea.Children.Add(new BoxView
 				{
-					BackgroundColor = (Color)Application.Current.Resources["SurfaceStrong"],
+					BackgroundColor = Color.FromArgb(fallbackHex),
 					HorizontalOptions = LayoutOptions.Fill,
 					VerticalOptions = LayoutOptions.Fill
 				});
 				imageArea.Children.Add(new Label
 				{
-					Text = "🏋️",
-					FontSize = 28,
+					Text = program.Name.Length > 0 ? program.Name[..1] : "W",
+					FontSize = 30,
+					FontFamily = "OpenSansSemibold",
+					TextColor = Colors.White,
+					Opacity = 0.6,
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.Center
 				});

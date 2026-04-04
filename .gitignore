@@ -71,3 +71,4 @@ appsettings.Development.json
 *.db3
 *.sqlite
 *.sqlite3
+.claude/

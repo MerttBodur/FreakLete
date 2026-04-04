@@ -43,10 +43,9 @@ public class ApiClient : IApiClient
 		// Local development backend
 #if ANDROID
 		// Android emulator routes 10.0.2.2 to host machine's localhost.
-		// Use HTTPS in debug so Android does not block cleartext local traffic.
-		return "https://10.0.2.2:7074";
+		return "http://10.0.2.2:5131";
 #else
-		return "https://localhost:7074";
+		return "http://localhost:5131";
 #endif
 #else
 		// Release / production
