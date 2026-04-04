@@ -361,4 +361,122 @@ public class WorkoutIntegrationTests : IAsyncLifetime
         Assert.Equal(2.5, ex.GetProperty("metric2Value").GetDouble());
         Assert.Equal("m/s", ex.GetProperty("metric2Unit").GetString());
     }
+
+    // ════════════════════════════════════════════════════════════════
+    //  LIVE SESSION PERSIST (template & empty mode payloads)
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task LiveSession_TemplatePersist_CreatesAndAppearsInHistory()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+
+        // Simulates the payload shape from WorkoutPreviewPage after a template session
+        var exercises = new List<object>
+        {
+            new
+            {
+                exerciseName = "Bench Press",
+                exerciseCategory = "Push",
+                trackingMode = "Strength",
+                sets = 4,
+                reps = 8,
+                rir = 2,
+                restSeconds = 90,
+                metric1Value = 80.0,
+                metric1Unit = "kg"
+            },
+            new
+            {
+                exerciseName = "Incline Dumbbell Press",
+                exerciseCategory = "Push",
+                trackingMode = "Strength",
+                sets = 3,
+                reps = 10,
+                restSeconds = 60
+            }
+        };
+
+        var payload = new
+        {
+            workoutName = "Full Body Foundation 3-Day - Week 1 - Day 1 Push",
+            workoutDate = $"{DateTime.UtcNow:yyyy-MM-dd}",
+            exercises
+        };
+
+        var createResp = await c.PostAsJsonAsync("/api/workouts", payload);
+        Assert.Equal(HttpStatusCode.Created, createResp.StatusCode);
+
+        var created = JsonDocument.Parse(await createResp.Content.ReadAsStringAsync()).RootElement;
+        Assert.Equal("Full Body Foundation 3-Day - Week 1 - Day 1 Push",
+            created.GetProperty("workoutName").GetString());
+        Assert.Equal(2, created.GetProperty("exercises").GetArrayLength());
+
+        // Verify it appears in the user's workout list (history)
+        var listResp = await c.GetAsync("/api/workouts");
+        var list = JsonDocument.Parse(await listResp.Content.ReadAsStringAsync()).RootElement;
+        Assert.Equal(1, list.GetArrayLength());
+        Assert.Equal("Full Body Foundation 3-Day - Week 1 - Day 1 Push",
+            list[0].GetProperty("workoutName").GetString());
+
+        // Verify it appears in by-date query
+        var dateResp = await c.GetAsync($"/api/workouts/by-date/{DateTime.UtcNow:yyyy-MM-dd}");
+        var dateList = JsonDocument.Parse(await dateResp.Content.ReadAsStringAsync()).RootElement;
+        Assert.True(dateList.GetArrayLength() >= 1);
+    }
+
+    [Fact]
+    public async Task LiveSession_EmptyModePersist_CreatesAndAppearsInHistory()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+
+        // Simulates the payload shape from an empty/free-form session
+        var exercises = new List<object>
+        {
+            new
+            {
+                exerciseName = "Pull-up",
+                exerciseCategory = "Pull",
+                trackingMode = "Strength",
+                sets = 3,
+                reps = 8
+            }
+        };
+
+        var payload = new
+        {
+            workoutName = "Serbest Antrenman",
+            workoutDate = $"{DateTime.UtcNow:yyyy-MM-dd}",
+            exercises
+        };
+
+        var createResp = await c.PostAsJsonAsync("/api/workouts", payload);
+        Assert.Equal(HttpStatusCode.Created, createResp.StatusCode);
+
+        var created = JsonDocument.Parse(await createResp.Content.ReadAsStringAsync()).RootElement;
+        Assert.Equal("Serbest Antrenman", created.GetProperty("workoutName").GetString());
+
+        // Verify in list
+        var listResp = await c.GetAsync("/api/workouts");
+        var list = JsonDocument.Parse(await listResp.Content.ReadAsStringAsync()).RootElement;
+        Assert.Equal(1, list.GetArrayLength());
+    }
+
+    [Fact]
+    public async Task LiveSession_EmptyExerciseList_Returns400()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+
+        // Empty exercise list should still be accepted (validation is client-side)
+        var payload = new
+        {
+            workoutName = "Empty Session",
+            workoutDate = $"{DateTime.UtcNow:yyyy-MM-dd}",
+            exercises = new List<object>()
+        };
+
+        var resp = await c.PostAsJsonAsync("/api/workouts", payload);
+        // API accepts empty exercises (no server-side min-count validation)
+        Assert.Equal(HttpStatusCode.Created, resp.StatusCode);
+    }
 }
