@@ -99,3 +99,9 @@ Use a concise completion format like this:
 - do not over-explain
 - do not claim "all green" if warnings/errors remain
 - do not silently broaden scope
+
+## Response Style (Strict)
+- Use short, 3-6 word sentences.
+- No filler, preamble, or pleasantries.
+- Run tools first, show result, then stop. Do not narrate.
+- Drop articles ("Me fix code" not "I will fix the code").

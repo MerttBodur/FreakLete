@@ -72,3 +72,66 @@ public class SaveCoachProfileRequest
     public string? InjuryHistory { get; set; }
     public string? CurrentPainPoints { get; set; }
 }
+
+// ── Training Program DTOs (for SessionPickerHelper tests) ───
+
+public class TrainingProgramResponse
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Description { get; set; } = "";
+    public string Goal { get; set; } = "";
+    public int DaysPerWeek { get; set; }
+    public int SessionDurationMinutes { get; set; }
+    public string Status { get; set; } = "";
+    public string Sport { get; set; } = "";
+    public string Position { get; set; } = "";
+    public string Notes { get; set; } = "";
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public bool IsStarterTemplate { get; set; }
+    public List<ProgramWeekResponse> Weeks { get; set; } = [];
+}
+
+public class ProgramWeekResponse
+{
+    public int Id { get; set; }
+    public int WeekNumber { get; set; }
+    public string Focus { get; set; } = "";
+    public bool IsDeload { get; set; }
+    public List<ProgramSessionResponse> Sessions { get; set; } = [];
+}
+
+public class ProgramSessionResponse
+{
+    public int Id { get; set; }
+    public int DayNumber { get; set; }
+    public string SessionName { get; set; } = "";
+    public string Focus { get; set; } = "";
+    public string Notes { get; set; } = "";
+    public List<ProgramExerciseResponse> Exercises { get; set; } = [];
+}
+
+public class ProgramExerciseResponse
+{
+    public int Id { get; set; }
+    public int Order { get; set; }
+    public string ExerciseName { get; set; } = "";
+    public string ExerciseCategory { get; set; } = "";
+    public int Sets { get; set; }
+    public string RepsOrDuration { get; set; } = "";
+    public string IntensityGuidance { get; set; } = "";
+    public int? RestSeconds { get; set; }
+    public string Notes { get; set; } = "";
+    public string SupersetGroup { get; set; } = "";
+}
+
+public class TrainingProgramListResponse
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Goal { get; set; } = "";
+    public string Status { get; set; } = "";
+    public int DaysPerWeek { get; set; }
+    public DateTime CreatedAt { get; set; }
+}

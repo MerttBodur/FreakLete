@@ -10,6 +10,7 @@ public partial class ProgramDetailPage : ContentPage
 	private readonly int _programId;
 	private readonly bool _isStarterTemplate;
 	private TrainingProgramResponse? _program;
+	private bool _pickingSession;
 
 	public ProgramDetailPage(int programId, bool isStarterTemplate = false)
 	{
@@ -22,6 +23,11 @@ public partial class ProgramDetailPage : ContentPage
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
+		if (_pickingSession)
+		{
+			_pickingSession = false;
+			return;
+		}
 		await LoadProgramAsync();
 	}
 
@@ -33,6 +39,7 @@ public partial class ProgramDetailPage : ContentPage
 
 		if (!result.Success || result.Data is null)
 		{
+			await DisplayAlert("Hata", result.Error ?? "Program yüklenemedi.", "Tamam");
 			await Navigation.PopAsync();
 			return;
 		}
@@ -76,28 +83,20 @@ public partial class ProgramDetailPage : ContentPage
 		}
 
 		// Stats
-		int totalSessions = program.Weeks.Sum(w => w.Sessions.Count);
-		int totalExercises = program.Weeks.Sum(w => w.Sessions.Sum(s => s.Exercises.Count));
+		var weeks = program.Weeks ?? [];
+		int totalSessions = weeks.Sum(w => (w.Sessions ?? []).Count);
+		int totalExercises = weeks.Sum(w => (w.Sessions ?? []).Sum(s => (s.Exercises ?? []).Count));
 
-		WeeksCountLabel.Text = program.Weeks.Count.ToString();
+		WeeksCountLabel.Text = weeks.Count.ToString();
 		SessionsCountLabel.Text = totalSessions.ToString();
 		ExercisesCountLabel.Text = totalExercises.ToString();
 
-		BuildWeekStructure(program.Weeks);
+		BuildWeekStructure(weeks);
 
-		// Toggle bottom buttons: templates get single "Başla", user-owned get two buttons
-		if (_isStarterTemplate)
-		{
-			StartWorkoutButton.IsVisible = true;
-			AddWorkoutButton.IsVisible = false;
-			StartLiveWorkoutButton.IsVisible = false;
-		}
-		else
-		{
-			StartWorkoutButton.IsVisible = false;
-			AddWorkoutButton.IsVisible = true;
-			StartLiveWorkoutButton.IsVisible = true;
-		}
+		// Bottom buttons: always show Add + Start; hide clone-only button
+		StartWorkoutButton.IsVisible = false;
+		AddWorkoutButton.IsVisible = true;
+		StartLiveWorkoutButton.IsVisible = true;
 	}
 
 	private void BuildWeekStructure(List<ProgramWeekResponse> weeks)
@@ -284,10 +283,20 @@ public partial class ProgramDetailPage : ContentPage
 
 	private async void OnAddWorkoutClicked(object? sender, EventArgs e)
 	{
-		if (_program is null) return;
+		if (_program is null)
+		{
+			await DisplayAlert("Hata", "Program verisi yüklenemedi. Lütfen geri dönüp tekrar deneyin.", "Tamam");
+			return;
+		}
 
+		_pickingSession = true;
 		var session = await SessionPickerHelper.PickSessionAsync(this, _program);
-		if (session is null) return;
+		if (session is null)
+		{
+			if (SessionPickerHelper.FlattenSessions(_program).Count == 0)
+				await DisplayAlert("Hata", "Bu programda henüz seans bulunmuyor.", "Tamam");
+			return;
+		}
 
 		await Navigation.PushAsync(
 			new AddWorkoutFromProgramPage(_program.Name, session.DisplayName, session.Session), true);
@@ -295,31 +304,20 @@ public partial class ProgramDetailPage : ContentPage
 
 	private async void OnStartWorkoutClicked(object? sender, EventArgs e)
 	{
-		if (_isStarterTemplate)
+		if (_program is null)
 		{
-			StartWorkoutButton.IsEnabled = false;
-			StartWorkoutButton.Text = "Kopyalanıyor...";
-
-			var result = await _api.CloneStarterTemplateAsync(_programId);
-			if (result.Success && result.Data is not null)
-			{
-				var clonedPage = new ProgramDetailPage(result.Data.Id);
-				Navigation.InsertPageBefore(clonedPage, this);
-				await Navigation.PopAsync(true);
-			}
-			else
-			{
-				StartWorkoutButton.IsEnabled = true;
-				StartWorkoutButton.Text = "Başla";
-				await DisplayAlert("Hata", result.Error ?? "Template kopyalanamadı", "Tamam");
-			}
+			await DisplayAlert("Hata", "Program verisi yüklenemedi. Lütfen geri dönüp tekrar deneyin.", "Tamam");
 			return;
 		}
 
-		if (_program is null) return;
-
+		_pickingSession = true;
 		var session = await SessionPickerHelper.PickSessionAsync(this, _program);
-		if (session is null) return;
+		if (session is null)
+		{
+			if (SessionPickerHelper.FlattenSessions(_program).Count == 0)
+				await DisplayAlert("Hata", "Bu programda henüz seans bulunmuyor.", "Tamam");
+			return;
+		}
 
 		await Navigation.PushAsync(
 			new StartWorkoutSessionPage(_program.Name, session.DisplayName, session.Session), true);

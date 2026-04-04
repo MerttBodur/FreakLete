@@ -15,7 +15,7 @@ public partial class HomePage : ContentPage
 	private string _exercise2Name = "Squat";
 	private List<WorkoutResponse>? _allWorkouts;
 	private int _pickingExerciseSlot; // 0 = not picking, 1 = picking ex1, 2 = picking ex2
-	private bool _showingStarterTemplates;
+	private sealed record QuickCard(TrainingProgramListResponse Program, bool IsStarter);
 
 	public HomePage()
 	{
@@ -78,22 +78,27 @@ public partial class HomePage : ContentPage
 			UpdateComparisonChart();
 		}
 
-		// Process quick workouts — fallback to starter templates if user has none
+		// Process quick workouts — show user programs + starter templates
 		var programsResult = programsTask.Result;
-		if (programsResult.Success && programsResult.Data is not null && programsResult.Data.Count > 0)
+		var starterResult = await _api.GetStarterTemplatesAsync();
+
+		var quickCards = new List<QuickCard>();
+
+		if (programsResult.Success && programsResult.Data is not null)
+			foreach (var p in programsResult.Data)
+				quickCards.Add(new QuickCard(p, false));
+
+		if (starterResult.Success && starterResult.Data is not null)
 		{
-			_showingStarterTemplates = false;
-			BuildQuickWorkoutCards(programsResult.Data);
+			var existingNames = new HashSet<string>(
+				quickCards.Select(c => c.Program.Name), StringComparer.OrdinalIgnoreCase);
+			foreach (var p in starterResult.Data)
+				if (!existingNames.Contains(p.Name))
+					quickCards.Add(new QuickCard(p, true));
 		}
-		else
-		{
-			var starterResult = await _api.GetStarterTemplatesAsync();
-			if (starterResult.Success && starterResult.Data is not null && starterResult.Data.Count > 0)
-			{
-				_showingStarterTemplates = true;
-				BuildQuickWorkoutCards(starterResult.Data);
-			}
-		}
+
+		if (quickCards.Count > 0)
+			BuildQuickWorkoutCards(quickCards.Take(6).ToList());
 	}
 
 	private void UpdateComparisonChart()
@@ -181,11 +186,11 @@ public partial class HomePage : ContentPage
 		}
 	}
 
-	private void BuildQuickWorkoutCards(List<TrainingProgramListResponse> programs)
+	private void BuildQuickWorkoutCards(List<QuickCard> cards)
 	{
 		QuickWorkoutsLayout.Children.Clear();
 
-		foreach (var program in programs.Take(6))
+		foreach (var (program, isStarter) in cards)
 		{
 			var card = new Border
 			{
@@ -295,8 +300,8 @@ public partial class HomePage : ContentPage
 
 			var tap = new TapGestureRecognizer();
 			int programId = program.Id;
-			bool isStarter = _showingStarterTemplates;
-			tap.Tapped += async (s, e) => await OnQuickWorkoutTapped(programId, isStarter);
+			bool cardIsStarter = isStarter;
+			tap.Tapped += async (s, e) => await OnQuickWorkoutTapped(programId, cardIsStarter);
 			card.GestureRecognizers.Add(tap);
 
 			QuickWorkoutsLayout.Children.Add(card);

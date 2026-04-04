@@ -27,7 +27,8 @@ public partial class AddWorkoutFromProgramPage : ContentPage
 		ExercisesContainer.Children.Clear();
 		_rowData.Clear();
 
-		foreach (var pe in _session.Exercises.OrderBy(e => e.Order))
+		var exercises = _session.Exercises ?? [];
+		foreach (var pe in exercises.OrderBy(e => e.Order))
 		{
 			var prefilled = ProgramExerciseConverter.Convert(pe);
 			var (view, data) = ExerciseInputRowBuilder.Build(pe, prefilled);

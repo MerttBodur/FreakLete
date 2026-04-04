@@ -12,7 +12,7 @@ public partial class WorkoutPage : ContentPage
 	private List<TrainingProgramListResponse> _allPrograms = [];
 	private List<RecommendedProgramInfo> _recommendedPrograms = [];
 	private string? _selectedGoalFilter;
-	private bool _showingStarterTemplates;
+	private readonly HashSet<int> _starterTemplateIds = [];
 
 	public WorkoutPage()
 	{
@@ -43,38 +43,39 @@ public partial class WorkoutPage : ContentPage
 
 			await Task.WhenAll(programsTask, activeTask, Task.WhenAll(weeklyTasks));
 
-			// Process program list — fallback to starter templates if user has none
-			var templatesResult = programsTask.Result;
-			_showingStarterTemplates = false;
+			// Process program list — merge user programs + starter templates
+			var userProgramsResult = programsTask.Result;
+			var starterResult = await _api.GetStarterTemplatesAsync();
 
-			if (templatesResult.Success && templatesResult.Data is not null && templatesResult.Data.Count > 0)
+			_programs.Clear();
+			_starterTemplateIds.Clear();
+			int userProgramCount = 0;
+
+			if (userProgramsResult.Success && userProgramsResult.Data is not null)
 			{
-				_programs.Clear();
-				foreach (var program in templatesResult.Data)
+				foreach (var program in userProgramsResult.Data)
+				{
 					_programs.Add(program);
-
-				NoProgramsLabel.IsVisible = false;
-				ProgramCountLabel.Text = _programs.Count.ToString();
+					userProgramCount++;
+				}
 			}
-			else
+
+			if (starterResult.Success && starterResult.Data is not null)
 			{
-				var starterResult = await _api.GetStarterTemplatesAsync();
-				if (starterResult.Success && starterResult.Data is not null && starterResult.Data.Count > 0)
+				var existingNames = new HashSet<string>(
+					_programs.Select(p => p.Name), StringComparer.OrdinalIgnoreCase);
+				foreach (var program in starterResult.Data)
 				{
-					_showingStarterTemplates = true;
-					_programs.Clear();
-					foreach (var program in starterResult.Data)
+					if (!existingNames.Contains(program.Name))
+					{
 						_programs.Add(program);
-
-					NoProgramsLabel.IsVisible = false;
-					ProgramCountLabel.Text = "0";
-				}
-				else
-				{
-					NoProgramsLabel.IsVisible = true;
-					ProgramCountLabel.Text = "0";
+						_starterTemplateIds.Add(program.Id);
+					}
 				}
 			}
+
+			NoProgramsLabel.IsVisible = _programs.Count == 0;
+			ProgramCountLabel.Text = userProgramCount.ToString();
 
 			// Process active program
 			var activeResult = activeTask.Result;
@@ -115,14 +116,14 @@ public partial class WorkoutPage : ContentPage
 
 			var candidates = _allPrograms
 				.Where(p => _activeProgram is null || p.Id != _activeProgram.Id)
-				.Take(4)
+				.Take(5)
 				.ToList();
 
 			// Load full details for recommended programs in parallel
 			if (candidates.Count > 0)
 			{
 				var detailTasks = candidates.Select(c =>
-					_showingStarterTemplates
+					_starterTemplateIds.Contains(c.Id)
 						? _api.GetStarterTemplateByIdAsync(c.Id)
 						: _api.GetProgramByIdAsync(c.Id)
 				).ToArray();
@@ -131,9 +132,12 @@ public partial class WorkoutPage : ContentPage
 				_recommendedPrograms = candidates.Select((c, i) =>
 				{
 					var detail = detailTasks[i].Result;
-					var full = detail.Success ? detail.Data : null;
+					if (!detail.Success || detail.Data is null)
+						return null;
+
+					var full = detail.Data;
 					string? formatPill = null;
-					if (full?.Weeks is not null)
+					if (full.Weeks is not null)
 					{
 						formatPill = full.Weeks
 							.SelectMany(w => w.Sessions)
@@ -149,10 +153,10 @@ public partial class WorkoutPage : ContentPage
 						Goal = c.Goal,
 						Status = c.Status,
 						DaysPerWeek = c.DaysPerWeek,
-						SessionDurationMinutes = full?.SessionDurationMinutes ?? 0,
+						SessionDurationMinutes = full.SessionDurationMinutes,
 						FormatPill = formatPill
 					};
-				}).ToList();
+				}).Where(r => r is not null).ToList()!;
 			}
 			else
 			{
@@ -329,7 +333,7 @@ public partial class WorkoutPage : ContentPage
 		{
 			Command = new Command(async () =>
 			{
-				await Navigation.PushAsync(new ProgramDetailPage(rec.Id, _showingStarterTemplates), true);
+				await Navigation.PushAsync(new ProgramDetailPage(rec.Id, _starterTemplateIds.Contains(rec.Id)), true);
 			})
 		});
 
@@ -394,7 +398,7 @@ public partial class WorkoutPage : ContentPage
 
 		if (element.BindingContext is not TrainingProgramListResponse program) return;
 
-		await Navigation.PushAsync(new ProgramDetailPage(program.Id, _showingStarterTemplates), true);
+		await Navigation.PushAsync(new ProgramDetailPage(program.Id, _starterTemplateIds.Contains(program.Id)), true);
 	}
 
 	private async void OnOpenNewWorkoutClicked(object? sender, EventArgs e)
