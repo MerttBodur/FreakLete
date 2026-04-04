@@ -310,6 +310,6 @@ public partial class HomePage : ContentPage
 
 	private async void OnStartWorkoutClicked(object? sender, EventArgs e)
 	{
-		await Navigation.PushAsync(new WorkoutPage(), true);
+		await Navigation.PushAsync(new StartWorkoutSessionPage(), true);
 	}
 }

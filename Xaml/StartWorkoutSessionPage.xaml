@@ -64,6 +64,20 @@
                 <!-- Exercises container (built dynamically) -->
                 <VerticalStackLayout x:Name="ExercisesContainer" Spacing="12" />
 
+                <!-- Add Exercise Button -->
+                <Button x:Name="AddExerciseButton"
+                        Text="+ Egzersiz Ekle"
+                        BackgroundColor="{StaticResource SurfaceRaised}"
+                        TextColor="{StaticResource AccentGlow}"
+                        BorderColor="{StaticResource SurfaceBorder}"
+                        BorderWidth="1"
+                        Padding="16,12"
+                        CornerRadius="14"
+                        FontSize="14"
+                        FontFamily="OpenSansSemibold"
+                        Clicked="OnAddExerciseClicked"
+                        HorizontalOptions="FillAndExpand" />
+
             </VerticalStackLayout>
         </ScrollView>
 

@@ -13,6 +13,7 @@ public partial class WorkoutPreviewPage : ContentPage
 	private readonly TimeSpan _duration;
 	private readonly List<ExerciseEntry> _exercises;
 	private readonly StartWorkoutSessionPage _sessionPage;
+	private bool _saved;
 
 	public WorkoutPreviewPage(
 		string workoutName,
@@ -32,6 +33,11 @@ public partial class WorkoutPreviewPage : ContentPage
 		BuildSummary();
 		BuildExerciseList();
 	}
+
+	/// <summary>
+	/// Whether this preview resulted in a successful save.
+	/// </summary>
+	public bool Saved => _saved;
 
 	private void BuildSummary()
 	{
@@ -122,6 +128,7 @@ public partial class WorkoutPreviewPage : ContentPage
 		var result = await _api.CreateWorkoutAsync(workoutData);
 		if (result.Success)
 		{
+			_saved = true;
 			_sessionPage.StopAllTimers();
 			// Remove the live session page from the stack, then pop this page → lands on ProgramDetail
 			Navigation.RemovePage(_sessionPage);

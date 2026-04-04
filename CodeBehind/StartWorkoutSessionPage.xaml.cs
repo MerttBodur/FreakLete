@@ -6,33 +6,59 @@ namespace FreakLete;
 
 public partial class StartWorkoutSessionPage : ContentPage
 {
-	private readonly string _workoutName;
-	private readonly string _sessionDisplayName;
-	private readonly ProgramSessionResponse _session;
+	private readonly WorkoutSessionState _sessionState;
+	private readonly ProgramSessionResponse? _templateSession;
 	private readonly List<ExerciseInputRowBuilder.ExerciseRowData> _rowData = [];
 
-	private DateTime _startTime;
 	private IDispatcherTimer? _workoutTimer;
 	private IDispatcherTimer? _restTimer;
 	private int _restSecondsRemaining;
 	private bool _timerStarted;
+	private bool _pickingExercise;
 
+	/// <summary>
+	/// Template mode — pre-loads exercises from a program session.
+	/// </summary>
 	public StartWorkoutSessionPage(string programName, string sessionDisplayName, ProgramSessionResponse session)
 	{
 		InitializeComponent();
-		_session = session;
-		_sessionDisplayName = sessionDisplayName;
-		_workoutName = $"{programName} - {sessionDisplayName}";
-		WorkoutNameLabel.Text = _workoutName;
+		_templateSession = session;
+
+		var workoutName = $"{programName} - {sessionDisplayName}";
+		var exercises = ProgramExerciseConverter.ConvertAll(session.Exercises ?? []);
+
+		_sessionState = WorkoutSessionState.FromTemplate(workoutName, exercises);
+		WorkoutNameLabel.Text = _sessionState.WorkoutName;
 		BuildExerciseRows();
+	}
+
+	/// <summary>
+	/// Empty mode — starts a free-form workout with no pre-loaded exercises.
+	/// </summary>
+	public StartWorkoutSessionPage()
+	{
+		InitializeComponent();
+		_templateSession = null;
+		_sessionState = WorkoutSessionState.Empty();
+		WorkoutNameLabel.Text = _sessionState.WorkoutName;
+		// No exercises to build — user adds via "Egzersiz Ekle"
 	}
 
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
+
+		// If returning from exercise picker, don't restart timer
+		if (_pickingExercise)
+		{
+			_pickingExercise = false;
+			return;
+		}
+
 		if (!_timerStarted)
 		{
-			_startTime = DateTime.Now;
+			_sessionState.StartedAt = DateTime.Now;
+			_sessionState.IsActive = true;
 			_timerStarted = true;
 			_workoutTimer = Dispatcher.CreateTimer();
 			_workoutTimer.Interval = TimeSpan.FromSeconds(1);
@@ -49,7 +75,7 @@ public partial class StartWorkoutSessionPage : ContentPage
 
 	private void OnWorkoutTimerTick(object? sender, EventArgs e)
 	{
-		var elapsed = DateTime.Now - _startTime;
+		var elapsed = _sessionState.Elapsed;
 		TimerLabel.Text = elapsed.TotalHours >= 1
 			? elapsed.ToString(@"h\:mm\:ss")
 			: elapsed.ToString(@"mm\:ss");
@@ -60,35 +86,72 @@ public partial class StartWorkoutSessionPage : ContentPage
 		ExercisesContainer.Children.Clear();
 		_rowData.Clear();
 
-		var exercises = _session.Exercises ?? [];
-		foreach (var pe in exercises.OrderBy(e => e.Order))
+		if (_templateSession is not null)
 		{
-			try
+			var exercises = _templateSession.Exercises ?? [];
+			foreach (var pe in exercises.OrderBy(e => e.Order))
 			{
-				var prefilled = ProgramExerciseConverter.Convert(pe);
-				var (view, data) = ExerciseInputRowBuilder.Build(pe, prefilled);
-				_rowData.Add(data);
-				ExercisesContainer.Children.Add(view);
-			}
-			catch
-			{
-				// Skip exercises that fail to convert rather than crashing
+				try
+				{
+					var prefilled = ProgramExerciseConverter.Convert(pe);
+					var (view, data) = ExerciseInputRowBuilder.Build(pe, prefilled);
+					_rowData.Add(data);
+					ExercisesContainer.Children.Add(view);
+				}
+				catch
+				{
+					// Skip exercises that fail to convert rather than crashing
+				}
 			}
 		}
+
+		// Also add any exercises that were added dynamically (empty mode or mid-session adds)
+		// These are already in _rowData and ExercisesContainer from AddExerciseRow
+	}
+
+	private void AddExerciseRow(ExerciseCatalogItem catalogItem)
+	{
+		var pe = new ProgramExerciseResponse
+		{
+			ExerciseName = catalogItem.Name,
+			ExerciseCategory = catalogItem.Category,
+			Sets = 3,
+			RepsOrDuration = "10",
+			RestSeconds = 60,
+			Order = _rowData.Count + 1
+		};
+
+		var prefilled = ProgramExerciseConverter.Convert(pe);
+		var (view, data) = ExerciseInputRowBuilder.Build(pe, prefilled);
+		_rowData.Add(data);
+		ExercisesContainer.Children.Add(view);
+
+		// Also track in session state
+		_sessionState.Exercises.Add(prefilled);
+	}
+
+	private async void OnAddExerciseClicked(object? sender, EventArgs e)
+	{
+		_pickingExercise = true;
+		await Navigation.PushAsync(
+			new ExercisePickerPage("Egzersiz Ekle", ExerciseCatalog.Categories, OnExercisePicked), true);
+	}
+
+	private void OnExercisePicked(ExerciseCatalogItem item)
+	{
+		MainThread.BeginInvokeOnMainThread(() => AddExerciseRow(item));
 	}
 
 	private void OnRestClicked(object? sender, EventArgs e)
 	{
 		if (_restTimer is not null && _restTimer.IsRunning)
 		{
-			// Stop rest timer
 			_restTimer.Stop();
 			RestTimerLabel.IsVisible = false;
 			RestButton.Text = "Dinlenme Başlat";
 			return;
 		}
 
-		// Determine rest duration — use first exercise's RestSeconds or default 60
 		int restSeconds = 60;
 		foreach (var row in _rowData)
 		{
@@ -119,11 +182,9 @@ public partial class StartWorkoutSessionPage : ContentPage
 			RestTimerLabel.Text = "Rest: Done!";
 			RestButton.Text = "Dinlenme Başlat";
 
-			// Vibrate if supported
 			try { Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(300)); }
 			catch { /* ignore if not supported */ }
 
-			// Hide after 3 seconds
 			Dispatcher.DispatchDelayed(TimeSpan.FromSeconds(3), () =>
 			{
 				if (RestTimerLabel.Text == "Rest: Done!")
@@ -139,6 +200,7 @@ public partial class StartWorkoutSessionPage : ContentPage
 	{
 		ErrorLabel.IsVisible = false;
 
+		// Read current values from all input rows
 		var exercises = new List<ExerciseEntry>();
 		foreach (var row in _rowData)
 		{
@@ -159,9 +221,12 @@ public partial class StartWorkoutSessionPage : ContentPage
 			return;
 		}
 
-		var duration = DateTime.Now - _startTime;
+		// Capture current state — session stays active so user can go back
+		_sessionState.Exercises = exercises;
+
+		var duration = DateTime.Now - _sessionState.StartedAt;
 		await Navigation.PushAsync(
-			new WorkoutPreviewPage(_workoutName, DateTime.Now, duration, exercises, this), true);
+			new WorkoutPreviewPage(_sessionState.WorkoutName, _sessionState.StartedAt, duration, exercises, this), true);
 	}
 
 	private async void OnBackClicked(object? sender, TappedEventArgs e)
@@ -171,6 +236,7 @@ public partial class StartWorkoutSessionPage : ContentPage
 		if (confirm)
 		{
 			StopAllTimers();
+			_sessionState.Stop();
 			await Navigation.PopAsync(true);
 		}
 	}
