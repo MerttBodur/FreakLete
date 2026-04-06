@@ -12,9 +12,11 @@ public partial class StartWorkoutSessionPage : ContentPage
 
 	private IDispatcherTimer? _workoutTimer;
 	private IDispatcherTimer? _restTimer;
-	private int _restSecondsRemaining;
+	private int _restSecondsElapsed;
 	private bool _timerStarted;
 	private bool _pickingExercise;
+
+	private ExerciseInputRowBuilder.SetData? _activeSet;
 
 	/// <summary>
 	/// Template mode — pre-loads exercises from a program session.
@@ -41,14 +43,12 @@ public partial class StartWorkoutSessionPage : ContentPage
 		_templateSession = null;
 		_sessionState = WorkoutSessionState.Empty();
 		WorkoutNameLabel.Text = _sessionState.WorkoutName;
-		// No exercises to build — user adds via "Egzersiz Ekle"
 	}
 
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
 
-		// If returning from exercise picker, don't restart timer
 		if (_pickingExercise)
 		{
 			_pickingExercise = false;
@@ -70,7 +70,6 @@ public partial class StartWorkoutSessionPage : ContentPage
 	protected override void OnDisappearing()
 	{
 		base.OnDisappearing();
-		// Don't stop workout timer — it should keep counting when navigating to preview
 	}
 
 	private void OnWorkoutTimerTick(object? sender, EventArgs e)
@@ -94,19 +93,16 @@ public partial class StartWorkoutSessionPage : ContentPage
 				try
 				{
 					var prefilled = ProgramExerciseConverter.Convert(pe);
-					var (view, data) = ExerciseInputRowBuilder.Build(pe, prefilled);
+					var (view, data) = ExerciseInputRowBuilder.BuildLive(pe, prefilled, OnSetSelected);
 					_rowData.Add(data);
 					ExercisesContainer.Children.Add(view);
 				}
 				catch
 				{
-					// Skip exercises that fail to convert rather than crashing
+					// Skip exercises that fail to convert
 				}
 			}
 		}
-
-		// Also add any exercises that were added dynamically (empty mode or mid-session adds)
-		// These are already in _rowData and ExercisesContainer from AddExerciseRow
 	}
 
 	private void AddExerciseRow(ExerciseCatalogItem catalogItem)
@@ -122,12 +118,25 @@ public partial class StartWorkoutSessionPage : ContentPage
 		};
 
 		var prefilled = ProgramExerciseConverter.Convert(pe);
-		var (view, data) = ExerciseInputRowBuilder.Build(pe, prefilled);
+		var (view, data) = ExerciseInputRowBuilder.BuildLive(pe, prefilled, OnSetSelected);
 		_rowData.Add(data);
 		ExercisesContainer.Children.Add(view);
 
-		// Also track in session state
 		_sessionState.Exercises.Add(prefilled);
+	}
+
+	private void OnSetSelected(ExerciseInputRowBuilder.SetData set)
+	{
+		// Deselect previous
+		if (_activeSet is not null)
+		{
+			_activeSet.Row.Stroke = new SolidColorBrush(GetColor("SurfaceBorder", "#342D46"));
+			_activeSet.Row.StrokeThickness = 1;
+		}
+
+		_activeSet = set;
+		_activeSet.Row.Stroke = new SolidColorBrush(GetColor("AccentGlow", "#A78BFA"));
+		_activeSet.Row.StrokeThickness = 2;
 	}
 
 	private async void OnAddExerciseClicked(object? sender, EventArgs e)
@@ -146,26 +155,27 @@ public partial class StartWorkoutSessionPage : ContentPage
 	{
 		if (_restTimer is not null && _restTimer.IsRunning)
 		{
+			// Stop — write elapsed time to active set
 			_restTimer.Stop();
+
+			if (_activeSet is not null)
+			{
+				_activeSet.RestSeconds = _restSecondsElapsed;
+				int mins = _restSecondsElapsed / 60;
+				int secs = _restSecondsElapsed % 60;
+				_activeSet.RestLabel.Text = mins > 0 ? $"{mins}:{secs:D2}" : $"{secs}s";
+			}
+
 			RestTimerLabel.IsVisible = false;
 			RestButton.Text = "Dinlenme Başlat";
 			return;
 		}
 
-		int restSeconds = 60;
-		foreach (var row in _rowData)
-		{
-			if (row.TemplateExercise.RestSeconds is > 0)
-			{
-				restSeconds = row.TemplateExercise.RestSeconds.Value;
-				break;
-			}
-		}
-
-		_restSecondsRemaining = restSeconds;
-		RestTimerLabel.Text = $"Rest: {_restSecondsRemaining}s";
+		// Start count-up timer from 0
+		_restSecondsElapsed = 0;
+		RestTimerLabel.Text = "0:00";
 		RestTimerLabel.IsVisible = true;
-		RestButton.Text = "Dinlenme Durdur";
+		RestButton.Text = "Dinlenme Bitir";
 
 		_restTimer = Dispatcher.CreateTimer();
 		_restTimer.Interval = TimeSpan.FromSeconds(1);
@@ -175,32 +185,16 @@ public partial class StartWorkoutSessionPage : ContentPage
 
 	private void OnRestTimerTick(object? sender, EventArgs e)
 	{
-		_restSecondsRemaining--;
-		if (_restSecondsRemaining <= 0)
-		{
-			_restTimer?.Stop();
-			RestTimerLabel.Text = "Rest: Done!";
-			RestButton.Text = "Dinlenme Başlat";
-
-			try { Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(300)); }
-			catch { /* ignore if not supported */ }
-
-			Dispatcher.DispatchDelayed(TimeSpan.FromSeconds(3), () =>
-			{
-				if (RestTimerLabel.Text == "Rest: Done!")
-					RestTimerLabel.IsVisible = false;
-			});
-			return;
-		}
-
-		RestTimerLabel.Text = $"Rest: {_restSecondsRemaining}s";
+		_restSecondsElapsed++;
+		int mins = _restSecondsElapsed / 60;
+		int secs = _restSecondsElapsed % 60;
+		RestTimerLabel.Text = $"{mins}:{secs:D2}";
 	}
 
 	private async void OnFinishClicked(object? sender, EventArgs e)
 	{
 		ErrorLabel.IsVisible = false;
 
-		// Read current values from all input rows
 		var exercises = new List<ExerciseEntry>();
 		foreach (var row in _rowData)
 		{
@@ -221,7 +215,6 @@ public partial class StartWorkoutSessionPage : ContentPage
 			return;
 		}
 
-		// Capture current state — session stays active so user can go back
 		_sessionState.Exercises = exercises;
 
 		var duration = DateTime.Now - _sessionState.StartedAt;
@@ -245,5 +238,12 @@ public partial class StartWorkoutSessionPage : ContentPage
 	{
 		_workoutTimer?.Stop();
 		_restTimer?.Stop();
+	}
+
+	private static Color GetColor(string key, string fallback)
+	{
+		if (Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color)
+			return color;
+		return Color.FromArgb(fallback);
 	}
 }
