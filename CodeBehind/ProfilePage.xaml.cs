@@ -1118,6 +1118,14 @@ public partial class ProfilePage : ContentPage
 		ClearStatus();
 	}
 
+	// ── Settings ──────────────────────────────────────────────────────
+
+	private async void OnSettingsClicked(object? sender, EventArgs e)
+	{
+		_skipNextProfileReload = true;
+		await Navigation.PushAsync(new SettingsPage(), true);
+	}
+
 	// ── Account actions ───────────────────────────────────────────────
 
 	private void OnLogoutClicked(object? sender, EventArgs e)

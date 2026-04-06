@@ -596,6 +596,12 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Settings -->
+                <Button Text="&#x2699;  Ayarlar"
+                        Style="{StaticResource SecondaryButton}"
+                        Clicked="OnSettingsClicked"
+                        HorizontalOptions="Fill" />
+
                 <Grid ColumnDefinitions="*,*"
                       ColumnSpacing="12">
                     <Button Grid.Column="0"
