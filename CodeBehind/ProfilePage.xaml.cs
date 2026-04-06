@@ -1123,7 +1123,7 @@ public partial class ProfilePage : ContentPage
 	private async void OnSettingsClicked(object? sender, EventArgs e)
 	{
 		_skipNextProfileReload = true;
-		await Navigation.PushAsync(new SettingsPage(), true);
+		await Navigation.PushAsync(new SettingsPage(_profile?.Email), true);
 	}
 
 	// ── Account actions ───────────────────────────────────────────────

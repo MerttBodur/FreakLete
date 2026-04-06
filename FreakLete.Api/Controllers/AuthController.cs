@@ -71,6 +71,38 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+    {
+        var userId = User.GetUserId();
+        var user = await _db.Users.FindAsync(userId);
+        if (user is null) return NotFound();
+
+        if (!string.Equals(user.Email, request.Email, StringComparison.OrdinalIgnoreCase))
+            return BadRequest(new { message = "E-posta adresi hesabınızla eşleşmiyor." });
+
+        if (!PasswordHasher.VerifyPassword(request.CurrentPassword, user.PasswordHash))
+            return BadRequest(new { message = "Mevcut şifre hatalı." });
+
+        if (request.NewPassword != request.NewPasswordRepeat)
+            return BadRequest(new { message = "Yeni şifreler eşleşmiyor." });
+
+        if (request.NewPassword.Length < 8)
+            return BadRequest(new { message = "Şifre en az 8 karakter olmalıdır." });
+
+        if (!request.NewPassword.Any(char.IsUpper))
+            return BadRequest(new { message = "Şifre en az 1 büyük harf içermelidir." });
+
+        if (!request.NewPassword.Any(c => !char.IsLetterOrDigit(c)))
+            return BadRequest(new { message = "Şifre en az 1 özel karakter içermelidir." });
+
+        user.PasswordHash = PasswordHasher.HashPassword(request.NewPassword);
+        await _db.SaveChangesAsync();
+
+        return Ok(new { message = "Şifre başarıyla değiştirildi." });
+    }
+
+    [Authorize]
     [HttpGet("profile")]
     public async Task<ActionResult<UserProfileResponse>> GetProfile()
     {

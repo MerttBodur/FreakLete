@@ -140,6 +140,129 @@ public class AuthIntegrationTests : IAsyncLifetime
 
     // ── Delete account ─────────────────────────────────────────────
 
+    // ── Change Password ────────────────────────────────────────────
+
+    [Fact]
+    public async Task ChangePassword_ValidRequest_Returns200AndNewPasswordWorks()
+    {
+        var email = $"cp-{Guid.NewGuid():N}@example.com";
+        const string oldPassword = "OldPassword1!";
+        const string newPassword = "NewPassword1!";
+        var auth = await AuthTestHelper.RegisterAsync(_client, email: email, password: oldPassword);
+        var authedClient = _factory.CreateClient();
+        AuthTestHelper.Authenticate(authedClient, auth.Token);
+
+        var response = await authedClient.PostAsJsonAsync("/api/auth/change-password", new
+        {
+            email,
+            currentPassword = oldPassword,
+            newPassword,
+            newPasswordRepeat = newPassword
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        // Old password should fail login
+        var oldLoginResponse = await _client.PostAsJsonAsync("/api/auth/login", new { email, password = oldPassword });
+        Assert.Equal(HttpStatusCode.Unauthorized, oldLoginResponse.StatusCode);
+
+        // New password should succeed
+        var newLogin = await AuthTestHelper.LoginAsync(_client, email, newPassword);
+        Assert.False(string.IsNullOrEmpty(newLogin.Token));
+    }
+
+    [Fact]
+    public async Task ChangePassword_WrongCurrentPassword_Returns400()
+    {
+        var email = $"cp-wrong-{Guid.NewGuid():N}@example.com";
+        var auth = await AuthTestHelper.RegisterAsync(_client, email: email, password: "CorrectPass1!");
+        var authedClient = _factory.CreateClient();
+        AuthTestHelper.Authenticate(authedClient, auth.Token);
+
+        var response = await authedClient.PostAsJsonAsync("/api/auth/change-password", new
+        {
+            email,
+            currentPassword = "WrongPass1!",
+            newPassword = "BrandNew1!",
+            newPasswordRepeat = "BrandNew1!"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ChangePassword_EmailMismatch_Returns400()
+    {
+        var email = $"cp-email-{Guid.NewGuid():N}@example.com";
+        var auth = await AuthTestHelper.RegisterAsync(_client, email: email, password: "TestPassword1!");
+        var authedClient = _factory.CreateClient();
+        AuthTestHelper.Authenticate(authedClient, auth.Token);
+
+        var response = await authedClient.PostAsJsonAsync("/api/auth/change-password", new
+        {
+            email = "wrong@example.com",
+            currentPassword = "TestPassword1!",
+            newPassword = "NewPassword1!",
+            newPasswordRepeat = "NewPassword1!"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ChangePassword_MismatchedNewPasswords_Returns400()
+    {
+        var email = $"cp-mismatch-{Guid.NewGuid():N}@example.com";
+        var auth = await AuthTestHelper.RegisterAsync(_client, email: email, password: "TestPassword1!");
+        var authedClient = _factory.CreateClient();
+        AuthTestHelper.Authenticate(authedClient, auth.Token);
+
+        var response = await authedClient.PostAsJsonAsync("/api/auth/change-password", new
+        {
+            email,
+            currentPassword = "TestPassword1!",
+            newPassword = "NewPassword1!",
+            newPasswordRepeat = "DifferentPassword1!"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ChangePassword_WeakNewPassword_Returns400()
+    {
+        var email = $"cp-weak-{Guid.NewGuid():N}@example.com";
+        var auth = await AuthTestHelper.RegisterAsync(_client, email: email, password: "TestPassword1!");
+        var authedClient = _factory.CreateClient();
+        AuthTestHelper.Authenticate(authedClient, auth.Token);
+
+        var response = await authedClient.PostAsJsonAsync("/api/auth/change-password", new
+        {
+            email,
+            currentPassword = "TestPassword1!",
+            newPassword = "short",
+            newPasswordRepeat = "short"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ChangePassword_WithoutToken_Returns401()
+    {
+        var response = await _client.PostAsJsonAsync("/api/auth/change-password", new
+        {
+            email = "test@example.com",
+            currentPassword = "TestPassword1!",
+            newPassword = "NewPassword1!",
+            newPasswordRepeat = "NewPassword1!"
+        });
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    // ── Delete account ─────────────────────────────────────────────
+
     [Fact]
     public async Task DeleteAccount_RemovesUserAndInvalidatesProfile()
     {

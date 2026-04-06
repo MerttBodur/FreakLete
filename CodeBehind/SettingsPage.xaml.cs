@@ -1,10 +1,16 @@
+using FreakLete.Services;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace FreakLete;
 
 public partial class SettingsPage : ContentPage
 {
-	public SettingsPage()
+	private readonly string? _userEmail;
+
+	public SettingsPage(string? userEmail = null)
 	{
 		InitializeComponent();
+		_userEmail = userEmail;
 	}
 
 	private async void OnBackClicked(object? sender, TappedEventArgs e)
@@ -14,7 +20,7 @@ public partial class SettingsPage : ContentPage
 
 	private async void OnChangePasswordClicked(object? sender, TappedEventArgs e)
 	{
-		await DisplayAlert("Şifre Değiştir", "Bu özellik bir sonraki güncellemede kullanıma sunulacaktır.", "Tamam");
+		await Navigation.PushAsync(new ChangePasswordPage(_userEmail), true);
 	}
 
 	private async void OnLanguageClicked(object? sender, TappedEventArgs e)

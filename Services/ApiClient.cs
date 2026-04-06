@@ -67,6 +67,26 @@ public class ApiClient : IApiClient
 		return PostAsync<AuthResponse>("api/auth/login", request);
 	}
 
+	public async Task<ApiResult<bool>> ChangePasswordAsync(string email, string currentPassword, string newPassword, string newPasswordRepeat)
+	{
+		try
+		{
+			AttachToken();
+			var request = new { email, currentPassword, newPassword, newPasswordRepeat };
+			var response = await _http.PostAsJsonAsync("api/auth/change-password", request, JsonOptions);
+
+			if (response.IsSuccessStatusCode)
+				return ApiResult<bool>.Ok(true);
+
+			var error = await ReadError(response);
+			return ApiResult<bool>.Fail(error, (int)response.StatusCode);
+		}
+		catch (Exception ex)
+		{
+			return ApiResult<bool>.Fail($"Bağlantı hatası: {ex.Message}");
+		}
+	}
+
 	public Task<ApiResult<UserProfileResponse>> GetProfileAsync()
 	{
 		return GetAsync<UserProfileResponse>("api/auth/profile");
