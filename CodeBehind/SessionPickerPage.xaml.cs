@@ -84,8 +84,8 @@ public partial class SessionPickerPage : ContentPage
 		{
 			Command = new Command(async () =>
 			{
-				_tcs.TrySetResult(option);
 				await Navigation.PopAsync(true);
+				_tcs.TrySetResult(option);
 			})
 		});
 

@@ -293,6 +293,7 @@ public partial class ProgramDetailPage : ContentPage
 		var session = await SessionPickerHelper.PickSessionAsync(this, _program);
 		if (session is null)
 		{
+			_pickingSession = false;
 			if (SessionPickerHelper.FlattenSessions(_program).Count == 0)
 				await DisplayAlert("Hata", "Bu programda henüz seans bulunmuyor.", "Tamam");
 			return;
@@ -314,6 +315,7 @@ public partial class ProgramDetailPage : ContentPage
 		var session = await SessionPickerHelper.PickSessionAsync(this, _program);
 		if (session is null)
 		{
+			_pickingSession = false;
 			if (SessionPickerHelper.FlattenSessions(_program).Count == 0)
 				await DisplayAlert("Hata", "Bu programda henüz seans bulunmuyor.", "Tamam");
 			return;
