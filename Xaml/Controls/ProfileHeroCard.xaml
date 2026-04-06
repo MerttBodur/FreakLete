@@ -15,7 +15,7 @@
 			       IsVisible="False"
 			       Grid.Row="0"
 			       Grid.Column="0" />
-			<BoxView BackgroundColor="#99000000"
+			<BoxView BackgroundColor="{StaticResource OverlayScrim}"
 			         Grid.Row="0"
 			         Grid.Column="0" />
 			<VerticalStackLayout Spacing="16"

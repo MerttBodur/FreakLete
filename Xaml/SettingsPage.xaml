@@ -90,7 +90,7 @@
                                 BackgroundColor="{StaticResource AccentSoft}"
                                 StrokeThickness="0"
                                 Padding="8,4"
-                                StrokeShape="RoundRectangle 6">
+                                StrokeShape="RoundRectangle 10">
                             <Label x:Name="LblLanguageCurrent"
                                    Text="English"
                                    FontSize="10"
@@ -127,7 +127,7 @@
                                 BackgroundColor="{StaticResource AccentSoft}"
                                 StrokeThickness="0"
                                 Padding="8,4"
-                                StrokeShape="RoundRectangle 6">
+                                StrokeShape="RoundRectangle 10">
                             <Label x:Name="LblReviewBadge"
                                    Text="Soon"
                                    FontSize="10"
@@ -164,7 +164,7 @@
                                 BackgroundColor="{StaticResource AccentSoft}"
                                 StrokeThickness="0"
                                 Padding="8,4"
-                                StrokeShape="RoundRectangle 6">
+                                StrokeShape="RoundRectangle 10">
                             <Label x:Name="LblDonateBadge"
                                    Text="Soon"
                                    FontSize="10"
@@ -201,7 +201,7 @@
                                 BackgroundColor="{StaticResource AccentSoft}"
                                 StrokeThickness="0"
                                 Padding="8,4"
-                                StrokeShape="RoundRectangle 6">
+                                StrokeShape="RoundRectangle 10">
                             <Label x:Name="LblSubscribeBadge"
                                    Text="Soon"
                                    FontSize="10"

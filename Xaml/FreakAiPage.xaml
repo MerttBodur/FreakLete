@@ -74,7 +74,7 @@
                 <!-- Active Program Card (shown when program exists) -->
                 <Border x:Name="ActiveProgramCard"
                         Style="{StaticResource CardBorder}"
-                        BackgroundColor="#1A2535"
+                        BackgroundColor="{StaticResource SurfaceRaised}"
                         Padding="14"
                         IsVisible="False">
                     <VerticalStackLayout Spacing="6">

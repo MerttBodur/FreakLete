@@ -13,7 +13,7 @@
                 HeightRequest="36"
                 FontSize="22"
                 Padding="0"
-                TextColor="#CFC9E6"
+                TextColor="{StaticResource TextPrimary}"
                 BackgroundColor="Transparent"
                 BorderWidth="0"
                 Clicked="OnBackButtonClicked"

@@ -222,7 +222,7 @@
                                         <ImageButton Grid.Column="1"
                                                      Source="icon_delete.svg"
                                                      Clicked="OnDeleteExerciseInvoked"
-                                                     BackgroundColor="#3A1623"
+                                                     BackgroundColor="{StaticResource DangerSoft}"
                                                      Padding="8"
                                                      WidthRequest="36"
                                                      HeightRequest="36"

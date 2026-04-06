@@ -200,14 +200,14 @@
     </Style>
 
     <Style TargetType="Label" x:Key="NavTitle">
-        <Setter Property="TextColor" Value="#E6E2F1" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="18" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
     </Style>
 
     <Style TargetType="Label" x:Key="HeaderTitle">
-        <Setter Property="TextColor" Value="#E9E3F8" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="21" />
         <Setter Property="CharacterSpacing" Value="0.2" />
