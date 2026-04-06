@@ -12,23 +12,27 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="GYM TRACKER"
                            Style="{StaticResource Eyebrow}" />
-                    <Label Text="Welcome back."
+                    <Label x:Name="WelcomeLabel"
+                           Text="Welcome back."
                            Style="{StaticResource Headline}"
                            HorizontalTextAlignment="Start" />
-                    <Label Text="Login to continue building workouts, PRs, and performance records."
+                    <Label x:Name="SubtitleLabel"
+                           Text="Login to continue building workouts, PRs, and performance records."
                            Style="{StaticResource BodyMuted}" />
                 </VerticalStackLayout>
             </Border>
 
             <Border Style="{StaticResource CardBorder}">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="Email"
+                    <Label x:Name="EmailLabel"
+                           Text="Email"
                            Style="{StaticResource BodyMuted}" />
                     <Entry x:Name="EmailEntry"
                            Placeholder="Enter your email"
                            Keyboard="Email" />
 
-                    <Label Text="Password"
+                    <Label x:Name="PasswordLabel"
+                           Text="Password"
                            Style="{StaticResource BodyMuted}" />
                     <Entry x:Name="PasswordEntry"
                            Placeholder="Enter your password"
@@ -44,7 +48,7 @@
                             Clicked="OnLoginClicked"
                             HorizontalOptions="Fill" />
 
-                    <Button x:Name="RegisterBtn"
+                    <Button x:Name="SignUpBtn"
                             Text="Sign Up"
                             Style="{StaticResource SecondaryButton}"
                             Clicked="OnRegisterClicked"

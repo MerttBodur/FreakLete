@@ -27,7 +27,17 @@ public partial class BottomNavBar : ContentView
 	public BottomNavBar()
 	{
 		InitializeComponent();
+		ApplyLanguage();
 		UpdateIndicators();
+	}
+
+	private void ApplyLanguage()
+	{
+		HomeLabel.Text = AppLanguage.NavHome;
+		WorkoutLabel.Text = AppLanguage.NavWorkout;
+		FreakAiLabel.Text = AppLanguage.NavFreakAi;
+		CalculationsLabel.Text = AppLanguage.NavCalc;
+		ProfileLabel.Text = AppLanguage.NavProfile;
 	}
 
 	private static void OnActiveTabChanged(BindableObject bindable, object oldValue, object newValue)

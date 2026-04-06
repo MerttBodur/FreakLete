@@ -12,6 +12,27 @@ public partial class RegisterPage : ContentPage
 	{
 		InitializeComponent();
 		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
+		ApplyLanguage();
+	}
+
+	private void ApplyLanguage()
+	{
+		TopHeader.Title = AppLanguage.RegisterTitle;
+		EyebrowLabel.Text = AppLanguage.IsTurkish ? "HESAP OLUŞTUR" : "CREATE ACCOUNT";
+		HeadlineLabel.Text = AppLanguage.RegisterHeadline;
+		SubtitleLabel.Text = AppLanguage.RegisterSubtitle;
+		FirstNameLabel.Text = AppLanguage.RegisterFirstName;
+		FirstNameEntry.Placeholder = AppLanguage.RegisterFirstNamePlaceholder;
+		LastNameLabel.Text = AppLanguage.RegisterLastName;
+		LastNameEntry.Placeholder = AppLanguage.RegisterLastNamePlaceholder;
+		RegEmailLabel.Text = AppLanguage.LoginEmail;
+		EmailEntry.Placeholder = AppLanguage.LoginEmailPlaceholder;
+		RegPasswordLabel.Text = AppLanguage.LoginPassword;
+		PasswordEntry.Placeholder = AppLanguage.IsTurkish ? "Şifre oluşturun" : "Create a password";
+		ConfirmPasswordLabel.Text = AppLanguage.RegisterConfirmPassword;
+		ConfirmPasswordEntry.Placeholder = AppLanguage.RegisterConfirmPasswordPlaceholder;
+		PasswordRulesLabel.Text = AppLanguage.RegisterPasswordRules;
+		SignUpBtn.Text = AppLanguage.RegisterButton;
 	}
 
 	private async void OnCreateAccountClicked(object? sender, EventArgs e)
@@ -30,37 +51,37 @@ public partial class RegisterPage : ContentPage
 			string.IsNullOrWhiteSpace(password) ||
 			string.IsNullOrWhiteSpace(confirmPassword))
 		{
-			ShowError("Please fill in all fields.");
+			ShowError(AppLanguage.RegisterErrorEmpty);
 			return;
 		}
 
 		if (!email.Contains('@') || !email.Contains('.'))
 		{
-			ShowError("Please enter a valid email address.");
+			ShowError(AppLanguage.RegisterErrorEmail);
 			return;
 		}
 
 		if (password.Length < 8)
 		{
-			ShowError("Password must be at least 8 characters.");
+			ShowError(AppLanguage.RegisterErrorPasswordLength);
 			return;
 		}
 
 		if (!password.Any(char.IsUpper))
 		{
-			ShowError("Password must include at least 1 uppercase letter.");
+			ShowError(AppLanguage.RegisterErrorPasswordUpper);
 			return;
 		}
 
 		if (!Regex.IsMatch(password, @"[^a-zA-Z0-9]"))
 		{
-			ShowError("Password must include at least 1 special character.");
+			ShowError(AppLanguage.RegisterErrorPasswordSpecial);
 			return;
 		}
 
 		if (password != confirmPassword)
 		{
-			ShowError("Passwords do not match.");
+			ShowError(AppLanguage.RegisterErrorPasswordMismatch);
 			return;
 		}
 
@@ -70,14 +91,14 @@ public partial class RegisterPage : ContentPage
 		{
 			await MessageDialogPage.ShowAsync(
 				Navigation,
-				"Account created",
-				"You can now log in with your new account.",
-				buttonText: "Go to Login");
+				AppLanguage.RegisterSuccessTitle,
+				AppLanguage.RegisterSuccessMessage,
+				buttonText: AppLanguage.RegisterSuccessButton);
 			await Navigation.PopAsync(true);
 		}
 		else
 		{
-			ShowError(result.Error ?? "Registration failed.");
+			ShowError(result.Error ?? AppLanguage.RegisterErrorFailed);
 		}
 	}
 

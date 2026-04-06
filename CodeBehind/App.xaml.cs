@@ -8,6 +8,7 @@ public partial class App : Application
 	public App()
 	{
 		InitializeComponent();
+		AppLanguage.Initialize();
 		MainPage = new NavigationPage(BuildStartPage());
 	}
 

@@ -15,6 +15,23 @@ public partial class ChangePasswordPage : ContentPage
 
 		if (!string.IsNullOrWhiteSpace(prefillEmail))
 			EmailEntry.Text = prefillEmail;
+
+		ApplyLanguage();
+	}
+
+	private void ApplyLanguage()
+	{
+		PageTitle.Text = AppLanguage.ChangePasswordTitle;
+		CpEmailLabel.Text = AppLanguage.ChangePasswordEmail;
+		EmailEntry.Placeholder = AppLanguage.ChangePasswordEmailPlaceholder;
+		CpCurrentLabel.Text = AppLanguage.ChangePasswordCurrent;
+		CurrentPasswordEntry.Placeholder = AppLanguage.ChangePasswordCurrentPlaceholder;
+		CpNewLabel.Text = AppLanguage.ChangePasswordNew;
+		NewPasswordEntry.Placeholder = AppLanguage.ChangePasswordNewPlaceholder;
+		CpRepeatLabel.Text = AppLanguage.ChangePasswordRepeat;
+		NewPasswordRepeatEntry.Placeholder = AppLanguage.ChangePasswordRepeatPlaceholder;
+		CpRulesLabel.Text = AppLanguage.ChangePasswordRules;
+		SubmitButton.Text = AppLanguage.ChangePasswordButton;
 	}
 
 	private async void OnSubmitClicked(object? sender, EventArgs e)
@@ -31,37 +48,37 @@ public partial class ChangePasswordPage : ContentPage
 			string.IsNullOrWhiteSpace(newPassword) ||
 			string.IsNullOrWhiteSpace(newPasswordRepeat))
 		{
-			ShowError("Tüm alanları doldurun.");
+			ShowError(AppLanguage.ChangePasswordErrorEmpty);
 			return;
 		}
 
 		if (!email.Contains('@') || !email.Contains('.'))
 		{
-			ShowError("Geçerli bir e-posta adresi girin.");
+			ShowError(AppLanguage.ChangePasswordErrorEmail);
 			return;
 		}
 
 		if (newPassword.Length < 8)
 		{
-			ShowError("Yeni şifre en az 8 karakter olmalıdır.");
+			ShowError(AppLanguage.ChangePasswordErrorLength);
 			return;
 		}
 
 		if (!newPassword.Any(char.IsUpper))
 		{
-			ShowError("Yeni şifre en az 1 büyük harf içermelidir.");
+			ShowError(AppLanguage.ChangePasswordErrorUpper);
 			return;
 		}
 
 		if (!Regex.IsMatch(newPassword, @"[^a-zA-Z0-9]"))
 		{
-			ShowError("Yeni şifre en az 1 özel karakter içermelidir.");
+			ShowError(AppLanguage.ChangePasswordErrorSpecial);
 			return;
 		}
 
 		if (newPassword != newPasswordRepeat)
 		{
-			ShowError("Yeni şifreler eşleşmiyor.");
+			ShowError(AppLanguage.ChangePasswordErrorMismatch);
 			return;
 		}
 
@@ -76,11 +93,11 @@ public partial class ChangePasswordPage : ContentPage
 			CurrentPasswordEntry.Text = string.Empty;
 			NewPasswordEntry.Text = string.Empty;
 			NewPasswordRepeatEntry.Text = string.Empty;
-			ShowSuccess("Şifre başarıyla değiştirildi.");
+			ShowSuccess(AppLanguage.ChangePasswordSuccess);
 		}
 		else
 		{
-			ShowError(result.Error ?? "Şifre değiştirilemedi.");
+			ShowError(result.Error ?? AppLanguage.ChangePasswordErrorFailed);
 		}
 	}
 

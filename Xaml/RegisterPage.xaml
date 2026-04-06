@@ -10,18 +10,22 @@
         <VerticalStackLayout Padding="24,30,24,30"
                              Spacing="18">
 
-            <local:TopHeader Title="Register"
+            <local:TopHeader x:Name="TopHeader"
+                             Title="Register"
                              ShowBackButton="True"
                              BackClicked="OnHeaderBackClicked" />
 
             <Border Style="{StaticResource AccentCardBorder}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="CREATE ACCOUNT"
+                    <Label x:Name="EyebrowLabel"
+                           Text="CREATE ACCOUNT"
                            Style="{StaticResource Eyebrow}" />
-                    <Label Text="Start your training profile."
+                    <Label x:Name="HeadlineLabel"
+                           Text="Start your training profile."
                            Style="{StaticResource Headline}"
                            HorizontalTextAlignment="Start" />
-                    <Label Text="Create your account to save workouts, PRs, and athletic performance data."
+                    <Label x:Name="SubtitleLabel"
+                           Text="Create your account to save workouts, PRs, and athletic performance data."
                            Style="{StaticResource BodyMuted}" />
                 </VerticalStackLayout>
             </Border>
@@ -32,7 +36,8 @@
                           ColumnSpacing="12">
                         <VerticalStackLayout Grid.Column="0"
                                              Spacing="8">
-                            <Label Text="First Name"
+                            <Label x:Name="FirstNameLabel"
+                                   Text="First Name"
                                    Style="{StaticResource BodyMuted}" />
                             <Entry x:Name="FirstNameEntry"
                                    Placeholder="Enter your first name" />
@@ -40,26 +45,30 @@
 
                         <VerticalStackLayout Grid.Column="1"
                                              Spacing="8">
-                            <Label Text="Last Name"
+                            <Label x:Name="LastNameLabel"
+                                   Text="Last Name"
                                    Style="{StaticResource BodyMuted}" />
                             <Entry x:Name="LastNameEntry"
                                    Placeholder="Enter your last name" />
                         </VerticalStackLayout>
                     </Grid>
 
-                    <Label Text="Email"
+                    <Label x:Name="RegEmailLabel"
+                           Text="Email"
                            Style="{StaticResource BodyMuted}" />
                     <Entry x:Name="EmailEntry"
                            Placeholder="Enter your email"
                            Keyboard="Email" />
 
-                    <Label Text="Password"
+                    <Label x:Name="RegPasswordLabel"
+                           Text="Password"
                            Style="{StaticResource BodyMuted}" />
                     <Entry x:Name="PasswordEntry"
                            Placeholder="Create a password"
                            IsPassword="True" />
 
-                    <Label Text="Confirm Password"
+                    <Label x:Name="ConfirmPasswordLabel"
+                           Text="Confirm Password"
                            Style="{StaticResource BodyMuted}" />
                     <Entry x:Name="ConfirmPasswordEntry"
                            Placeholder="Confirm your password"
@@ -68,7 +77,8 @@
                     <Border Style="{StaticResource CardBorder}"
                             BackgroundColor="{StaticResource SurfaceRaised}"
                             Padding="14">
-                        <Label Text="Password rules: at least 8 characters, 1 uppercase letter, and 1 special character."
+                        <Label x:Name="PasswordRulesLabel"
+                               Text="Password rules: at least 8 characters, 1 uppercase letter, and 1 special character."
                                Style="{StaticResource BodyMuted}" />
                     </Border>
 
@@ -77,7 +87,8 @@
                            FontSize="13"
                            IsVisible="False" />
 
-                    <Button Text="Sign Up"
+                    <Button x:Name="SignUpBtn"
+                            Text="Sign Up"
                             Clicked="OnCreateAccountClicked"
                             HorizontalOptions="Fill" />
                 </VerticalStackLayout>

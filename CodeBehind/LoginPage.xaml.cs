@@ -13,6 +13,19 @@ public partial class LoginPage : ContentPage
 		InitializeComponent();
 		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
+		ApplyLanguage();
+	}
+
+	private void ApplyLanguage()
+	{
+		WelcomeLabel.Text = AppLanguage.LoginWelcome;
+		SubtitleLabel.Text = AppLanguage.LoginSubtitle;
+		EmailLabel.Text = AppLanguage.LoginEmail;
+		EmailEntry.Placeholder = AppLanguage.LoginEmailPlaceholder;
+		PasswordLabel.Text = AppLanguage.LoginPassword;
+		PasswordEntry.Placeholder = AppLanguage.LoginPasswordPlaceholder;
+		LoginBtn.Text = AppLanguage.LoginButton;
+		SignUpBtn.Text = AppLanguage.LoginSignUp;
 	}
 
 	private async void OnLoginClicked(object? sender, EventArgs e)
@@ -24,7 +37,7 @@ public partial class LoginPage : ContentPage
 
 		if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
 		{
-			ShowError("Please enter your email and password.");
+			ShowError(AppLanguage.LoginErrorEmpty);
 			return;
 		}
 
@@ -37,7 +50,7 @@ public partial class LoginPage : ContentPage
 		}
 		else
 		{
-			ShowError(result.Error ?? "Login failed.");
+			ShowError(result.Error ?? AppLanguage.LoginErrorFailed);
 		}
 	}
 

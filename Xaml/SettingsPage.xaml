@@ -21,8 +21,9 @@
                     <TapGestureRecognizer Tapped="OnBackClicked" />
                 </Label.GestureRecognizers>
             </Label>
-            <Label Grid.Column="1"
-                   Text="Ayarlar"
+            <Label x:Name="PageTitle"
+                   Grid.Column="1"
+                   Text="Settings"
                    FontSize="20"
                    FontFamily="OpenSansSemibold"
                    TextColor="{StaticResource TextPrimary}"
@@ -44,11 +45,13 @@
                                FontSize="20"
                                VerticalOptions="Center" />
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                            <Label Text="Şifre Değiştir"
+                            <Label x:Name="LblChangePassword"
+                                   Text="Change Password"
                                    FontSize="15"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}" />
-                            <Label Text="Hesap şifrenizi güncelleyin"
+                            <Label x:Name="LblChangePasswordDesc"
+                                   Text="Update your account password"
                                    FontSize="11"
                                    FontFamily="OpenSansRegular"
                                    TextColor="{StaticResource TextSecondary}" />
@@ -72,109 +75,170 @@
                                FontSize="20"
                                VerticalOptions="Center" />
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                            <Label Text="Dil"
+                            <Label x:Name="LblLanguage"
+                                   Text="Language"
                                    FontSize="15"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}" />
-                            <Label Text="Uygulama dilini değiştirin"
+                            <Label x:Name="LblLanguageDesc"
+                                   Text="Change app language"
                                    FontSize="11"
                                    FontFamily="OpenSansRegular"
                                    TextColor="{StaticResource TextSecondary}" />
                         </VerticalStackLayout>
-                        <Label Grid.Column="2"
-                               Text="&#x203A;"
-                               FontSize="22"
-                               TextColor="{StaticResource TextMuted}"
-                               VerticalOptions="Center" />
+                        <Border Grid.Column="2"
+                                BackgroundColor="{StaticResource AccentSoft}"
+                                StrokeThickness="0"
+                                Padding="8,4"
+                                StrokeShape="RoundRectangle 6">
+                            <Label x:Name="LblLanguageCurrent"
+                                   Text="English"
+                                   FontSize="10"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource AccentGlow}" />
+                        </Border>
                     </Grid>
                 </Border>
 
                 <!-- Leave Review -->
                 <Border Style="{StaticResource CardBorder}"
-                        Padding="16,14">
+                        Padding="16,14"
+                        Opacity="0.5">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnLeaveReviewClicked" />
+                        <TapGestureRecognizer Tapped="OnComingSoonClicked" />
                     </Border.GestureRecognizers>
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
                         <Label Text="&#x2B50;"
                                FontSize="20"
                                VerticalOptions="Center" />
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                            <Label Text="Yorum Bırak"
+                            <Label x:Name="LblReview"
+                                   Text="Leave Review"
                                    FontSize="15"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}" />
-                            <Label Text="Uygulamamızı değerlendirin"
+                            <Label x:Name="LblReviewDesc"
+                                   Text="Rate our app"
                                    FontSize="11"
                                    FontFamily="OpenSansRegular"
                                    TextColor="{StaticResource TextSecondary}" />
                         </VerticalStackLayout>
-                        <Label Grid.Column="2"
-                               Text="&#x203A;"
-                               FontSize="22"
-                               TextColor="{StaticResource TextMuted}"
-                               VerticalOptions="Center" />
+                        <Border Grid.Column="2"
+                                BackgroundColor="{StaticResource AccentSoft}"
+                                StrokeThickness="0"
+                                Padding="8,4"
+                                StrokeShape="RoundRectangle 6">
+                            <Label x:Name="LblReviewBadge"
+                                   Text="Soon"
+                                   FontSize="10"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource AccentGlow}" />
+                        </Border>
                     </Grid>
                 </Border>
 
                 <!-- Donate -->
                 <Border Style="{StaticResource CardBorder}"
-                        Padding="16,14">
+                        Padding="16,14"
+                        Opacity="0.5">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnDonateClicked" />
+                        <TapGestureRecognizer Tapped="OnComingSoonClicked" />
                     </Border.GestureRecognizers>
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
                         <Label Text="&#x2764;"
                                FontSize="20"
                                VerticalOptions="Center" />
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                            <Label Text="Bağış Yap"
+                            <Label x:Name="LblDonate"
+                                   Text="Donate"
                                    FontSize="15"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}" />
-                            <Label Text="Geliştirmeyi destekleyin"
+                            <Label x:Name="LblDonateDesc"
+                                   Text="Support development"
                                    FontSize="11"
                                    FontFamily="OpenSansRegular"
                                    TextColor="{StaticResource TextSecondary}" />
                         </VerticalStackLayout>
-                        <Label Grid.Column="2"
-                               Text="&#x203A;"
-                               FontSize="22"
-                               TextColor="{StaticResource TextMuted}"
-                               VerticalOptions="Center" />
+                        <Border Grid.Column="2"
+                                BackgroundColor="{StaticResource AccentSoft}"
+                                StrokeThickness="0"
+                                Padding="8,4"
+                                StrokeShape="RoundRectangle 6">
+                            <Label x:Name="LblDonateBadge"
+                                   Text="Soon"
+                                   FontSize="10"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource AccentGlow}" />
+                        </Border>
                     </Grid>
                 </Border>
 
                 <!-- Subscribe -->
                 <Border Style="{StaticResource CardBorder}"
-                        Padding="16,14">
+                        Padding="16,14"
+                        Opacity="0.5">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnSubscribeClicked" />
+                        <TapGestureRecognizer Tapped="OnComingSoonClicked" />
                     </Border.GestureRecognizers>
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
                         <Label Text="&#x1F451;"
                                FontSize="20"
                                VerticalOptions="Center" />
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                            <Label Text="Abone Ol"
+                            <Label x:Name="LblSubscribe"
+                                   Text="Subscribe"
                                    FontSize="15"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}" />
-                            <Label Text="Premium özelliklerin kilidini açın"
+                            <Label x:Name="LblSubscribeDesc"
+                                   Text="Unlock premium features"
                                    FontSize="11"
                                    FontFamily="OpenSansRegular"
                                    TextColor="{StaticResource TextSecondary}" />
                         </VerticalStackLayout>
-                        <Label Grid.Column="2"
-                               Text="&#x203A;"
-                               FontSize="22"
-                               TextColor="{StaticResource TextMuted}"
-                               VerticalOptions="Center" />
+                        <Border Grid.Column="2"
+                                BackgroundColor="{StaticResource AccentSoft}"
+                                StrokeThickness="0"
+                                Padding="8,4"
+                                StrokeShape="RoundRectangle 6">
+                            <Label x:Name="LblSubscribeBadge"
+                                   Text="Soon"
+                                   FontSize="10"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource AccentGlow}" />
+                        </Border>
                     </Grid>
                 </Border>
 
             </VerticalStackLayout>
         </ScrollView>
+
+        <!-- Coming soon toast -->
+        <Border x:Name="ToastBanner"
+                Grid.RowSpan="2"
+                IsVisible="False"
+                Opacity="0"
+                BackgroundColor="{StaticResource AccentSoft}"
+                StrokeThickness="1"
+                Stroke="{StaticResource Accent}"
+                StrokeShape="RoundRectangle 12"
+                Padding="16,12"
+                HorizontalOptions="Center"
+                VerticalOptions="End"
+                Margin="24,0,24,32">
+            <HorizontalStackLayout Spacing="8">
+                <Label Text="&#x1F6A7;"
+                       FontSize="16"
+                       VerticalOptions="Center" />
+                <Label x:Name="ToastText"
+                       Text="This feature is coming soon!"
+                       FontSize="13"
+                       FontFamily="OpenSansSemibold"
+                       TextColor="{StaticResource AccentGlow}"
+                       VerticalOptions="Center" />
+            </HorizontalStackLayout>
+        </Border>
     </Grid>
 
 </ContentPage>

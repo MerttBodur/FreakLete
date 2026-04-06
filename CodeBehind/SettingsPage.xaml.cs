@@ -1,5 +1,4 @@
 using FreakLete.Services;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FreakLete;
 
@@ -11,6 +10,27 @@ public partial class SettingsPage : ContentPage
 	{
 		InitializeComponent();
 		_userEmail = userEmail;
+		ApplyLanguage();
+	}
+
+	private void ApplyLanguage()
+	{
+		PageTitle.Text = AppLanguage.SettingsTitle;
+		LblChangePassword.Text = AppLanguage.SettingsChangePassword;
+		LblChangePasswordDesc.Text = AppLanguage.SettingsChangePasswordDesc;
+		LblLanguage.Text = AppLanguage.SettingsLanguage;
+		LblLanguageDesc.Text = AppLanguage.SettingsLanguageDesc;
+		LblLanguageCurrent.Text = AppLanguage.SettingsLanguageCurrent;
+		LblReview.Text = AppLanguage.SettingsLeaveReview;
+		LblReviewDesc.Text = AppLanguage.SettingsLeaveReviewDesc;
+		LblReviewBadge.Text = AppLanguage.SettingsComingSoon;
+		LblDonate.Text = AppLanguage.SettingsDonate;
+		LblDonateDesc.Text = AppLanguage.SettingsDonateDesc;
+		LblDonateBadge.Text = AppLanguage.SettingsComingSoon;
+		LblSubscribe.Text = AppLanguage.SettingsSubscribe;
+		LblSubscribeDesc.Text = AppLanguage.SettingsSubscribeDesc;
+		LblSubscribeBadge.Text = AppLanguage.SettingsComingSoon;
+		ToastText.Text = AppLanguage.SettingsComingSoonToast;
 	}
 
 	private async void OnBackClicked(object? sender, TappedEventArgs e)
@@ -25,21 +45,42 @@ public partial class SettingsPage : ContentPage
 
 	private async void OnLanguageClicked(object? sender, TappedEventArgs e)
 	{
-		await DisplayAlert("Dil", "Dil seçimi bir sonraki güncellemede kullanıma sunulacaktır.", "Tamam");
+		string current = AppLanguage.Code;
+		string[] options = current == "tr"
+			? ["English"]
+			: ["Türkçe"];
+
+		string choice = await DisplayActionSheet(
+			AppLanguage.SettingsSelectLanguage,
+			AppLanguage.SettingsCancel,
+			null,
+			options);
+
+		if (choice == "English")
+		{
+			AppLanguage.SetLanguage("en");
+			ApplyLanguage();
+		}
+		else if (choice == "Türkçe")
+		{
+			AppLanguage.SetLanguage("tr");
+			ApplyLanguage();
+		}
 	}
 
-	private async void OnLeaveReviewClicked(object? sender, TappedEventArgs e)
-	{
-		await DisplayAlert("Yorum Bırak", "Mağaza yönlendirmesi bir sonraki güncellemede eklenecektir.", "Tamam");
-	}
+	private bool _toastShowing;
 
-	private async void OnDonateClicked(object? sender, TappedEventArgs e)
+	private async void OnComingSoonClicked(object? sender, TappedEventArgs e)
 	{
-		await DisplayAlert("Bağış Yap", "Bağış entegrasyonu bir sonraki güncellemede eklenecektir.", "Tamam");
-	}
+		if (_toastShowing) return;
+		_toastShowing = true;
 
-	private async void OnSubscribeClicked(object? sender, TappedEventArgs e)
-	{
-		await DisplayAlert("Abone Ol", "Abonelik sistemi bir sonraki güncellemede eklenecektir.", "Tamam");
+		ToastBanner.IsVisible = true;
+		await ToastBanner.FadeTo(1, 200, Easing.CubicOut);
+		await Task.Delay(1800);
+		await ToastBanner.FadeTo(0, 300, Easing.CubicIn);
+		ToastBanner.IsVisible = false;
+
+		_toastShowing = false;
 	}
 }
