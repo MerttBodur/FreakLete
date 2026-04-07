@@ -36,6 +36,10 @@ public class AppLanguageTests : IDisposable
         Assert.Equal("Change", AppLanguage.ChartChange);
         Assert.Equal("Pick Session", AppLanguage.SessionPickerTitle);
         Assert.Equal("DELOAD", AppLanguage.ProgramDetailDeload);
+        Assert.Equal("3x/week", AppLanguage.FormatFrequencyPerWeek(3));
+        Assert.Equal("Weight must be a positive number.", AppLanguage.FormatMustBePositive("Weight"));
+        Assert.Equal("Sport list could not be loaded.", AppLanguage.SportCatalogLoadError);
+        Assert.Equal("Sport catalog request failed.", AppLanguage.SportCatalogRequestFailed);
     }
 
     [Fact]
@@ -48,6 +52,11 @@ public class AppLanguageTests : IDisposable
         Assert.Equal("Henüz veri yok", AppLanguage.ChartNoData);
         Assert.Equal("Değiştir", AppLanguage.ChartChange);
         Assert.Equal("Seans Seç", AppLanguage.SessionPickerTitle);
+        Assert.Equal("DİNLENME", AppLanguage.ProgramDetailDeload);
+        Assert.Equal("Haftada 3x", AppLanguage.FormatFrequencyPerWeek(3));
+        Assert.Equal("Ağırlık pozitif bir sayı olmalıdır.", AppLanguage.FormatMustBePositive("Ağırlık"));
+        Assert.Equal("Spor listesi yüklenemedi.", AppLanguage.SportCatalogLoadError);
+        Assert.Equal("Spor kataloğu isteği başarısız oldu.", AppLanguage.SportCatalogRequestFailed);
     }
 
     [Fact]

@@ -506,7 +506,7 @@ public partial class ProfilePage : ContentPage
 
 			if (_sportCatalog.Count == 0)
 			{
-				picker.ShowError(_sportCatalogLoadError ?? "Sport list could not be loaded.");
+				picker.ShowError(_sportCatalogLoadError ?? AppLanguage.SportCatalogLoadError);
 			}
 			else
 			{
@@ -542,7 +542,7 @@ public partial class ProfilePage : ContentPage
 		{
 			if (_sportCatalog.Count == 0)
 			{
-				activePicker.ShowError(_sportCatalogLoadError ?? "Sport list could not be loaded.");
+				activePicker.ShowError(_sportCatalogLoadError ?? AppLanguage.SportCatalogLoadError);
 			}
 			else
 			{
@@ -924,7 +924,7 @@ public partial class ProfilePage : ContentPage
 		bool parsed = MetricInput.TryParseFlexibleDouble(PerformanceValueEntry.Text, out double value);
 		if (!parsed || value <= 0)
 		{
-			ShowError($"{_selectedPerformanceItem.PrimaryLabel} must be a positive number.");
+			ShowError(AppLanguage.FormatMustBePositive(_selectedPerformanceItem.PrimaryLabel));
 			return;
 		}
 
@@ -933,7 +933,7 @@ public partial class ProfilePage : ContentPage
 		{
 			if (!MetricInput.TryParseFlexibleDouble(PerformanceSecondaryValueEntry.Text, out double parsedSecondary) || parsedSecondary <= 0)
 			{
-				ShowError($"{_selectedPerformanceItem.SecondaryLabel} must be a positive number.");
+				ShowError(AppLanguage.FormatMustBePositive(_selectedPerformanceItem.SecondaryLabel));
 				return;
 			}
 
@@ -1443,7 +1443,7 @@ public partial class ProfilePage : ContentPage
 		else
 		{
 			_sportCatalog = [];
-			_sportCatalogLoadError = result.Error ?? "Sport catalog request failed.";
+			_sportCatalogLoadError = result.Error ?? AppLanguage.SportCatalogRequestFailed;
 		}
 	}
 

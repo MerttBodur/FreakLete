@@ -429,7 +429,7 @@ public partial class NewWorkoutPage : ContentPage
 
 		if (!MetricInput.TryParseFlexibleDouble(Metric1Entry.Text, out double metric1) || metric1 <= 0)
 		{
-			ShowError($"{_selectedExerciseItem.PrimaryLabel} must be a positive number.");
+			ShowError(AppLanguage.FormatMustBePositive(_selectedExerciseItem.PrimaryLabel));
 			return null;
 		}
 
@@ -438,7 +438,7 @@ public partial class NewWorkoutPage : ContentPage
 		{
 			if (!MetricInput.TryParseFlexibleDouble(Metric2Entry.Text, out double parsedMetric2) || parsedMetric2 <= 0)
 			{
-				ShowError($"{_selectedExerciseItem.SecondaryLabel} must be a positive number.");
+				ShowError(AppLanguage.FormatMustBePositive(_selectedExerciseItem.SecondaryLabel));
 				return null;
 			}
 

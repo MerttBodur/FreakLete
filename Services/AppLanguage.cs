@@ -540,8 +540,19 @@ public static class AppLanguage
 		: $"{goal} · {daysPerWeek} days/week · {weekCount} weeks";
 
 	// ── Program Detail – dynamic labels ─────────────────────────
-	public static string ProgramDetailDeload => "DELOAD";
+	public static string ProgramDetailDeload => IsTurkish ? "DİNLENME" : "DELOAD";
 	public static string FormatExercises(int count) => IsTurkish ? $"{count} egzersiz" : $"{count} exercises";
 	public static string FormatDurationMinutes(int min) => $"{min} min";
-	public static string FormatFrequencyPerWeek(int days) => $"{days}x/week";
+	public static string FormatFrequencyPerWeek(int days) => IsTurkish ? $"Haftada {days}x" : $"{days}x/week";
+
+	// ── Validation / error strings ──────────────────────────────
+	public static string FormatMustBePositive(string label) => IsTurkish
+		? $"{label} pozitif bir sayı olmalıdır."
+		: $"{label} must be a positive number.";
+	public static string SportCatalogLoadError => IsTurkish
+		? "Spor listesi yüklenemedi."
+		: "Sport list could not be loaded.";
+	public static string SportCatalogRequestFailed => IsTurkish
+		? "Spor kataloğu isteği başarısız oldu."
+		: "Sport catalog request failed.";
 }
