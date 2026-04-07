@@ -16,7 +16,8 @@
 
             <Border Style="{StaticResource AccentCardBorder}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="SELECT"
+                    <Label x:Name="BadgeLabel"
+                           Text="SELECT"
                            Style="{StaticResource Eyebrow}" />
                     <Label x:Name="PageTitleLabel"
                            Text="Choose Option"
@@ -31,7 +32,7 @@
                     BackgroundColor="{StaticResource SurfaceRaised}"
                     IsVisible="False">
                 <Entry x:Name="SearchEntry"
-                       Placeholder="Search..."
+                       Placeholder=""
                        PlaceholderColor="{StaticResource TextMuted}"
                        TextColor="{StaticResource TextPrimary}"
                        BackgroundColor="Transparent"
@@ -61,7 +62,8 @@
                                    WidthRequest="32"
                                    HeightRequest="32"
                                    Color="{StaticResource Accent}" />
-                <Label Text="Loading..."
+                <Label x:Name="LoadingLabel"
+                       Text="Loading..."
                        Style="{StaticResource BodyMuted}"
                        HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
@@ -74,12 +76,12 @@
                                  Spacing="8"
                                  Padding="24">
                 <Label x:Name="EmptyLabel"
-                       Text="No options found"
+                       Text=""
                        Style="{StaticResource BodyMuted}"
                        HorizontalTextAlignment="Center"
                        FontSize="16" />
                 <Label x:Name="EmptyHintLabel"
-                       Text="Try a different search term"
+                       Text=""
                        Style="{StaticResource BodyMuted}"
                        HorizontalTextAlignment="Center"
                        FontSize="13" />
@@ -93,12 +95,12 @@
                                  Spacing="12"
                                  Padding="24">
                 <Label x:Name="ErrorLabel"
-                       Text="Failed to load"
+                       Text=""
                        TextColor="Red"
                        HorizontalTextAlignment="Center"
                        FontSize="15" />
                 <Button x:Name="RetryButton"
-                        Text="Retry"
+                        Text=""
                         Style="{StaticResource SecondaryButton}"
                         Clicked="OnRetryClicked"
                         HorizontalOptions="Center" />

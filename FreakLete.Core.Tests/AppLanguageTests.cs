@@ -40,6 +40,21 @@ public class AppLanguageTests : IDisposable
         Assert.Equal("Weight must be a positive number.", AppLanguage.FormatMustBePositive("Weight"));
         Assert.Equal("Sport list could not be loaded.", AppLanguage.SportCatalogLoadError);
         Assert.Equal("Sport catalog request failed.", AppLanguage.SportCatalogRequestFailed);
+        // Shared pages
+        Assert.Equal("SELECT", AppLanguage.PickerSelect);
+        Assert.Equal("Search...", AppLanguage.PickerSearch);
+        Assert.Equal("Loading...", AppLanguage.PickerLoading);
+        Assert.Equal("Retry", AppLanguage.PickerRetry);
+        Assert.Equal("No results found", AppLanguage.PickerNoResults);
+        Assert.Equal("No options available", AppLanguage.PickerNoOptions);
+        Assert.Equal("EXERCISE BROWSER", AppLanguage.ExPickerBadge);
+        Assert.Equal("View", AppLanguage.ExPickerView);
+        Assert.Equal("DATE OF BIRTH", AppLanguage.DateSelectorBadge);
+        Assert.Equal("Year", AppLanguage.DateSelectorYear);
+        Assert.Equal("Done", AppLanguage.DateSelectorDone);
+        Assert.Equal("SUCCESS", AppLanguage.DialogSuccess);
+        Assert.Equal("Continue", AppLanguage.DialogContinue);
+        Assert.Equal("Preparing your session...", AppLanguage.StartupPreparing);
     }
 
     [Fact]
@@ -57,6 +72,21 @@ public class AppLanguageTests : IDisposable
         Assert.Equal("Ağırlık pozitif bir sayı olmalıdır.", AppLanguage.FormatMustBePositive("Ağırlık"));
         Assert.Equal("Spor listesi yüklenemedi.", AppLanguage.SportCatalogLoadError);
         Assert.Equal("Spor kataloğu isteği başarısız oldu.", AppLanguage.SportCatalogRequestFailed);
+        // Shared pages
+        Assert.Equal("SEÇ", AppLanguage.PickerSelect);
+        Assert.Equal("Ara...", AppLanguage.PickerSearch);
+        Assert.Equal("Yükleniyor...", AppLanguage.PickerLoading);
+        Assert.Equal("Tekrar Dene", AppLanguage.PickerRetry);
+        Assert.Equal("Sonuç bulunamadı", AppLanguage.PickerNoResults);
+        Assert.Equal("Mevcut seçenek yok", AppLanguage.PickerNoOptions);
+        Assert.Equal("EGZERSİZ TARAYICISI", AppLanguage.ExPickerBadge);
+        Assert.Equal("Gör", AppLanguage.ExPickerView);
+        Assert.Equal("DOĞUM TARİHİ", AppLanguage.DateSelectorBadge);
+        Assert.Equal("Yıl", AppLanguage.DateSelectorYear);
+        Assert.Equal("Tamam", AppLanguage.DateSelectorDone);
+        Assert.Equal("BAŞARILI", AppLanguage.DialogSuccess);
+        Assert.Equal("Devam", AppLanguage.DialogContinue);
+        Assert.Equal("Oturum hazırlanıyor...", AppLanguage.StartupPreparing);
     }
 
     [Fact]
@@ -74,6 +104,22 @@ public class AppLanguageTests : IDisposable
         Assert.Equal("Gün 1", AppLanguage.FormatDay(1));
         Assert.Equal("5 egzersiz", AppLanguage.FormatExercises(5));
         Assert.Equal("2 öğe", AppLanguage.FormatItemCount(2));
+    }
+
+    [Fact]
+    public void MonthAbbreviations_Respect_Language()
+    {
+        SetCodeDirect("en");
+        string[] enMonths = AppLanguage.MonthAbbreviations;
+        Assert.Equal(12, enMonths.Length);
+        Assert.Equal("Jan", enMonths[0]);
+        Assert.Equal("Dec", enMonths[11]);
+
+        SetCodeDirect("tr");
+        string[] trMonths = AppLanguage.MonthAbbreviations;
+        Assert.Equal(12, trMonths.Length);
+        Assert.Equal("Oca", trMonths[0]);
+        Assert.Equal("Ara", trMonths[11]);
     }
 
     [Fact]

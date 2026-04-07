@@ -1,3 +1,5 @@
+using FreakLete.Services;
+
 namespace FreakLete;
 
 public partial class DateSelectorPage : ContentPage
@@ -7,8 +9,7 @@ public partial class DateSelectorPage : ContentPage
 	private int _selectedMonth;
 	private int _selectedDay;
 
-	private static readonly string[] MonthNames =
-		["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+	private static string[] MonthNames => AppLanguage.MonthAbbreviations;
 
 	public DateSelectorPage(DateTime currentDate, Func<DateTime, Task> onSelected)
 	{
@@ -18,10 +19,21 @@ public partial class DateSelectorPage : ContentPage
 		_selectedMonth = currentDate.Month;
 		_selectedDay = currentDate.Day;
 
+		ApplyLanguage();
 		BuildYearChips();
 		BuildMonthChips();
 		BuildDayChips();
 		UpdateDateLabel();
+	}
+
+	private void ApplyLanguage()
+	{
+		HeaderView.Title = AppLanguage.DateSelectorTitle;
+		BadgeLabel.Text = AppLanguage.DateSelectorBadge;
+		YearLabel.Text = AppLanguage.DateSelectorYear;
+		MonthLabel.Text = AppLanguage.DateSelectorMonth;
+		DayLabel.Text = AppLanguage.DateSelectorDay;
+		DoneButton.Text = AppLanguage.DateSelectorDone;
 	}
 
 	private void BuildYearChips()

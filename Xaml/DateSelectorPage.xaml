@@ -13,11 +13,12 @@
             <local:TopHeader x:Name="HeaderView"
                              ShowBackButton="True"
                              BackClicked="OnHeaderBackClicked"
-                             Title="Date of Birth" />
+                             Title="" />
 
             <Border Style="{StaticResource AccentCardBorder}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="DATE OF BIRTH"
+                    <Label x:Name="BadgeLabel"
+                           Text="DATE OF BIRTH"
                            Style="{StaticResource Eyebrow}" />
                     <Label x:Name="SelectedDateLabel"
                            Text="--"
@@ -31,21 +32,24 @@
                     Padding="24,0">
             <VerticalStackLayout Spacing="16">
 
-                <Label Text="Year"
+                <Label x:Name="YearLabel"
+                       Text="Year"
                        Style="{StaticResource SubHeadline}" />
                 <ScrollView Orientation="Horizontal">
                     <HorizontalStackLayout x:Name="YearChips"
                                            Spacing="8" />
                 </ScrollView>
 
-                <Label Text="Month"
+                <Label x:Name="MonthLabel"
+                       Text="Month"
                        Style="{StaticResource SubHeadline}" />
                 <ScrollView Orientation="Horizontal">
                     <HorizontalStackLayout x:Name="MonthChips"
                                            Spacing="8" />
                 </ScrollView>
 
-                <Label Text="Day"
+                <Label x:Name="DayLabel"
+                       Text="Day"
                        Style="{StaticResource SubHeadline}" />
                 <FlexLayout x:Name="DayChips"
                             Wrap="Wrap"
@@ -55,7 +59,8 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <Button Grid.Row="2"
+        <Button x:Name="DoneButton"
+                Grid.Row="2"
                 Text="Done"
                 Margin="24,12"
                 Clicked="OnDoneClicked" />

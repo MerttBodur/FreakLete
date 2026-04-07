@@ -555,4 +555,43 @@ public static class AppLanguage
 	public static string SportCatalogRequestFailed => IsTurkish
 		? "Spor kataloğu isteği başarısız oldu."
 		: "Sport catalog request failed.";
+
+	// ── Option Picker Page ──────────────────────────────────────
+	public static string PickerSelect => IsTurkish ? "SEÇ" : "SELECT";
+	public static string PickerChooseOption => IsTurkish ? "Seçenek Belirle" : "Choose Option";
+	public static string PickerSearch => IsTurkish ? "Ara..." : "Search...";
+	public static string PickerLoading => IsTurkish ? "Yükleniyor..." : "Loading...";
+	public static string PickerNoOptionsFound => IsTurkish ? "Seçenek bulunamadı" : "No options found";
+	public static string PickerTryDifferentSearch => IsTurkish ? "Farklı bir arama terimi deneyin" : "Try a different search term";
+	public static string PickerFailedToLoad => IsTurkish ? "Yüklenemedi" : "Failed to load";
+	public static string PickerRetry => IsTurkish ? "Tekrar Dene" : "Retry";
+	public static string PickerNoResults => IsTurkish ? "Sonuç bulunamadı" : "No results found";
+	public static string PickerNoOptions => IsTurkish ? "Mevcut seçenek yok" : "No options available";
+
+	// ── Exercise Picker Page ────────────────────────────────────
+	public static string ExPickerBadge => IsTurkish ? "EGZERSİZ TARAYICISI" : "EXERCISE BROWSER";
+	public static string ExPickerChoose => IsTurkish ? "Egzersiz Seç" : "Choose Exercise";
+	public static string ExPickerDesc => IsTurkish
+		? "En çok önerilen 20 hareket varsayılan olarak gösterilir. Tam listeye ulaşmak için kategori içinde arama yapın."
+		: "Top 20 recommended movements show by default. Search inside a category to reach the full list.";
+	public static string ExPickerSearchPlaceholder => IsTurkish ? "Bu kategoride ara" : "Search inside this category";
+	public static string ExPickerView => IsTurkish ? "Gör" : "View";
+
+	// ── Date Selector Page ──────────────────────────────────────
+	public static string DateSelectorTitle => IsTurkish ? "Doğum Tarihi" : "Date of Birth";
+	public static string DateSelectorBadge => IsTurkish ? "DOĞUM TARİHİ" : "DATE OF BIRTH";
+	public static string DateSelectorYear => IsTurkish ? "Yıl" : "Year";
+	public static string DateSelectorMonth => IsTurkish ? "Ay" : "Month";
+	public static string DateSelectorDay => IsTurkish ? "Gün" : "Day";
+	public static string DateSelectorDone => IsTurkish ? "Tamam" : "Done";
+	public static string[] MonthAbbreviations => IsTurkish
+		? ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
+		: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+	// ── Message Dialog Page ─────────────────────────────────────
+	public static string DialogSuccess => IsTurkish ? "BAŞARILI" : "SUCCESS";
+	public static string DialogContinue => IsTurkish ? "Devam" : "Continue";
+
+	// ── Startup Page ────────────────────────────────────────────
+	public static string StartupPreparing => IsTurkish ? "Oturum hazırlanıyor..." : "Preparing your session...";
 }

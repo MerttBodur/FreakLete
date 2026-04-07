@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:FreakLete"
              x:Class="FreakLete.ExercisePickerPage"
+             x:Name="ThisPage"
              NavigationPage.HasNavigationBar="False">
 
     <Grid RowDefinitions="Auto,*">
@@ -16,13 +17,15 @@
 
             <Border Style="{StaticResource AccentCardBorder}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="EXERCISE BROWSER"
+                    <Label x:Name="BadgeLabel"
+                           Text="EXERCISE BROWSER"
                            Style="{StaticResource Eyebrow}" />
                     <Label x:Name="PageTitleLabel"
                            Text="Choose Exercise"
                            Style="{StaticResource Headline}"
                            HorizontalTextAlignment="Start" />
-                    <Label Text="Top 20 recommended movements show by default. Search inside a category to reach the full list."
+                    <Label x:Name="DescLabel"
+                           Text=""
                            Style="{StaticResource BodyMuted}" />
                 </VerticalStackLayout>
             </Border>
@@ -30,7 +33,7 @@
             <Border Style="{StaticResource CardBorder}"
                     BackgroundColor="{StaticResource SurfaceRaised}">
                 <Entry x:Name="SearchEntry"
-                       Placeholder="Search inside this category"
+                       Placeholder=""
                        PlaceholderColor="{StaticResource TextMuted}"
                        TextColor="{StaticResource TextPrimary}"
                        TextChanged="OnSearchTextChanged" />
@@ -90,7 +93,7 @@
                                     StrokeShape="RoundRectangle 18"
                                     Padding="10,6"
                                     VerticalOptions="Center">
-                                <Label Text="View"
+                                <Label Text="{Binding ViewText, Source={x:Reference ThisPage}}"
                                        Style="{StaticResource BodyMuted}" />
                             </Border>
                         </Grid>

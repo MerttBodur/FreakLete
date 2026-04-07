@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using FreakLete.Services;
 
 namespace FreakLete;
 
@@ -51,6 +52,7 @@ public partial class OptionPickerPage : ContentPage
 
 		HeaderView.Title = title;
 		PageTitleLabel.Text = title;
+		ApplyLanguage();
 
 		// Build items
 		foreach (var item in items)
@@ -81,6 +83,14 @@ public partial class OptionPickerPage : ContentPage
 
 		ApplyFilter();
 		OptionsCollection.ItemsSource = VisibleOptions;
+	}
+
+	private void ApplyLanguage()
+	{
+		BadgeLabel.Text = AppLanguage.PickerSelect;
+		SearchEntry.Placeholder = AppLanguage.PickerSearch;
+		LoadingLabel.Text = AppLanguage.PickerLoading;
+		RetryButton.Text = AppLanguage.PickerRetry;
 	}
 
 	// ── State management ────────────────────────────────────────
@@ -168,13 +178,13 @@ public partial class OptionPickerPage : ContentPage
 
 		if (!hasItems && !string.IsNullOrWhiteSpace(_searchText))
 		{
-			EmptyLabel.Text = "No results found";
-			EmptyHintLabel.Text = "Try a different search term";
+			EmptyLabel.Text = AppLanguage.PickerNoResults;
+			EmptyHintLabel.Text = AppLanguage.PickerTryDifferentSearch;
 			EmptyHintLabel.IsVisible = true;
 		}
 		else if (!hasItems)
 		{
-			EmptyLabel.Text = "No options available";
+			EmptyLabel.Text = AppLanguage.PickerNoOptions;
 			EmptyHintLabel.IsVisible = false;
 		}
 	}
@@ -186,7 +196,7 @@ public partial class OptionPickerPage : ContentPage
 		CategoryChipsLayout.Children.Clear();
 
 		// "All" chip
-		var allChip = CreateCategoryChip("All", _selectedCategory is null);
+		var allChip = CreateCategoryChip(AppLanguage.SharedAll, _selectedCategory is null);
 		CategoryChipsLayout.Children.Add(allChip);
 
 		foreach (string cat in _categories)
@@ -220,18 +230,14 @@ public partial class OptionPickerPage : ContentPage
 		if (sender is not Button button) return;
 
 		string text = button.Text;
-		_selectedCategory = text == "All" ? null : text;
+		_selectedCategory = text == AppLanguage.SharedAll ? null : text;
 
 		// Update chip visuals
 		foreach (var child in CategoryChipsLayout.Children)
 		{
 			if (child is Button btn)
 			{
-				bool isActive = btn.Text == (text == "All" ? "All" : text) && btn == button
-					|| (text == "All" && btn.Text == "All");
-
-				// Simplify: just check if this is the clicked button
-				isActive = btn == button;
+				bool isActive = btn == button;
 
 				btn.BackgroundColor = isActive ? Color.FromArgb("#7C4DFF") : Color.FromArgb("#1B1727");
 				btn.TextColor = isActive ? Colors.White : Color.FromArgb("#C9C3DA");

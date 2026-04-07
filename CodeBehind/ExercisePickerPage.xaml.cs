@@ -13,6 +13,7 @@ public partial class ExercisePickerPage : ContentPage
 
 	public ObservableCollection<CategoryChipItem> Categories { get; } = [];
 	public ObservableCollection<ExerciseCatalogItem> VisibleExercises { get; } = [];
+	public string ViewText => AppLanguage.ExPickerView;
 
 	public ExercisePickerPage(
 		string pageTitle,
@@ -27,6 +28,9 @@ public partial class ExercisePickerPage : ContentPage
 
 		HeaderView.Title = pageTitle;
 		PageTitleLabel.Text = pageTitle;
+		BadgeLabel.Text = AppLanguage.ExPickerBadge;
+		DescLabel.Text = AppLanguage.ExPickerDesc;
+		SearchEntry.Placeholder = AppLanguage.ExPickerSearchPlaceholder;
 
 		BuildCategories();
 		SelectCategory(_allowedCategories.FirstOrDefault() ?? ExerciseCatalog.Categories.First());

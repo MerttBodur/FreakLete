@@ -1,3 +1,5 @@
+using FreakLete.Services;
+
 namespace FreakLete;
 
 public partial class MessageDialogPage : ContentPage
@@ -17,10 +19,10 @@ public partial class MessageDialogPage : ContentPage
 		INavigation navigation,
 		string title,
 		string message,
-		string buttonText = "Continue",
-		string badge = "SUCCESS")
+		string? buttonText = null,
+		string? badge = null)
 	{
-		MessageDialogPage page = new(badge, title, message, buttonText);
+		MessageDialogPage page = new(badge ?? AppLanguage.DialogSuccess, title, message, buttonText ?? AppLanguage.DialogContinue);
 		await navigation.PushModalAsync(page, false);
 		await page._resultSource.Task;
 	}

@@ -15,7 +15,8 @@
                    TextColor="{StaticResource TextPrimary}"
                    HorizontalTextAlignment="Center" />
 
-            <Label Text="Preparing your session..."
+            <Label x:Name="StatusLabel"
+                   Text="Preparing your session..."
                    FontSize="14"
                    FontFamily="OpenSansRegular"
                    TextColor="{StaticResource TextMuted}"

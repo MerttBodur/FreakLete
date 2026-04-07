@@ -14,6 +14,7 @@ public partial class StartupPage : ContentPage
 		InitializeComponent();
 		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
+		StatusLabel.Text = AppLanguage.StartupPreparing;
 	}
 
 	protected override async void OnAppearing()
