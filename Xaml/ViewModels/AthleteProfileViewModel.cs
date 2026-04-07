@@ -22,9 +22,11 @@ public class AthleteProfileViewModel : INotifyPropertyChanged
     private DateOnly? _dateOfBirth;
     private string _weightText = "";
     private string _bodyFatText = "";
+    private string _heightText = "";
     private SportDefinitionResponse? _selectedSport;
     private string? _selectedPosition;
     private string? _selectedGymExperience;
+    private string? _selectedSex;
     private bool _isSaving;
     private bool _isDirty;
     private string? _saveError;
@@ -34,9 +36,11 @@ public class AthleteProfileViewModel : INotifyPropertyChanged
     private DateOnly? _serverDateOfBirth;
     private string _serverWeightText = "";
     private string _serverBodyFatText = "";
+    private string _serverHeightText = "";
     private string? _serverSportName;
     private string? _serverPosition;
     private string? _serverGymExperience;
+    private string? _serverSex;
 
     public AthleteProfileViewModel(SaveDelegate save, List<SportDefinitionResponse> sportCatalog)
     {
@@ -64,6 +68,12 @@ public class AthleteProfileViewModel : INotifyPropertyChanged
         set { if (SetField(ref _bodyFatText, value ?? "")) UpdateDirty(); }
     }
 
+    public string HeightText
+    {
+        get => _heightText;
+        set { if (SetField(ref _heightText, value ?? "")) UpdateDirty(); }
+    }
+
     public SportDefinitionResponse? SelectedSport
     {
         get => _selectedSport;
@@ -89,6 +99,12 @@ public class AthleteProfileViewModel : INotifyPropertyChanged
     {
         get => _selectedGymExperience;
         set { if (SetField(ref _selectedGymExperience, value)) UpdateDirty(); }
+    }
+
+    public string? SelectedSex
+    {
+        get => _selectedSex;
+        set { if (SetField(ref _selectedSex, value)) UpdateDirty(); }
     }
 
     public bool ShowPositionSelector =>
@@ -139,7 +155,9 @@ public class AthleteProfileViewModel : INotifyPropertyChanged
         _dateOfBirth = profile.DateOfBirth;
         _weightText = profile.WeightKg?.ToString("0.##") ?? "";
         _bodyFatText = profile.BodyFatPercentage?.ToString("0.##") ?? "";
+        _heightText = profile.HeightCm?.ToString("0.##") ?? "";
         _selectedGymExperience = string.IsNullOrWhiteSpace(profile.GymExperienceLevel) ? null : profile.GymExperienceLevel;
+        _selectedSex = string.IsNullOrWhiteSpace(profile.Sex) ? null : profile.Sex;
 
         // Resolve sport from catalog
         _selectedSport = string.IsNullOrWhiteSpace(profile.SportName)
@@ -164,9 +182,11 @@ public class AthleteProfileViewModel : INotifyPropertyChanged
         _serverDateOfBirth = _dateOfBirth;
         _serverWeightText = _weightText;
         _serverBodyFatText = _bodyFatText;
+        _serverHeightText = _heightText;
         _serverSportName = _selectedSport?.Name;
         _serverPosition = _selectedPosition;
         _serverGymExperience = _selectedGymExperience;
+        _serverSex = _selectedSex;
 
         // Reset status
         _isDirty = false;
@@ -182,7 +202,7 @@ public class AthleteProfileViewModel : INotifyPropertyChanged
 
     public (bool IsValid, string? Error) Validate()
     {
-        return ProfileStateManager.ValidateAthleteFields(_weightText, _bodyFatText);
+        return ProfileStateManager.ValidateAthleteFields(_weightText, _bodyFatText, _heightText);
     }
 
     // ── Save ─────────────────────────────────────────────────────
@@ -206,6 +226,8 @@ public class AthleteProfileViewModel : INotifyPropertyChanged
             DateOfBirth = _dateOfBirth,
             WeightKg = ProfileStateManager.ParseNullableDouble(_weightText),
             BodyFatPercentage = ProfileStateManager.ParseNullableDouble(_bodyFatText),
+            HeightCm = ProfileStateManager.ParseNullableDouble(_heightText),
+            Sex = _selectedSex,
             SportName = _selectedSport?.Name,
             Position = ShowPositionSelector ? _selectedPosition : null,
             GymExperienceLevel = _selectedGymExperience
@@ -257,9 +279,11 @@ public class AthleteProfileViewModel : INotifyPropertyChanged
         IsDirty = _dateOfBirth != _serverDateOfBirth
             || _weightText != _serverWeightText
             || _bodyFatText != _serverBodyFatText
+            || _heightText != _serverHeightText
             || _selectedSport?.Name != _serverSportName
             || _selectedPosition != _serverPosition
-            || _selectedGymExperience != _serverGymExperience;
+            || _selectedGymExperience != _serverGymExperience
+            || _selectedSex != _serverSex;
     }
 
     // ── INotifyPropertyChanged ───────────────────────────────────

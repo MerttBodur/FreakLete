@@ -16,6 +16,7 @@ public partial class ProfilePage : ContentPage
 		"5+ years"
 	];
 
+	private static readonly string[] SexOptions = ["Male", "Female"];
 	private static readonly string[] TrainingDaysOptions = ["1", "2", "3", "4", "5", "6", "7"];
 	private static readonly string[] SessionDurationOptions = ["30", "45", "60", "75", "90", "120"];
 	private static readonly string[] TrainingGoalOptions =
@@ -96,6 +97,9 @@ public partial class ProfilePage : ContentPage
 		AgeLabel.Text = AppLanguage.ProfileAge;
 		WeightKgLabel.Text = AppLanguage.ProfileWeightKg;
 		BodyFatLabel.Text = AppLanguage.ProfileBodyFat;
+		HeightCmLabel.Text = AppLanguage.ProfileHeightCm;
+		SexTitleLabel.Text = AppLanguage.ProfileSex;
+		SexLabel.Text = AppLanguage.ProfileSelectSex;
 		SportTitleLabel.Text = AppLanguage.ProfileSport;
 		SportLabel.Text = AppLanguage.ProfileSelectSport;
 		PositionTitleLabel.Text = AppLanguage.ProfilePosition;
@@ -221,12 +225,16 @@ public partial class ProfilePage : ContentPage
 
 		WeightEntry.TextChanged -= OnWeightTextChanged;
 		BodyFatEntry.TextChanged -= OnBodyFatTextChanged;
+		HeightEntry.TextChanged -= OnHeightTextChanged;
 		WeightEntry.Text = _athleteVm.WeightText;
 		BodyFatEntry.Text = _athleteVm.BodyFatText;
+		HeightEntry.Text = _athleteVm.HeightText;
 		WeightEntry.TextChanged += OnWeightTextChanged;
 		BodyFatEntry.TextChanged += OnBodyFatTextChanged;
+		HeightEntry.TextChanged += OnHeightTextChanged;
 
 		SetSelectorValue(SportLabel, _athleteVm.SelectedSport?.Name, AppLanguage.ProfileSelectSport);
+		SetSelectorValue(SexLabel, _athleteVm.SelectedSex, AppLanguage.ProfileSelectSex);
 		SyncPositionUI();
 
 		SetSelectorValue(GymExperienceLabel, _athleteVm.SelectedGymExperience, AppLanguage.ProfileSelectExperience);
@@ -582,13 +590,30 @@ public partial class ProfilePage : ContentPage
 				if (_athleteVm is not null)
 					_athleteVm.SelectedGymExperience = val;
 				SetSelectorValue(GymExperienceLabel, val, AppLanguage.ProfileSelectExperience);
-				
+
 				var success = await SaveAthleteFieldAsync();
-				
+
 				// Prevent OnAppearing from reloading only if save succeeded
 				if (success)
 					// Prevent OnAppearing from reloading and overwriting our change
 				_skipNextProfileReload = true;
+			}), true);
+	}
+
+	private async void OnSexSelectorTapped(object? sender, TappedEventArgs e)
+	{
+		var current = _athleteVm?.SelectedSex;
+		await Navigation.PushAsync(
+			new OptionPickerPage(AppLanguage.ProfileSexTitle, SexOptions, current, async val =>
+			{
+				if (_athleteVm is not null)
+					_athleteVm.SelectedSex = val;
+				SetSelectorValue(SexLabel, val, AppLanguage.ProfileSelectSex);
+
+				var success = await SaveAthleteFieldAsync();
+
+				if (success)
+					_skipNextProfileReload = true;
 			}), true);
 	}
 
@@ -778,6 +803,12 @@ public partial class ProfilePage : ContentPage
 			_athleteVm.BodyFatText = e.NewTextValue ?? "";
 	}
 
+	private void OnHeightTextChanged(object? sender, TextChangedEventArgs e)
+	{
+		if (_athleteVm is not null)
+			_athleteVm.HeightText = e.NewTextValue ?? "";
+	}
+
 	private async void OnWeightUnfocused(object? sender, FocusEventArgs e)
 	{
 		// Autosave when user leaves the weight field
@@ -787,6 +818,12 @@ public partial class ProfilePage : ContentPage
 	private async void OnBodyFatUnfocused(object? sender, FocusEventArgs e)
 	{
 		// Autosave when user leaves the body fat field
+		await SaveAthleteFieldAsync();
+	}
+
+	private async void OnHeightUnfocused(object? sender, FocusEventArgs e)
+	{
+		// Autosave when user leaves the height field
 		await SaveAthleteFieldAsync();
 	}
 
@@ -807,11 +844,15 @@ public partial class ProfilePage : ContentPage
 			SyncDateOfBirthUI();
 			WeightEntry.TextChanged -= OnWeightTextChanged;
 			BodyFatEntry.TextChanged -= OnBodyFatTextChanged;
+			HeightEntry.TextChanged -= OnHeightTextChanged;
 			WeightEntry.Text = _athleteVm.WeightText;
 			BodyFatEntry.Text = _athleteVm.BodyFatText;
+			HeightEntry.Text = _athleteVm.HeightText;
 			WeightEntry.TextChanged += OnWeightTextChanged;
 			BodyFatEntry.TextChanged += OnBodyFatTextChanged;
+			HeightEntry.TextChanged += OnHeightTextChanged;
 			SetSelectorValue(SportLabel, _athleteVm.SelectedSport?.Name, AppLanguage.ProfileSelectSport);
+			SetSelectorValue(SexLabel, _athleteVm.SelectedSex, AppLanguage.ProfileSelectSex);
 			SyncPositionUI();
 			SetSelectorValue(GymExperienceLabel, _athleteVm.SelectedGymExperience, AppLanguage.ProfileSelectExperience);
 			ShowSuccess(AppLanguage.ProfileSaved);

@@ -218,6 +218,31 @@
                             </VerticalStackLayout>
                         </Grid>
 
+                        <VerticalStackLayout Spacing="8">
+                            <Label x:Name="HeightCmLabel"
+                                   Text="Height (cm)"
+                                   Style="{StaticResource BodyMuted}" />
+                            <Entry x:Name="HeightEntry"
+                                   Placeholder="Example: 178"
+                                   Keyboard="Numeric"
+                                   Unfocused="OnHeightUnfocused" />
+                        </VerticalStackLayout>
+
+                        <Label x:Name="SexTitleLabel"
+                               Text="Sex"
+                               Style="{StaticResource BodyMuted}" />
+                        <Border Style="{StaticResource CardBorder}"
+                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                Padding="14,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSexSelectorTapped" />
+                            </Border.GestureRecognizers>
+                            <Label x:Name="SexLabel"
+                                   Text="Select sex"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   FontSize="15" />
+                        </Border>
+
                         <Label x:Name="SportTitleLabel"
                                Text="Sport"
                                Style="{StaticResource BodyMuted}" />

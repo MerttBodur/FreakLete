@@ -1,31 +1,39 @@
 # FreakLete PRD
 
 ## 1. Urun Ozeti
-FreakLete, field athletes ve gym odakli sporcular icin gelistirilmis bir mobil performans takip uygulamasidir. Uygulama; workout loglama, athletic performance tracking, movement goals, exercise discovery ve performance calculations gibi ozellikleri tek bir akista toplar.
+FreakLete, field athletes ve gym odakli sporcular icin gelistirilmis bir mobil performans takip uygulamasidir. Uygulama; workout loglama, athletic performance tracking, movement goals, exercise discovery, training programs ve performance calculations gibi ozellikleri tek bir akista toplar.
 
 Bu dokumanin amaci:
-- tamamlanan MVP'yi netlestirmek
+- tamamlanan urun temelini netlestirmek
 - mevcut urun mimarisini ozetlemek
-- bundan sonraki roadmap'i mantikli fazlara ayirmak
+- shipped state ile roadmap state'i birbirinden ayirmak
+- bundan sonraki roadmap'i mantikli fazlara bolmek
 
 ## 1.1 Guncel Durum Ozeti
-22 Mart 2026 itibariyla FreakLete artik sadece local-first bir MVP degildir.
+7 Nisan 2026 itibariyla FreakLete artik sadece local-first bir MVP degildir.
 
 Bugunku durum:
-- Mobile app production backend'e baglidir
-- Backend Railway uzerinde canlidir
-- Production PostgreSQL persistence aktiftir
+- mobile app production backend'e baglidir
+- backend Railway uzerinde canlidir
+- production PostgreSQL persistence aktiftir
 - JWT auth ve SecureStorage tabanli session mantigi calismaktadir
-- Profile, workouts, PRs, athletic performance ve movement goals backend tarafinda tutulmaktadir
-- Structured sport / position profile selection ve coach profile alanlari eklenmistir
-- Training program persistence katmani eklenmistir
-- Initial FreakAI MVP uygulama icinde erisilebilir durumdadir
-- Production backend smoke test'i gecmistir
+- profile, workouts, PRs, athletic performance ve movement goals backend tarafinda tutulmaktadir
+- app-wide `EN/TR` localization aktiftir
+- runtime language refresh mevcuttur; sayfalar aktif dil degisimine tepki verebilir
+- settings sayfasinda language switch mevcuttur
+- secure change-password flow mevcuttur
+- structured sport / position profile selection ve coach profile alanlari eklenmistir
+- training program persistence katmani eklenmistir
+- starter template browser + clone flow mevcuttur
+- live workout v1 start / active session flow mevcuttur
+- initial FreakAI MVP uygulama icinde erisilebilir durumdadir ve kullanicinin dilinde cevap verebilir
+- production backend smoke test'i gecmistir
 - Android signed AAB uretilmistir
 
 Bu nedenle urun durumu:
-- Phase 1 tamamlandi
-- aktif odak Android release / Play Store cikisidir
+- cloud-backed mobile product foundation tamamlanmistir
+- artik shipped reality ile roadmap ayrimi daha net tutulmalidir
+- aktif odak Android release / Play Store cikisi ve sonraki roadmap fazlaridir
 
 ## 2. Problem
 Mevcut fitness uygulamalarinin cogu ya sadece klasik bodybuilding log mantigina odaklanir ya da atletik performans tarafini yuzeysel gecer. Field athletes icin gerekli olan seyler genelde ayni yerde bulunmaz:
@@ -49,6 +57,7 @@ FreakLete'in uzun vadeli hedefi:
 - veriyi metin yiginlari yerine dashboard, chart, metric tile ve progress card'larla taranabilir hale getiren
 - zaman icinde trendleri grafiklerle gorunur hale getiren
 - canli workout akisinda set bazli veri toplayan
+- benchmark ve percentile mantigi ile performans seviyesini daha anlamli gosteren
 - zayif noktalarini tespit eden
 - hedefine, sporuna ve pozisyonuna gore akilli oneriler yapan
 - zamanla FreakAI tarafindan guclendirilen bir performance companion'a donusen
@@ -64,15 +73,22 @@ Asagidaki basliklar artik roadmap maddesi degil, mevcut urunun parcasidir.
 - Exercise browser
 - Calendar tabanli workout history
 - Calculations sayfasi
-- 1RM calculation
-- RSI calculation
+- `1RM` calculation
+- `RSI` calculation
 - Athletic performance tracking
 - Movement goals
 - Profile / body metrics
 - Structured sport / position selection
 - Coach profile fields
-- Initial FreakAI chat and coaching flow
 - Training program persistence and retrieval
+- Starter template browser + clone flow
+- Live workout v1 start / active session flow
+- Settings page
+- App-wide `EN/TR` localization
+- Runtime language refresh
+- Secure change-password flow
+- Initial FreakAI chat and coaching flow
+- FreakAI language mirroring
 - CRUD for key records
 
 ### 5.2 Product and UX
@@ -81,10 +97,12 @@ Asagidaki basliklar artik roadmap maddesi degil, mevcut urunun parcasidir.
 - Strength ve athletic movement'lar ayni katalog yapisinda toplandi
 - Modern custom dialogs eklendi
 - Profile tarafinda native picker / date dialog'lari yerine custom selector akisi kullanilmaya baslandi
+- Workout surface'lerinde starter template ve kullanici programlari ayni akis icinde gorulebilir hale geldi
+- Canli workout baslatma ve aktif seans tutma davranisi shipped v1 olarak mevcuttur
 
 Not:
-- Bu iyilestirmeler ilk gecis adimidir
-- Asil hedef halen dashboard-first, graph-first, scan-based UI V2 tasarimidir
+- bu iyilestirmeler ilk gecis adimidir
+- asil hedef halen dashboard-first, graph-first, scan-based UI V2 tasarimidir
 
 ### 5.3 Data and Quality
 - Production PostgreSQL persistence
@@ -96,12 +114,17 @@ Not:
 - `FreakLete.Api.Tests` ile auth, profile, workouts, PRs, athletic performance, movement goals, exercise catalog, sport catalog, calculations, training programs ve FreakAI controller coverage
 - Typed athlete/coach profile endpoint'leri, roundtrip persistence, invalid input rejection, cross-section isolation ve `DateOfBirth` date-only behavior dogrulanmis durumda
 - API regression coverage backend persistence guveni sagliyor; real UI flows manual Android smoke testing ile dogrulanir
-- Mevcut test stratejisi: FreakLete.Api.Tests ve FreakLete.Core.Tests (blocking), plus manual Android emulator smoke testing (real verification)
+- Mevcut test stratejisi: `FreakLete.Api.Tests` ve `FreakLete.Core.Tests` (blocking), plus manual Android emulator smoke testing (real verification)
+
+Bu dokuman guncellemesi icin mevcut verification note:
+- `FreakLete.Core.Tests` bu oturumda calisti ve `158/158` gecti
+- `FreakLete.Api.Tests` bu oturumda restore cikisindan sonra `exit code 1` ile sessiz kapandi
+- bu nedenle `FreakLete.Api.Tests` bu oturum icin green olarak belgelenmedi
 
 ### 5.4 Production Validation
 - Railway production backend canli
 - Production PostgreSQL migration'lari uygulanmis
-- Backend smoke test sonucu: 13/13 PASSED
+- Backend smoke test sonucu: `13/13 PASSED`
 - Register / login / profile / workouts / PR / athletic performance / movement goals / delete account production'da dogrulandi
 - Signed Android AAB uretilmis durumda
 
@@ -112,6 +135,7 @@ Not:
 - C#
 - XAML
 - SecureStorage + backend API
+- AppLanguage tabanli client-side localization
 
 ### 6.2 Backend
 - ASP.NET Core Web API
@@ -142,7 +166,9 @@ Bu ne demek:
 - production source of truth PostgreSQL'dir
 - app debug modda local backend kullanabilir, release modda production backend kullanir
 - structured athlete profile ve program verisi cloud-backed hale gelmistir
-- initial FreakAI katmani backend uzerinden cagrilabilir durumdadir
+- starter template akisi public browse + authenticated clone mantigi ile kurulmustur
+- live workout v1 aktif seans mantigi repo icinde mevcuttur
+- initial FreakAI katmani backend uzerinden cagrilabilir ve kullanicinin diliyle eslesecek sekilde yonlendirilebilir durumdadir
 
 ## 7. Backend Durumu
 Backend tarafi artik "direction" seviyesinde degil, aktif production katmanidir.
@@ -152,13 +178,16 @@ Mevcut backend durumu:
 - Railway PostgreSQL ile calisan production database
 - Dockerfile tabanli deploy
 - Health check / migration mantigi dogrulanmis production ortam
+- Training program starter template endpoint'leri ve seeding mantigi mevcuttur
+- Auth tarafinda secure change-password endpoint'i mevcuttur
+- FreakAI tarafinda language detection + response guard mantigi mevcuttur
 
 Bu katmanin mevcut rolu:
 - gercek account system
 - cloud persistence
 - reinstall sonrasi account restore
 - release build'lerde production source of truth olmak
-- gelecekte recommendation ve AI sistemleri icin merkezi veri kaynagi saglamak
+- gelecekte recommendation, benchmark ve AI sistemleri icin merkezi veri kaynagi saglamak
 
 ## 8. Product Principles
 Roadmap boyunca su prensipler korunmali:
@@ -171,6 +200,9 @@ Roadmap boyunca su prensipler korunmali:
 - chart, metric tile, badge, weekly strip ve action card gibi gorsel sinyaller ana bilgi tasiyici olmali
 - kullanicidan toplanan her detay kullaniciya gosterilmek zorunda degil; bazi skorlar ic kalite / coaching sinyali olarak arka planda kalabilir
 - FreakAI, veri ve recommendation katmanlarinin ustune kurulan urunun ana intelligence omurgasi olmalidir
+- benchmark dili "global kabul gormus tek oran" gibi yazilmamali; dogru ifade `public benchmark tables / competition-derived percentiles` olmalidir
+- norm profili desteklenmiyorsa uygulama raw value + raw ratio gosterebilir, ama sahte tier uretmemelidir
+- shipped olmayan roadmap basliklari mevcut ozellikmis gibi yazilmamalidir
 
 ## 9. Roadmap
 
@@ -191,9 +223,9 @@ Kullanicinin hesabi ve verileri artik sadece cihaz icinde degil, backend tarafin
 - Reinstall sonrasi account restore
 
 ### Basari Kriterleri
-- Kullanici uygulamayi silip yeniden yuklediginde tekrar login olabilir
-- Workout, goals, PR ve athletic performance datasi geri gelir
-- Session sadece local Preferences'e degil, gercek auth mantigina dayanir
+- kullanici uygulamayi silip yeniden yuklediginde tekrar login olabilir
+- workout, goals, PR ve athletic performance datasi geri gelir
+- session sadece local Preferences'e degil, gercek auth mantigina dayanir
 
 ### Sonuc
 Bu faz tamamlanmistir.
@@ -206,86 +238,72 @@ Tamamlananlar:
 - production smoke test
 - mobile app'in production backend'e baglanmasi
 
-## Phase 2 - Structured Athlete Profile
-Recommendation sisteminden once kullanici profilini daha anlamli ve secilebilir hale getirmek gerekir.
+## Phase 2 - Profile Expansion for Benchmarking and Guidance
+Shipped athlete/coach selector surfaces'in ustune, benchmark ve guidance icin eksik profile alanlarini tamamlamak gerekir.
 
 Not:
-- sport / position selection ve coach profile alanlarinin ilk versiyonu eklenmistir
-- bu faz artik "tamamen sifirdan baslama" degil, kalan structured profile genislemesidir
+- sport / position selection ve coach profile selector alanlari shipped durumdadir
+- training days, session duration, goal ve dietary selector akislarinin ilk versiyonu da shipped durumdadir
+- bu faz artik tamamen sifirdan baslama degil, kalan profile genislemesidir
+- `FFMI` ve benchmark norm gating icin profile `HeightCm` ve `Sex` alanlari eklenmelidir
 
 ### Hedef
-Handwritten profile alanlarini structured browser / picker sistemine cevirmek.
+Ileride benchmark-driven calculations ve guidance icin gerekli temel profile alanlarini tamamlamak.
 
 ### Kapsam
-- Sport browser
-- Position browser
+- `HeightCm` alani
+- `Sex` alani
 - Goal metric browser
 - Target quality selection
 - Target body area selection
-- Structured athlete profile model
 
 ### Ornek Alanlar
-- Sport: Soccer, Basketball, Volleyball, Sprinting vb.
-- Position: QB, RB, WR, OL, DL vb.
 - Target quality: explosiveness, max strength, reactive ability, acceleration vb.
 - Target metric: squat, vertical jump, broad jump, 40y dash vb.
 
-## Phase 2A - Live Workout and Tracking Analytics
-Bu faz, urunun sadece "log kaydi" degil, canli antrenman akisini ve zaman icindeki degisimi anlayan bir tracking katmanina donusmesini hedefler.
+## Phase 2A - Tracking Analytics and Live Workout Depth
+Bu faz, shipped live workout v1'in ustune daha zengin tracking ve analytics katmani kurmayi hedefler.
+
+Not:
+- live workout v1 start / active session flow zaten mevcuttur
+- bu faz basic "start workout"u degil, daha derin instrumentation ve analytics kapsamini ifade eder
 
 ### Hedef
-- Workout'lari canli sekilde baslatip yonetebilmek
-- Set bazli daha iyi sinyal toplayabilmek
-- Kullaniciya trendleri grafiklerle gostermek
-- Ileride recommendation ve FreakAI tarafinda kullanilacak bir internal fatigue sinyali uretmek
+- set bazli workout sinyallerini zenginlestirmek
+- canli workout akisina daha fazla rehberlik eklemek
+- kullaniciya trendleri grafiklerle gostermek
+- ileride recommendation ve FreakAI tarafinda kullanilacak bir internal fatigue sinyali uretmek
 
 ### Kapsam
-- Live workout mode
-- Workout start / active session flow
-- Global workout timer
-- Set timer
-- Rest timer
-- Per-set reps girisi
-- Per-set RPE girisi
-- Opsiyonel concentric phase time girisi
-- Set tamamlandiginda otomatik rest baslatma
-- Session sonu total fatigue hesaplamasi
-- Fatigue'yi kullaniciya ham skor olarak gostermeme
-- Internal fatigue bucket:
-  - low
-  - intermediate
-  - high
+- guided set progression
+- auto-rest behavior ve daha net set transition mantigi
+- richer per-set capture
+- `RPE` girisi
+- opsiyonel concentric phase time girisi
+- session sonu total fatigue hesaplamasi
+- fatigue'yi kullaniciya ham skor olarak gostermeme
+- internal fatigue bucket: `low`, `intermediate`, `high`
 
 ### Analytics Kapsami
 - PR analysis line chart
-- Bodyweight analysis line chart
-- Workout count / consistency line chart
-- Ileride genisletilebilir trend kartlari
-
-### Urun Davranisi
-- Kullanici Start Workout'a tiklar
-- Workout session aktif hale gelir
-- Kullanici egzersiz secer (ornegin Back Squat)
-- Set suresi baslar
-- Kullanici seti bitirince ilgili set tamamlanir
-- Sonrasinda reps, RPE ve opsiyonel concentric phase time girilir
-- Set bitiminden hemen sonra dinlenme suresi baslar
-- Session boyunca tum parametrelerden total fatigue hesaplanir
-- Bu skor ham deger olarak gosterilmez; sistem icinde yorumlanir
+- bodyweight analysis line chart
+- workout count / consistency line chart
+- historical body measurement tracking to support bodyweight/body fat charts
+- ileride genisletilebilir trend kartlari
 
 ### Neden Onemli
-- Daha zengin workout context'i verir
-- Recommendation engine icin daha iyi veri tabani olusturur
+- daha zengin workout context'i verir
+- recommendation engine icin daha iyi veri tabani olusturur
 - FreakAI'in recovery, load, yorgunluk ve progression kararlarini destekler
-- Kullanicinin ilerlemeyi sadece liste degil trend olarak gormesini saglar
+- kullanicinin ilerlemeyi sadece liste degil trend olarak gormesini saglar
 
 ## Phase 2B - Dashboard-First UI V2
 Bu faz, mevcut visual refresh'i daha ileri tasiyip urunu text-heavy utility app gorunumunden scan-based performance dashboard deneyimine donusturur.
 
 ### Hedef
-- Ana ekranlari daha gorsel, daha taranabilir ve daha az yorucu hale getirmek
-- Grafik, metric tile, progress card ve action surface'leri urunun ana dili yapmak
-- Kullaniciya paragraf okumadan "bugun ne var", "nasil gidiyor", "sirada ne var" sorularinin cevabini vermek
+- ana ekranlari daha gorsel, daha taranabilir ve daha az yorucu hale getirmek
+- grafik, metric tile, progress card ve action surface'leri urunun ana dili yapmak
+- kullaniciya paragraf okumadan "bugun ne var", "nasil gidiyor", "sirada ne var" sorularinin cevabini vermek
 
 ### UI V2 Phase 1 - Shared Design System
 - HeroPanel
@@ -317,49 +335,22 @@ Bu faz, mevcut visual refresh'i daha ileri tasiyip urunu text-heavy utility app 
 
 ### UI V2 Phase 4 - Deep Workflow Surfaces
 - Calculations redesign
-- Profile'i Overview / Coach / Performance / Goals segmentlerine ayirma
+- Profile'i `Overview / Coach / Performance / Goals` segmentlerine ayirma
 - NewWorkout'i step-based flow'a donusturme
 - FreakAI'i coach dashboard-first yuzeye tasima
 
 ### UI V2 Phase 5 - Visual Selection and Onboarding Surfaces
 - Equipment selection grid
-- goal/focus/equipment gibi secimlerde visual card kullanimi
+- goal / focus / equipment gibi secimlerde visual card kullanimi
 - browser-backed selector akisini daha gorsel ve hizli hale getirme
 
 ### Basari Kriterleri
-- Ana ekranlarda kullanici uzun aciklama paragraflari okumadan yonunu bulabilir
+- ana ekranlarda kullanici uzun aciklama paragraflari okumadan yonunu bulabilir
 - Home gercek bir dashboard hissi verir
 - Profile uzun tek parca form gibi hissettirmez
-- Chart'lar dekoratif degil, ana bilgi tasiyici olur
-- Workout ve program akislarinda image-backed / status-aware kartlar kullanilir
-- Uygulama "tool collection" degil, "training system" gibi hissedilir
-
-## Phase 2C - Regression Safety Expansion
-Bu fazin amaci, uygulamanin yalnizca build alan degil, regression'a dayanikli bir urun haline gelmesini saglamaktir.
-
-### Hedef
-- Auth/profile tarafinda baslayan API regression coverage'i urunun diger kritik alanlarina yaymak
-- Mobile profile state tutarsizliklarini yakalayacak testable logic ve regression coverage eklemek
-- FreakAI ve tracked-data endpoint'lerinde korkmadan iterasyon yapilabilecek bir safety net kurmak
-
-### Kapsam
-- Workouts API regression tests
-- PR entries API regression tests
-- Athletic performance API regression tests
-- Movement goals API regression tests
-- Training program endpoint regression tests
-- FreakAI controller / error-path tests
-- Mobile profile save/state consistency tests
-
-### Neden Onemli
-- API roundtrip coverage tek basina yeterli degil; kullanicinin "saved" gorup sonra eski state'e donmesi gibi mobile-state bug'lari ayrica ele alinmali
-- Bu faz correctness ve risk reduction fazidir
-- UI V2 ve yeni feature development'i daha guvenli hale getirir
-
-### Guncel Durum
-- API regression expansion'in buyuk kismi tamamlanmistir
-- Workouts, PRs, athletic performance, movement goals, training programs ve FreakAI controller test coverage repo icinde mevcuttur
-- Real user-facing verification manual Android emulator smoke testing ile yapilir
+- chart'lar dekoratif degil, ana bilgi tasiyici olur
+- workout ve program akislarinda image-backed / status-aware kartlar kullanilir
+- uygulama "tool collection" degil, "training system" gibi hissedilir
 
 ## Phase 3 - Exercise Metadata Engine
 Bu faz roadmap'in en kritik katmanlarindan biridir.
@@ -396,6 +387,69 @@ Her exercise icin su eksenlerde puanlama:
 
 Bu puanlama recommendation engine'in temel girdilerinden biri olacak.
 
+## Phase 3A - Performance Standards and Exercise Guidance
+Bu faz, bugunku `1RM + RSI` calculations surface'ini daha akilli ama halen deterministic bir performance standards katmanina genisletir.
+
+Onemli not:
+- bu fazdaki tum basliklar roadmap'tir
+- `FFMI`, lift seviyeleri, kompozit atlet lakaplari ve egzersiz demo medyasi bugunku shipped urunde mevcut degildir
+- benchmark dili `public benchmark tables / competition-derived percentiles` olarak yazilmalidir; evrensel tek tablo varsayimi yapilmamalidir
+
+### Column 1 - Calculations Intelligence
+Bu sutun, mevcut calculation surface'ini genisletir ama yalnizca veri ve benchmark mantigi guvenli oldugunda kullaniciya tier gosterir.
+
+Kapsam:
+- `FFMI` hesaplama, ancak `HeightCm + WeightKg + BodyFatPercentage` birlikte varsa
+- profile once `HeightCm` ve `Sex` alanlarini ekleme
+- powerlifting liftleri icin UI'da `1RM / bodyweight` oranini gosterme
+- lift-tier mantigini sabit kaba oranlarla degil, data-driven percentile yaklasimiyla kurma
+- powerlifting omurgasinda `IPF GL` ve `OpenPowerlifting` benzeri competition-derived yaklasimlari referans alma
+- `RSI`, vertical jump ve standing broad jump benchmark'larini sex ve mumkun oldugunda sport / athlete population'a gore ele alma
+- desteklenmeyen norm profillerinde `raw value + raw ratio` gosterme, ama tier uretmeme
+- air-time -> vertical jump hesabini opsiyonel ek hesap yolu olarak planlama
+
+### Column 2 - Profile Level System
+Bu sutun, profile yuzeyinde seviye etiketleri ve aciklayici guidance dilini tanimlar.
+
+Kapsam:
+- v1 benchmarked movement scope: `Bench Press`, `Back Squat`, `Deadlift`, `Military/Overhead Press`, `Power Clean`, `Vertical Jump`, `Single/Standing Broad Jump`
+- v1 seviye etiketleri: `Beginner`, `Intermediate`, `Advanced`, `Freak`
+- kompozit lakap mantigini minimum kapsama kuraliyla calistirma
+- athletic cluster guclu ise `Athlete`
+- yalniz power cluster guclu ise `Powerlifter`
+- ikisi de kismi ise `Hybrid`
+- veri yetersizse lakap gostermeme
+- `1RM`, `RSI`, `FFMI` ve benchmark terimleri icin kucuk `?` tooltip aciklamalari planlama
+
+### Column 3 - Exercise Demo Media
+Bu sutun, metin tabanli egzersiz rehberligini medya ile zenginlestirir ama kapsami kontrollu tutar.
+
+Kapsam:
+- v1'de yalnizca Tier-1 hareketler icin demo medya hedefleme
+- ilk fazda tum `251` hareket icin medya kapsamayi hedeflememe
+- demo medya metadata'sini catalog'da opsiyonel alan olarak tasarlama
+- medya yoksa mevcut `Instructions / CommonMistakes / Progression / Regression` metnini fallback olarak kullanma
+- bu fazi mevcut urunde `GIF support already shipped` gibi anlatmama
+
+### Required Validation
+Bu faz implementasyonunda su test basliklari zorunlu olacaktir:
+- profile alan migration testi (`HeightCm`, `Sex`)
+- `FFMI` hesap testi
+- benchmark tier resolver testleri
+- athlete title resolver testleri
+- tooltip rendering testi
+- media fallback davranis testi
+
+### Source Direction
+Bu fazin veri dili ve benchmark omurgasi icin kullanilacak referans yonu:
+- `FFMI` height-normalized temel: VanItallie 1990 https://pubmed.ncbi.nlm.nih.gov/2239792/
+- `FFMI` historical/application context: Kouri 1995 https://pubmed.ncbi.nlm.nih.gov/7496846/
+- `FFMI`'nin athlete population icinde sex/sport farklari gosterebildigine dair dayanak: https://pubmed.ncbi.nlm.nih.gov/37815277/
+- ek athlete-population FFMI referansi: https://pubmed.ncbi.nlm.nih.gov/30985525/
+- `RSI` benchmark dili icin `preliminary, athlete-population-specific` yaklasim: https://www.mdpi.com/2075-4663/6/4/133
+- powerlifting relatif kiyas omurgasi: `IPF GL Formula` https://www.powerlifting.sport/rules/codes/info/ipf-formula
+- competition-derived percentile data backbone yonu: `OpenPowerlifting Data Service` https://openpowerlifting.gitlab.io/opl-csv/introduction.html
+
 ## Phase 4 - Rule-Based Recommendation Engine
 AI'dan once test edilebilir ve deterministic bir recommendation engine kurulmali.
 
@@ -411,15 +465,15 @@ Kullanicinin mevcut verisine gore mantiksal ve aciklanabilir oneriler sunmak.
 - Sport / position bazli rule-based recommendation
 
 ### Ornek Use Case'ler
-- Kullanici sprint odakli ama posterior chain volumu dusuk
-- Kullanici broad jump gelistirmek istiyor ama relevant power movement exposure zayif
-- Kullanici RB olarak acceleration odakli bir profile sahip
+- kullanici sprint odakli ama posterior chain volumu dusuk
+- kullanici broad jump gelistirmek istiyor ama relevant power movement exposure zayif
+- kullanici RB olarak acceleration odakli bir profile sahip
 
 ## Phase 5 - FreakAI Intelligence Layer
 FreakAI bu urunde tek basina bir "chat feature" degil, uzun vadede urunun intelligence backbone'u olacak katmandir.
 
 Not:
-- initial FreakAI MVP ve training-program-aware coach flow baslatilmistir
+- initial FreakAI MVP, language-aware behavior, training-program-aware coach flow ve ilk program generation akisi baslatilmistir
 - bu faz, mevcut MVP'nin ustune daha derin reasoning, recommendation ve orchestration katmanini ifade eder
 
 ### Hedef
@@ -430,13 +484,13 @@ Kullaniciya daha akilli, daha aciklayici ve daha context-aware oneriler sunan; r
 - Weak point explanation
 - Sport + position specific guidance
 - Goal-oriented movement suggestions
-- Program idea generation
 - User context aware coaching style explanations
 
 ### Onemli Ilke
 FreakAI output:
 - Phase 2'deki structured profile
 - Phase 3'teki exercise metadata
+- Phase 3A'daki performance standards
 - Phase 4'teki deterministic scoring
 ustune kurulacak.
 
@@ -448,24 +502,23 @@ FreakAI zamanla su alanlarin ana orkestrasyon katmani olacaktir:
 - future program builder intelligence
 - kullanicinin tum performans verisini anlamlandiran ust katman
 
-## Phase 6 - Program Builder
-Bu fazda urun tek tek movement onerisi veren bir uygulamadan daha ileri gider.
+## Phase 6 - Advanced Program Builder
+Bu faz, mevcut starter template ve ilk AI program generation katmaninin ustune daha guclu bir builder deneyimi kurar.
 
 ### Hedef
-Kullaniciya mini block, microcycle veya direction-level program onerileri sunmak.
+Kullaniciya mini block, microcycle veya direction-level programlari daha kontrollu sekilde olusturma ve yonetme kabiliyeti sunmak.
 
 ### Kapsam
 - Weekly structure suggestions
 - Goal-based exercise grouping
-- Session templates
 - Progression logic
 - Load / frequency recommendations
 
 ## 10. Yapilmis Islerin Roadmapten Cikarilmasi
 Asagidaki basliklar artik "gelecek is" degil:
 - exercise browser
-- 1RM calculation
-- RSI calculation
+- `1RM` calculation
+- `RSI` calculation
 - movement goals
 - athletic performance tracking
 - local catalog seeding
@@ -474,12 +527,22 @@ Asagidaki basliklar artik "gelecek is" degil:
 - production PostgreSQL persistence
 - Railway deployment
 - production smoke testing
+- app-wide `EN/TR` localization
+- runtime language refresh
+- settings / language switch
+- secure change-password flow
+- starter template browse + clone flow
+- live workout v1
+- FreakAI language mirroring
 
 ## 11. Product Risks
-- Cloud migration sirasinda local SQLite ile backend verisinin cakisabilmesi
-- Structured metadata kurulmadan AI feature'a erken gecilmesi
-- Sport / position recommendation logic'inin veri olmadan varsayimla yazilmasi
-- Catalog expansion sirasinda data quality problemleri
+- cloud migration sirasinda local SQLite ile backend verisinin cakisabilmesi
+- structured metadata kurulmadan AI feature'a erken gecilmesi
+- sport / position recommendation logic'inin veri olmadan varsayimla yazilmasi
+- catalog expansion sirasinda data quality problemleri
+- benchmark sisteminin "evrensel tek tablo" varsayimiyla hatali yazilmasi
+- desteklenmeyen norm profillerinde sahte tier uretilmesi
+- Tier-1 kapsami yerine tum katalog icin bir anda medya beklenmesi
 
 ## 12. Out of Scope for Current Next Phase
 Su an bir sonraki faz icin odak disi sayilabilecek basliklar:
@@ -492,6 +555,8 @@ Su an bir sonraki faz icin odak disi sayilabilecek basliklar:
 - AI recommendation implementation
 - iOS release execution
 - advanced infrastructure migration
+- desteklenmeyen norm profillerine zorla tier uretmek
+- ilk fazda tum katalog icin demo medya zorunlulugu
 
 ## 13. Store Readiness - Current Focus
 Aktif odak product roadmap fazlarindan bagimsiz olarak Android release execution'dir.
@@ -521,15 +586,15 @@ Urunu saglam buyutmek icin onerilen sira:
 
 1. Android release / Play Store cikisi
 2. iOS release hazirligi
-3. Regression safety expansion
-4. Dashboard-first UI V2
-5. Structured athlete profile
-6. Live workout and tracking analytics
-7. Exercise metadata engine
+3. Dashboard-first UI V2
+4. Profile expansion for benchmarking and guidance
+5. Tracking analytics and live workout depth
+6. Exercise metadata engine
+7. Performance standards and exercise guidance
 8. Rule-based recommendation engine
 9. FreakAI intelligence layer
-10. Program builder
+10. Advanced program builder
 
 ## 15. Net Product Direction
 FreakLete'in bundan sonraki asil hedefi sadece "log tutan bir app" olmak degil;
-athlete-specific, dashboard-first, structured-data-driven, trend-aware, recommendation-capable ve uzun vadede FreakAI tarafindan guclendirilen bir performance platformuna donusmektir.
+multilingual, athlete-specific, dashboard-first, structured-data-driven, benchmark-aware, trend-aware, recommendation-capable ve uzun vadede FreakAI tarafindan guclendirilen bir performance platformuna donusmektir.

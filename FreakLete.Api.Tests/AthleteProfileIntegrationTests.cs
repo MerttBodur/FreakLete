@@ -54,6 +54,8 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
             dateOfBirth = "2000-06-15",
             weightKg = 82.5,
             bodyFatPercentage = 14.2,
+            heightCm = 178.5,
+            sex = "Male",
             sportName = "Basketball",
             position = "Point Guard",
             gymExperienceLevel = "3-4 years"
@@ -67,6 +69,8 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
         Assert.Equal("2000-06-15", body.GetProperty("dateOfBirth").GetString());
         Assert.Equal(82.5, body.GetProperty("weightKg").GetDouble(), 0.01);
         Assert.Equal(14.2, body.GetProperty("bodyFatPercentage").GetDouble(), 0.01);
+        Assert.Equal(178.5, body.GetProperty("heightCm").GetDouble(), 0.01);
+        Assert.Equal("Male", body.GetProperty("sex").GetString());
         Assert.Equal("Basketball", body.GetProperty("sportName").GetString());
         Assert.Equal("Point Guard", body.GetProperty("position").GetString());
         Assert.Equal("3-4 years", body.GetProperty("gymExperienceLevel").GetString());
@@ -76,6 +80,8 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
         Assert.Equal("2000-06-15", p.GetProperty("dateOfBirth").GetString());
         Assert.Equal(82.5, p.GetProperty("weightKg").GetDouble(), 0.01);
         Assert.Equal(14.2, p.GetProperty("bodyFatPercentage").GetDouble(), 0.01);
+        Assert.Equal(178.5, p.GetProperty("heightCm").GetDouble(), 0.01);
+        Assert.Equal("Male", p.GetProperty("sex").GetString());
         Assert.Equal("Basketball", p.GetProperty("sportName").GetString());
         Assert.Equal("Point Guard", p.GetProperty("position").GetString());
         Assert.Equal("3-4 years", p.GetProperty("gymExperienceLevel").GetString());
@@ -96,6 +102,8 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
             dateOfBirth = "1995-01-01",
             weightKg = 80.0,
             bodyFatPercentage = 15.0,
+            heightCm = 175.0,
+            sex = "Female",
             sportName = "Soccer",
             position = "Goalkeeper",
             gymExperienceLevel = "5+ years"
@@ -107,6 +115,8 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
             dateOfBirth = (string?)null,
             weightKg = (double?)null,
             bodyFatPercentage = (double?)null,
+            heightCm = (double?)null,
+            sex = (string?)null,
             sportName = (string?)null,
             position = (string?)null,
             gymExperienceLevel = (string?)null
@@ -117,6 +127,8 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
         Assert.Equal(JsonValueKind.Null, p.GetProperty("dateOfBirth").ValueKind);
         Assert.Equal(JsonValueKind.Null, p.GetProperty("weightKg").ValueKind);
         Assert.Equal(JsonValueKind.Null, p.GetProperty("bodyFatPercentage").ValueKind);
+        Assert.Equal(JsonValueKind.Null, p.GetProperty("heightCm").ValueKind);
+        Assert.Equal("", p.GetProperty("sex").GetString());
         Assert.Equal("", p.GetProperty("sportName").GetString());
         Assert.Equal("", p.GetProperty("position").GetString());
         Assert.Equal("", p.GetProperty("gymExperienceLevel").GetString());
@@ -273,6 +285,8 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
         var resp = await c.PutAsJsonAsync("/api/auth/profile/athlete", new
         {
             weightKg = 75.0,
+            heightCm = 180.0,
+            sex = "Female",
             sportName = "Powerlifting"
         });
 
@@ -280,6 +294,8 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
 
         // Athlete fields in response
         Assert.Equal(75.0, body.GetProperty("weightKg").GetDouble(), 0.01);
+        Assert.Equal(180.0, body.GetProperty("heightCm").GetDouble(), 0.01);
+        Assert.Equal("Female", body.GetProperty("sex").GetString());
         Assert.Equal("Powerlifting", body.GetProperty("sportName").GetString());
 
         // Coach fields also in response
@@ -435,5 +451,46 @@ public class AthleteProfileIntegrationTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         var p = await GetProfileJsonAsync(c);
         Assert.Equal("", p.GetProperty("gymExperienceLevel").GetString());
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  HEIGHT VALIDATION
+    // ════════════════════════════════════════════════════════════════
+
+    [Theory]
+    [InlineData(79.9)]
+    [InlineData(300.1)]
+    [InlineData(-1)]
+    public async Task SaveAthleteProfile_InvalidHeight_Returns400(double height)
+    {
+        var c = await RegisterAndAuthenticateAsync();
+        var resp = await c.PutAsJsonAsync("/api/auth/profile/athlete", new { heightCm = height });
+        Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  SEX VALIDATION
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task SaveAthleteProfile_InvalidSex_Returns400()
+    {
+        var c = await RegisterAndAuthenticateAsync();
+        var resp = await c.PutAsJsonAsync("/api/auth/profile/athlete", new { sex = "Other" });
+        Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
+        var body = await resp.Content.ReadAsStringAsync();
+        Assert.Contains("Invalid sex value", body);
+    }
+
+    [Theory]
+    [InlineData("male", "Male")]
+    [InlineData("FEMALE", "Female")]
+    public async Task SaveAthleteProfile_SexCaseInsensitive_NormalizesToCanonical(string input, string expected)
+    {
+        var c = await RegisterAndAuthenticateAsync();
+        var resp = await c.PutAsJsonAsync("/api/auth/profile/athlete", new { sex = input });
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        var p = await GetProfileJsonAsync(c);
+        Assert.Equal(expected, p.GetProperty("sex").GetString());
     }
 }

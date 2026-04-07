@@ -57,6 +57,8 @@ public class ProfileViewModelFlowTests
             Profile.DateOfBirth = req.DateOfBirth;
             Profile.WeightKg = req.WeightKg;
             Profile.BodyFatPercentage = req.BodyFatPercentage;
+            Profile.HeightCm = req.HeightCm;
+            Profile.Sex = req.Sex ?? "";
             Profile.SportName = req.SportName ?? "";
             Profile.Position = req.Position ?? "";
             Profile.GymExperienceLevel = req.GymExperienceLevel ?? "";
@@ -123,6 +125,8 @@ public class ProfileViewModelFlowTests
         athlete.DateOfBirth = new DateOnly(1900, 1, 1);
         athlete.WeightText = "20";
         athlete.BodyFatText = "0";
+        athlete.HeightText = "80";
+        athlete.SelectedSex = "Male";
         athlete.SelectedSport = SportCatalog.First(s => s.Name == "Powerlifting");
         athlete.SelectedGymExperience = "< 1 year";
 
@@ -133,6 +137,8 @@ public class ProfileViewModelFlowTests
         Assert.Equal(new DateOnly(1900, 1, 1), store.LastAthleteSave!.DateOfBirth);
         Assert.Equal(20.0, store.LastAthleteSave.WeightKg);
         Assert.Equal(0.0, store.LastAthleteSave.BodyFatPercentage);
+        Assert.Equal(80.0, store.LastAthleteSave.HeightCm);
+        Assert.Equal("Male", store.LastAthleteSave.Sex);
         Assert.Equal("Powerlifting", store.LastAthleteSave.SportName);
         Assert.Null(store.LastAthleteSave.Position); // Powerlifting has no positions
         Assert.Equal("< 1 year", store.LastAthleteSave.GymExperienceLevel);
@@ -147,6 +153,8 @@ public class ProfileViewModelFlowTests
         Assert.Equal(new DateOnly(1900, 1, 1), reloaded.DateOfBirth);
         Assert.Equal("20", reloaded.WeightText);
         Assert.Equal("0", reloaded.BodyFatText);
+        Assert.Equal("80", reloaded.HeightText);
+        Assert.Equal("Male", reloaded.SelectedSex);
         Assert.Equal("Powerlifting", reloaded.SelectedSport?.Name);
         Assert.Null(reloaded.SelectedPosition);
         Assert.Equal("< 1 year", reloaded.SelectedGymExperience);
@@ -162,6 +170,8 @@ public class ProfileViewModelFlowTests
         athlete.DateOfBirth = new DateOnly(2000, 6, 15);
         athlete.WeightText = "82.5";
         athlete.BodyFatText = "15.2";
+        athlete.HeightText = "178";
+        athlete.SelectedSex = "Female";
         athlete.SelectedSport = SportCatalog.First(s => s.Name == "Basketball");
         athlete.SelectedPosition = "Point Guard";
         athlete.SelectedGymExperience = "3-4 years";
@@ -172,6 +182,8 @@ public class ProfileViewModelFlowTests
         Assert.Equal(new DateOnly(2000, 6, 15), store.LastAthleteSave!.DateOfBirth);
         Assert.Equal(82.5, store.LastAthleteSave.WeightKg);
         Assert.Equal(15.2, store.LastAthleteSave.BodyFatPercentage);
+        Assert.Equal(178.0, store.LastAthleteSave.HeightCm);
+        Assert.Equal("Female", store.LastAthleteSave.Sex);
         Assert.Equal("Basketball", store.LastAthleteSave.SportName);
         Assert.Equal("Point Guard", store.LastAthleteSave.Position);
         Assert.Equal("3-4 years", store.LastAthleteSave.GymExperienceLevel);
@@ -184,6 +196,8 @@ public class ProfileViewModelFlowTests
         Assert.Equal("Point Guard", reloaded.SelectedPosition);
         Assert.Equal(82.5, double.Parse(reloaded.WeightText));
         Assert.Equal(15.2, double.Parse(reloaded.BodyFatText));
+        Assert.Equal(178.0, double.Parse(reloaded.HeightText));
+        Assert.Equal("Female", reloaded.SelectedSex);
     }
 
     [Fact]
@@ -195,6 +209,8 @@ public class ProfileViewModelFlowTests
         athlete.DateOfBirth = new DateOnly(2026, 3, 26);
         athlete.WeightText = "400";
         athlete.BodyFatText = "100";
+        athlete.HeightText = "300";
+        athlete.SelectedSex = "Male";
         athlete.SelectedSport = SportCatalog.First(s => s.Name == "Soccer");
         athlete.SelectedPosition = "Striker";
         athlete.SelectedGymExperience = "5+ years";
@@ -205,6 +221,8 @@ public class ProfileViewModelFlowTests
         Assert.Equal(new DateOnly(2026, 3, 26), store.LastAthleteSave!.DateOfBirth);
         Assert.Equal(400.0, store.LastAthleteSave.WeightKg);
         Assert.Equal(100.0, store.LastAthleteSave.BodyFatPercentage);
+        Assert.Equal(300.0, store.LastAthleteSave.HeightCm);
+        Assert.Equal("Male", store.LastAthleteSave.Sex);
         Assert.Equal("Soccer", store.LastAthleteSave.SportName);
         Assert.Equal("Striker", store.LastAthleteSave.Position);
         Assert.Equal("5+ years", store.LastAthleteSave.GymExperienceLevel);
@@ -217,6 +235,8 @@ public class ProfileViewModelFlowTests
         Assert.Equal("Striker", reloaded.SelectedPosition);
         Assert.Equal("400", reloaded.WeightText);
         Assert.Equal("100", reloaded.BodyFatText);
+        Assert.Equal("300", reloaded.HeightText);
+        Assert.Equal("Male", reloaded.SelectedSex);
         Assert.Equal("5+ years", reloaded.SelectedGymExperience);
     }
 
@@ -367,6 +387,8 @@ public class ProfileViewModelFlowTests
         athlete.DateOfBirth = new DateOnly(2000, 6, 15);
         athlete.WeightText = "82.5";
         athlete.BodyFatText = "15.2";
+        athlete.HeightText = "178";
+        athlete.SelectedSex = "Female";
         athlete.SelectedSport = SportCatalog.First(s => s.Name == "Basketball");
         athlete.SelectedPosition = "Point Guard";
         athlete.SelectedGymExperience = "3-4 years";
@@ -381,6 +403,8 @@ public class ProfileViewModelFlowTests
         Assert.Equal("Point Guard", athlete.SelectedPosition);
         Assert.True(athlete.ShowPositionSelector);
         Assert.Equal("3-4 years", athlete.SelectedGymExperience);
+        Assert.Equal("178", athlete.HeightText);
+        Assert.Equal("Female", athlete.SelectedSex);
         Assert.False(athlete.IsDirty);
     }
 
@@ -398,6 +422,8 @@ public class ProfileViewModelFlowTests
         athlete.DateOfBirth = new DateOnly(2000, 6, 15);
         athlete.WeightText = "82.5";
         athlete.BodyFatText = "15.2";
+        athlete.HeightText = "178";
+        athlete.SelectedSex = "Male";
         athlete.SelectedSport = SportCatalog.First(s => s.Name == "Basketball");
         athlete.SelectedPosition = "Point Guard";
         athlete.SelectedGymExperience = "3-4 years";
@@ -418,10 +444,12 @@ public class ProfileViewModelFlowTests
         // Full reload (same as navigating away and back)
         var (ra, rc) = LoadPage(store);
 
-        // All 6 athlete fields
+        // All 8 athlete fields
         Assert.Equal(new DateOnly(2000, 6, 15), ra.DateOfBirth);
         Assert.Equal(82.5, double.Parse(ra.WeightText));
         Assert.Equal(15.2, double.Parse(ra.BodyFatText));
+        Assert.Equal(178.0, double.Parse(ra.HeightText));
+        Assert.Equal("Male", ra.SelectedSex);
         Assert.Equal("Basketball", ra.SelectedSport?.Name);
         Assert.Equal("Point Guard", ra.SelectedPosition);
         Assert.Equal("3-4 years", ra.SelectedGymExperience);

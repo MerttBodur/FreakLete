@@ -11,6 +11,8 @@ public class SaveAthleteProfileRequest
     public DateOnly? DateOfBirth { get; set; }
     public double? WeightKg { get; set; }
     public double? BodyFatPercentage { get; set; }
+    public double? HeightCm { get; set; }
+    public string? Sex { get; set; }
     public string? SportName { get; set; }
     public string? Position { get; set; }
     public string? GymExperienceLevel { get; set; }

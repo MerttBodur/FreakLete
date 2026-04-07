@@ -122,6 +122,8 @@ public class AuthController : ControllerBase
             DateOfBirth = user.DateOfBirth,
             WeightKg = user.WeightKg,
             BodyFatPercentage = user.BodyFatPercentage,
+            HeightCm = user.HeightCm,
+            Sex = user.Sex,
             SportName = user.SportName,
             Position = user.Position,
             GymExperienceLevel = user.GymExperienceLevel,

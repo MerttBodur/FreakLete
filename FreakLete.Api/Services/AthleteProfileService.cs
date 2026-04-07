@@ -14,6 +14,11 @@ public class AthleteProfileService
         "< 1 year", "1-2 years", "3-4 years", "5+ years"
     };
 
+    private static readonly HashSet<string> AllowedSexValues = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Male", "Female"
+    };
+
     public AthleteProfileService(AppDbContext db)
     {
         _db = db;
@@ -45,6 +50,16 @@ public class AthleteProfileService
         if (request.BodyFatPercentage.HasValue &&
             (request.BodyFatPercentage.Value < 0 || request.BodyFatPercentage.Value > 100))
             return new SaveResult(false, "Body fat must be between 0 and 100%.", user);
+
+        // ── Validate height ─────────────────────────────
+        if (request.HeightCm.HasValue && (request.HeightCm.Value < 80 || request.HeightCm.Value > 300))
+            return new SaveResult(false, "Height must be between 80 and 300 cm.", user);
+
+        // ── Validate sex ────────────────────────────────
+        var normalizedSex = NormalizeEmpty(request.Sex);
+        if (normalizedSex is not null && !AllowedSexValues.Contains(normalizedSex))
+            return new SaveResult(false,
+                $"Invalid sex value: '{normalizedSex}'. Allowed values: {string.Join(", ", AllowedSexValues)}.", user);
 
         // ── Validate gym experience level ────────────────
         var normalizedGym = NormalizeEmpty(request.GymExperienceLevel);
@@ -86,10 +101,17 @@ public class AthleteProfileService
             resolvedPosition = null;
         }
 
+        // ── Resolve canonical sex value ─────────────────
+        string? resolvedSex = normalizedSex is not null
+            ? AllowedSexValues.First(v => string.Equals(v, normalizedSex, StringComparison.OrdinalIgnoreCase))
+            : null;
+
         // ── Apply fields ─────────────────────────────────
         user.DateOfBirth = request.DateOfBirth;
         user.WeightKg = request.WeightKg;
         user.BodyFatPercentage = request.BodyFatPercentage;
+        user.HeightCm = request.HeightCm;
+        user.Sex = resolvedSex ?? string.Empty;
         user.SportName = resolvedSport ?? string.Empty;
         user.Position = resolvedPosition ?? string.Empty;
         user.GymExperienceLevel = normalizedGym ?? string.Empty;
@@ -112,6 +134,8 @@ public class AthleteProfileService
             DateOfBirth = user.DateOfBirth,
             WeightKg = user.WeightKg,
             BodyFatPercentage = user.BodyFatPercentage,
+            HeightCm = user.HeightCm,
+            Sex = user.Sex,
             SportName = user.SportName,
             Position = user.Position,
             GymExperienceLevel = user.GymExperienceLevel,

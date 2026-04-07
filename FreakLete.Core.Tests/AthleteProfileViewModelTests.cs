@@ -23,12 +23,14 @@ public class AthleteProfileViewModelTests
 
     private static UserProfileResponse MakeProfile(
         DateOnly? dob = null, double? weight = null, double? bodyFat = null,
+        double? height = null, string sex = "",
         string sport = "", string position = "", string gym = "")
     {
         return new UserProfileResponse
         {
             Id = 1, FirstName = "Test", LastName = "User", Email = "t@t.com",
             DateOfBirth = dob, WeightKg = weight, BodyFatPercentage = bodyFat,
+            HeightCm = height, Sex = sex,
             SportName = sport, Position = position, GymExperienceLevel = gym
         };
     }
@@ -45,6 +47,8 @@ public class AthleteProfileViewModelTests
             dob: new DateOnly(2000, 6, 15),
             weight: 82.5,
             bodyFat: 14.2,
+            height: 178,
+            sex: "Male",
             sport: "Soccer",
             position: "Goalkeeper",
             gym: "3-4 years"));
@@ -52,6 +56,8 @@ public class AthleteProfileViewModelTests
         Assert.Equal(new DateOnly(2000, 6, 15), vm.DateOfBirth);
         Assert.Equal(82.5.ToString("0.##"), vm.WeightText);
         Assert.Equal(14.2.ToString("0.##"), vm.BodyFatText);
+        Assert.Equal(178.0.ToString("0.##"), vm.HeightText);
+        Assert.Equal("Male", vm.SelectedSex);
         Assert.Equal("Soccer", vm.SelectedSport?.Name);
         Assert.Equal("Goalkeeper", vm.SelectedPosition);
         Assert.Equal("3-4 years", vm.SelectedGymExperience);
@@ -67,6 +73,8 @@ public class AthleteProfileViewModelTests
         Assert.Null(vm.DateOfBirth);
         Assert.Equal("", vm.WeightText);
         Assert.Equal("", vm.BodyFatText);
+        Assert.Equal("", vm.HeightText);
+        Assert.Null(vm.SelectedSex);
         Assert.Null(vm.SelectedSport);
         Assert.Null(vm.SelectedPosition);
         Assert.Null(vm.SelectedGymExperience);
@@ -238,6 +246,24 @@ public class AthleteProfileViewModelTests
         Assert.True(vm.IsDirty);
     }
 
+    [Fact]
+    public void ChangingHeight_MakesDirty()
+    {
+        var vm = CreateVm();
+        vm.HydrateFromProfile(MakeProfile(height: 178));
+        vm.HeightText = "180";
+        Assert.True(vm.IsDirty);
+    }
+
+    [Fact]
+    public void ChangingSex_MakesDirty()
+    {
+        var vm = CreateVm();
+        vm.HydrateFromProfile(MakeProfile(sex: "Male"));
+        vm.SelectedSex = "Female";
+        Assert.True(vm.IsDirty);
+    }
+
     // ════════════════════════════════════════════════════════════════
     //  VALIDATION
     // ════════════════════════════════════════════════════════════════
@@ -264,6 +290,16 @@ public class AthleteProfileViewModelTests
         Assert.NotNull(error);
     }
 
+    [Fact]
+    public void Validate_InvalidHeight_ReturnsError()
+    {
+        var vm = CreateVm();
+        vm.HeightText = "500";
+        var (valid, error) = vm.Validate();
+        Assert.False(valid);
+        Assert.NotNull(error);
+    }
+
     // ════════════════════════════════════════════════════════════════
     //  SAVE — successful save refreshes from returned profile
     // ════════════════════════════════════════════════════════════════
@@ -272,7 +308,8 @@ public class AthleteProfileViewModelTests
     public async Task SaveAsync_Success_RehydratesFromResponse()
     {
         var serverProfile = MakeProfile(
-            weight: 85, bodyFat: 16, sport: "Soccer", position: "Striker", gym: "5+ years");
+            weight: 85, bodyFat: 16, height: 180, sex: "Male",
+            sport: "Soccer", position: "Striker", gym: "5+ years");
 
         var vm = CreateVm(save: _ =>
             Task.FromResult(ApiResult<UserProfileResponse>.Ok(serverProfile)));
@@ -288,6 +325,8 @@ public class AthleteProfileViewModelTests
         // Rehydrated from server response
         Assert.Equal(85.0.ToString("0.##"), vm.WeightText);
         Assert.Equal(16.0.ToString("0.##"), vm.BodyFatText);
+        Assert.Equal(180.0.ToString("0.##"), vm.HeightText);
+        Assert.Equal("Male", vm.SelectedSex);
         Assert.Equal("Soccer", vm.SelectedSport?.Name);
         Assert.False(vm.IsDirty); // rehydrated = not dirty
     }

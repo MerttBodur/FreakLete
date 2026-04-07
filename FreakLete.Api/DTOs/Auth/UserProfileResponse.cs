@@ -9,6 +9,8 @@ public class UserProfileResponse
     public DateOnly? DateOfBirth { get; set; }
     public double? WeightKg { get; set; }
     public double? BodyFatPercentage { get; set; }
+    public double? HeightCm { get; set; }
+    public string Sex { get; set; } = string.Empty;
     public string SportName { get; set; } = string.Empty;
     public string Position { get; set; } = string.Empty;
     public string GymExperienceLevel { get; set; } = string.Empty;

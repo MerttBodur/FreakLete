@@ -6,20 +6,19 @@ FreakLete is a mobile app for field athletes who lift and want to log gym sessio
 
 FreakLete combines classic strength tracking with athletic metrics such as jumps, sprint work, RSI, movement goals, and exercise-specific data entry. The app now runs with a production backend and PostgreSQL persistence, so accounts and training data are no longer limited to a single device.
 
-The current product also includes:
+The shipped product also now includes:
+- app-wide `EN/TR` language support with runtime UI refresh
+- `FreakAI` responses that mirror the user's language
 - structured athlete profile selection for sport, position, and coach preferences
-- initial training program persistence
-- an early `FreakAI` coach workflow for chat, program guidance, and active program review
+- starter training templates alongside user-owned programs
+- a live workout start and active-session flow
+- settings access with language switching and secure change-password support
 
-Long term, `FreakAI` will move beyond its current MVP and become a deeper intelligence layer sitting on top of structured athlete data, exercise metadata, and recommendation logic.
-
-Near-term product direction also includes deeper tracking visibility and session flow improvements:
-- a dashboard-first UI V2 that replaces text-heavy surfaces with charts, metric tiles, progress cards, and stronger visual hierarchy
-- analytics dashboards for PR, bodyweight, and workout consistency trends
-- a live workout mode with set/rest timing
-- internal fatigue scoring to support smarter coaching and recovery decisions
+Long term, `FreakAI` will move beyond its current MVP and become a deeper intelligence layer sitting on top of structured athlete data, exercise metadata, benchmark-driven guidance, and recommendation logic.
 
 The app is designed around a fast daily workflow:
+- start a quick live workout or work from an active training program
+- browse starter templates or saved programs
 - build workouts with categorized exercise recommendations
 - review saved sessions from a calendar view
 - calculate 1RM and RSI values
@@ -29,6 +28,7 @@ The app is designed around a fast daily workflow:
 
 - Register and login flow with JWT-based authentication
 - Workout logging with categorized exercise selection
+- Live workout v1 with workout start, active session state, workout timer, manual rest timer, and pre-save workout preview
 - Exercise browser with recommended movements by category
 - Calendar-based workout history
 - Edit and delete support for saved workouts
@@ -37,9 +37,28 @@ The app is designed around a fast daily workflow:
 - Movement goal tracking
 - Profile and body metrics management
 - Structured sport, position, and coach profile selection
-- Training program persistence and active program retrieval
-- FreakAI coach MVP with multilingual response behavior
+- Training program persistence, active program retrieval, and starter template browsing/clone flow
+- App-wide `EN/TR` language switching with runtime page refresh
+- Settings page with language switching and secure change-password flow
+- FreakAI coach MVP with language-aware response mirroring
 - Cloud-backed persistence for profile, workouts, PRs, movement goals, and athletic performance
+
+## Calculations
+
+Shipped today, the calculations surface is intentionally narrow:
+- estimated `1RM` and rep-range output for loaded movements
+- `RSI` calculation from jump height and ground contact time
+- saved PR and athletic-performance records that support those surfaces
+
+Roadmap items, not shipped today:
+- `FFMI`, only when height, weight, and body-fat data all exist
+- lift-relative-strength displays such as `1RM / bodyweight`
+- percentile-driven lift and jump tiers based on public benchmark tables and competition-derived percentiles
+- vertical jump and standing broad jump benchmark layers
+- air-time to vertical-jump conversion when direct jump-height input is not available
+- tooltip-style explanations for `1RM`, `RSI`, `FFMI`, and benchmark terms
+
+Where supported benchmark tables do not fit the user's norm profile, the product direction is to show raw values and raw ratios instead of inventing a misleading tier.
 
 ## Screens
 
@@ -49,7 +68,7 @@ Main dashboard with the primary workout and calculations entry points.
 
 ![Home dashboard](docs/screenshots/home-dashboard.png)
 
-Workout landing screen for session creation and history access.
+Workout landing screen for active programs, starter templates, session creation, and history access.
 
 ![Workout overview](docs/screenshots/workout-overview.png)
 
@@ -131,35 +150,32 @@ Automated testing now has multiple layers:
 - `FreakLete.Api.Tests` covers auth, athlete profile, coach profile, workouts, PR entries, athletic performance, movement goals, exercise catalog, sport catalog, calculations, training programs, and FreakAI controller regression scenarios
 - manual smoke testing remains a separate release-verification layer for end-to-end mobile flows
 
-That automated coverage provides strong confidence in backend and core logic. Real MAUI page behavior and user-facing flows are verified through manual Android emulator smoke testing, which is the documented release-verification path.
+Current verification note for this documentation refresh:
+- `FreakLete.Core.Tests` ran and passed `158/158`
+- `FreakLete.Api.Tests` exited with code `1` in this session after restore output, so it is not documented as green until the cause is diagnosed
+
+That automated coverage provides strong confidence in backend and core logic when the suites are green. Real MAUI page behavior and user-facing flows are verified through manual Android emulator smoke testing, which is the documented release-verification path.
 
 The production backend has also passed end-to-end smoke tests for auth, profile, workouts, PRs, athletic performance, movement goals, and account deletion.
 
 ## Roadmap
 
+### Near-Term Shipped Reality Gaps
+
 - Android Play Store release flow
 - iOS release preparation
-- Dashboard-First UI V2
-  - shared visual primitives such as hero panels, metric tiles, trend cards, weekly strips, and exercise cards
-  - Home, Workout, Calendar, Calculations, Profile, New Workout, and FreakAI surfaces redesigned around scan-first dashboards
-  - visual selection grids for equipment, goals, and other key coach-profile choices
-- Tracking analytics dashboards
-  - PR trend line charts
-  - bodyweight trend line charts
-  - workout count / consistency trend charts
-  - historical body measurement tracking to support bodyweight/body fat charts
-- Live workout mode
-  - start workout flow
-  - set timer and rest timer flow
-  - per-set reps, RPE, and optional concentric time capture
-- Internal fatigue modeling
-  - calculate total session fatigue in the background
-  - classify fatigue internally as low / intermediate / high
-  - use this as an internal signal rather than a user-facing score
-- Structured athlete profile improvements
-- Training template library and better program browsing
-- Richer exercise metadata and recommendation groundwork
-- Deeper FreakAI intelligence layer
+- Dashboard-first UI V2 across Home, Workout, Calendar, Calculations, Profile, New Workout, and FreakAI
+- Tracking analytics dashboards for PR, bodyweight, workout count, and consistency trends
+- Live workout depth beyond v1, including guided per-set automation, richer fatigue signals, and deeper session analytics
+- Benchmark-specific profile expansion such as `HeightCm`, `Sex`, and richer recommendation groundwork
+- Deeper benchmark-aware FreakAI intelligence layer
+
+### Performance Standards & Guidance
+
+- Calculations intelligence: add `FFMI`, lift-relative-strength displays, percentile-driven lift/jump tiers, and air-time-to-vertical-jump conversion without presenting any of them as already shipped.
+- Profile level system: add `HeightCm` and `Sex`, limit v1 benchmarked movements to `Bench Press`, `Back Squat`, `Deadlift`, `Military/Overhead Press`, `Power Clean`, `Vertical Jump`, and `Single/Standing Broad Jump`, and use planned labels of `Beginner`, `Intermediate`, `Advanced`, and `Freak`.
+- Composite identity and tooltips: only show labels such as `Athlete`, `Powerlifter`, or `Hybrid` when enough supporting data exists, and add small explainer tooltips for `1RM`, `RSI`, `FFMI`, and benchmark terms.
+- Exercise demo media: start with optional demo metadata for Tier-1 movements only, while keeping `Instructions`, `CommonMistakes`, `Progression`, and `Regression` text as the fallback whenever media is absent.
 
 ## Author
 

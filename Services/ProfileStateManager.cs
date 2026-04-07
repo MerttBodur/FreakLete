@@ -9,10 +9,11 @@ public class ProfileStateManager
 	// ── Validation ────────────────────────────────────────
 
 	public static (bool IsValid, string? Error) ValidateAthleteFields(
-		string? weightText, string? bodyFatText)
+		string? weightText, string? bodyFatText, string? heightText = null)
 	{
 		double? weight = ParseNullableDouble(weightText);
 		double? bodyFat = ParseNullableDouble(bodyFatText);
+		double? height = ParseNullableDouble(heightText);
 
 		if (weightText?.Length > 0 && !weight.HasValue)
 			return (false, "Weight must be a valid number.");
@@ -20,11 +21,17 @@ public class ProfileStateManager
 		if (bodyFatText?.Length > 0 && !bodyFat.HasValue)
 			return (false, "Body fat must be a valid number.");
 
+		if (heightText?.Length > 0 && !height.HasValue)
+			return (false, "Height must be a valid number.");
+
 		if (weight.HasValue && (weight.Value < 20 || weight.Value > 400))
 			return (false, "Weight must be between 20 and 400 kg.");
 
 		if (bodyFat.HasValue && (bodyFat.Value < 0 || bodyFat.Value > 100))
 			return (false, "Body fat must be between 0 and 100.");
+
+		if (height.HasValue && (height.Value < 80 || height.Value > 300))
+			return (false, "Height must be between 80 and 300 cm.");
 
 		return (true, null);
 	}

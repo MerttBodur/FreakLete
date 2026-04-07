@@ -273,6 +273,10 @@ public static class AppLanguage
 	public static string ProfileSelectSport => IsTurkish ? "Spor dalınızı seçin" : "Select your sport";
 	public static string ProfilePosition => IsTurkish ? "Pozisyon / Branş" : "Position / Discipline";
 	public static string ProfileSelectPosition => IsTurkish ? "Pozisyonunuzu seçin" : "Select your position";
+	public static string ProfileHeightCm => IsTurkish ? "Boy (cm)" : "Height (cm)";
+	public static string ProfileSex => IsTurkish ? "Cinsiyet" : "Sex";
+	public static string ProfileSelectSex => IsTurkish ? "Cinsiyet seçin" : "Select sex";
+	public static string ProfileSexTitle => IsTurkish ? "Cinsiyet Seç" : "Select Sex";
 	public static string ProfileGymExperience => IsTurkish ? "Spor Salonu Deneyimi" : "Gym Experience";
 	public static string ProfileSelectExperience => IsTurkish ? "Deneyim seviyesini seçin" : "Select experience level";
 	public static string ProfileCoachProfile => IsTurkish ? "Koç Profili" : "Coach Profile";

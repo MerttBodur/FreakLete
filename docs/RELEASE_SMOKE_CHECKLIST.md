@@ -34,9 +34,11 @@ These fields are the core Profile flow that users interact with:
 1. **DateOfBirth** - Date picker from selector
 2. **WeightKg** - Manual entry (numeric input)
 3. **BodyFatPercentage** - Manual entry (numeric input)
-4. **SportName** - Selector (Sport picker)
-5. **Position** - Selector (Position picker, if sport has positions)
-6. **GymExperienceLevel** - Selector (Experience level picker)
+4. **HeightCm** - Manual entry (numeric input, 80-300 cm)
+5. **Sex** - Selector (Male / Female)
+6. **SportName** - Selector (Sport picker)
+7. **Position** - Selector (Position picker, if sport has positions)
+8. **GymExperienceLevel** - Selector (Experience level picker)
 
 **Coach Profile:**
 7. **TrainingDaysPerWeek** - Selector (1-7 days)
@@ -58,6 +60,8 @@ Execute the Profile flow with these three datasets:
 DateOfBirth: 2000-01-01
 WeightKg: 50
 BodyFatPercentage: 5
+HeightCm: 165
+Sex: Male
 SportName: Soccer
 Position: Goalkeeper
 GymExperienceLevel: < 1 year
@@ -84,6 +88,8 @@ CurrentPainPoints: (blank)
 DateOfBirth: 1995-06-15
 WeightKg: 85
 BodyFatPercentage: 15
+HeightCm: 178
+Sex: Female
 SportName: Powerlifting
 Position: (not applicable)
 GymExperienceLevel: 3-4 years
@@ -110,6 +116,8 @@ CurrentPainPoints: (blank)
 DateOfBirth: 1970-12-31
 WeightKg: 150
 BodyFatPercentage: 45
+HeightCm: 198
+Sex: Male
 SportName: Basketball
 Position: Center
 GymExperienceLevel: 5+ years
