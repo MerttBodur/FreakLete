@@ -18,7 +18,7 @@ public partial class RegisterPage : ContentPage
 	private void ApplyLanguage()
 	{
 		TopHeader.Title = AppLanguage.RegisterTitle;
-		EyebrowLabel.Text = AppLanguage.IsTurkish ? "HESAP OLUŞTUR" : "CREATE ACCOUNT";
+		EyebrowLabel.Text = AppLanguage.RegisterEyebrow;
 		HeadlineLabel.Text = AppLanguage.RegisterHeadline;
 		SubtitleLabel.Text = AppLanguage.RegisterSubtitle;
 		FirstNameLabel.Text = AppLanguage.RegisterFirstName;
@@ -28,7 +28,7 @@ public partial class RegisterPage : ContentPage
 		RegEmailLabel.Text = AppLanguage.LoginEmail;
 		EmailEntry.Placeholder = AppLanguage.LoginEmailPlaceholder;
 		RegPasswordLabel.Text = AppLanguage.LoginPassword;
-		PasswordEntry.Placeholder = AppLanguage.IsTurkish ? "Şifre oluşturun" : "Create a password";
+		PasswordEntry.Placeholder = AppLanguage.RegisterPasswordPlaceholder;
 		ConfirmPasswordLabel.Text = AppLanguage.RegisterConfirmPassword;
 		ConfirmPasswordEntry.Placeholder = AppLanguage.RegisterConfirmPasswordPlaceholder;
 		PasswordRulesLabel.Text = AppLanguage.RegisterPasswordRules;

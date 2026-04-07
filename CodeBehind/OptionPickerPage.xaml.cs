@@ -93,6 +93,25 @@ public partial class OptionPickerPage : ContentPage
 		RetryButton.Text = AppLanguage.PickerRetry;
 	}
 
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged()
+	{
+		ApplyLanguage();
+		BuildCategoryChips();
+		ApplyFilter();
+	}
+
 	// ── State management ────────────────────────────────────────
 
 	/// <summary>Show loading spinner, hide other states.</summary>

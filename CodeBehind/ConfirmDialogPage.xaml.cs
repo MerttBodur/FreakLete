@@ -16,6 +16,23 @@ public partial class ConfirmDialogPage : ContentPage
 		CancelButton.Text = cancelText;
 	}
 
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged()
+	{
+		ActionBadge.Text = AppLanguage.ConfirmAction;
+	}
+
 	public static async Task<bool> ShowAsync(
 		INavigation navigation,
 		string title,

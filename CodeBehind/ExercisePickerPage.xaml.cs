@@ -36,6 +36,26 @@ public partial class ExercisePickerPage : ContentPage
 		SelectCategory(_allowedCategories.FirstOrDefault() ?? ExerciseCatalog.Categories.First());
 	}
 
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged()
+	{
+		BadgeLabel.Text = AppLanguage.ExPickerBadge;
+		DescLabel.Text = AppLanguage.ExPickerDesc;
+		SearchEntry.Placeholder = AppLanguage.ExPickerSearchPlaceholder;
+		OnPropertyChanged(nameof(ViewText));
+	}
+
 	private void BuildCategories()
 	{
 		Categories.Clear();

@@ -90,6 +90,7 @@ public static class AppLanguage
 
 	// ── Register Page ───────────────────────────────────────────
 	public static string RegisterTitle => IsTurkish ? "Kayıt Ol" : "Register";
+	public static string RegisterEyebrow => IsTurkish ? "HESAP OLUŞTUR" : "CREATE ACCOUNT";
 	public static string RegisterHeadline => IsTurkish ? "Antrenman profilini oluştur." : "Start your training profile.";
 	public static string RegisterSubtitle => IsTurkish
 		? "Antrenmanlarını, PR'larını ve atletik performans verilerini kaydetmek için hesap oluştur."
@@ -98,6 +99,7 @@ public static class AppLanguage
 	public static string RegisterFirstNamePlaceholder => IsTurkish ? "Adınızı girin" : "Enter your first name";
 	public static string RegisterLastName => IsTurkish ? "Soyad" : "Last Name";
 	public static string RegisterLastNamePlaceholder => IsTurkish ? "Soyadınızı girin" : "Enter your last name";
+	public static string RegisterPasswordPlaceholder => IsTurkish ? "Şifre oluşturun" : "Create a password";
 	public static string RegisterConfirmPassword => IsTurkish ? "Şifre Tekrar" : "Confirm Password";
 	public static string RegisterConfirmPasswordPlaceholder => IsTurkish ? "Şifrenizi tekrar girin" : "Confirm your password";
 	public static string RegisterPasswordRules => IsTurkish

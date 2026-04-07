@@ -40,6 +40,9 @@ public class AppLanguageTests : IDisposable
         Assert.Equal("Weight must be a positive number.", AppLanguage.FormatMustBePositive("Weight"));
         Assert.Equal("Sport list could not be loaded.", AppLanguage.SportCatalogLoadError);
         Assert.Equal("Sport catalog request failed.", AppLanguage.SportCatalogRequestFailed);
+        // Register page
+        Assert.Equal("CREATE ACCOUNT", AppLanguage.RegisterEyebrow);
+        Assert.Equal("Create a password", AppLanguage.RegisterPasswordPlaceholder);
         // Shared pages
         Assert.Equal("SELECT", AppLanguage.PickerSelect);
         Assert.Equal("Search...", AppLanguage.PickerSearch);
@@ -72,6 +75,9 @@ public class AppLanguageTests : IDisposable
         Assert.Equal("Ağırlık pozitif bir sayı olmalıdır.", AppLanguage.FormatMustBePositive("Ağırlık"));
         Assert.Equal("Spor listesi yüklenemedi.", AppLanguage.SportCatalogLoadError);
         Assert.Equal("Spor kataloğu isteği başarısız oldu.", AppLanguage.SportCatalogRequestFailed);
+        // Register page
+        Assert.Equal("HESAP OLUŞTUR", AppLanguage.RegisterEyebrow);
+        Assert.Equal("Şifre oluşturun", AppLanguage.RegisterPasswordPlaceholder);
         // Shared pages
         Assert.Equal("SEÇ", AppLanguage.PickerSelect);
         Assert.Equal("Ara...", AppLanguage.PickerSearch);

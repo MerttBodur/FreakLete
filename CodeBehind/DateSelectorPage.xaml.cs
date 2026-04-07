@@ -26,6 +26,25 @@ public partial class DateSelectorPage : ContentPage
 		UpdateDateLabel();
 	}
 
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged()
+	{
+		ApplyLanguage();
+		BuildMonthChips();
+		UpdateDateLabel();
+	}
+
 	private void ApplyLanguage()
 	{
 		HeaderView.Title = AppLanguage.DateSelectorTitle;

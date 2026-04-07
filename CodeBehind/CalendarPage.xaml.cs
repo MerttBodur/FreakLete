@@ -50,7 +50,11 @@ public partial class CalendarPage : ContentPage
 		AppLanguage.LanguageChanged -= OnLanguageChanged;
 	}
 
-	private void OnLanguageChanged() => ApplyLanguage();
+	private void OnLanguageChanged()
+	{
+		ApplyLanguage();
+		BuildCalendar();
+	}
 
 	protected override async void OnAppearing()
 	{
