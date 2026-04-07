@@ -31,6 +31,7 @@ public partial class StartWorkoutSessionPage : ContentPage
 
 		_sessionState = WorkoutSessionState.FromTemplate(workoutName, exercises);
 		WorkoutNameLabel.Text = _sessionState.WorkoutName;
+		ApplyLanguage();
 		BuildExerciseRows();
 	}
 
@@ -43,11 +44,13 @@ public partial class StartWorkoutSessionPage : ContentPage
 		_templateSession = null;
 		_sessionState = WorkoutSessionState.Empty();
 		WorkoutNameLabel.Text = _sessionState.WorkoutName;
+		ApplyLanguage();
 	}
 
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
 
 		if (_pickingExercise)
 		{
@@ -70,6 +73,18 @@ public partial class StartWorkoutSessionPage : ContentPage
 	protected override void OnDisappearing()
 	{
 		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged() => ApplyLanguage();
+
+	private void ApplyLanguage()
+	{
+		AddExerciseButton.Text = AppLanguage.LiveWorkoutAddExercise;
+		RestButton.Text = (_restTimer is not null && _restTimer.IsRunning)
+			? AppLanguage.LiveWorkoutRestEnd
+			: AppLanguage.LiveWorkoutRestStart;
+		FinishButton.Text = AppLanguage.LiveWorkoutFinish;
 	}
 
 	private void OnWorkoutTimerTick(object? sender, EventArgs e)
@@ -143,7 +158,7 @@ public partial class StartWorkoutSessionPage : ContentPage
 	{
 		_pickingExercise = true;
 		await Navigation.PushAsync(
-			new ExercisePickerPage("Egzersiz Ekle", ExerciseCatalog.Categories, OnExercisePicked), true);
+			new ExercisePickerPage(AppLanguage.LiveWorkoutAddExerciseTitle, ExerciseCatalog.Categories, OnExercisePicked), true);
 	}
 
 	private void OnExercisePicked(ExerciseCatalogItem item)
@@ -167,7 +182,7 @@ public partial class StartWorkoutSessionPage : ContentPage
 			}
 
 			RestTimerLabel.IsVisible = false;
-			RestButton.Text = "Dinlenme Başlat";
+			RestButton.Text = AppLanguage.LiveWorkoutRestStart;
 			return;
 		}
 
@@ -175,7 +190,7 @@ public partial class StartWorkoutSessionPage : ContentPage
 		_restSecondsElapsed = 0;
 		RestTimerLabel.Text = "0:00";
 		RestTimerLabel.IsVisible = true;
-		RestButton.Text = "Dinlenme Bitir";
+		RestButton.Text = AppLanguage.LiveWorkoutRestEnd;
 
 		_restTimer = Dispatcher.CreateTimer();
 		_restTimer.Interval = TimeSpan.FromSeconds(1);
@@ -201,7 +216,7 @@ public partial class StartWorkoutSessionPage : ContentPage
 			var entry = ExerciseInputRowBuilder.ReadValues(row);
 			if (entry.Sets <= 0)
 			{
-				ErrorLabel.Text = $"{entry.ExerciseName}: Set sayısı gerekli.";
+				ErrorLabel.Text = $"{entry.ExerciseName}: {AppLanguage.LiveWorkoutSetRequired}";
 				ErrorLabel.IsVisible = true;
 				return;
 			}
@@ -210,7 +225,7 @@ public partial class StartWorkoutSessionPage : ContentPage
 
 		if (exercises.Count == 0)
 		{
-			ErrorLabel.Text = "En az bir egzersiz gerekli.";
+			ErrorLabel.Text = AppLanguage.LiveWorkoutNeedExercise;
 			ErrorLabel.IsVisible = true;
 			return;
 		}
@@ -224,8 +239,8 @@ public partial class StartWorkoutSessionPage : ContentPage
 
 	private async void OnBackClicked(object? sender, TappedEventArgs e)
 	{
-		bool confirm = await DisplayAlert("Antrenmanı İptal Et",
-			"Devam eden antrenmanı iptal etmek istediğinize emin misiniz?", "Evet", "Hayır");
+		bool confirm = await DisplayAlert(AppLanguage.LiveWorkoutCancelTitle,
+			AppLanguage.LiveWorkoutCancelConfirm, AppLanguage.LiveWorkoutYes, AppLanguage.LiveWorkoutNo);
 		if (confirm)
 		{
 			StopAllTimers();

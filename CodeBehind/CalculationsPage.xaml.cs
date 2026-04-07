@@ -32,14 +32,62 @@ public partial class CalculationsPage : ContentPage
 		InitializeComponent();
 		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
+		ApplyLanguage();
 		UpdateOneRmSelectionUI();
 		UpdatePrSelectionUI();
 		UpdateCalculationTabUI(showOneRm: true);
 	}
 
+	private void ApplyLanguage()
+	{
+		CalcTitleLabel.Text = AppLanguage.CalcPageTitle;
+		CalcSubtitleLabel.Text = AppLanguage.CalcPageSubtitle;
+		NoPrsLabel.Text = AppLanguage.CalcNoPrs;
+		NoPrsDescLabel.Text = AppLanguage.CalcNoPrsDesc;
+		ChartTitleLabel.Text = AppLanguage.CalcPrProgress;
+		ToolsSectionLabel.Text = AppLanguage.CalcStrengthTools;
+		StrengthEstimateLabel.Text = AppLanguage.CalcStrengthEstimate;
+		StrengthMovementLabel.Text = AppLanguage.CalcStrengthMovement;
+		BrowseStrengthBtn.Text = AppLanguage.SharedBrowse;
+		WeightRangeLabel.Text = AppLanguage.CalcWeightKgRange;
+		RepsRangeLabel.Text = AppLanguage.CalcRepsRange;
+		RirRangeLabel.Text = AppLanguage.CalcRirRange;
+		ConcentricTimeLbl.Text = AppLanguage.CalcConcentricTime;
+		CalculateBtn.Text = AppLanguage.CalcCalculate;
+		CalcRangeLabel.Text = AppLanguage.CalcCalculatedRange;
+		SavePrTitle.Text = AppLanguage.CalcSavePr;
+		MovementLabel.Text = AppLanguage.CalcMovement;
+		BrowsePrBtn.Text = AppLanguage.SharedBrowse;
+		PrWeightLabel.Text = AppLanguage.CalcWeightKg;
+		PrRepsLabel.Text = AppLanguage.CalcReps;
+		PrRirLabel.Text = AppLanguage.CalcRir;
+		PrConcentricTimeLbl.Text = AppLanguage.CalcConcentricTime;
+		PrGctLabel.Text = AppLanguage.CalcGroundContactTime;
+		SavePrButton.Text = AppLanguage.CalcSavePr;
+		CancelPrEditButton.Text = AppLanguage.SharedCancel;
+		SavedPrEntriesLabel.Text = AppLanguage.CalcSavedPrEntries;
+		NoSavedPrLabel.Text = AppLanguage.CalcNoSavedPr;
+		RsiTitleLabel.Text = AppLanguage.CalcReactiveStrength;
+		RsiDescLabel.Text = AppLanguage.CalcRsiDesc;
+		JumpHeightLabel.Text = AppLanguage.CalcJumpHeight;
+		GctLabel.Text = AppLanguage.CalcGctS;
+		CalculateRsiBtn.Text = AppLanguage.CalcCalculateRsi;
+		RsiResultTitle.Text = AppLanguage.CalcResult;
+		RsiResultLabel.Text = AppLanguage.CalcNoRsiYet;
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged() => ApplyLanguage();
+
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
 		await LoadProgressDashboardAsync();
 		await LoadSavedPrEntriesAsync();
 		RefreshSavedPrList();
@@ -204,7 +252,7 @@ public partial class CalculationsPage : ContentPage
 		{
 			best = entries.OrderByDescending(e => SafeEstimated1Rm(e)).First();
 			HeroPrExerciseLabel.Text = _selectedExerciseGroup.ExerciseName.ToUpperInvariant();
-			HeroPrStrengthLabel.Text = "ESTIMATED 1RM (KG)";
+			HeroPrStrengthLabel.Text = AppLanguage.CalcEstimated1Rm;
 			var estimated1Rm = SafeEstimated1Rm(best);
 			HeroPrValueLabel.Text = $"{estimated1Rm:0.#} kg";
 		}
@@ -220,12 +268,12 @@ public partial class CalculationsPage : ContentPage
 				? $"{catalogItem.PrimaryLabel} ({catalogItem.PrimaryUnit})".ToUpperInvariant()
 				: !string.IsNullOrWhiteSpace(best.Metric1Unit)
 					? $"BEST ({best.Metric1Unit.ToUpperInvariant()})"
-					: "BEST VALUE";
+					: AppLanguage.CalcBestValue;
 			HeroPrStrengthLabel.Text = metricLabel;
 			HeroPrValueLabel.Text = $"{best.Metric1Value:0.##} {best.Metric1Unit}";
 		}
 
-		HeroPrDateLabel.Text = $"Best PR: {best.CreatedAt:MMM dd, yyyy}";
+		HeroPrDateLabel.Text = AppLanguage.FormatBestPr(best.CreatedAt);
 		HeroPrCard.IsVisible = true;
 
 		// Chart: up to last 6 points, require at least 2 for a line
@@ -243,7 +291,7 @@ public partial class CalculationsPage : ContentPage
 
 			PrChartView.Drawable = new PrLineChartDrawable(points, useMonthLabels);
 			PrChartView.Invalidate();
-			ChartTitleLabel.Text = $"{_selectedExerciseGroup.ExerciseName} Progress";
+			ChartTitleLabel.Text = AppLanguage.FormatProgress(_selectedExerciseGroup.ExerciseName);
 			ChartCard.IsVisible = true;
 		}
 		else
@@ -403,7 +451,7 @@ public partial class CalculationsPage : ContentPage
 	{
 		await Navigation.PushAsync(
 			new ExercisePickerPage(
-				"Choose Strength Exercise",
+				AppLanguage.CalcChooseStrength,
 				StrengthCategories,
 				OnStrengthExerciseSelected),
 			true);
@@ -419,8 +467,8 @@ public partial class CalculationsPage : ContentPage
 	{
 		if (_selectedStrengthExerciseItem is null)
 		{
-			SelectedStrengthExerciseLabel.Text = "No strength movement selected";
-			SelectedStrengthExerciseHintLabel.Text = "Browse weighted movements for the 1RM estimate.";
+			SelectedStrengthExerciseLabel.Text = AppLanguage.CalcNoStrengthSelected;
+			SelectedStrengthExerciseHintLabel.Text = AppLanguage.CalcStrengthHint;
 			return;
 		}
 
@@ -473,7 +521,7 @@ public partial class CalculationsPage : ContentPage
 	{
 		await Navigation.PushAsync(
 			new ExercisePickerPage(
-				"Choose PR Movement",
+				AppLanguage.CalcChoosePr,
 				ExerciseCatalog.Categories,
 				OnPrExerciseSelected),
 			true);
@@ -489,8 +537,8 @@ public partial class CalculationsPage : ContentPage
 	{
 		if (_selectedPrExerciseItem is null)
 		{
-			SelectedPrExerciseLabel.Text = "No PR movement selected";
-			SelectedPrExerciseHintLabel.Text = "Browse gym and athletic movements before saving a PR.";
+			SelectedPrExerciseLabel.Text = AppLanguage.CalcNoPrSelected;
+			SelectedPrExerciseHintLabel.Text = AppLanguage.CalcPrHint;
 			PrStrengthInputsSection.IsVisible = false;
 			PrCustomInputsSection.IsVisible = false;
 			PrMetric2Container.IsVisible = false;
@@ -527,13 +575,13 @@ public partial class CalculationsPage : ContentPage
 
 		if (!_session.IsLoggedIn())
 		{
-			ShowError(PrStatusLabel, "Please log in again.");
+			ShowError(PrStatusLabel, AppLanguage.SharedPleaseLogin);
 			return;
 		}
 
 		if (_selectedPrExerciseItem is null)
 		{
-			ShowError(PrStatusLabel, "Choose a movement before saving.");
+			ShowError(PrStatusLabel, AppLanguage.SharedChooseMovement);
 			return;
 		}
 
@@ -567,20 +615,20 @@ public partial class CalculationsPage : ContentPage
 			var result = await _api.UpdatePrEntryAsync(_editingPrEntryId.Value, data);
 			if (!result.Success)
 			{
-				ShowError(PrStatusLabel, result.Error ?? "Failed to update PR.");
+				ShowError(PrStatusLabel, result.Error ?? AppLanguage.CalcPrFailedUpdate);
 				return;
 			}
-			ShowSuccess(PrStatusLabel, "Saved PR updated.");
+			ShowSuccess(PrStatusLabel, AppLanguage.CalcPrUpdated);
 		}
 		else
 		{
 			var result = await _api.CreatePrEntryAsync(data);
 			if (!result.Success)
 			{
-				ShowError(PrStatusLabel, result.Error ?? "Failed to save PR.");
+				ShowError(PrStatusLabel, result.Error ?? AppLanguage.CalcPrFailedSave);
 				return;
 			}
-			ShowSuccess(PrStatusLabel, "Saved PR added.");
+			ShowSuccess(PrStatusLabel, AppLanguage.CalcPrSaved);
 		}
 
 		ResetPrSaveMode();
@@ -593,7 +641,7 @@ public partial class CalculationsPage : ContentPage
 	{
 		if (_selectedPrExerciseItem is null)
 		{
-			return PrEntryBuildResult.Failure("Choose a movement before saving.");
+			return PrEntryBuildResult.Failure(AppLanguage.SharedChooseMovement);
 		}
 
 		return CalculationsPageLogic.BuildPrEntry(new PrEntryBuildRequest
@@ -699,10 +747,10 @@ public partial class CalculationsPage : ContentPage
 
 		bool confirmed = await ConfirmDialogPage.ShowAsync(
 			Navigation,
-			"Delete PR",
-			$"Delete '{item.Text}'?",
-			"Delete",
-			"Cancel");
+			AppLanguage.CalcDeletePrTitle,
+			AppLanguage.FormatDeleteConfirm(item.Text),
+			AppLanguage.SharedDelete,
+			AppLanguage.SharedCancel);
 		if (!confirmed)
 		{
 			return;
@@ -717,7 +765,7 @@ public partial class CalculationsPage : ContentPage
 		await LoadProgressDashboardAsync();
 		await LoadSavedPrEntriesAsync();
 		RefreshSavedPrList();
-		ShowSuccess(PrStatusLabel, "Saved PR deleted.");
+		ShowSuccess(PrStatusLabel, AppLanguage.CalcPrDeleted);
 	}
 
 	private void OnEditSavedPrInvoked(object? sender, EventArgs e)
@@ -747,9 +795,9 @@ public partial class CalculationsPage : ContentPage
 			PrConcentricTimeEntry.Text = item.ConcentricTimeSeconds?.ToString("0.##") ?? string.Empty;
 		}
 
-		SavePrButton.Text = "Update PR";
+		SavePrButton.Text = AppLanguage.CalcUpdatePr;
 		CancelPrEditButton.IsVisible = true;
-		ShowSuccess(PrStatusLabel, $"Editing: {item.Text}");
+		ShowSuccess(PrStatusLabel, AppLanguage.FormatEditing(item.Text));
 	}
 
 	private void OnCancelPrEditClicked(object? sender, EventArgs e)
@@ -770,7 +818,7 @@ public partial class CalculationsPage : ContentPage
 		PrMetric1Entry.Text = string.Empty;
 		PrMetric2Entry.Text = string.Empty;
 		PrGroundContactTimeEntry.Text = string.Empty;
-		SavePrButton.Text = "Save PR";
+		SavePrButton.Text = AppLanguage.CalcSavePr;
 		CancelPrEditButton.IsVisible = false;
 	}
 
@@ -780,13 +828,13 @@ public partial class CalculationsPage : ContentPage
 
 		if (!MetricInput.TryParseFlexibleDouble(RsiJumpHeightEntry.Text, out double jumpHeightCm) || jumpHeightCm <= 0)
 		{
-			ShowError(RsiStatusLabel, "Jump height must be a positive number.");
+			ShowError(RsiStatusLabel, AppLanguage.CalcJumpHeightError);
 			return;
 		}
 
 		if (!MetricInput.TryParseFlexibleDouble(RsiGroundContactTimeEntry.Text, out double gctSeconds) || gctSeconds <= 0)
 		{
-			ShowError(RsiStatusLabel, "GCT must be a positive number.");
+			ShowError(RsiStatusLabel, AppLanguage.CalcGctError);
 			return;
 		}
 

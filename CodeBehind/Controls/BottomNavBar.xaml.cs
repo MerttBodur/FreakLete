@@ -29,7 +29,11 @@ public partial class BottomNavBar : ContentView
 		InitializeComponent();
 		ApplyLanguage();
 		UpdateIndicators();
+		Loaded += (_, _) => AppLanguage.LanguageChanged += OnLanguageChanged;
+		Unloaded += (_, _) => AppLanguage.LanguageChanged -= OnLanguageChanged;
 	}
+
+	private void OnLanguageChanged() => ApplyLanguage();
 
 	private void ApplyLanguage()
 	{

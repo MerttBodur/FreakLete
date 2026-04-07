@@ -45,27 +45,38 @@ public partial class SettingsPage : ContentPage
 
 	private async void OnLanguageClicked(object? sender, TappedEventArgs e)
 	{
-		string current = AppLanguage.Code;
-		string[] options = current == "tr"
-			? ["English"]
-			: ["Türkçe"];
+		LangPickerTitle.Text = AppLanguage.SettingsSelectLanguage;
+		BtnLangCancel.Text = AppLanguage.SettingsCancel;
 
-		string choice = await DisplayActionSheet(
-			AppLanguage.SettingsSelectLanguage,
-			AppLanguage.SettingsCancel,
-			null,
-			options);
+		bool isTr = AppLanguage.Code == "tr";
+		Style secondary = (Style)Application.Current!.Resources["SecondaryButton"];
+		BtnLangEnglish.Style = isTr ? null : secondary;
+		BtnLangTurkish.Style = isTr ? secondary : null;
 
-		if (choice == "English")
-		{
-			AppLanguage.SetLanguage("en");
-			ApplyLanguage();
-		}
-		else if (choice == "Türkçe")
-		{
-			AppLanguage.SetLanguage("tr");
-			ApplyLanguage();
-		}
+		LanguageOverlay.IsVisible = true;
+		await LanguageOverlay.FadeTo(1, 200, Easing.CubicOut);
+	}
+
+	private async void OnLanguageOverlayDismiss(object? sender, EventArgs e)
+	{
+		await LanguageOverlay.FadeTo(0, 200, Easing.CubicIn);
+		LanguageOverlay.IsVisible = false;
+	}
+
+	private async void OnLangEnglishClicked(object? sender, EventArgs e)
+	{
+		AppLanguage.SetLanguage("en");
+		ApplyLanguage();
+		await LanguageOverlay.FadeTo(0, 200, Easing.CubicIn);
+		LanguageOverlay.IsVisible = false;
+	}
+
+	private async void OnLangTurkishClicked(object? sender, EventArgs e)
+	{
+		AppLanguage.SetLanguage("tr");
+		ApplyLanguage();
+		await LanguageOverlay.FadeTo(0, 200, Easing.CubicIn);
+		LanguageOverlay.IsVisible = false;
 	}
 
 	private bool _toastShowing;

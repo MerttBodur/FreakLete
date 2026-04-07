@@ -15,19 +15,45 @@ public partial class ProgramDetailPage : ContentPage
 	public ProgramDetailPage(int programId, bool isStarterTemplate = false)
 	{
 		InitializeComponent();
+		ApplyLanguage();
 		_programId = programId;
 		_isStarterTemplate = isStarterTemplate;
 		_api = App.Current!.Handler.MauiContext!.Services.GetRequiredService<ApiClient>();
 	}
 
+	private void ApplyLanguage()
+	{
+		PageTitleLabel.Text = AppLanguage.ProgramDetailTitle;
+		TrainingProgramBadge.Text = AppLanguage.ProgramDetailTrainingProgram;
+		WeeksSubLabel.Text = AppLanguage.ProgramDetailWeeks;
+		SessionsSubLabel.Text = AppLanguage.ProgramDetailSessions;
+		ExercisesSubLabel.Text = AppLanguage.ProgramDetailExercises;
+		StartWorkoutButton.Text = AppLanguage.ProgramDetailStart;
+		AddWorkoutButton.Text = AppLanguage.ProgramDetailAddWorkout;
+		StartLiveWorkoutButton.Text = AppLanguage.ProgramDetailStartWorkout;
+	}
+
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
 		if (_pickingSession)
 		{
 			_pickingSession = false;
 			return;
 		}
+		await LoadProgramAsync();
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private async void OnLanguageChanged()
+	{
+		ApplyLanguage();
 		await LoadProgramAsync();
 	}
 
@@ -39,7 +65,7 @@ public partial class ProgramDetailPage : ContentPage
 
 		if (!result.Success || result.Data is null)
 		{
-			await DisplayAlert("Hata", result.Error ?? "Program yüklenemedi.", "Tamam");
+			await DisplayAlert(AppLanguage.SharedError, result.Error ?? AppLanguage.ProgramDetailLoadError, AppLanguage.SharedOk);
 			await Navigation.PopAsync();
 			return;
 		}
@@ -54,11 +80,11 @@ public partial class ProgramDetailPage : ContentPage
 		GoalPillLabel.Text = program.Goal;
 		GoalPill.IsVisible = !string.IsNullOrWhiteSpace(program.Goal);
 
-		FrequencyPillLabel.Text = $"{program.DaysPerWeek}x/week";
+		FrequencyPillLabel.Text = AppLanguage.FormatFrequencyPerWeek(program.DaysPerWeek);
 
 		if (program.SessionDurationMinutes > 0)
 		{
-			DurationPillLabel.Text = $"{program.SessionDurationMinutes} min";
+			DurationPillLabel.Text = AppLanguage.FormatDurationMinutes(program.SessionDurationMinutes);
 			DurationPill.IsVisible = true;
 		}
 
@@ -66,7 +92,7 @@ public partial class ProgramDetailPage : ContentPage
 		{
 			if (_isStarterTemplate)
 			{
-				StatusBadgeLabel.Text = "TEMPLATE";
+				StatusBadgeLabel.Text = AppLanguage.ProgramDetailTemplate;
 				StatusBadge.IsVisible = true;
 				var accentSoft = (Application.Current?.Resources["AccentSoft"] as Color) ?? Color.FromArgb("#2F2346");
 				StatusBadge.BackgroundColor = accentSoft;
@@ -111,7 +137,7 @@ public partial class ProgramDetailPage : ContentPage
 			var weekHeader = new HorizontalStackLayout { Spacing = 10 };
 			weekHeader.Children.Add(new Label
 			{
-				Text = $"Week {week.WeekNumber}",
+				Text = AppLanguage.FormatWeek(week.WeekNumber),
 				FontSize = 20,
 				FontFamily = "OpenSansSemibold",
 				TextColor = GetColor("TextPrimary", "#F7F7FB"),
@@ -120,7 +146,7 @@ public partial class ProgramDetailPage : ContentPage
 
 			if (week.IsDeload)
 			{
-				weekHeader.Children.Add(CreatePill("DELOAD", "WarningSoft", "Warning"));
+				weekHeader.Children.Add(CreatePill(AppLanguage.ProgramDetailDeload, "WarningSoft", "Warning"));
 			}
 
 			weekSection.Children.Add(weekHeader);
@@ -162,7 +188,7 @@ public partial class ProgramDetailPage : ContentPage
 		// Session name
 		var sessionTitle = !string.IsNullOrWhiteSpace(session.SessionName)
 			? session.SessionName
-			: $"Day {session.DayNumber}";
+			: AppLanguage.FormatDay(session.DayNumber);
 
 		content.Children.Add(new Label
 		{
@@ -285,7 +311,7 @@ public partial class ProgramDetailPage : ContentPage
 	{
 		if (_program is null)
 		{
-			await DisplayAlert("Hata", "Program verisi yüklenemedi. Lütfen geri dönüp tekrar deneyin.", "Tamam");
+			await DisplayAlert(AppLanguage.SharedError, AppLanguage.ProgramDetailDataError, AppLanguage.SharedOk);
 			return;
 		}
 
@@ -295,7 +321,7 @@ public partial class ProgramDetailPage : ContentPage
 		{
 			_pickingSession = false;
 			if (SessionPickerHelper.FlattenSessions(_program).Count == 0)
-				await DisplayAlert("Hata", "Bu programda henüz seans bulunmuyor.", "Tamam");
+				await DisplayAlert(AppLanguage.SharedError, AppLanguage.ProgramDetailNoSessions, AppLanguage.SharedOk);
 			return;
 		}
 
@@ -307,7 +333,7 @@ public partial class ProgramDetailPage : ContentPage
 	{
 		if (_program is null)
 		{
-			await DisplayAlert("Hata", "Program verisi yüklenemedi. Lütfen geri dönüp tekrar deneyin.", "Tamam");
+			await DisplayAlert(AppLanguage.SharedError, AppLanguage.ProgramDetailDataError, AppLanguage.SharedOk);
 			return;
 		}
 
@@ -317,7 +343,7 @@ public partial class ProgramDetailPage : ContentPage
 		{
 			_pickingSession = false;
 			if (SessionPickerHelper.FlattenSessions(_program).Count == 0)
-				await DisplayAlert("Hata", "Bu programda henüz seans bulunmuyor.", "Tamam");
+				await DisplayAlert(AppLanguage.SharedError, AppLanguage.ProgramDetailNoSessions, AppLanguage.SharedOk);
 			return;
 		}
 

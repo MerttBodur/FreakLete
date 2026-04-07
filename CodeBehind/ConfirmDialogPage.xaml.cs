@@ -1,3 +1,5 @@
+using FreakLete.Services;
+
 namespace FreakLete;
 
 public partial class ConfirmDialogPage : ContentPage
@@ -7,6 +9,7 @@ public partial class ConfirmDialogPage : ContentPage
 	public ConfirmDialogPage(string title, string message, string confirmText, string cancelText)
 	{
 		InitializeComponent();
+		ActionBadge.Text = AppLanguage.ConfirmAction;
 		TitleLabel.Text = title;
 		MessageLabel.Text = message;
 		ConfirmButton.Text = confirmText;
@@ -17,10 +20,10 @@ public partial class ConfirmDialogPage : ContentPage
 		INavigation navigation,
 		string title,
 		string message,
-		string confirmText = "Delete",
-		string cancelText = "Cancel")
+		string? confirmText = null,
+		string? cancelText = null)
 	{
-		ConfirmDialogPage page = new(title, message, confirmText, cancelText);
+		ConfirmDialogPage page = new(title, message, confirmText ?? AppLanguage.SharedDelete, cancelText ?? AppLanguage.SharedCancel);
 		await navigation.PushModalAsync(page, false);
 		return await page._resultSource.Task;
 	}

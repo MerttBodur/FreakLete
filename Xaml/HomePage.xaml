@@ -13,10 +13,11 @@
 
                 <!-- Section 1: Header -->
                 <VerticalStackLayout Spacing="2" Padding="0,4,0,0">
-                    <Label FontSize="12"
+                    <Label x:Name="WelcomeLabel"
+                           FontSize="12"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextSecondary}"
-                           Text="HOŞ GELDİN"
+                           Text="WELCOME"
                            CharacterSpacing="1" />
                     <HorizontalStackLayout Spacing="0">
                         <Label FontSize="12"
@@ -45,11 +46,13 @@
                     </Border.Background>
                     <Grid ColumnDefinitions="*,Auto" Padding="20,18">
                         <VerticalStackLayout Spacing="10" VerticalOptions="Center">
-                            <Label Text="Start Workout"
+                            <Label x:Name="StartWorkoutLabel"
+                                   Text="Start Workout"
                                    FontSize="20"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}" />
-                            <Button Text="Başlat"
+                            <Button x:Name="StartButton"
+                                    Text="Start"
                                     BackgroundColor="{StaticResource Accent}"
                                     TextColor="White"
                                     CornerRadius="14"
@@ -73,7 +76,8 @@
                                        FontFamily="OpenSansSemibold"
                                        TextColor="{StaticResource AccentGlow}"
                                        HorizontalTextAlignment="Center" />
-                                <Label Text="ANTRENMAN"
+                                <Label x:Name="WorkoutsBadgeLabel"
+                                       Text="WORKOUTS"
                                        FontSize="9"
                                        FontFamily="OpenSansSemibold"
                                        TextColor="{StaticResource TextSecondary}"
@@ -92,12 +96,14 @@
 
                 <!-- Section 4: Quick Workouts -->
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Quick Workouts"
+                    <Label x:Name="QuickWorkoutsTitle"
+                           Text="Quick Workouts"
                            FontSize="18"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimary}"
                            Padding="0,0,0,0" />
-                    <Label Text="Hızlıca başlayabileceğin hazır antrenman şablonları"
+                    <Label x:Name="QuickWorkoutsDesc"
+                           Text="Ready-made workout templates to get started quickly"
                            FontSize="11"
                            FontFamily="OpenSansRegular"
                            TextColor="{StaticResource TextSecondary}" />

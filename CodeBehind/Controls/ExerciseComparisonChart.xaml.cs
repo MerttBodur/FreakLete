@@ -1,3 +1,4 @@
+using FreakLete.Services;
 using Microcharts;
 using SkiaSharp;
 
@@ -73,6 +74,22 @@ public partial class ExerciseComparisonChart : ContentView
 	public ExerciseComparisonChart()
 	{
 		InitializeComponent();
+		ApplyLanguage();
+		Loaded += (_, _) => AppLanguage.LanguageChanged += OnLanguageChanged;
+		Unloaded += (_, _) => AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged()
+	{
+		ApplyLanguage();
+		ApplyState();
+	}
+
+	private void ApplyLanguage()
+	{
+		SubtitleLabel.Text = AppLanguage.ChartSubtitle;
+		ChangeButtonLabel.Text = AppLanguage.ChartChange;
+		EmptyStateLabel.Text = AppLanguage.ChartNoData;
 	}
 
 	private static void OnPropertyChanged(BindableObject bindable, object oldValue, object newValue)

@@ -13,11 +13,13 @@
 
                 <!-- Page Title -->
                 <VerticalStackLayout Spacing="4">
-                    <Label FontSize="32"
+                    <Label x:Name="CalcTitleLabel"
+                           FontSize="32"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimary}"
                            Text="Progress" />
-                    <Label FontSize="14"
+                    <Label x:Name="CalcSubtitleLabel"
+                           FontSize="14"
                            FontFamily="OpenSansRegular"
                            TextColor="{StaticResource TextSecondary}"
                            Text="Track your personal records" />
@@ -39,12 +41,14 @@
                         Padding="24,28"
                         IsVisible="False">
                     <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
-                        <Label FontSize="18"
+                        <Label x:Name="NoPrsLabel"
+                               FontSize="18"
                                FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource TextPrimary}"
                                Text="No PRs recorded yet"
                                HorizontalTextAlignment="Center" />
-                        <Label FontSize="14"
+                        <Label x:Name="NoPrsDescLabel"
+                               FontSize="14"
                                FontFamily="OpenSansRegular"
                                TextColor="{StaticResource TextSecondary}"
                                Text="Save a personal record below to see your progress here"
@@ -114,7 +118,8 @@
                          Margin="0,6,0,0" />
 
                 <!-- Calculator Sections - Start -->
-                <Label FontSize="18"
+                <Label x:Name="ToolsSectionLabel"
+                       FontSize="18"
                        FontFamily="OpenSansSemibold"
                        TextColor="{StaticResource TextPrimary}"
                        Text="Strength &amp; Athletic Tools"
@@ -140,11 +145,13 @@
                                      Spacing="18">
                     <Border Style="{StaticResource CardBorder}">
                         <VerticalStackLayout Spacing="12">
-                            <Label Text="Strength Estimate"
+                            <Label x:Name="StrengthEstimateLabel"
+                                   Text="Strength Estimate"
                                    Style="{StaticResource SubHeadline}"
                                    HorizontalTextAlignment="Start" />
 
-                            <Label Text="Strength movement"
+                            <Label x:Name="StrengthMovementLabel"
+                                   Text="Strength movement"
                                    Style="{StaticResource BodyMuted}" />
                             <Border Style="{StaticResource CardBorder}"
                                     BackgroundColor="{StaticResource SurfaceRaised}"
@@ -161,7 +168,8 @@
                                                Style="{StaticResource BodyMuted}" />
                                     </VerticalStackLayout>
 
-                                    <Button Grid.Column="1"
+                                    <Button x:Name="BrowseStrengthBtn"
+                                            Grid.Column="1"
                                             Text="Browse"
                                             Style="{StaticResource SecondaryButton}"
                                             Clicked="OnChooseStrengthExerciseClicked"
@@ -173,7 +181,8 @@
                                   ColumnSpacing="12">
                                 <VerticalStackLayout Grid.Column="0"
                                                      Spacing="8">
-                                    <Label Text="Weight (kg): 40 - 250"
+                                    <Label x:Name="WeightRangeLabel"
+                                           Text="Weight (kg): 40 - 250"
                                            Style="{StaticResource BodyMuted}" />
                                     <Entry x:Name="WeightEntry"
                                            Keyboard="Numeric"
@@ -182,7 +191,8 @@
 
                                 <VerticalStackLayout Grid.Column="1"
                                                      Spacing="8">
-                                    <Label Text="Reps: 1 - 8"
+                                    <Label x:Name="RepsRangeLabel"
+                                           Text="Reps: 1 - 8"
                                            Style="{StaticResource BodyMuted}" />
                                     <Entry x:Name="RepsEntry"
                                            Keyboard="Numeric"
@@ -194,7 +204,8 @@
                                   ColumnSpacing="12">
                                 <VerticalStackLayout Grid.Column="0"
                                                      Spacing="8">
-                                    <Label Text="RIR: 0 - 5"
+                                    <Label x:Name="RirRangeLabel"
+                                           Text="RIR: 0 - 5"
                                            Style="{StaticResource BodyMuted}" />
                                     <Entry x:Name="RirEntry"
                                            Keyboard="Numeric"
@@ -203,7 +214,8 @@
 
                                 <VerticalStackLayout Grid.Column="1"
                                                      Spacing="8">
-                                    <Label Text="Concentric Time (s)"
+                                    <Label x:Name="ConcentricTimeLbl"
+                                           Text="Concentric Time (s)"
                                            Style="{StaticResource BodyMuted}" />
                                     <Entry x:Name="ConcentricTimeEntry"
                                            Keyboard="Numeric"
@@ -211,7 +223,8 @@
                                 </VerticalStackLayout>
                             </Grid>
 
-                            <Button Text="Calculate"
+                            <Button x:Name="CalculateBtn"
+                                    Text="Calculate"
                                     Clicked="OnCalculateOneRmClicked" />
 
                             <Label x:Name="OneRmStatusLabel"
@@ -223,7 +236,8 @@
 
                     <Border Style="{StaticResource CardBorder}">
                         <VerticalStackLayout Spacing="12">
-                            <Label Text="Calculated Range"
+                            <Label x:Name="CalcRangeLabel"
+                                   Text="Calculated Range"
                                    Style="{StaticResource SubHeadline}"
                                    HorizontalTextAlignment="Start" />
 
@@ -236,11 +250,13 @@
 
                     <Border Style="{StaticResource CardBorder}">
                         <VerticalStackLayout Spacing="12">
-                            <Label Text="Save PR"
+                            <Label x:Name="SavePrTitle"
+                                   Text="Save PR"
                                    Style="{StaticResource SubHeadline}"
                                    HorizontalTextAlignment="Start" />
 
-                            <Label Text="Movement"
+                            <Label x:Name="MovementLabel"
+                                   Text="Movement"
                                    Style="{StaticResource BodyMuted}" />
                             <Border Style="{StaticResource CardBorder}"
                                     BackgroundColor="{StaticResource SurfaceRaised}"
@@ -257,7 +273,8 @@
                                                Style="{StaticResource BodyMuted}" />
                                     </VerticalStackLayout>
 
-                                    <Button Grid.Column="1"
+                                    <Button x:Name="BrowsePrBtn"
+                                            Grid.Column="1"
                                             Text="Browse"
                                             Style="{StaticResource SecondaryButton}"
                                             Clicked="OnChoosePrExerciseClicked"
@@ -272,7 +289,8 @@
                                       ColumnSpacing="12">
                                     <VerticalStackLayout Grid.Column="0"
                                                          Spacing="8">
-                                        <Label Text="Weight (kg)"
+                                        <Label x:Name="PrWeightLabel"
+                                               Text="Weight (kg)"
                                                Style="{StaticResource BodyMuted}" />
                                         <Entry x:Name="PrWeightEntry"
                                                Keyboard="Numeric"
@@ -281,7 +299,8 @@
 
                                     <VerticalStackLayout Grid.Column="1"
                                                          Spacing="8">
-                                        <Label Text="Reps"
+                                        <Label x:Name="PrRepsLabel"
+                                               Text="Reps"
                                                Style="{StaticResource BodyMuted}" />
                                         <Entry x:Name="PrRepsEntry"
                                                Keyboard="Numeric"
@@ -293,7 +312,8 @@
                                       ColumnSpacing="12">
                                     <VerticalStackLayout Grid.Column="0"
                                                          Spacing="8">
-                                        <Label Text="RIR"
+                                        <Label x:Name="PrRirLabel"
+                                               Text="RIR"
                                                Style="{StaticResource BodyMuted}" />
                                         <Entry x:Name="PrRirEntry"
                                                Keyboard="Numeric"
@@ -302,7 +322,8 @@
 
                                     <VerticalStackLayout Grid.Column="1"
                                                          Spacing="8">
-                                        <Label Text="Concentric Time (s)"
+                                        <Label x:Name="PrConcentricTimeLbl"
+                                               Text="Concentric Time (s)"
                                                Style="{StaticResource BodyMuted}" />
                                         <Entry x:Name="PrConcentricTimeEntry"
                                                Keyboard="Numeric"
@@ -337,7 +358,8 @@
                                 <VerticalStackLayout x:Name="PrGctContainer"
                                                      Spacing="8"
                                                      IsVisible="False">
-                                    <Label Text="Ground Contact Time (s)"
+                                    <Label x:Name="PrGctLabel"
+                                           Text="Ground Contact Time (s)"
                                            Style="{StaticResource BodyMuted}" />
                                     <Entry x:Name="PrGroundContactTimeEntry"
                                            Keyboard="Numeric"
@@ -368,13 +390,15 @@
 
                     <Border Style="{StaticResource CardBorder}">
                         <VerticalStackLayout Spacing="12">
-                            <Label Text="Saved PR Entries"
+                            <Label x:Name="SavedPrEntriesLabel"
+                                   Text="Saved PR Entries"
                                    Style="{StaticResource SubHeadline}"
                                    HorizontalTextAlignment="Start" />
 
                             <CollectionView x:Name="SavedPrView">
                                 <CollectionView.EmptyView>
-                                    <Label Text="No saved PR yet."
+                                    <Label x:Name="NoSavedPrLabel"
+                                           Text="No saved PR yet."
                                            HorizontalOptions="Center"
                                            Style="{StaticResource BodyMuted}" />
                                 </CollectionView.EmptyView>
@@ -419,17 +443,20 @@
                                      IsVisible="False">
                     <Border Style="{StaticResource CardBorder}">
                         <VerticalStackLayout Spacing="12">
-                            <Label Text="Reactive Strength Index"
+                            <Label x:Name="RsiTitleLabel"
+                                   Text="Reactive Strength Index"
                                    Style="{StaticResource SubHeadline}"
                                    HorizontalTextAlignment="Start" />
-                            <Label Text="RSI uses jump height and ground contact time to estimate reactive output."
+                            <Label x:Name="RsiDescLabel"
+                                   Text="RSI uses jump height and ground contact time to estimate reactive output."
                                    Style="{StaticResource BodyMuted}" />
 
                             <Grid ColumnDefinitions="*,*"
                                   ColumnSpacing="12">
                                 <VerticalStackLayout Grid.Column="0"
                                                      Spacing="8">
-                                    <Label Text="Jump Height (cm)"
+                                    <Label x:Name="JumpHeightLabel"
+                                           Text="Jump Height (cm)"
                                            Style="{StaticResource BodyMuted}" />
                                     <Entry x:Name="RsiJumpHeightEntry"
                                            Keyboard="Numeric"
@@ -438,7 +465,8 @@
 
                                 <VerticalStackLayout Grid.Column="1"
                                                      Spacing="8">
-                                    <Label Text="GCT (s)"
+                                    <Label x:Name="GctLabel"
+                                           Text="GCT (s)"
                                            Style="{StaticResource BodyMuted}" />
                                     <Entry x:Name="RsiGroundContactTimeEntry"
                                            Keyboard="Numeric"
@@ -446,7 +474,8 @@
                                 </VerticalStackLayout>
                             </Grid>
 
-                            <Button Text="Calculate RSI"
+                            <Button x:Name="CalculateRsiBtn"
+                                    Text="Calculate RSI"
                                     Clicked="OnCalculateRsiClicked" />
 
                             <Label x:Name="RsiStatusLabel"
@@ -458,7 +487,8 @@
 
                     <Border Style="{StaticResource CardBorder}">
                         <VerticalStackLayout Spacing="12">
-                            <Label Text="Result"
+                            <Label x:Name="RsiResultTitle"
+                                   Text="Result"
                                    Style="{StaticResource SubHeadline}"
                                    HorizontalTextAlignment="Start" />
 

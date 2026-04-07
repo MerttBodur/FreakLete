@@ -29,7 +29,7 @@
                            FontSize="11"
                            FontFamily="OpenSansRegular"
                            TextColor="{StaticResource TextSecondary}"
-                           Text="Son 7 gün içerisindeki maksimum ağırlıklar ve tekrar sayıları" />
+                           Text="Max weights and reps in the last 7 days" />
                 </VerticalStackLayout>
                 <Border Grid.Column="1"
                         StrokeShape="RoundRectangle 10"
@@ -37,10 +37,11 @@
                         Stroke="Transparent"
                         Padding="10,6"
                         VerticalOptions="Center">
-                    <Label FontSize="11"
+                    <Label x:Name="ChangeButtonLabel"
+                           FontSize="11"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource AccentGlow}"
-                           Text="Değiştir" />
+                           Text="Change" />
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnChangeButtonTapped" />
                     </Border.GestureRecognizers>
@@ -88,7 +89,7 @@
                    FontSize="13"
                    FontFamily="OpenSansRegular"
                    TextColor="{StaticResource TextMuted}"
-                   Text="Henüz veri yok"
+                   Text="No data yet"
                    HorizontalOptions="Center"
                    IsVisible="False" />
 

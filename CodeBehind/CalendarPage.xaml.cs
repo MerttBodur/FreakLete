@@ -23,11 +23,39 @@ public partial class CalendarPage : ContentPage
 		BindingContext = this;
 		_selectedDate = DateTime.Today;
 		_currentMonth = new DateTime(_selectedDate.Year, _selectedDate.Month, 1);
+		ApplyLanguage();
 	}
+
+	private void ApplyLanguage()
+	{
+		Header.Title = AppLanguage.CalendarTitle;
+		TrainingHistoryBadge.Text = AppLanguage.CalendarTrainingHistory;
+		CalendarDescLabel.Text = AppLanguage.CalendarDesc;
+		SavedWorkoutsTitle.Text = AppLanguage.CalendarSavedWorkouts;
+		NoWorkoutLabel.Text = AppLanguage.CalendarNoWorkout;
+
+		var dayNames = AppLanguage.CalendarDayNames;
+		DayName0.Text = dayNames[0];
+		DayName1.Text = dayNames[1];
+		DayName2.Text = dayNames[2];
+		DayName3.Text = dayNames[3];
+		DayName4.Text = dayNames[4];
+		DayName5.Text = dayNames[5];
+		DayName6.Text = dayNames[6];
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged() => ApplyLanguage();
 
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
 		await ReloadWorkoutsAsync();
 		BuildCalendar();
 	}
@@ -74,7 +102,7 @@ public partial class CalendarPage : ContentPage
 		CalendarDays.Clear();
 
 		MonthLabel.Text = _currentMonth.ToString("MMMM yyyy");
-		SelectedDateLabel.Text = $"Selected: {_selectedDate:dd MMM yyyy}";
+		SelectedDateLabel.Text = AppLanguage.FormatCalendarSelected(_selectedDate);
 
 		int daysInMonth = DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month);
 		int startOffset = GetMondayBasedOffset(_currentMonth.DayOfWeek);
@@ -169,10 +197,10 @@ public partial class CalendarPage : ContentPage
 
 		bool confirmed = await ConfirmDialogPage.ShowAsync(
 			Navigation,
-			"Delete Workout",
-			$"Delete '{item.WorkoutName}'?",
-			"Delete",
-			"Cancel");
+			AppLanguage.CalendarDeleteTitle,
+			AppLanguage.FormatCalendarDeleteConfirm(item.WorkoutName),
+			AppLanguage.SharedDelete,
+			AppLanguage.SharedCancel);
 		if (!confirmed)
 		{
 			return;

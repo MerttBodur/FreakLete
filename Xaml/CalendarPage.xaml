@@ -10,15 +10,18 @@
         <VerticalStackLayout Padding="24,18,24,28"
                              Spacing="18">
 
-            <local:TopHeader Title="Calendar"
+            <local:TopHeader x:Name="Header"
+                             Title="Calendar"
                              ShowBackButton="True"
                              BackClicked="OnHeaderBackClicked" />
 
             <Border Style="{StaticResource AccentCardBorder}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="TRAINING HISTORY"
+                    <Label x:Name="TrainingHistoryBadge"
+                           Text="TRAINING HISTORY"
                            Style="{StaticResource Eyebrow}" />
-                    <Label Text="Review sessions by day and keep your schedule visible."
+                    <Label x:Name="CalendarDescLabel"
+                           Text="Review sessions by day and keep your schedule visible."
                            Style="{StaticResource Headline}"
                            HorizontalTextAlignment="Start" />
                     <Label x:Name="SelectedDateLabel"
@@ -49,13 +52,13 @@
 
                     <Grid ColumnDefinitions="*,*,*,*,*,*,*"
                           ColumnSpacing="6">
-                        <Label Grid.Column="0" Text="Mon" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
-                        <Label Grid.Column="1" Text="Tue" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
-                        <Label Grid.Column="2" Text="Wed" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
-                        <Label Grid.Column="3" Text="Thu" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
-                        <Label Grid.Column="4" Text="Fri" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
-                        <Label Grid.Column="5" Text="Sat" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
-                        <Label Grid.Column="6" Text="Sun" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label x:Name="DayName0" Grid.Column="0" Text="Mon" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label x:Name="DayName1" Grid.Column="1" Text="Tue" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label x:Name="DayName2" Grid.Column="2" Text="Wed" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label x:Name="DayName3" Grid.Column="3" Text="Thu" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label x:Name="DayName4" Grid.Column="4" Text="Fri" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label x:Name="DayName5" Grid.Column="5" Text="Sat" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
+                        <Label x:Name="DayName6" Grid.Column="6" Text="Sun" HorizontalTextAlignment="Center" Style="{StaticResource BodyMuted}" />
                     </Grid>
 
                     <CollectionView x:Name="CalendarDaysView"
@@ -97,13 +100,15 @@
 
             <Border Style="{StaticResource CardBorder}">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="Saved Workouts"
+                    <Label x:Name="SavedWorkoutsTitle"
+                           Text="Saved Workouts"
                            Style="{StaticResource SubHeadline}"
                            HorizontalTextAlignment="Start" />
 
                     <CollectionView x:Name="SavedWorkoutsView">
                         <CollectionView.EmptyView>
-                            <Label Text="No workout saved for this date."
+                            <Label x:Name="NoWorkoutLabel"
+                                   Text="No workout saved for this date."
                                    HorizontalOptions="Center"
                                    Margin="0,8,0,0"
                                    Style="{StaticResource BodyMuted}" />

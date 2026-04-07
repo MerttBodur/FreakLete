@@ -30,7 +30,8 @@
                     <TapGestureRecognizer Tapped="OnBackClicked" />
                 </Border.GestureRecognizers>
             </Border>
-            <Label Text="Program Details"
+            <Label x:Name="PageTitleLabel"
+                   Text="Program Details"
                    FontSize="18"
                    FontFamily="OpenSansSemibold"
                    TextColor="{StaticResource TextPrimary}"
@@ -59,7 +60,8 @@
                     </Border.Stroke>
                     <VerticalStackLayout Padding="22,20" Spacing="10">
                         <HorizontalStackLayout Spacing="10">
-                            <Label FontSize="11"
+                            <Label x:Name="TrainingProgramBadge"
+                                   FontSize="11"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource AccentGlow}"
                                    Text="TRAINING PROGRAM"
@@ -148,7 +150,8 @@
                                    TextColor="{StaticResource AccentGlow}"
                                    HorizontalTextAlignment="Center"
                                    Text="0" />
-                            <Label FontSize="10"
+                            <Label x:Name="WeeksSubLabel"
+                                   FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextSecondary}"
                                    HorizontalTextAlignment="Center"
@@ -172,7 +175,8 @@
                                    TextColor="{StaticResource AccentGlow}"
                                    HorizontalTextAlignment="Center"
                                    Text="0" />
-                            <Label FontSize="10"
+                            <Label x:Name="SessionsSubLabel"
+                                   FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextSecondary}"
                                    HorizontalTextAlignment="Center"
@@ -196,7 +200,8 @@
                                    TextColor="{StaticResource AccentGlow}"
                                    HorizontalTextAlignment="Center"
                                    Text="0" />
-                            <Label FontSize="10"
+                            <Label x:Name="ExercisesSubLabel"
+                                   FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextSecondary}"
                                    HorizontalTextAlignment="Center"
@@ -232,7 +237,7 @@
                 <!-- Single button for starter templates (shown/hidden in code-behind) -->
                 <Button x:Name="StartWorkoutButton"
                         Grid.ColumnSpan="3"
-                        Text="Başla"
+                        Text="Start"
                         BackgroundColor="{StaticResource Accent}"
                         TextColor="White"
                         Padding="24,14"
@@ -245,7 +250,7 @@
                 <!-- Two buttons for user-owned programs -->
                 <Button x:Name="AddWorkoutButton"
                         Grid.Column="0"
-                        Text="Antrenman Ekle"
+                        Text="Add Workout"
                         BackgroundColor="{StaticResource SurfaceRaised}"
                         TextColor="{StaticResource TextPrimary}"
                         BorderColor="{StaticResource SurfaceBorder}"
@@ -258,7 +263,7 @@
                         HorizontalOptions="FillAndExpand" />
                 <Button x:Name="StartLiveWorkoutButton"
                         Grid.Column="2"
-                        Text="Antrenman Başla"
+                        Text="Start Workout"
                         BackgroundColor="{StaticResource Accent}"
                         TextColor="White"
                         Padding="16,14"

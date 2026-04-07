@@ -30,8 +30,34 @@ public partial class WorkoutPreviewPage : ContentPage
 		_exercises = exercises;
 		_sessionPage = sessionPage;
 
+		ApplyLanguage();
 		BuildSummary();
 		BuildExerciseList();
+	}
+
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged()
+	{
+		ApplyLanguage();
+		BuildSummary();
+	}
+
+	private void ApplyLanguage()
+	{
+		PageTitleLabel.Text = AppLanguage.PreviewTitle;
+		GoBackButton.Text = AppLanguage.PreviewGoBack;
+		SaveButton.Text = AppLanguage.PreviewSave;
 	}
 
 	/// <summary>
@@ -43,9 +69,10 @@ public partial class WorkoutPreviewPage : ContentPage
 	{
 		SummaryNameLabel.Text = _workoutName;
 		SummaryDateLabel.Text = _workoutDate.ToString("dd MMM yyyy");
-		SummaryDurationLabel.Text = _duration.TotalHours >= 1
-			? $"Süre: {_duration:h\\:mm\\:ss}"
-			: $"Süre: {_duration:mm\\:ss}";
+		var formatted = _duration.TotalHours >= 1
+			? _duration.ToString(@"h\:mm\:ss")
+			: _duration.ToString(@"mm\:ss");
+		SummaryDurationLabel.Text = AppLanguage.FormatDuration(formatted);
 	}
 
 	private void BuildExerciseList()
@@ -99,7 +126,7 @@ public partial class WorkoutPreviewPage : ContentPage
 	{
 		ErrorLabel.IsVisible = false;
 		SaveButton.IsEnabled = false;
-		SaveButton.Text = "Kaydediliyor...";
+		SaveButton.Text = AppLanguage.PreviewSaving;
 
 		var exercises = _exercises.Select(entry => new
 		{
@@ -137,8 +164,8 @@ public partial class WorkoutPreviewPage : ContentPage
 		else
 		{
 			SaveButton.IsEnabled = true;
-			SaveButton.Text = "Kaydet";
-			ErrorLabel.Text = result.Error ?? "Antrenman kaydedilemedi.";
+			SaveButton.Text = AppLanguage.PreviewSave;
+			ErrorLabel.Text = result.Error ?? AppLanguage.PreviewFailed;
 			ErrorLabel.IsVisible = true;
 		}
 	}

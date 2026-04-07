@@ -13,7 +13,8 @@
                 MaximumWidthRequest="420"
                 BackgroundColor="{StaticResource SurfaceRaised}">
             <VerticalStackLayout Spacing="14">
-                <Label Text="CONFIRM ACTION"
+                <Label x:Name="ActionBadge"
+                       Text="CONFIRM ACTION"
                        Style="{StaticResource Eyebrow}" />
 
                 <Label x:Name="TitleLabel"

@@ -16,7 +16,31 @@ public partial class SessionPickerPage : ContentPage
 		InitializeComponent();
 		_tcs = tcs;
 		_options = options;
+		ApplyLanguage();
 		BuildSessionCards();
+	}
+
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged()
+	{
+		ApplyLanguage();
+		BuildSessionCards();
+	}
+
+	private void ApplyLanguage()
+	{
+		PageTitleLabel.Text = AppLanguage.SessionPickerTitle;
 	}
 
 	private void BuildSessionCards()
@@ -69,7 +93,7 @@ public partial class SessionPickerPage : ContentPage
 		{
 			var pills = new HorizontalStackLayout { Spacing = 8 };
 
-			pills.Children.Add(CreatePill($"{exercises.Count} exercises"));
+			pills.Children.Add(CreatePill(AppLanguage.FormatExercises(exercises.Count)));
 
 			// Show first 2 exercise names
 			var preview = exercises.OrderBy(e => e.Order).Take(2).Select(e => e.ExerciseName);

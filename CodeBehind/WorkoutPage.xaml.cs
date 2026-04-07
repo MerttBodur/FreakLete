@@ -1,8 +1,20 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using FreakLete.Services;
 using Microsoft.Maui.Controls.Shapes;
 
 namespace FreakLete;
+
+public class DaysPerWeekFormatConverter : IValueConverter
+{
+	public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+	{
+		if (value is int days) return AppLanguage.FormatXPerWeek(days);
+		return value?.ToString() ?? "";
+	}
+	public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+		=> throw new NotImplementedException();
+}
 
 public partial class WorkoutPage : ContentPage
 {
@@ -18,11 +30,42 @@ public partial class WorkoutPage : ContentPage
 	{
 		InitializeComponent();
 		ProgramsCollectionView.ItemsSource = _programs;
+		ApplyLanguage();
 	}
+
+	private void ApplyLanguage()
+	{
+		PageTitleLabel.Text = AppLanguage.WorkoutPageTitle;
+		PageSubtitleLabel.Text = AppLanguage.WorkoutPageSubtitle;
+		ActiveProgramBadge.Text = AppLanguage.WorkoutActiveProgram;
+		HeroStartBtn.Text = AppLanguage.WorkoutStartWorkout;
+		EmptyGetStartedBadge.Text = AppLanguage.WorkoutGetStarted;
+		EmptyNoActiveLabel.Text = AppLanguage.WorkoutNoActiveProgram;
+		EmptyDescLabel.Text = AppLanguage.WorkoutNoActiveDesc;
+		EmptyQuickWorkoutBtn.Text = AppLanguage.WorkoutQuickWorkout;
+		ThisWeekBadge.Text = AppLanguage.WorkoutThisWeek;
+		SessionsSubLabel.Text = AppLanguage.WorkoutSessions;
+		ProgramsBadge.Text = AppLanguage.WorkoutPrograms;
+		AvailableSubLabel.Text = AppLanguage.WorkoutAvailable;
+		RecommendedLabel.Text = AppLanguage.WorkoutRecommended;
+		AllProgramsLabel.Text = AppLanguage.WorkoutAllPrograms;
+		NoProgramsLabel.Text = AppLanguage.WorkoutNoPrograms;
+		QuickAddLabel.Text = AppLanguage.WorkoutQuickAdd;
+		CalendarLabel.Text = AppLanguage.WorkoutCalendar;
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged() => ApplyLanguage();
 
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
 		await LoadPageDataAsync();
 	}
 
@@ -87,11 +130,11 @@ public partial class WorkoutPage : ContentPage
 
 				HeroProgramName.Text = _activeProgram.Name;
 				HeroProgramGoal.Text = _activeProgram.Goal;
-				HeroFrequencyLabel.Text = $"{_activeProgram.DaysPerWeek}x/week";
+				HeroFrequencyLabel.Text = AppLanguage.FormatXPerWeek(_activeProgram.DaysPerWeek);
 
 				if (_activeProgram.SessionDurationMinutes > 0)
 				{
-					HeroDurationLabel.Text = $"{_activeProgram.SessionDurationMinutes} min";
+					HeroDurationLabel.Text = AppLanguage.FormatMinutes(_activeProgram.SessionDurationMinutes);
 					HeroDurationPill.IsVisible = true;
 				}
 			}
@@ -109,7 +152,7 @@ public partial class WorkoutPage : ContentPage
 				.Sum(r => r.Data!.Count);
 
 			SessionsCountLabel.Text = workoutsThisWeek.ToString();
-			HeroWeeklyLabel.Text = $"{workoutsThisWeek} this week";
+			HeroWeeklyLabel.Text = AppLanguage.FormatThisWeek(workoutsThisWeek);
 
 			// Build recommendations: exclude active program, take up to 4
 			_allPrograms = _programs.ToList();
@@ -197,7 +240,7 @@ public partial class WorkoutPage : ContentPage
 		GoalChipsScroll.IsVisible = true;
 
 		// "All" chip
-		GoalChipsContainer.Children.Add(CreateGoalChip("All", _selectedGoalFilter is null));
+		GoalChipsContainer.Children.Add(CreateGoalChip(AppLanguage.SharedAll, _selectedGoalFilter is null));
 
 		foreach (var goal in distinctGoals)
 		{
@@ -228,7 +271,7 @@ public partial class WorkoutPage : ContentPage
 		{
 			Command = new Command(() =>
 			{
-				_selectedGoalFilter = text == "All" ? null : text;
+				_selectedGoalFilter = text == AppLanguage.SharedAll ? null : text;
 				BuildGoalChips();
 				ApplyGoalFilter();
 			})
@@ -317,10 +360,10 @@ public partial class WorkoutPage : ContentPage
 		// Pills row
 		var pills = new HorizontalStackLayout { Spacing = 8 };
 
-		pills.Children.Add(CreateSmallPill($"{rec.DaysPerWeek}x/week"));
+		pills.Children.Add(CreateSmallPill(AppLanguage.FormatXPerWeek(rec.DaysPerWeek)));
 
 		if (rec.SessionDurationMinutes > 0)
-			pills.Children.Add(CreateSmallPill($"{rec.SessionDurationMinutes} min"));
+			pills.Children.Add(CreateSmallPill(AppLanguage.FormatMinutes(rec.SessionDurationMinutes)));
 
 		if (!string.IsNullOrWhiteSpace(rec.FormatPill))
 			pills.Children.Add(CreateSmallPill(rec.FormatPill));

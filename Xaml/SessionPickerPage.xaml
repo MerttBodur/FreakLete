@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FreakLete.SessionPickerPage"
              NavigationPage.HasNavigationBar="False"
-             Title="Seans Seç"
+             Title="Pick Session"
              BackgroundColor="{StaticResource Background}">
 
     <Grid RowDefinitions="Auto,*">
@@ -30,7 +30,8 @@
                     <TapGestureRecognizer Tapped="OnCancelClicked" />
                 </Border.GestureRecognizers>
             </Border>
-            <Label Text="Seans Seç"
+            <Label x:Name="PageTitleLabel"
+                   Text="Pick Session"
                    FontSize="18"
                    FontFamily="OpenSansSemibold"
                    TextColor="{StaticResource TextPrimary}"

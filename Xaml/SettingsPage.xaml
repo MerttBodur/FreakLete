@@ -214,6 +214,53 @@
             </VerticalStackLayout>
         </ScrollView>
 
+        <!-- Language picker overlay -->
+        <Grid x:Name="LanguageOverlay"
+              Grid.RowSpan="2"
+              IsVisible="False"
+              Opacity="0"
+              BackgroundColor="{StaticResource OverlayScrim}"
+              Padding="24">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnLanguageOverlayDismiss" />
+            </Grid.GestureRecognizers>
+            <Border Style="{StaticResource CardBorder}"
+                    Padding="20"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    MaximumWidthRequest="420"
+                    BackgroundColor="{StaticResource SurfaceRaised}">
+                <VerticalStackLayout Spacing="14">
+                    <Label x:Name="LangPickerTitle"
+                           Text="Select Language"
+                           Style="{StaticResource SubHeadline}"
+                           HorizontalTextAlignment="Start" />
+
+                    <Button x:Name="BtnLangEnglish"
+                            Text="English"
+                            Clicked="OnLangEnglishClicked"
+                            FontFamily="OpenSansSemibold"
+                            FontSize="15"
+                            HeightRequest="48"
+                            CornerRadius="18" />
+
+                    <Button x:Name="BtnLangTurkish"
+                            Text="Türkçe"
+                            Clicked="OnLangTurkishClicked"
+                            FontFamily="OpenSansSemibold"
+                            FontSize="15"
+                            HeightRequest="48"
+                            CornerRadius="18" />
+
+                    <Button x:Name="BtnLangCancel"
+                            Text="Cancel"
+                            Style="{StaticResource SecondaryButton}"
+                            Clicked="OnLanguageOverlayDismiss"
+                            Margin="0,4,0,0" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
         <!-- Coming soon toast -->
         <Border x:Name="ToastBanner"
                 Grid.RowSpan="2"

@@ -19,7 +19,29 @@ public partial class AddWorkoutFromProgramPage : ContentPage
 		_workoutName = $"{programName} - {sessionDisplayName}";
 		WorkoutNameLabel.Text = _workoutName;
 		WorkoutDatePicker.Date = DateTime.Now.Date;
+		ApplyLanguage();
 		BuildExerciseRows();
+	}
+
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged() => ApplyLanguage();
+
+	private void ApplyLanguage()
+	{
+		PageTitleLabel.Text = AppLanguage.AddFromProgramTitle;
+		DateLabel.Text = AppLanguage.AddFromProgramDate;
+		SaveButton.Text = AppLanguage.AddFromProgramSave;
 	}
 
 	private void BuildExerciseRows()
@@ -47,7 +69,7 @@ public partial class AddWorkoutFromProgramPage : ContentPage
 			var entry = ExerciseInputRowBuilder.ReadValues(row);
 			if (entry.Sets <= 0)
 			{
-				ErrorLabel.Text = $"{entry.ExerciseName}: Set sayısı gerekli.";
+				ErrorLabel.Text = $"{entry.ExerciseName}: {AppLanguage.AddFromProgramSetRequired}";
 				ErrorLabel.IsVisible = true;
 				return;
 			}
@@ -72,13 +94,13 @@ public partial class AddWorkoutFromProgramPage : ContentPage
 
 		if (exercises.Count == 0)
 		{
-			ErrorLabel.Text = "En az bir egzersiz gerekli.";
+			ErrorLabel.Text = AppLanguage.AddFromProgramNeedExercise;
 			ErrorLabel.IsVisible = true;
 			return;
 		}
 
 		SaveButton.IsEnabled = false;
-		SaveButton.Text = "Kaydediliyor...";
+		SaveButton.Text = AppLanguage.AddFromProgramSaving;
 
 		var workoutData = new
 		{
@@ -95,8 +117,8 @@ public partial class AddWorkoutFromProgramPage : ContentPage
 		else
 		{
 			SaveButton.IsEnabled = true;
-			SaveButton.Text = "Kaydet";
-			ErrorLabel.Text = result.Error ?? "Antrenman kaydedilemedi.";
+			SaveButton.Text = AppLanguage.AddFromProgramSave;
+			ErrorLabel.Text = result.Error ?? AppLanguage.AddFromProgramFailed;
 			ErrorLabel.IsVisible = true;
 		}
 	}

@@ -90,7 +90,8 @@
                                    TextColor="{StaticResource AccentGlow}"
                                    HorizontalTextAlignment="Center"
                                    Text="0" />
-                            <Label FontSize="10"
+                            <Label x:Name="WorkoutsSubLabel"
+                                   FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextSecondary}"
                                    HorizontalTextAlignment="Center"
@@ -115,7 +116,8 @@
                                    TextColor="{StaticResource AccentGlow}"
                                    HorizontalTextAlignment="Center"
                                    Text="0" />
-                            <Label FontSize="10"
+                            <Label x:Name="SavedPrsSubLabel"
+                                   FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextSecondary}"
                                    HorizontalTextAlignment="Center"
@@ -140,7 +142,8 @@
                                    TextColor="{StaticResource AccentGlow}"
                                    HorizontalTextAlignment="Center"
                                    Text="0" />
-                            <Label FontSize="10"
+                            <Label x:Name="RecordsSubLabel"
+                                   FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextSecondary}"
                                    HorizontalTextAlignment="Center"
@@ -152,7 +155,8 @@
 
                 <!-- Highlights Section -->
                 <VerticalStackLayout x:Name="HighlightsSection" Spacing="10">
-                    <Label FontSize="18"
+                    <Label x:Name="HighlightsLabel"
+                           FontSize="18"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimary}"
                            Text="Highlights"
@@ -167,11 +171,13 @@
 
                 <Border Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Profile Details"
+                        <Label x:Name="ProfileDetailsTitle"
+                               Text="Profile Details"
                                Style="{StaticResource SubHeadline}"
                                HorizontalTextAlignment="Start" />
 
-                        <Label Text="Date of Birth"
+                        <Label x:Name="DobLabel"
+                               Text="Date of Birth"
                                Style="{StaticResource BodyMuted}" />
                         <Border Style="{StaticResource CardBorder}"
                                 BackgroundColor="{StaticResource SurfaceRaised}"
@@ -192,7 +198,8 @@
                               ColumnSpacing="12">
                             <VerticalStackLayout Grid.Column="0"
                                                  Spacing="8">
-                                <Label Text="Weight (kg)"
+                                <Label x:Name="WeightKgLabel"
+                                       Text="Weight (kg)"
                                        Style="{StaticResource BodyMuted}" />
                                 <Entry x:Name="WeightEntry"
                                        Placeholder="Example: 82.5"
@@ -201,7 +208,8 @@
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1"
                                                  Spacing="8">
-                                <Label Text="Body Fat (%)"
+                                <Label x:Name="BodyFatLabel"
+                                       Text="Body Fat (%)"
                                        Style="{StaticResource BodyMuted}" />
                                 <Entry x:Name="BodyFatEntry"
                                        Placeholder="Example: 12.5"
@@ -210,7 +218,8 @@
                             </VerticalStackLayout>
                         </Grid>
 
-                        <Label Text="Sport"
+                        <Label x:Name="SportTitleLabel"
+                               Text="Sport"
                                Style="{StaticResource BodyMuted}" />
                         <Border Style="{StaticResource CardBorder}"
                                 BackgroundColor="{StaticResource SurfaceRaised}"
@@ -227,7 +236,8 @@
                         <VerticalStackLayout x:Name="PositionContainer"
                                              Spacing="8"
                                              IsVisible="False">
-                            <Label Text="Position / Discipline"
+                            <Label x:Name="PositionTitleLabel"
+                                   Text="Position / Discipline"
                                    Style="{StaticResource BodyMuted}" />
                             <Border Style="{StaticResource CardBorder}"
                                     BackgroundColor="{StaticResource SurfaceRaised}"
@@ -242,7 +252,8 @@
                             </Border>
                         </VerticalStackLayout>
 
-                        <Label Text="Gym Experience"
+                        <Label x:Name="GymExpTitleLabel"
+                               Text="Gym Experience"
                                Style="{StaticResource BodyMuted}" />
                         <Border Style="{StaticResource CardBorder}"
                                 BackgroundColor="{StaticResource SurfaceRaised}"
@@ -260,11 +271,13 @@
 
                 <Border Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Coach Profile"
+                        <Label x:Name="CoachProfileTitle"
+                               Text="Coach Profile"
                                Style="{StaticResource SubHeadline}"
                                HorizontalTextAlignment="Start" />
 
-                        <Label Text="Training Days / Week"
+                        <Label x:Name="TrainingDaysTitleLabel"
+                               Text="Training Days / Week"
                                Style="{StaticResource BodyMuted}" />
                         <Border Style="{StaticResource CardBorder}"
                                 BackgroundColor="{StaticResource SurfaceRaised}"
@@ -278,7 +291,8 @@
                                    FontSize="15" />
                         </Border>
 
-                        <Label Text="Session Duration (minutes)"
+                        <Label x:Name="SessionDurationTitleLabel"
+                               Text="Session Duration (minutes)"
                                Style="{StaticResource BodyMuted}" />
                         <Border Style="{StaticResource CardBorder}"
                                 BackgroundColor="{StaticResource SurfaceRaised}"
@@ -292,7 +306,8 @@
                                    FontSize="15" />
                         </Border>
 
-                        <Label Text="Primary Training Goal"
+                        <Label x:Name="PrimaryGoalTitleLabel"
+                               Text="Primary Training Goal"
                                Style="{StaticResource BodyMuted}" />
                         <Border Style="{StaticResource CardBorder}"
                                 BackgroundColor="{StaticResource SurfaceRaised}"
@@ -306,7 +321,8 @@
                                    FontSize="15" />
                         </Border>
 
-                        <Label Text="Secondary Goal (optional)"
+                        <Label x:Name="SecondaryGoalTitleLabel"
+                               Text="Secondary Goal (optional)"
                                Style="{StaticResource BodyMuted}" />
                         <Border Style="{StaticResource CardBorder}"
                                 BackgroundColor="{StaticResource SurfaceRaised}"
@@ -320,7 +336,8 @@
                                    FontSize="15" />
                         </Border>
 
-                        <Label Text="Available Equipment"
+                        <Label x:Name="EquipmentTitleLabel"
+                               Text="Available Equipment"
                                Style="{StaticResource BodyMuted}" />
                         <Border x:Name="EquipmentSelector"
                                 Style="{StaticResource CardBorder}"
@@ -335,7 +352,8 @@
                                    FontSize="15" />
                         </Border>
 
-                        <Label Text="Injury History"
+                        <Label x:Name="InjuryHistoryTitleLabel"
+                               Text="Injury History"
                                Style="{StaticResource BodyMuted}" />
                         <Editor x:Name="InjuryHistoryEditor"
                                 Placeholder="e.g. ACL reconstruction 2023 left knee, chronic shoulder impingement..."
@@ -344,7 +362,8 @@
                                 HeightRequest="60"
                                 Unfocused="OnInjuryHistoryEditorUnfocused" />
 
-                        <Label Text="Current Pain Points"
+                        <Label x:Name="CurrentPainTitleLabel"
+                               Text="Current Pain Points"
                                Style="{StaticResource BodyMuted}" />
                         <Editor x:Name="CurrentPainEditor"
                                 Placeholder="e.g. Mild right knee discomfort during deep squats..."
@@ -353,7 +372,8 @@
                                 HeightRequest="60"
                                 Unfocused="OnCurrentPainEditorUnfocused" />
 
-                        <Label Text="Physical Limitations"
+                        <Label x:Name="PhysicalLimitsTitleLabel"
+                               Text="Physical Limitations"
                                Style="{StaticResource BodyMuted}" />
                         <Editor x:Name="PhysicalLimitationsEditor"
                                 Placeholder="e.g. Limited overhead mobility, can't do behind-neck movements..."
@@ -362,7 +382,8 @@
                                 HeightRequest="60"
                                 Unfocused="OnPhysicalLimitationsEditorUnfocused" />
 
-                        <Label Text="Dietary Preference (optional)"
+                        <Label x:Name="DietaryPrefTitleLabel"
+                               Text="Dietary Preference (optional)"
                                Style="{StaticResource BodyMuted}" />
                         <Border Style="{StaticResource CardBorder}"
                                 BackgroundColor="{StaticResource SurfaceRaised}"
@@ -383,11 +404,13 @@
 
                 <Border Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Athletic Performance"
+                        <Label x:Name="AthleticPerfTitle"
+                               Text="Athletic Performance"
                                Style="{StaticResource SubHeadline}"
                                HorizontalTextAlignment="Start" />
 
-                        <Label Text="Movement"
+                        <Label x:Name="AthleticMovementLabel"
+                               Text="Movement"
                                Style="{StaticResource BodyMuted}" />
                         <Border Style="{StaticResource CardBorder}"
                                 BackgroundColor="{StaticResource SurfaceRaised}"
@@ -404,7 +427,8 @@
                                            Style="{StaticResource BodyMuted}" />
                                 </VerticalStackLayout>
 
-                                <Button Grid.Column="1"
+                                <Button x:Name="BrowsePerformanceBtn"
+                                        Grid.Column="1"
                                         Text="Browse"
                                         Style="{StaticResource SecondaryButton}"
                                         Clicked="OnChoosePerformanceMovementClicked"
@@ -498,11 +522,13 @@
 
                 <Border Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Movement Goals"
+                        <Label x:Name="MovementGoalsTitle"
+                               Text="Movement Goals"
                                Style="{StaticResource SubHeadline}"
                                HorizontalTextAlignment="Start" />
 
-                        <Label Text="Goal movement"
+                        <Label x:Name="GoalMovementLabel"
+                               Text="Goal movement"
                                Style="{StaticResource BodyMuted}" />
                         <Border Style="{StaticResource CardBorder}"
                                 BackgroundColor="{StaticResource SurfaceRaised}"
@@ -519,7 +545,8 @@
                                            Style="{StaticResource BodyMuted}" />
                                 </VerticalStackLayout>
 
-                                <Button Grid.Column="1"
+                                <Button x:Name="BrowseGoalBtn"
+                                        Grid.Column="1"
                                         Text="Browse"
                                         Style="{StaticResource SecondaryButton}"
                                         Clicked="OnChooseGoalMovementClicked"
@@ -597,19 +624,22 @@
                 </Border>
 
                 <!-- Settings -->
-                <Button Text="&#x2699;  Ayarlar"
+                <Button x:Name="SettingsBtn"
+                        Text="&#x2699;  Settings"
                         Style="{StaticResource SecondaryButton}"
                         Clicked="OnSettingsClicked"
                         HorizontalOptions="Fill" />
 
                 <Grid ColumnDefinitions="*,*"
                       ColumnSpacing="12">
-                    <Button Grid.Column="0"
+                    <Button x:Name="LogoutBtn"
+                            Grid.Column="0"
                             Text="Logout"
                             Style="{StaticResource SecondaryButton}"
                             Clicked="OnLogoutClicked" />
 
-                    <Button Grid.Column="1"
+                    <Button x:Name="DeleteAccountBtn"
+                            Grid.Column="1"
                             Text="Delete"
                             BackgroundColor="{StaticResource DangerSoft}"
                             Clicked="OnDeleteAccountClicked" />

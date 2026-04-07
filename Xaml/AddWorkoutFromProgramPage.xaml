@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FreakLete.AddWorkoutFromProgramPage"
              NavigationPage.HasNavigationBar="False"
-             Title="Antrenman Ekle"
+             Title="Add Workout"
              BackgroundColor="{StaticResource Background}">
 
     <Grid RowDefinitions="Auto,*,Auto">
@@ -30,7 +30,8 @@
                     <TapGestureRecognizer Tapped="OnBackClicked" />
                 </Border.GestureRecognizers>
             </Border>
-            <Label Text="Antrenman Ekle"
+            <Label x:Name="PageTitleLabel"
+                   Text="Add Workout"
                    FontSize="18"
                    FontFamily="OpenSansSemibold"
                    TextColor="{StaticResource TextPrimary}"
@@ -49,7 +50,8 @@
 
                 <!-- Date picker -->
                 <HorizontalStackLayout Spacing="10">
-                    <Label Text="Tarih:"
+                    <Label x:Name="DateLabel"
+                           Text="Date:"
                            FontSize="14"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextSecondary}"
@@ -84,7 +86,7 @@
                 </LinearGradientBrush>
             </Border.Background>
             <Button x:Name="SaveButton"
-                    Text="Kaydet"
+                    Text="Save"
                     BackgroundColor="{StaticResource Accent}"
                     TextColor="White"
                     Padding="24,14"

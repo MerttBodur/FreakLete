@@ -79,21 +79,85 @@ public partial class ProfilePage : ContentPage
 		InitializeComponent();
 		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
+		ApplyLanguage();
 		UpdatePerformanceSelectionUI();
 		UpdateGoalSelectionUI();
 	}
 
+	private void ApplyLanguage()
+	{
+		WorkoutsSubLabel.Text = AppLanguage.ProfileWorkouts;
+		SavedPrsSubLabel.Text = AppLanguage.ProfileSavedPrs;
+		RecordsSubLabel.Text = AppLanguage.ProfileRecords;
+		HighlightsLabel.Text = AppLanguage.ProfileHighlights;
+		ProfileDetailsTitle.Text = AppLanguage.ProfileDetails;
+		DobLabel.Text = AppLanguage.ProfileDateOfBirth;
+		DateOfBirthLabel.Text = AppLanguage.ProfileSelectDob;
+		AgeLabel.Text = AppLanguage.ProfileAge;
+		WeightKgLabel.Text = AppLanguage.ProfileWeightKg;
+		BodyFatLabel.Text = AppLanguage.ProfileBodyFat;
+		SportTitleLabel.Text = AppLanguage.ProfileSport;
+		SportLabel.Text = AppLanguage.ProfileSelectSport;
+		PositionTitleLabel.Text = AppLanguage.ProfilePosition;
+		PositionLabel.Text = AppLanguage.ProfileSelectPosition;
+		GymExpTitleLabel.Text = AppLanguage.ProfileGymExperience;
+		GymExperienceLabel.Text = AppLanguage.ProfileSelectExperience;
+		CoachProfileTitle.Text = AppLanguage.ProfileCoachProfile;
+		TrainingDaysTitleLabel.Text = AppLanguage.ProfileTrainingDays;
+		TrainingDaysLabel.Text = AppLanguage.ProfileSelectDays;
+		SessionDurationTitleLabel.Text = AppLanguage.ProfileSessionDuration;
+		SessionDurationLabel.Text = AppLanguage.ProfileSelectDuration;
+		PrimaryGoalTitleLabel.Text = AppLanguage.ProfilePrimaryGoal;
+		PrimaryGoalLabel.Text = AppLanguage.ProfileSelectPrimaryGoal;
+		SecondaryGoalTitleLabel.Text = AppLanguage.ProfileSecondaryGoal;
+		SecondaryGoalLabel.Text = AppLanguage.ProfileSelectSecondaryGoal;
+		EquipmentTitleLabel.Text = AppLanguage.ProfileEquipment;
+		EquipmentLabel.Text = AppLanguage.ProfileSelectEquipment;
+		InjuryHistoryTitleLabel.Text = AppLanguage.ProfileInjuryHistory;
+		InjuryHistoryEditor.Placeholder = AppLanguage.ProfileInjuryPlaceholder;
+		CurrentPainTitleLabel.Text = AppLanguage.ProfileCurrentPain;
+		CurrentPainEditor.Placeholder = AppLanguage.ProfilePainPlaceholder;
+		PhysicalLimitsTitleLabel.Text = AppLanguage.ProfileLimitations;
+		PhysicalLimitationsEditor.Placeholder = AppLanguage.ProfileLimitationsPlaceholder;
+		DietaryPrefTitleLabel.Text = AppLanguage.ProfileDietaryPreference;
+		DietaryPreferenceLabel.Text = AppLanguage.ProfileSelectDietary;
+		AthleticPerfTitle.Text = AppLanguage.ProfileAthleticPerformance;
+		AthleticMovementLabel.Text = AppLanguage.CalcMovement;
+		BrowsePerformanceBtn.Text = AppLanguage.SharedBrowse;
+		AthleticPerformanceEmptyLabel.Text = AppLanguage.ProfileNoPerformance;
+		PerformanceActionButton.Text = AppLanguage.SharedSave;
+		PerformanceCancelButton.Text = AppLanguage.SharedCancel;
+		MovementGoalsTitle.Text = AppLanguage.ProfileMovementGoals;
+		GoalMovementLabel.Text = AppLanguage.ProfileGoalMovement;
+		BrowseGoalBtn.Text = AppLanguage.SharedBrowse;
+		GoalActionButton.Text = AppLanguage.SharedSave;
+		GoalCancelButton.Text = AppLanguage.SharedCancel;
+		MovementGoalsEmptyLabel.Text = AppLanguage.ProfileNoGoals;
+		SettingsBtn.Text = AppLanguage.ProfileSettings;
+		LogoutBtn.Text = AppLanguage.ProfileLogout;
+		DeleteAccountBtn.Text = AppLanguage.ProfileDeleteAccount;
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged() => ApplyLanguage();
+
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
-		
+		AppLanguage.LanguageChanged += OnLanguageChanged;
+
 		// Skip if returning from a selector page (athlete auto-save handles persistence)
 		if (_skipNextProfileReload)
 		{
 			_skipNextProfileReload = false;
 			return;
 		}
-		
+
 		await LoadProfileAsync();
 	}
 
@@ -114,7 +178,7 @@ public partial class ProfilePage : ContentPage
 				GoToLogin();
 				return;
 			}
-			ShowError(result.Error ?? "Failed to load profile.");
+			ShowError(result.Error ?? AppLanguage.ProfileFailedLoad);
 			return;
 		}
 
@@ -162,10 +226,10 @@ public partial class ProfilePage : ContentPage
 		WeightEntry.TextChanged += OnWeightTextChanged;
 		BodyFatEntry.TextChanged += OnBodyFatTextChanged;
 
-		SetSelectorValue(SportLabel, _athleteVm.SelectedSport?.Name, "Select your sport");
+		SetSelectorValue(SportLabel, _athleteVm.SelectedSport?.Name, AppLanguage.ProfileSelectSport);
 		SyncPositionUI();
 
-		SetSelectorValue(GymExperienceLabel, _athleteVm.SelectedGymExperience, "Select experience level");
+		SetSelectorValue(GymExperienceLabel, _athleteVm.SelectedGymExperience, AppLanguage.ProfileSelectExperience);
 
 		WorkoutCountLabel.Text = _profile.TotalWorkouts.ToString();
 		OneRmPrCountLabel.Text = _profile.TotalPrs.ToString();
@@ -246,11 +310,11 @@ public partial class ProfilePage : ContentPage
 
 		var milestones = new List<(string title, string subtitle, bool achieved)>
 		{
-			("First Workout", "Completed your first workout", totalWorkouts >= 1),
-			("First PR", "Recorded your first personal record", totalPrs >= 1),
-			("Consistent", "Completed 10+ workouts", totalWorkouts >= 10),
-			("Performance Logged", "Logged athletic performance data", athleticCount >= 1),
-			("Goal Setter", "Set at least one movement goal", goalCount >= 1)
+			(AppLanguage.ProfileHighlightFirstWorkout, AppLanguage.ProfileHighlightFirstWorkoutDesc, totalWorkouts >= 1),
+			(AppLanguage.ProfileHighlightFirstPr, AppLanguage.ProfileHighlightFirstPrDesc, totalPrs >= 1),
+			(AppLanguage.ProfileHighlightConsistent, AppLanguage.ProfileHighlightConsistentDesc, totalWorkouts >= 10),
+			(AppLanguage.ProfileHighlightPerformance, AppLanguage.ProfileHighlightPerformanceDesc, athleticCount >= 1),
+			(AppLanguage.ProfileHighlightGoalSetter, AppLanguage.ProfileHighlightGoalSetterDesc, goalCount >= 1)
 		};
 
 		var achieved = milestones.Where(m => m.achieved).ToList();
@@ -267,7 +331,7 @@ public partial class ProfilePage : ContentPage
 			};
 			emptyCard.Content = new Label
 			{
-				Text = "No highlights yet. Complete a workout or save a PR to get started!",
+				Text = AppLanguage.ProfileNoHighlights,
 				FontSize = 13,
 				FontFamily = "OpenSansRegular",
 				TextColor = GetProfileColor("TextSecondary", "#B3B2C5"),
@@ -407,7 +471,7 @@ public partial class ProfilePage : ContentPage
 		var categories = BuildSportCategories();
 
 		var picker = new OptionPickerPage(
-			"Select Sport",
+			AppLanguage.ProfileSelectSportTitle,
 			items,
 			_athleteVm?.SelectedSport?.Name,
 			async name =>
@@ -418,7 +482,7 @@ public partial class ProfilePage : ContentPage
 				{
 					if (_athleteVm is not null)
 						_athleteVm.SelectedSport = sport;
-					SetSelectorValue(SportLabel, sport.Name, "Select your sport");
+					SetSelectorValue(SportLabel, sport.Name, AppLanguage.ProfileSelectSport);
 					SyncPositionUI();
 					
 					// Autosave the change
@@ -494,11 +558,11 @@ public partial class ProfilePage : ContentPage
 
 		var currentPos = _athleteVm?.SelectedPosition;
 		await Navigation.PushAsync(
-			new OptionPickerPage("Select Position", sport.Positions, currentPos, async pos =>
+			new OptionPickerPage(AppLanguage.ProfileSelectPositionTitle, sport.Positions, currentPos, async pos =>
 			{
 				if (_athleteVm is not null)
 					_athleteVm.SelectedPosition = pos;
-				SetSelectorValue(PositionLabel, pos, "Select your position");
+				SetSelectorValue(PositionLabel, pos, AppLanguage.ProfileSelectPosition);
 				
 				// Autosave the change
 				var success = await SaveAthleteFieldAsync();
@@ -513,11 +577,11 @@ public partial class ProfilePage : ContentPage
 	{
 		var current = _athleteVm?.SelectedGymExperience;
 		await Navigation.PushAsync(
-			new OptionPickerPage("Gym Experience", ExperienceLevels, current, async val =>
+			new OptionPickerPage(AppLanguage.ProfileGymExperienceTitle, ExperienceLevels, current, async val =>
 			{
 				if (_athleteVm is not null)
 					_athleteVm.SelectedGymExperience = val;
-				SetSelectorValue(GymExperienceLabel, val, "Select experience level");
+				SetSelectorValue(GymExperienceLabel, val, AppLanguage.ProfileSelectExperience);
 				
 				var success = await SaveAthleteFieldAsync();
 				
@@ -531,11 +595,11 @@ public partial class ProfilePage : ContentPage
 	private async void OnTrainingDaysTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Training Days / Week", TrainingDaysOptions, _coachVm?.SelectedTrainingDays, async val =>
+			new OptionPickerPage(AppLanguage.ProfileTrainingDaysTitle, TrainingDaysOptions, _coachVm?.SelectedTrainingDays, async val =>
 			{
 				if (_coachVm is not null)
 					_coachVm.SelectedTrainingDays = val;
-				SetSelectorValue(TrainingDaysLabel, val, "Select days per week");
+				SetSelectorValue(TrainingDaysLabel, val, AppLanguage.ProfileSelectDays);
 				
 				// Autosave the change
 				var success = await SaveCoachFieldAsync();
@@ -549,11 +613,11 @@ public partial class ProfilePage : ContentPage
 	private async void OnSessionDurationTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Session Duration", SessionDurationOptions, _coachVm?.SelectedSessionDuration, async val =>
+			new OptionPickerPage(AppLanguage.ProfileSessionDurationTitle, SessionDurationOptions, _coachVm?.SelectedSessionDuration, async val =>
 			{
 				if (_coachVm is not null)
 					_coachVm.SelectedSessionDuration = val;
-				SetSelectorValue(SessionDurationLabel, val, "Select session duration");
+				SetSelectorValue(SessionDurationLabel, val, AppLanguage.ProfileSelectDuration);
 				
 				// Autosave the change
 				var success = await SaveCoachFieldAsync();
@@ -567,11 +631,11 @@ public partial class ProfilePage : ContentPage
 	private async void OnPrimaryGoalTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Primary Goal", TrainingGoalOptions, _coachVm?.SelectedPrimaryGoal, async val =>
+			new OptionPickerPage(AppLanguage.ProfilePrimaryGoalTitle, TrainingGoalOptions, _coachVm?.SelectedPrimaryGoal, async val =>
 			{
 				if (_coachVm is not null)
 					_coachVm.SelectedPrimaryGoal = val;
-				SetSelectorValue(PrimaryGoalLabel, val, "Select your primary goal");
+				SetSelectorValue(PrimaryGoalLabel, val, AppLanguage.ProfileSelectPrimaryGoal);
 				
 				// Autosave the change
 				var success = await SaveCoachFieldAsync();
@@ -585,11 +649,11 @@ public partial class ProfilePage : ContentPage
 	private async void OnSecondaryGoalTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Secondary Goal", TrainingGoalOptions, _coachVm?.SelectedSecondaryGoal, async val =>
+			new OptionPickerPage(AppLanguage.ProfileSecondaryGoalTitle, TrainingGoalOptions, _coachVm?.SelectedSecondaryGoal, async val =>
 			{
 				if (_coachVm is not null)
 					_coachVm.SelectedSecondaryGoal = val;
-				SetSelectorValue(SecondaryGoalLabel, val, "Select secondary goal");
+				SetSelectorValue(SecondaryGoalLabel, val, AppLanguage.ProfileSelectSecondaryGoal);
 				
 				// Autosave the change
 				var success = await SaveCoachFieldAsync();
@@ -603,11 +667,11 @@ public partial class ProfilePage : ContentPage
 	private async void OnDietaryPreferenceTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Dietary Preference", DietaryPreferenceOptions, _coachVm?.SelectedDietaryPreference, async val =>
+			new OptionPickerPage(AppLanguage.ProfileDietaryTitle, DietaryPreferenceOptions, _coachVm?.SelectedDietaryPreference, async val =>
 			{
 				if (_coachVm is not null)
 					_coachVm.SelectedDietaryPreference = val;
-				SetSelectorValue(DietaryPreferenceLabel, val, "Select dietary preference");
+				SetSelectorValue(DietaryPreferenceLabel, val, AppLanguage.ProfileSelectDietary);
 				
 				// Autosave the change
 				var success = await SaveCoachFieldAsync();
@@ -621,11 +685,11 @@ public partial class ProfilePage : ContentPage
 	private async void OnEquipmentSelectorTapped(object? sender, TappedEventArgs e)
 	{
 		await Navigation.PushAsync(
-			new OptionPickerPage("Equipment Access", EquipmentAccessOptions, _coachVm?.EquipmentText, async val =>
+			new OptionPickerPage(AppLanguage.ProfileEquipmentTitle, EquipmentAccessOptions, _coachVm?.EquipmentText, async val =>
 			{
 				if (_coachVm is not null)
 					_coachVm.EquipmentText = val;
-				SetSelectorValue(EquipmentLabel, val, "Select equipment access");
+				SetSelectorValue(EquipmentLabel, val, AppLanguage.ProfileSelectEquipment);
 				
 				// Autosave the change
 				var success = await SaveCoachFieldAsync();
@@ -747,14 +811,14 @@ public partial class ProfilePage : ContentPage
 			BodyFatEntry.Text = _athleteVm.BodyFatText;
 			WeightEntry.TextChanged += OnWeightTextChanged;
 			BodyFatEntry.TextChanged += OnBodyFatTextChanged;
-			SetSelectorValue(SportLabel, _athleteVm.SelectedSport?.Name, "Select your sport");
+			SetSelectorValue(SportLabel, _athleteVm.SelectedSport?.Name, AppLanguage.ProfileSelectSport);
 			SyncPositionUI();
-			SetSelectorValue(GymExperienceLabel, _athleteVm.SelectedGymExperience, "Select experience level");
-			ShowSuccess("Profile saved.");
+			SetSelectorValue(GymExperienceLabel, _athleteVm.SelectedGymExperience, AppLanguage.ProfileSelectExperience);
+			ShowSuccess(AppLanguage.ProfileSaved);
 		}
 		else
 		{
-			ShowError(_athleteVm.SaveError ?? "Failed to save profile.");
+			ShowError(_athleteVm.SaveError ?? AppLanguage.ProfileFailedSave);
 		}
 	}
 
@@ -769,7 +833,7 @@ public partial class ProfilePage : ContentPage
 		var success = await _athleteVm.SaveAsync();
 		if (!success)
 		{
-			ShowError(_athleteVm.SaveError ?? "Failed to save athlete profile.");
+			ShowError(_athleteVm.SaveError ?? AppLanguage.ProfileAthleteFailedSave);
 		}
 		return success;
 	}
@@ -785,7 +849,7 @@ public partial class ProfilePage : ContentPage
 		var success = await _coachVm.SaveAsync();
 		if (!success)
 		{
-			ShowError(_coachVm.SaveError ?? "Failed to save coach profile.");
+			ShowError(_coachVm.SaveError ?? AppLanguage.ProfileCoachFailedSave);
 		}
 		return success;
 	}
@@ -811,11 +875,11 @@ public partial class ProfilePage : ContentPage
 		if (success)
 		{
 			SyncCoachUI();
-			ShowSuccess("Coach profile saved.");
+			ShowSuccess(AppLanguage.ProfileCoachSaved);
 		}
 		else
 		{
-			ShowError(_coachVm.SaveError ?? "Failed to save coach profile.");
+			ShowError(_coachVm.SaveError ?? AppLanguage.ProfileCoachFailedSave);
 		}
 	}
 
@@ -853,7 +917,7 @@ public partial class ProfilePage : ContentPage
 
 		if (_selectedPerformanceItem is null)
 		{
-			ShowError("Choose a movement and enter a valid result.");
+			ShowError(AppLanguage.ProfileChooseMovementError);
 			return;
 		}
 
@@ -882,7 +946,7 @@ public partial class ProfilePage : ContentPage
 		{
 			if (!MetricInput.TryParseFlexibleDouble(PerformanceTimingEntry.Text, out double parsedGctSeconds) || parsedGctSeconds <= 0)
 			{
-				ShowError("Ground contact time must be a positive number.");
+				ShowError(AppLanguage.ProfileGctError);
 				return;
 			}
 
@@ -893,7 +957,7 @@ public partial class ProfilePage : ContentPage
 		{
 			if (!MetricInput.TryParseFlexibleDouble(PerformanceTimingEntry.Text, out double parsedTime) || parsedTime <= 0)
 			{
-				ShowError("Concentric time must be a positive number.");
+				ShowError(AppLanguage.ProfileConcentricError);
 				return;
 			}
 
@@ -916,10 +980,10 @@ public partial class ProfilePage : ContentPage
 		{
 			var result = await _api.UpdateAthleticPerformanceAsync(_editingPerformanceId.Value, data);
 			if (result.Success)
-				ShowSuccess("Athletic performance updated.");
+				ShowSuccess(AppLanguage.ProfilePerformanceUpdated);
 			else
 			{
-				ShowError(result.Error ?? "Failed to update.");
+				ShowError(result.Error ?? AppLanguage.ProfileFailedUpdate);
 				return;
 			}
 		}
@@ -927,10 +991,10 @@ public partial class ProfilePage : ContentPage
 		{
 			var result = await _api.CreateAthleticPerformanceAsync(data);
 			if (result.Success)
-				ShowSuccess("Athletic performance added.");
+				ShowSuccess(AppLanguage.ProfilePerformanceAdded);
 			else
 			{
-				ShowError(result.Error ?? "Failed to save.");
+				ShowError(result.Error ?? AppLanguage.ProfileFailedGeneric);
 				return;
 			}
 		}
@@ -948,10 +1012,10 @@ public partial class ProfilePage : ContentPage
 
 		bool confirmed = await ConfirmDialogPage.ShowAsync(
 			Navigation,
-			"Delete Entry",
-			$"Delete '{item.Text}'?",
-			"Delete",
-			"Cancel");
+			AppLanguage.ProfileDeleteEntryTitle,
+			AppLanguage.FormatDeleteConfirm(item.Text),
+			AppLanguage.SharedDelete,
+			AppLanguage.SharedCancel);
 		if (!confirmed)
 		{
 			return;
@@ -965,11 +1029,11 @@ public partial class ProfilePage : ContentPage
 				ResetPerformanceForm();
 			}
 			await LoadAthleticPerformancesAsync();
-			ShowSuccess("Athletic performance deleted.");
+			ShowSuccess(AppLanguage.ProfilePerformanceDeleted);
 		}
 		else
 		{
-			ShowError(result.Error ?? "Failed to delete.");
+			ShowError(result.Error ?? AppLanguage.ProfileFailedDelete);
 		}
 	}
 
@@ -988,9 +1052,9 @@ public partial class ProfilePage : ContentPage
 		PerformanceTimingEntry.Text = item.GroundContactTimeMs.HasValue
 			? MetricInput.MillisecondsToSeconds(item.GroundContactTimeMs.Value).ToString("0.##")
 			: item.ConcentricTimeSeconds?.ToString("0.##") ?? string.Empty;
-		PerformanceActionButton.Text = "Update";
+		PerformanceActionButton.Text = AppLanguage.SharedUpdate;
 		PerformanceCancelButton.IsVisible = true;
-		ShowSuccess($"Editing: {item.Text}");
+		ShowSuccess(AppLanguage.FormatEditing(item.Text));
 	}
 
 	// ── Movement Goals CRUD ───────────────────────────────────────────
@@ -1006,7 +1070,7 @@ public partial class ProfilePage : ContentPage
 
 		if (_selectedGoalItem is null)
 		{
-			ShowError("Choose a movement before saving a goal.");
+			ShowError(AppLanguage.SharedChooseMovement);
 			return;
 		}
 
@@ -1016,7 +1080,7 @@ public partial class ProfilePage : ContentPage
 
 		if (string.IsNullOrWhiteSpace(movementName) || string.IsNullOrWhiteSpace(unit) || !parsed || targetValue <= 0)
 		{
-			ShowError("Goal movement and target value are required, and target must be positive.");
+			ShowError(AppLanguage.ProfileGoalError);
 			return;
 		}
 
@@ -1033,10 +1097,10 @@ public partial class ProfilePage : ContentPage
 		{
 			var result = await _api.UpdateMovementGoalAsync(_editingGoalId.Value, data);
 			if (result.Success)
-				ShowSuccess("Movement goal updated.");
+				ShowSuccess(AppLanguage.ProfileGoalUpdated);
 			else
 			{
-				ShowError(result.Error ?? "Failed to update goal.");
+				ShowError(result.Error ?? AppLanguage.ProfileFailedUpdate);
 				return;
 			}
 		}
@@ -1044,10 +1108,10 @@ public partial class ProfilePage : ContentPage
 		{
 			var result = await _api.CreateMovementGoalAsync(data);
 			if (result.Success)
-				ShowSuccess("Movement goal saved.");
+				ShowSuccess(AppLanguage.ProfileGoalSaved);
 			else
 			{
-				ShowError(result.Error ?? "Failed to save goal.");
+				ShowError(result.Error ?? AppLanguage.ProfileFailedGeneric);
 				return;
 			}
 		}
@@ -1065,10 +1129,10 @@ public partial class ProfilePage : ContentPage
 
 		bool confirmed = await ConfirmDialogPage.ShowAsync(
 			Navigation,
-			"Delete Goal",
-			$"Delete '{item.Text}'?",
-			"Delete",
-			"Cancel");
+			AppLanguage.ProfileDeleteGoalTitle,
+			AppLanguage.FormatDeleteConfirm(item.Text),
+			AppLanguage.SharedDelete,
+			AppLanguage.SharedCancel);
 		if (!confirmed)
 		{
 			return;
@@ -1082,11 +1146,11 @@ public partial class ProfilePage : ContentPage
 				ResetGoalForm();
 			}
 			await LoadMovementGoalsAsync();
-			ShowSuccess("Movement goal deleted.");
+			ShowSuccess(AppLanguage.ProfileGoalDeleted);
 		}
 		else
 		{
-			ShowError(result.Error ?? "Failed to delete goal.");
+			ShowError(result.Error ?? AppLanguage.ProfileFailedDelete);
 		}
 	}
 
@@ -1101,9 +1165,9 @@ public partial class ProfilePage : ContentPage
 		_selectedGoalItem = ExerciseCatalog.GetByNameAndCategory(item.MovementName, item.MovementCategory);
 		UpdateGoalSelectionUI();
 		GoalTargetValueEntry.Text = item.TargetValue.ToString("0.##");
-		GoalActionButton.Text = "Update";
+		GoalActionButton.Text = AppLanguage.SharedUpdate;
 		GoalCancelButton.IsVisible = true;
-		ShowSuccess($"Editing: {item.Text}");
+		ShowSuccess(AppLanguage.FormatEditing(item.Text));
 	}
 
 	private void OnCancelPerformanceEditClicked(object? sender, EventArgs e)
@@ -1143,10 +1207,10 @@ public partial class ProfilePage : ContentPage
 
 		bool confirmed = await ConfirmDialogPage.ShowAsync(
 			Navigation,
-			"Delete Account",
-			"This will permanently delete your profile, workouts, PRs, goals, and athletic performance records.",
-			"Delete",
-			"Cancel");
+			AppLanguage.ProfileDeleteTitle,
+			AppLanguage.ProfileDeleteConfirm,
+			AppLanguage.SharedDelete,
+			AppLanguage.SharedCancel);
 
 		if (!confirmed)
 		{
@@ -1161,7 +1225,7 @@ public partial class ProfilePage : ContentPage
 		}
 		else
 		{
-			ShowError(result.Error ?? "Failed to delete account.");
+			ShowError(result.Error ?? AppLanguage.ProfileFailedDelete);
 		}
 	}
 
@@ -1212,7 +1276,7 @@ public partial class ProfilePage : ContentPage
 		PerformanceValueEntry.Text = string.Empty;
 		PerformanceSecondaryValueEntry.Text = string.Empty;
 		PerformanceTimingEntry.Text = string.Empty;
-		PerformanceActionButton.Text = "Save";
+		PerformanceActionButton.Text = AppLanguage.SharedSave;
 		PerformanceCancelButton.IsVisible = false;
 	}
 
@@ -1220,7 +1284,7 @@ public partial class ProfilePage : ContentPage
 	{
 		await Navigation.PushAsync(
 			new ExercisePickerPage(
-				"Choose Movement",
+				AppLanguage.SharedChooseMovement,
 				AthleticCategories,
 				OnPerformanceMovementSelected),
 			true);
@@ -1236,7 +1300,7 @@ public partial class ProfilePage : ContentPage
 	{
 		await Navigation.PushAsync(
 			new ExercisePickerPage(
-				"Choose Goal Movement",
+				AppLanguage.SharedChooseMovement,
 				ExerciseCatalog.Categories,
 				OnGoalMovementSelected),
 			true);
@@ -1252,10 +1316,10 @@ public partial class ProfilePage : ContentPage
 	{
 		if (_selectedPerformanceItem is null)
 		{
-			SelectedPerformanceLabel.Text = "No movement selected";
-			SelectedPerformanceHintLabel.Text = "Browse sprint, jump, plyo, and Olympic lift movements.";
-			PerformanceMetric1Label.Text = "Result";
-			PerformanceValueEntry.Placeholder = "Enter result";
+			SelectedPerformanceLabel.Text = AppLanguage.SharedNoMovementSelected;
+			SelectedPerformanceHintLabel.Text = AppLanguage.ProfileBrowsePerformanceHint;
+			PerformanceMetric1Label.Text = AppLanguage.ProfileResult;
+			PerformanceValueEntry.Placeholder = AppLanguage.ProfileEnterResult;
 			PerformanceMetric2Container.IsVisible = false;
 			PerformanceTimingContainer.IsVisible = false;
 			return;
@@ -1270,19 +1334,19 @@ public partial class ProfilePage : ContentPage
 		PerformanceSecondaryValueEntry.Placeholder = $"Enter {_selectedPerformanceItem.SecondaryLabel.ToLowerInvariant()}";
 		PerformanceTimingContainer.IsVisible = _selectedPerformanceItem.SupportsGroundContactTime || _selectedPerformanceItem.SupportsConcentricTime;
 		PerformanceTimingLabel.Text = _selectedPerformanceItem.SupportsGroundContactTime
-			? "Ground Contact Time (s)"
-			: "Concentric Time (s)";
-		PerformanceTimingEntry.Placeholder = "Optional";
+			? AppLanguage.CalcGroundContactTime
+			: AppLanguage.CalcConcentricTime;
+		PerformanceTimingEntry.Placeholder = AppLanguage.ProfileTimingPlaceholder;
 	}
 
 	private void UpdateGoalSelectionUI()
 	{
 		if (_selectedGoalItem is null)
 		{
-			SelectedGoalLabel.Text = "No movement selected";
-			SelectedGoalHintLabel.Text = "Browse the exercise catalog and set a target on the movement's main metric.";
+			SelectedGoalLabel.Text = AppLanguage.SharedNoMovementSelected;
+			SelectedGoalHintLabel.Text = AppLanguage.ProfileGoalHint;
 			GoalUnitLabel.Text = "-";
-			GoalTargetValueEntry.Placeholder = "Target value";
+			GoalTargetValueEntry.Placeholder = AppLanguage.ProfileTargetValue;
 			return;
 		}
 
@@ -1353,7 +1417,7 @@ public partial class ProfilePage : ContentPage
 		_selectedGoalItem = null;
 		UpdateGoalSelectionUI();
 		GoalTargetValueEntry.Text = string.Empty;
-		GoalActionButton.Text = "Save";
+		GoalActionButton.Text = AppLanguage.SharedSave;
 		GoalCancelButton.IsVisible = false;
 	}
 
@@ -1390,7 +1454,7 @@ public partial class ProfilePage : ContentPage
 	{
 		if (_athleteVm is null) return;
 		PositionContainer.IsVisible = _athleteVm.ShowPositionSelector;
-		SetSelectorValue(PositionLabel, _athleteVm.SelectedPosition, "Select your position");
+		SetSelectorValue(PositionLabel, _athleteVm.SelectedPosition, AppLanguage.ProfileSelectPosition);
 	}
 
 	/// <summary>
@@ -1399,12 +1463,12 @@ public partial class ProfilePage : ContentPage
 	private void SyncCoachUI()
 	{
 		if (_coachVm is null) return;
-		SetSelectorValue(TrainingDaysLabel, _coachVm.SelectedTrainingDays, "Select days per week");
-		SetSelectorValue(SessionDurationLabel, _coachVm.SelectedSessionDuration, "Select session duration");
-		SetSelectorValue(PrimaryGoalLabel, _coachVm.SelectedPrimaryGoal, "Select your primary goal");
-		SetSelectorValue(SecondaryGoalLabel, _coachVm.SelectedSecondaryGoal, "Select secondary goal");
-		SetSelectorValue(DietaryPreferenceLabel, _coachVm.SelectedDietaryPreference, "Select dietary preference");
-		SetSelectorValue(EquipmentLabel, _coachVm.EquipmentText, "Select equipment access");
+		SetSelectorValue(TrainingDaysLabel, _coachVm.SelectedTrainingDays, AppLanguage.ProfileSelectDays);
+		SetSelectorValue(SessionDurationLabel, _coachVm.SelectedSessionDuration, AppLanguage.ProfileSelectDuration);
+		SetSelectorValue(PrimaryGoalLabel, _coachVm.SelectedPrimaryGoal, AppLanguage.ProfileSelectPrimaryGoal);
+		SetSelectorValue(SecondaryGoalLabel, _coachVm.SelectedSecondaryGoal, AppLanguage.ProfileSelectSecondaryGoal);
+		SetSelectorValue(DietaryPreferenceLabel, _coachVm.SelectedDietaryPreference, AppLanguage.ProfileSelectDietary);
+		SetSelectorValue(EquipmentLabel, _coachVm.EquipmentText, AppLanguage.ProfileSelectEquipment);
 		InjuryHistoryEditor.Text = _coachVm.InjuryHistoryText;
 		CurrentPainEditor.Text = _coachVm.PainPointsText;
 		PhysicalLimitationsEditor.Text = _coachVm.LimitationsText;

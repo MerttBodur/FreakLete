@@ -22,6 +22,7 @@ public partial class NewWorkoutPage : ContentPage
 		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 		_editingWorkoutId = workoutId;
+		ApplyLanguage();
 		ConfigurePageMode();
 		UpdateExerciseSelectionUI();
 		RefreshExercisesList();
@@ -30,21 +31,57 @@ public partial class NewWorkoutPage : ContentPage
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
 		if (_editingWorkoutId.HasValue)
 		{
 			await LoadWorkoutForEditAsync();
 		}
 	}
 
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged()
+	{
+		ApplyLanguage();
+		ConfigurePageMode();
+		UpdateExerciseSelectionUI();
+		RefreshExercisesList();
+	}
+
+	private void ApplyLanguage()
+	{
+		Header.Title = _editingWorkoutId.HasValue ? AppLanguage.NewWorkoutEditTitle : AppLanguage.NewWorkoutTitle;
+		SessionSetupBadge.Text = AppLanguage.NewWorkoutSessionSetup;
+		WorkoutDetailsLabel.Text = AppLanguage.NewWorkoutDetails;
+		DateLabel.Text = AppLanguage.NewWorkoutDate;
+		WorkoutNameLabel2.Text = AppLanguage.NewWorkoutName;
+		WorkoutNameEntry.Placeholder = AppLanguage.NewWorkoutNamePlaceholder;
+		ContinueButton.Text = AppLanguage.SharedContinue;
+		ExerciseBuilderLabel.Text = AppLanguage.NewWorkoutExerciseBuilder;
+		ChooseExerciseLabel.Text = AppLanguage.NewWorkoutChooseExercise;
+		BrowseExerciseBtn.Text = AppLanguage.SharedBrowse;
+		SetCountLabel.Text = AppLanguage.NewWorkoutSetCount;
+		RepCountLabel.Text = AppLanguage.NewWorkoutRepCount;
+		RirLabel.Text = AppLanguage.NewWorkoutRir;
+		RestSecondsLabel.Text = AppLanguage.NewWorkoutRestSeconds;
+		ConcentricTimeLabel.Text = AppLanguage.NewWorkoutConcentricTime;
+		GctLabel.Text = AppLanguage.NewWorkoutGctLabel;
+		AddExerciseBtn.Text = AppLanguage.NewWorkoutAdd;
+		SessionExercisesLabel.Text = AppLanguage.NewWorkoutSessionExercises;
+		NoExerciseLabel.Text = AppLanguage.NewWorkoutNoExerciseAdded;
+	}
+
 	private void ConfigurePageMode()
 	{
 		bool isEditing = _editingWorkoutId.HasValue;
-		PageTitleLabel.Text = isEditing ? "Edit Workout" : "Add New Workout";
-		PageHelperLabel.Text = isEditing
-			? "Update the workout details, adjust exercises, and save the new session version."
-			: "Set the date, name your workout, then add exercises to the session.";
-		Title = isEditing ? "Edit Workout" : "Add New Workout";
-		ConfirmWorkoutButton.Text = isEditing ? "Save Changes" : "Save Workout";
+		PageTitleLabel.Text = isEditing ? AppLanguage.NewWorkoutEditTitle : AppLanguage.NewWorkoutTitle;
+		PageHelperLabel.Text = isEditing ? AppLanguage.NewWorkoutEditDesc : AppLanguage.NewWorkoutAddDesc;
+		Title = isEditing ? AppLanguage.NewWorkoutEditTitle : AppLanguage.NewWorkoutTitle;
+		ConfirmWorkoutButton.Text = isEditing ? AppLanguage.NewWorkoutSaveChanges : AppLanguage.NewWorkoutSave;
 	}
 
 	private async Task LoadWorkoutForEditAsync()
@@ -52,7 +89,7 @@ public partial class NewWorkoutPage : ContentPage
 		var result = await _api.GetWorkoutByIdAsync(_editingWorkoutId!.Value);
 		if (!result.Success || result.Data is null)
 		{
-			ShowError("Workout could not be loaded.");
+			ShowError(AppLanguage.NewWorkoutCouldNotLoad);
 			return;
 		}
 
@@ -91,7 +128,7 @@ public partial class NewWorkoutPage : ContentPage
 
 		if (string.IsNullOrWhiteSpace(WorkoutNameEntry.Text))
 		{
-			ShowError("Workout name is required before adding exercises.");
+			ShowError(AppLanguage.NewWorkoutNameRequired);
 			return;
 		}
 
@@ -104,7 +141,7 @@ public partial class NewWorkoutPage : ContentPage
 
 		if (_selectedExerciseItem is null)
 		{
-			ShowError("Please choose an exercise first.");
+			ShowError(AppLanguage.NewWorkoutChooseFirst);
 			return;
 		}
 
@@ -126,19 +163,19 @@ public partial class NewWorkoutPage : ContentPage
 
 		if (!_session.IsLoggedIn())
 		{
-			ShowError("Please log in again.");
+			ShowError(AppLanguage.SharedPleaseLogin);
 			return;
 		}
 
 		if (string.IsNullOrWhiteSpace(WorkoutNameEntry.Text))
 		{
-			ShowError("Workout name is required.");
+			ShowError(AppLanguage.NewWorkoutWorkoutNameRequired);
 			return;
 		}
 
 		if (_exercises.Count == 0)
 		{
-			ShowError("Add at least one exercise before confirm.");
+			ShowError(AppLanguage.NewWorkoutAddAtLeastOne);
 			return;
 		}
 
@@ -172,7 +209,7 @@ public partial class NewWorkoutPage : ContentPage
 			var result = await _api.UpdateWorkoutAsync(_editingWorkoutId.Value, workoutData);
 			if (!result.Success)
 			{
-				ShowError(result.Error ?? "Failed to update workout.");
+				ShowError(result.Error ?? AppLanguage.NewWorkoutFailedUpdate);
 				return;
 			}
 		}
@@ -181,7 +218,7 @@ public partial class NewWorkoutPage : ContentPage
 			var result = await _api.CreateWorkoutAsync(workoutData);
 			if (!result.Success)
 			{
-				ShowError(result.Error ?? "Failed to save workout.");
+				ShowError(result.Error ?? AppLanguage.NewWorkoutFailedSave);
 				return;
 			}
 		}
@@ -202,7 +239,7 @@ public partial class NewWorkoutPage : ContentPage
 			.ToList();
 
 		ExercisesCollectionView.ItemsSource = items;
-		ExerciseCountLabel.Text = _exercises.Count == 1 ? "1 item" : $"{_exercises.Count} items";
+		ExerciseCountLabel.Text = AppLanguage.FormatItemCount(_exercises.Count);
 	}
 
 	private void OnDeleteExerciseInvoked(object? sender, EventArgs e)
@@ -273,7 +310,7 @@ public partial class NewWorkoutPage : ContentPage
 	{
 		await Navigation.PushAsync(
 			new ExercisePickerPage(
-				"Choose Exercise",
+				AppLanguage.NewWorkoutChooseExerciseTitle,
 				ExerciseCatalog.Categories,
 				OnExerciseSelected),
 			true);
@@ -289,8 +326,8 @@ public partial class NewWorkoutPage : ContentPage
 	{
 		if (_selectedExerciseItem is null)
 		{
-			SelectedExerciseLabel.Text = "No exercise selected";
-			SelectedExerciseHintLabel.Text = "Tap browse to open your recommended movement library.";
+			SelectedExerciseLabel.Text = AppLanguage.NewWorkoutNoExercise;
+			SelectedExerciseHintLabel.Text = AppLanguage.NewWorkoutExerciseHint;
 			StrengthInputsSection.IsVisible = false;
 			CustomInputsSection.IsVisible = false;
 			Metric2Container.IsVisible = false;
@@ -322,7 +359,7 @@ public partial class NewWorkoutPage : ContentPage
 	{
 		if (_selectedExerciseItem is null)
 		{
-			ShowError("Please choose an exercise first.");
+			ShowError(AppLanguage.NewWorkoutChooseFirst);
 			return null;
 		}
 
@@ -330,13 +367,13 @@ public partial class NewWorkoutPage : ContentPage
 		{
 			if (!int.TryParse(SetCountEntry.Text, out int setCount) || setCount <= 0)
 			{
-				ShowError("Set count is required and must be a positive number.");
+				ShowError(AppLanguage.NewWorkoutSetError);
 				return null;
 			}
 
 			if (!int.TryParse(RepCountEntry.Text, out int repCount) || repCount <= 0)
 			{
-				ShowError("Rep count is required and must be a positive number.");
+				ShowError(AppLanguage.NewWorkoutRepError);
 				return null;
 			}
 
@@ -347,7 +384,7 @@ public partial class NewWorkoutPage : ContentPage
 			{
 				if (!int.TryParse(RirEntry.Text, out int parsedRir) || parsedRir < 0 || parsedRir > 5)
 				{
-					ShowError("RIR must be between 0 - 5.");
+					ShowError(AppLanguage.NewWorkoutRirError);
 					return null;
 				}
 
@@ -358,7 +395,7 @@ public partial class NewWorkoutPage : ContentPage
 			{
 				if (!int.TryParse(RestSecondsEntry.Text, out int parsedRest) || parsedRest <= 0)
 				{
-					ShowError("Rest seconds must be a positive number.");
+					ShowError(AppLanguage.NewWorkoutRestError);
 					return null;
 				}
 
@@ -370,7 +407,7 @@ public partial class NewWorkoutPage : ContentPage
 			{
 				if (!MetricInput.TryParseFlexibleDouble(ConcentricTimeEntry.Text, out double parsedTime) || parsedTime <= 0)
 				{
-					ShowError("Concentric time must be a positive number.");
+					ShowError(AppLanguage.NewWorkoutConcentricError);
 					return null;
 				}
 
@@ -413,7 +450,7 @@ public partial class NewWorkoutPage : ContentPage
 		{
 			if (!MetricInput.TryParseFlexibleDouble(GroundContactTimeEntry.Text, out double parsedGctSeconds) || parsedGctSeconds <= 0)
 			{
-				ShowError("Ground contact time must be a positive number.");
+				ShowError(AppLanguage.NewWorkoutGctError);
 				return null;
 			}
 

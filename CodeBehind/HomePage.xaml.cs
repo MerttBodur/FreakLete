@@ -22,17 +22,37 @@ public partial class HomePage : ContentPage
 		InitializeComponent();
 		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
+		ApplyLanguage();
 	}
+
+	private void ApplyLanguage()
+	{
+		WelcomeLabel.Text = AppLanguage.HomeWelcome;
+		StartWorkoutLabel.Text = AppLanguage.HomeStartWorkout;
+		StartButton.Text = AppLanguage.HomeStart;
+		WorkoutsBadgeLabel.Text = AppLanguage.HomeWorkoutsBadge;
+		QuickWorkoutsTitle.Text = AppLanguage.HomeQuickWorkouts;
+		QuickWorkoutsDesc.Text = AppLanguage.HomeQuickWorkoutsDesc;
+	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		AppLanguage.LanguageChanged -= OnLanguageChanged;
+	}
+
+	private void OnLanguageChanged() => ApplyLanguage();
 
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
+		AppLanguage.LanguageChanged += OnLanguageChanged;
 
 		// If returning from exercise picker for exercise 2
 		if (_pickingExerciseSlot == 2)
 		{
 			await Navigation.PushAsync(
-				new ExercisePickerPage("Egzersiz 2 Seç", ExerciseCatalog.Categories, OnComparisonExercisePicked), true);
+				new ExercisePickerPage(AppLanguage.HomePickExercise2, ExerciseCatalog.Categories, OnComparisonExercisePicked), true);
 			return;
 		}
 
@@ -115,12 +135,12 @@ public partial class HomePage : ContentPage
 		var exercise2Data = new List<float>();
 		var dayLabels = new List<string>();
 
-		string[] turkishDayAbbr = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
+		var dayAbbr = AppLanguage.HomeDayAbbreviations;
 
 		for (int i = 6; i >= 0; i--)
 		{
 			var targetDate = today.AddDays(-i);
-			dayLabels.Add(turkishDayAbbr[(int)targetDate.DayOfWeek]);
+			dayLabels.Add(dayAbbr[(int)targetDate.DayOfWeek]);
 
 			float max1 = 0, max2 = 0;
 
@@ -168,7 +188,7 @@ public partial class HomePage : ContentPage
 	{
 		_pickingExerciseSlot = 1;
 		await Navigation.PushAsync(
-			new ExercisePickerPage("Egzersiz 1 Seç", ExerciseCatalog.Categories, OnComparisonExercisePicked), true);
+			new ExercisePickerPage(AppLanguage.HomePickExercise1, ExerciseCatalog.Categories, OnComparisonExercisePicked), true);
 	}
 
 	private void OnComparisonExercisePicked(ExerciseCatalogItem item)
@@ -276,7 +296,7 @@ public partial class HomePage : ContentPage
 
 			textStack.Children.Add(new Label
 			{
-				Text = $"{program.DaysPerWeek} gün/hafta",
+				Text = AppLanguage.FormatDaysPerWeek(program.DaysPerWeek),
 				FontSize = 11,
 				FontFamily = "OpenSansRegular",
 				TextColor = (Color)Application.Current.Resources["TextSecondary"]

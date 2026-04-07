@@ -10,13 +10,15 @@
         <VerticalStackLayout Padding="24,18,24,28"
                              Spacing="18">
 
-            <local:TopHeader Title="New Workout"
+            <local:TopHeader x:Name="Header"
+                             Title="New Workout"
                              ShowBackButton="True"
                              BackClicked="OnHeaderBackClicked" />
 
             <Border Style="{StaticResource AccentCardBorder}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="SESSION SETUP"
+                    <Label x:Name="SessionSetupBadge"
+                           Text="SESSION SETUP"
                            Style="{StaticResource Eyebrow}" />
                     <Label x:Name="PageTitleLabel"
                            Text="New Workout"
@@ -30,20 +32,23 @@
 
             <Border Style="{StaticResource CardBorder}">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="Workout Details"
+                    <Label x:Name="WorkoutDetailsLabel"
+                           Text="Workout Details"
                            Style="{StaticResource SubHeadline}"
                            HorizontalTextAlignment="Start" />
 
-                    <Label Text="Date"
+                    <Label x:Name="DateLabel"
+                           Text="Date"
                            Style="{StaticResource BodyMuted}" />
                     <DatePicker x:Name="WorkoutDatePicker" />
 
-                    <Label Text="Workout Name"
+                    <Label x:Name="WorkoutNameLabel2"
+                           Text="Workout Name"
                            Style="{StaticResource BodyMuted}" />
                     <Entry x:Name="WorkoutNameEntry"
                            Placeholder="Example: Push Day" />
 
-                    <Button x:Name="AddExercisesButton"
+                    <Button x:Name="ContinueButton"
                             Text="Continue"
                             Clicked="OnAddExercisesClicked" />
                 </VerticalStackLayout>
@@ -53,11 +58,13 @@
                     Style="{StaticResource CardBorder}"
                     IsVisible="False">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="Exercise Builder"
+                    <Label x:Name="ExerciseBuilderLabel"
+                           Text="Exercise Builder"
                            Style="{StaticResource SubHeadline}"
                            HorizontalTextAlignment="Start" />
 
-                    <Label Text="Choose exercise"
+                    <Label x:Name="ChooseExerciseLabel"
+                           Text="Choose exercise"
                            Style="{StaticResource BodyMuted}" />
                     <Border Style="{StaticResource CardBorder}"
                             BackgroundColor="{StaticResource SurfaceRaised}"
@@ -74,7 +81,8 @@
                                        Style="{StaticResource BodyMuted}" />
                             </VerticalStackLayout>
 
-                            <Button Grid.Column="1"
+                            <Button x:Name="BrowseExerciseBtn"
+                                    Grid.Column="1"
                                     Text="Browse"
                                     Style="{StaticResource SecondaryButton}"
                                     Clicked="OnChooseExerciseClicked"
@@ -89,7 +97,8 @@
                               ColumnSpacing="12">
                             <VerticalStackLayout Grid.Column="0"
                                                  Spacing="8">
-                                <Label Text="Set Count"
+                                <Label x:Name="SetCountLabel"
+                                       Text="Set Count"
                                        Style="{StaticResource BodyMuted}" />
                                 <Entry x:Name="SetCountEntry"
                                        Keyboard="Numeric"
@@ -98,7 +107,8 @@
 
                             <VerticalStackLayout Grid.Column="1"
                                                  Spacing="8">
-                                <Label Text="Rep Count"
+                                <Label x:Name="RepCountLabel"
+                                       Text="Rep Count"
                                        Style="{StaticResource BodyMuted}" />
                                 <Entry x:Name="RepCountEntry"
                                        Keyboard="Numeric"
@@ -110,7 +120,8 @@
                               ColumnSpacing="12">
                             <VerticalStackLayout Grid.Column="0"
                                                  Spacing="8">
-                                <Label Text="RIR"
+                                <Label x:Name="RirLabel"
+                                       Text="RIR"
                                        Style="{StaticResource BodyMuted}" />
                                 <Entry x:Name="RirEntry"
                                        Keyboard="Numeric"
@@ -119,7 +130,8 @@
 
                             <VerticalStackLayout Grid.Column="1"
                                                  Spacing="8">
-                                <Label Text="Rest Seconds"
+                                <Label x:Name="RestSecondsLabel"
+                                       Text="Rest Seconds"
                                        Style="{StaticResource BodyMuted}" />
                                 <Entry x:Name="RestSecondsEntry"
                                        Keyboard="Numeric"
@@ -130,7 +142,8 @@
                         <VerticalStackLayout x:Name="StrengthTimingContainer"
                                              Spacing="8"
                                              IsVisible="False">
-                            <Label Text="Concentric Time (s)"
+                            <Label x:Name="ConcentricTimeLabel"
+                                   Text="Concentric Time (s)"
                                    Style="{StaticResource BodyMuted}" />
                             <Entry x:Name="ConcentricTimeEntry"
                                    Keyboard="Numeric"
@@ -164,7 +177,8 @@
                         <VerticalStackLayout x:Name="GroundContactTimeContainer"
                                              Spacing="8"
                                              IsVisible="False">
-                            <Label Text="Ground Contact Time (s)"
+                            <Label x:Name="GctLabel"
+                                   Text="Ground Contact Time (s)"
                                    Style="{StaticResource BodyMuted}" />
                             <Entry x:Name="GroundContactTimeEntry"
                                    Keyboard="Numeric"
@@ -172,7 +186,8 @@
                         </VerticalStackLayout>
                     </VerticalStackLayout>
 
-                    <Button Text="Add"
+                    <Button x:Name="AddExerciseBtn"
+                            Text="Add"
                             Style="{StaticResource SecondaryButton}"
                             Clicked="OnAddExerciseClicked" />
                 </VerticalStackLayout>
@@ -187,7 +202,8 @@
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*,Auto"
                           ColumnSpacing="12">
-                        <Label Text="Session Exercises"
+                        <Label x:Name="SessionExercisesLabel"
+                               Text="Session Exercises"
                                Style="{StaticResource SubHeadline}"
                                HorizontalTextAlignment="Start" />
                         <Label x:Name="ExerciseCountLabel"
@@ -198,7 +214,8 @@
 
                     <CollectionView x:Name="ExercisesCollectionView">
                         <CollectionView.EmptyView>
-                            <Label Text="No exercise added yet."
+                            <Label x:Name="NoExerciseLabel"
+                                   Text="No exercise added yet."
                                    HorizontalOptions="Center"
                                    Style="{StaticResource BodyMuted}" />
                         </CollectionView.EmptyView>

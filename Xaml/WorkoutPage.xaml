@@ -2,10 +2,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:FreakLete"
+             xmlns:services="clr-namespace:FreakLete.Services"
              x:Class="FreakLete.WorkoutPage"
              NavigationPage.HasNavigationBar="False"
              Title="Workout"
              BackgroundColor="{StaticResource Background}">
+
+    <ContentPage.Resources>
+        <local:DaysPerWeekFormatConverter x:Key="DaysPerWeekFmt" />
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
@@ -14,11 +19,13 @@
 
                 <!-- Page Header -->
                 <VerticalStackLayout Spacing="4">
-                    <Label FontSize="28"
+                    <Label x:Name="PageTitleLabel"
+                           FontSize="28"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimary}"
                            Text="Programs" />
-                    <Label FontSize="13"
+                    <Label x:Name="PageSubtitleLabel"
+                           FontSize="13"
                            FontFamily="OpenSansRegular"
                            TextColor="{StaticResource TextSecondary}"
                            Text="Your training plans" />
@@ -43,7 +50,8 @@
                         </LinearGradientBrush>
                     </Border.Stroke>
                     <VerticalStackLayout Padding="22,20" Spacing="12">
-                        <Label FontSize="11"
+                        <Label x:Name="ActiveProgramBadge"
+                               FontSize="11"
                                FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource AccentGlow}"
                                Text="ACTIVE PROGRAM"
@@ -95,7 +103,8 @@
                         </HorizontalStackLayout>
 
                         <!-- CTA -->
-                        <Button Text="Start Workout"
+                        <Button x:Name="HeroStartBtn"
+                                Text="Start Workout"
                                 BackgroundColor="{StaticResource Accent}"
                                 TextColor="White"
                                 Padding="24,14"
@@ -126,18 +135,21 @@
                     </Border.Background>
                     <VerticalStackLayout Padding="22,26" Spacing="12"
                                          HorizontalOptions="Center">
-                        <Label FontSize="11"
+                        <Label x:Name="EmptyGetStartedBadge"
+                               FontSize="11"
                                FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource AccentGlow}"
                                Text="GET STARTED"
                                CharacterSpacing="1.5"
                                HorizontalTextAlignment="Center" />
-                        <Label FontSize="20"
+                        <Label x:Name="EmptyNoActiveLabel"
+                               FontSize="20"
                                FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource TextPrimary}"
                                Text="No active program"
                                HorizontalTextAlignment="Center" />
-                        <Label FontSize="13"
+                        <Label x:Name="EmptyDescLabel"
+                               FontSize="13"
                                FontFamily="OpenSansRegular"
                                TextColor="{StaticResource TextSecondary}"
                                Text="Create a training program with FreakAI or start a quick workout"
@@ -154,7 +166,8 @@
                                     FontSize="14"
                                     FontFamily="OpenSansSemibold"
                                     Clicked="OnGoToFreakAiClicked" />
-                            <Button Grid.Column="1"
+                            <Button x:Name="EmptyQuickWorkoutBtn"
+                                    Grid.Column="1"
                                     Text="Quick Workout"
                                     BackgroundColor="{StaticResource SurfaceStrong}"
                                     TextColor="{StaticResource TextPrimary}"
@@ -181,7 +194,8 @@
                             </LinearGradientBrush>
                         </Border.Background>
                         <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-                            <Label FontSize="10"
+                            <Label x:Name="ThisWeekBadge"
+                                   FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextSecondary}"
                                    CharacterSpacing="0.5"
@@ -193,7 +207,8 @@
                                    TextColor="{StaticResource AccentGlow}"
                                    Text="0"
                                    HorizontalTextAlignment="Center" />
-                            <Label FontSize="10"
+                            <Label x:Name="SessionsSubLabel"
+                                   FontSize="10"
                                    FontFamily="OpenSansRegular"
                                    TextColor="{StaticResource TextSecondary}"
                                    Text="sessions"
@@ -215,7 +230,8 @@
                             <SolidColorBrush Color="{StaticResource Accent}" />
                         </Border.Stroke>
                         <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-                            <Label FontSize="10"
+                            <Label x:Name="ProgramsBadge"
+                                   FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource AccentGlow}"
                                    CharacterSpacing="0.5"
@@ -227,7 +243,8 @@
                                    TextColor="{StaticResource TextPrimary}"
                                    Text="0"
                                    HorizontalTextAlignment="Center" />
-                            <Label FontSize="10"
+                            <Label x:Name="AvailableSubLabel"
+                                   FontSize="10"
                                    FontFamily="OpenSansRegular"
                                    TextColor="{StaticResource TextSecondary}"
                                    Text="available"
@@ -249,7 +266,8 @@
                 <VerticalStackLayout x:Name="RecommendedSection"
                                      Spacing="12"
                                      IsVisible="False">
-                    <Label FontSize="18"
+                    <Label x:Name="RecommendedLabel"
+                           FontSize="18"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimary}"
                            Text="Recommended" />
@@ -258,7 +276,8 @@
                 </VerticalStackLayout>
 
                 <!-- Section Header -->
-                <Label FontSize="18"
+                <Label x:Name="AllProgramsLabel"
+                       FontSize="18"
                        FontFamily="OpenSansSemibold"
                        TextColor="{StaticResource TextPrimary}"
                        Text="All Programs"
@@ -322,13 +341,13 @@
                                             Padding="18,10">
                                         <Grid ColumnDefinitions="Auto,*,Auto">
                                             <Label Grid.Column="0"
-                                                   Text="{Binding DaysPerWeek, StringFormat='{0}x/week'}"
+                                                   Text="{Binding DaysPerWeek, Converter={StaticResource DaysPerWeekFmt}}"
                                                    FontSize="12"
                                                    FontFamily="OpenSansSemibold"
                                                    TextColor="{StaticResource TextSecondary}"
                                                    VerticalOptions="Center" />
                                             <Label Grid.Column="2"
-                                                   Text="View Details"
+                                                   Text="{x:Static services:AppLanguage.WorkoutViewDetails}"
                                                    FontSize="12"
                                                    FontFamily="OpenSansSemibold"
                                                    TextColor="{StaticResource AccentGlow}"
@@ -382,7 +401,8 @@
                                        HorizontalOptions="Center"
                                        VerticalOptions="Center" />
                             </Border>
-                            <Label FontSize="13"
+                            <Label x:Name="QuickAddLabel"
+                                   FontSize="13"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}"
                                    Text="Quick Add"
@@ -418,7 +438,8 @@
                                        HeightRequest="18"
                                        HorizontalOptions="Center" />
                             </Border>
-                            <Label FontSize="13"
+                            <Label x:Name="CalendarLabel"
+                                   FontSize="13"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource TextPrimary}"
                                    Text="Calendar"
