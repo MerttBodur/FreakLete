@@ -39,6 +39,8 @@ builder.Services.AddScoped<FreakAiOrchestrator>();
 builder.Services.AddScoped<AthleteProfileService>();
 builder.Services.AddScoped<CoachProfileService>();
 builder.Services.AddScoped<StarterTemplateSeedService>();
+builder.Services.AddScoped<EntitlementService>();
+builder.Services.AddScoped<QuotaService>();
 
 // Gemini AI — key from user-secrets (local) or env var Gemini__ApiKey (Railway)
 var geminiApiKey = builder.Configuration["Gemini:ApiKey"]

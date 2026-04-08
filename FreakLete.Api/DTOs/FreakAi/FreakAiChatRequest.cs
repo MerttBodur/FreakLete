@@ -10,6 +10,14 @@ public class FreakAiChatRequest
     public string Message { get; set; } = string.Empty;
 
     public List<ChatMessage>? History { get; set; }
+
+    /// <summary>
+    /// Optional intent hint from client: program_generate, program_view,
+    /// program_analyze, nutrition_guidance, general_chat.
+    /// Falls back to server-side classification if omitted.
+    /// </summary>
+    [MaxLength(30)]
+    public string? Intent { get; set; }
 }
 
 public class FreakAiChatResponse

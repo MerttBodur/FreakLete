@@ -220,6 +220,13 @@ public class ApiClient : IApiClient
 		return PostAsync<FreakAiChatResponse>("api/freakai/chat", request);
 	}
 
+	// ── Billing ─────────────────────────────────────────
+
+	public Task<ApiResult<BillingStatusResponse>> GetBillingStatusAsync()
+	{
+		return GetAsync<BillingStatusResponse>("api/billing/status");
+	}
+
 	// ── Training Programs ────────────────────────────────
 
 	public Task<ApiResult<List<TrainingProgramListResponse>>> GetTrainingProgramsAsync()
@@ -536,6 +543,19 @@ public class SaveCoachProfileRequest
 	public string? PhysicalLimitations { get; set; }
 	public string? InjuryHistory { get; set; }
 	public string? CurrentPainPoints { get; set; }
+}
+
+// ── Billing DTOs ────────────────────────────────────────
+
+public class BillingStatusResponse
+{
+	public string Plan { get; set; } = "free";
+	public bool IsPremiumActive { get; set; }
+	public DateTime? SubscriptionEndsAtUtc { get; set; }
+	public int GeneralChatRemainingToday { get; set; }
+	public int ProgramGenerateRemainingThisMonth { get; set; }
+	public int ProgramAnalyzeRemainingThisMonth { get; set; }
+	public DateTime? NutritionGuidanceNextAvailableAtUtc { get; set; }
 }
 
 // ── FreakAI DTOs ────────────────────────────────────────

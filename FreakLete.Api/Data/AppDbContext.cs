@@ -18,6 +18,8 @@ public class AppDbContext : DbContext
     public DbSet<ProgramWeek> ProgramWeeks => Set<ProgramWeek>();
     public DbSet<ProgramSession> ProgramSessions => Set<ProgramSession>();
     public DbSet<ProgramExercise> ProgramExercises => Set<ProgramExercise>();
+    public DbSet<BillingPurchase> BillingPurchases => Set<BillingPurchase>();
+    public DbSet<AiUsageRecord> AiUsageRecords => Set<AiUsageRecord>();
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -216,6 +218,41 @@ public class AppDbContext : DbContext
             e.Property(x => x.IntensityGuidance).HasMaxLength(200);
             e.Property(x => x.Notes).HasMaxLength(500);
             e.Property(x => x.SupersetGroup).HasMaxLength(10);
+        });
+
+        // BillingPurchase
+        modelBuilder.Entity<BillingPurchase>(e =>
+        {
+            e.HasKey(b => b.Id);
+            e.HasIndex(b => b.UserId);
+            e.HasIndex(b => new { b.Platform, b.PurchaseToken }).IsUnique();
+            e.HasIndex(b => new { b.UserId, b.Kind, b.State });
+            e.HasOne(b => b.User)
+             .WithMany()
+             .HasForeignKey(b => b.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.Property(b => b.Platform).HasMaxLength(20);
+            e.Property(b => b.Kind).HasMaxLength(20);
+            e.Property(b => b.ProductId).HasMaxLength(100);
+            e.Property(b => b.BasePlanId).HasMaxLength(50);
+            e.Property(b => b.PurchaseToken).HasMaxLength(500);
+            e.Property(b => b.OrderId).HasMaxLength(200);
+            e.Property(b => b.State).HasMaxLength(20);
+        });
+
+        // AiUsageRecord
+        modelBuilder.Entity<AiUsageRecord>(e =>
+        {
+            e.HasKey(a => a.Id);
+            e.HasIndex(a => new { a.UserId, a.Intent, a.OccurredAtUtc });
+            e.HasIndex(a => new { a.UserId, a.OccurredAtUtc });
+            e.HasOne(a => a.User)
+             .WithMany()
+             .HasForeignKey(a => a.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.Property(a => a.Intent).HasMaxLength(30);
+            e.Property(a => a.PlanAtTime).HasMaxLength(10);
+            e.Property(a => a.Notes).HasMaxLength(500);
         });
     }
 }
