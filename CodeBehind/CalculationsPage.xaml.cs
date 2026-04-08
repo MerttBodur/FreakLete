@@ -35,7 +35,7 @@ public partial class CalculationsPage : ContentPage
 		ApplyLanguage();
 		UpdateOneRmSelectionUI();
 		UpdatePrSelectionUI();
-		UpdateCalculationTabUI(showOneRm: true);
+		UpdateCalculationTabUI(CalcTab.OneRm);
 	}
 
 	private void ApplyLanguage()
@@ -74,6 +74,17 @@ public partial class CalculationsPage : ContentPage
 		CalculateRsiBtn.Text = AppLanguage.CalcCalculateRsi;
 		RsiResultTitle.Text = AppLanguage.CalcResult;
 		RsiResultLabel.Text = AppLanguage.CalcNoRsiYet;
+		FfmiTitleLabel.Text = AppLanguage.CalcFfmiTitle;
+		FfmiDescLabel.Text = AppLanguage.CalcFfmiDesc;
+		FfmiMissingDataLabel.Text = AppLanguage.CalcFfmiMissingData;
+		FfmiGoToProfileBtn.Text = AppLanguage.CalcFfmiGoToProfile;
+		FfmiWeightLabel.Text = AppLanguage.CalcFfmiWeightLabel;
+		FfmiHeightLabel.Text = AppLanguage.CalcFfmiHeightLabel;
+		FfmiBodyFatLabel.Text = AppLanguage.CalcFfmiBodyFatLabel;
+		CalculateFfmiBtn.Text = AppLanguage.CalcFfmiCalculate;
+		FfmiResultTitle.Text = AppLanguage.CalcResult;
+		FfmiNormalizedCaption.Text = AppLanguage.CalcFfmiNormalized;
+		FfmiSecondaryLabel.Text = AppLanguage.CalcFfmiNoResult;
 	}
 
 	protected override void OnDisappearing()
@@ -426,25 +437,41 @@ public partial class CalculationsPage : ContentPage
 		}
 	}
 
+	private enum CalcTab { OneRm, Rsi, Ffmi }
+
 	private void OnOneRmTabClicked(object? sender, EventArgs e)
 	{
-		UpdateCalculationTabUI(showOneRm: true);
+		UpdateCalculationTabUI(CalcTab.OneRm);
 	}
 
 	private void OnRsiTabClicked(object? sender, EventArgs e)
 	{
-		UpdateCalculationTabUI(showOneRm: false);
+		UpdateCalculationTabUI(CalcTab.Rsi);
 	}
 
-	private void UpdateCalculationTabUI(bool showOneRm)
+	private void OnFfmiTabClicked(object? sender, EventArgs e)
 	{
-		OneRmSection.IsVisible = showOneRm;
-		RsiSection.IsVisible = !showOneRm;
+		UpdateCalculationTabUI(CalcTab.Ffmi);
+		_ = LoadFfmiProfileDataAsync();
+	}
 
-		OneRmTabButton.BackgroundColor = showOneRm ? Color.FromArgb("#7C4DFF") : Color.FromArgb("#161322");
-		OneRmTabButton.TextColor = showOneRm ? Colors.White : Color.FromArgb("#C9C3DA");
-		RsiTabButton.BackgroundColor = showOneRm ? Color.FromArgb("#161322") : Color.FromArgb("#7C4DFF");
-		RsiTabButton.TextColor = showOneRm ? Color.FromArgb("#C9C3DA") : Colors.White;
+	private void UpdateCalculationTabUI(CalcTab activeTab)
+	{
+		OneRmSection.IsVisible = activeTab == CalcTab.OneRm;
+		RsiSection.IsVisible = activeTab == CalcTab.Rsi;
+		FfmiSection.IsVisible = activeTab == CalcTab.Ffmi;
+
+		var active = Color.FromArgb("#7C4DFF");
+		var inactive = Color.FromArgb("#161322");
+		var activeText = Colors.White;
+		var inactiveText = Color.FromArgb("#C9C3DA");
+
+		OneRmTabButton.BackgroundColor = activeTab == CalcTab.OneRm ? active : inactive;
+		OneRmTabButton.TextColor = activeTab == CalcTab.OneRm ? activeText : inactiveText;
+		RsiTabButton.BackgroundColor = activeTab == CalcTab.Rsi ? active : inactive;
+		RsiTabButton.TextColor = activeTab == CalcTab.Rsi ? activeText : inactiveText;
+		FfmiTabButton.BackgroundColor = activeTab == CalcTab.Ffmi ? active : inactive;
+		FfmiTabButton.TextColor = activeTab == CalcTab.Ffmi ? activeText : inactiveText;
 	}
 
 	private async void OnChooseStrengthExerciseClicked(object? sender, EventArgs e)
@@ -840,6 +867,64 @@ public partial class CalculationsPage : ContentPage
 
 		double rsi = CalculationService.CalculateRsi(jumpHeightCm, gctSeconds);
 		RsiResultLabel.Text = $"RSI: {rsi:0.00} | Height {jumpHeightCm:0.##} cm | GCT {gctSeconds:0.##} s";
+	}
+
+	private async Task LoadFfmiProfileDataAsync()
+	{
+		if (!_session.IsLoggedIn()) return;
+
+		var result = await _api.GetProfileAsync();
+		if (!result.Success || result.Data is null) return;
+
+		var profile = result.Data;
+		bool hasFfmiData = profile.WeightKg.HasValue
+						&& profile.HeightCm.HasValue
+						&& profile.BodyFatPercentage.HasValue;
+
+		FfmiMissingDataCard.IsVisible = !hasFfmiData;
+		FfmiInputCard.IsVisible = hasFfmiData;
+		FfmiResultCard.IsVisible = hasFfmiData;
+
+		if (hasFfmiData)
+		{
+			FfmiWeightEntry.Text = profile.WeightKg!.Value.ToString("0.#");
+			FfmiHeightEntry.Text = profile.HeightCm!.Value.ToString("0.#");
+			FfmiBodyFatEntry.Text = profile.BodyFatPercentage!.Value.ToString("0.#");
+		}
+	}
+
+	private async void OnFfmiGoToProfileClicked(object? sender, EventArgs e)
+	{
+		await Navigation.PushAsync(new ProfilePage(), true);
+	}
+
+	private void OnCalculateFfmiClicked(object? sender, EventArgs e)
+	{
+		ClearLabel(FfmiStatusLabel);
+
+		if (!MetricInput.TryParseFlexibleDouble(FfmiWeightEntry.Text, out double weightKg) || weightKg <= 0)
+		{
+			ShowError(FfmiStatusLabel, AppLanguage.CalcFfmiWeightError);
+			return;
+		}
+
+		if (!MetricInput.TryParseFlexibleDouble(FfmiHeightEntry.Text, out double heightCm) || heightCm <= 0)
+		{
+			ShowError(FfmiStatusLabel, AppLanguage.CalcFfmiHeightError);
+			return;
+		}
+
+		if (!MetricInput.TryParseFlexibleDouble(FfmiBodyFatEntry.Text, out double bodyFat) || bodyFat <= 0 || bodyFat >= 100)
+		{
+			ShowError(FfmiStatusLabel, AppLanguage.CalcFfmiBodyFatError);
+			return;
+		}
+
+		var (lbm, rawFfmi, normalizedFfmi) = CalculationService.CalculateFfmi(weightKg, heightCm, bodyFat);
+
+		FfmiNormalizedLabel.Text = normalizedFfmi.ToString("0.0");
+		FfmiNormalizedCaption.Text = AppLanguage.CalcFfmiNormalized;
+		FfmiSecondaryLabel.Text = $"{AppLanguage.CalcFfmiRaw}: {rawFfmi:0.0}  |  {AppLanguage.CalcFfmiLbm}: {lbm:0.1} kg";
 	}
 
 	private static void ShowError(Label label, string message)

@@ -33,4 +33,18 @@ public class CalculationsController : ControllerBase
         var rsi = CalculationService.CalculateRsi(request.JumpHeightCm, request.GroundContactTimeSeconds);
         return Ok(Math.Round(rsi, 3));
     }
+
+    [HttpPost("ffmi")]
+    public ActionResult<FfmiResponse> CalculateFfmi(FfmiRequest request)
+    {
+        var (lbm, raw, normalized) = CalculationService.CalculateFfmi(
+            request.WeightKg, request.HeightCm, request.BodyFatPercentage);
+
+        return Ok(new FfmiResponse
+        {
+            NormalizedFfmi = Math.Round(normalized, 2),
+            RawFfmi = Math.Round(raw, 2),
+            LeanBodyMassKg = Math.Round(lbm, 2)
+        });
+    }
 }

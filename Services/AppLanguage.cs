@@ -258,6 +258,27 @@ public static class AppLanguage
 	public static string CalcDeletePrTitle => IsTurkish ? "PR Sil" : "Delete PR";
 	public static string FormatDeleteConfirm(string text) => IsTurkish ? $"'{text}' silinsin mi?" : $"Delete '{text}'?";
 
+	// ── FFMI ────────────────────────────────────────────────
+	public static string CalcFfmiTitle => IsTurkish ? "Yağsız Kütle İndeksi" : "Fat-Free Mass Index";
+	public static string CalcFfmiDesc => IsTurkish
+		? "FFMI, yağsız vücut kütlenizi boy uzunluğunuza göre değerlendirir."
+		: "FFMI evaluates your lean body mass relative to your height.";
+	public static string CalcFfmiMissingData => IsTurkish
+		? "FFMI hesaplamak için profilinizde kilo, boy ve vücut yağ oranı gereklidir."
+		: "FFMI requires weight, height, and body fat percentage in your profile.";
+	public static string CalcFfmiGoToProfile => IsTurkish ? "Profili Düzenle" : "Edit Profile";
+	public static string CalcFfmiCalculate => IsTurkish ? "FFMI Hesapla" : "Calculate FFMI";
+	public static string CalcFfmiNormalized => IsTurkish ? "NORMALİZE FFMI" : "NORMALIZED FFMI";
+	public static string CalcFfmiRaw => IsTurkish ? "Ham FFMI" : "Raw FFMI";
+	public static string CalcFfmiLbm => IsTurkish ? "Yağsız Kütle (kg)" : "Lean Body Mass (kg)";
+	public static string CalcFfmiNoResult => IsTurkish ? "Henüz FFMI hesaplanmadı." : "No FFMI calculated yet.";
+	public static string CalcFfmiWeightLabel => IsTurkish ? "Kilo (kg)" : "Weight (kg)";
+	public static string CalcFfmiHeightLabel => IsTurkish ? "Boy (cm)" : "Height (cm)";
+	public static string CalcFfmiBodyFatLabel => IsTurkish ? "Vücut Yağ Oranı (%)" : "Body Fat (%)";
+	public static string CalcFfmiWeightError => IsTurkish ? "Kilo pozitif bir sayı olmalıdır." : "Weight must be a positive number.";
+	public static string CalcFfmiHeightError => IsTurkish ? "Boy pozitif bir sayı olmalıdır." : "Height must be a positive number.";
+	public static string CalcFfmiBodyFatError => IsTurkish ? "Vücut yağ oranı 0 ile 100 arasında olmalıdır." : "Body fat must be between 0 and 100.";
+
 	// ── Profile Page ────────────────────────────────────────────
 	public static string ProfileWorkouts => IsTurkish ? "Antrenman" : "Workouts";
 	public static string ProfileSavedPrs => IsTurkish ? "PR'lar" : "Saved PRs";

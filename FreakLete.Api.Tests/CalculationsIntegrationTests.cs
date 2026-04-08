@@ -313,4 +313,120 @@ public class CalculationsIntegrationTests : IAsyncLifetime
             new { jumpHeightCm = 40.0, groundContactTimeSeconds = 5.1 });
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+
+    // ════════════════════════════════════════════════════════════════
+    //  FFMI — AUTH
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task Ffmi_Unauthenticated_Returns401()
+    {
+        var response = await _factory.CreateClient().PostAsJsonAsync("/api/Calculations/ffmi",
+            new { weightKg = 80.0, heightCm = 178.0, bodyFatPercentage = 15.0 });
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  FFMI — VALID REQUESTS
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task Ffmi_ValidRequest_ReturnsExpectedShape()
+    {
+        var client = await AuthenticateAsync();
+        var response = await client.PostAsJsonAsync("/api/Calculations/ffmi",
+            new { weightKg = 80.0, heightCm = 178.0, bodyFatPercentage = 15.0 });
+        response.EnsureSuccessStatusCode();
+
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<JsonElement>(body, JsonOpts);
+
+        Assert.True(result.TryGetProperty("normalizedFfmi", out var nf));
+        Assert.True(nf.GetDouble() > 0);
+        Assert.True(result.TryGetProperty("rawFfmi", out var rf));
+        Assert.True(rf.GetDouble() > 0);
+        Assert.True(result.TryGetProperty("leanBodyMassKg", out var lbm));
+        Assert.True(lbm.GetDouble() > 0);
+    }
+
+    [Fact]
+    public async Task Ffmi_CorrectCalculation()
+    {
+        // LBM = 80 * (1 - 0.15) = 68
+        // rawFFMI = 68 / 1.78^2 = 21.46
+        // normalizedFFMI = 21.46 + 6.1 * (1.8 - 1.78) = 21.58
+        var client = await AuthenticateAsync();
+        var response = await client.PostAsJsonAsync("/api/Calculations/ffmi",
+            new { weightKg = 80.0, heightCm = 178.0, bodyFatPercentage = 15.0 });
+        response.EnsureSuccessStatusCode();
+
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<JsonElement>(body, JsonOpts);
+
+        Assert.Equal(21.58, result.GetProperty("normalizedFfmi").GetDouble(), 1);
+        Assert.Equal(21.46, result.GetProperty("rawFfmi").GetDouble(), 1);
+        Assert.Equal(68.0, result.GetProperty("leanBodyMassKg").GetDouble(), 1);
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  FFMI — BOUNDARY VALUES
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task Ffmi_MinBoundary_Returns200()
+    {
+        var client = await AuthenticateAsync();
+        var response = await client.PostAsJsonAsync("/api/Calculations/ffmi",
+            new { weightKg = 0.1, heightCm = 1.0, bodyFatPercentage = 0.1 });
+        response.EnsureSuccessStatusCode();
+    }
+
+    [Fact]
+    public async Task Ffmi_MaxBoundary_Returns200()
+    {
+        var client = await AuthenticateAsync();
+        var response = await client.PostAsJsonAsync("/api/Calculations/ffmi",
+            new { weightKg = 500.0, heightCm = 300.0, bodyFatPercentage = 99.9 });
+        response.EnsureSuccessStatusCode();
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  FFMI — INVALID INPUT
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task Ffmi_ZeroWeight_Returns400()
+    {
+        var client = await AuthenticateAsync();
+        var response = await client.PostAsJsonAsync("/api/Calculations/ffmi",
+            new { weightKg = 0.0, heightCm = 178.0, bodyFatPercentage = 15.0 });
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Ffmi_ZeroHeight_Returns400()
+    {
+        var client = await AuthenticateAsync();
+        var response = await client.PostAsJsonAsync("/api/Calculations/ffmi",
+            new { weightKg = 80.0, heightCm = 0.0, bodyFatPercentage = 15.0 });
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Ffmi_BodyFat100_Returns400()
+    {
+        var client = await AuthenticateAsync();
+        var response = await client.PostAsJsonAsync("/api/Calculations/ffmi",
+            new { weightKg = 80.0, heightCm = 178.0, bodyFatPercentage = 100.0 });
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Ffmi_NegativeBodyFat_Returns400()
+    {
+        var client = await AuthenticateAsync();
+        var response = await client.PostAsJsonAsync("/api/Calculations/ffmi",
+            new { weightKg = 80.0, heightCm = 178.0, bodyFatPercentage = -1.0 });
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }

@@ -75,6 +75,7 @@ Asagidaki basliklar artik roadmap maddesi degil, mevcut urunun parcasidir.
 - Calculations sayfasi
 - `1RM` calculation
 - `RSI` calculation
+- `FFMI` calculation (normalized, raw, lean body mass)
 - Athletic performance tracking
 - Movement goals
 - Profile / body metrics
@@ -391,15 +392,15 @@ Bu puanlama recommendation engine'in temel girdilerinden biri olacak.
 Bu faz, bugunku `1RM + RSI` calculations surface'ini daha akilli ama halen deterministic bir performance standards katmanina genisletir.
 
 Onemli not:
-- bu fazdaki tum basliklar roadmap'tir
-- `FFMI`, lift seviyeleri, kompozit atlet lakaplari ve egzersiz demo medyasi bugunku shipped urunde mevcut degildir
+- `FFMI` hesaplama shipped durumdadir (normalized, raw, lean body mass); profilde `WeightKg + HeightCm + BodyFatPercentage` varsa hesaplanir, yoksa empty-state gosterilir
+- lift seviyeleri, kompozit atlet lakaplari ve egzersiz demo medyasi bugunku shipped urunde mevcut degildir
 - benchmark dili `public benchmark tables / competition-derived percentiles` olarak yazilmalidir; evrensel tek tablo varsayimi yapilmamalidir
 
 ### Column 1 - Calculations Intelligence
 Bu sutun, mevcut calculation surface'ini genisletir ama yalnizca veri ve benchmark mantigi guvenli oldugunda kullaniciya tier gosterir.
 
 Kapsam:
-- `FFMI` hesaplama, ancak `HeightCm + WeightKg + BodyFatPercentage` birlikte varsa
+- `FFMI` hesaplama: SHIPPED (`HeightCm + WeightKg + BodyFatPercentage` birlikte varsa hesaplanir, yoksa empty-state + profile CTA gosterilir)
 - profile once `HeightCm` ve `Sex` alanlarini ekleme
 - powerlifting liftleri icin UI'da `1RM / bodyweight` oranini gosterme
 - lift-tier mantigini sabit kaba oranlarla degil, data-driven percentile yaklasimiyla kurma
@@ -519,6 +520,7 @@ Asagidaki basliklar artik "gelecek is" degil:
 - exercise browser
 - `1RM` calculation
 - `RSI` calculation
+- `FFMI` calculation
 - movement goals
 - athletic performance tracking
 - local catalog seeding

@@ -127,7 +127,7 @@
 
                 <Border Style="{StaticResource CardBorder}"
                         Padding="8">
-                    <Grid ColumnDefinitions="*,*"
+                    <Grid ColumnDefinitions="*,*,*"
                           ColumnSpacing="8">
                         <Button Grid.Column="0"
                                 x:Name="OneRmTabButton"
@@ -138,6 +138,11 @@
                                 Text="RSI"
                                 Style="{StaticResource SecondaryButton}"
                                 Clicked="OnRsiTabClicked" />
+                        <Button Grid.Column="2"
+                                x:Name="FfmiTabButton"
+                                Text="FFMI"
+                                Style="{StaticResource SecondaryButton}"
+                                Clicked="OnFfmiTabClicked" />
                     </Grid>
                 </Border>
 
@@ -498,6 +503,106 @@
                         </VerticalStackLayout>
                     </Border>
                 </VerticalStackLayout>
+
+                <VerticalStackLayout x:Name="FfmiSection"
+                                     Spacing="18"
+                                     IsVisible="False">
+
+                    <Border x:Name="FfmiMissingDataCard"
+                            Style="{StaticResource CardBorder}"
+                            IsVisible="False">
+                        <VerticalStackLayout Spacing="12"
+                                             HorizontalOptions="Center">
+                            <Label x:Name="FfmiMissingDataLabel"
+                                   Text="FFMI requires weight, height, and body fat percentage in your profile."
+                                   Style="{StaticResource BodyMuted}"
+                                   HorizontalTextAlignment="Center"
+                                   LineBreakMode="WordWrap" />
+                            <Button x:Name="FfmiGoToProfileBtn"
+                                    Text="Edit Profile"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Clicked="OnFfmiGoToProfileClicked" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border x:Name="FfmiInputCard"
+                            Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label x:Name="FfmiTitleLabel"
+                                   Text="Fat-Free Mass Index"
+                                   Style="{StaticResource SubHeadline}"
+                                   HorizontalTextAlignment="Start" />
+                            <Label x:Name="FfmiDescLabel"
+                                   Text="FFMI evaluates your lean body mass relative to your height."
+                                   Style="{StaticResource BodyMuted}" />
+
+                            <Grid ColumnDefinitions="*,*"
+                                  ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0"
+                                                     Spacing="8">
+                                    <Label x:Name="FfmiWeightLabel"
+                                           Text="Weight (kg)"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Entry x:Name="FfmiWeightEntry"
+                                           Keyboard="Numeric"
+                                           Placeholder="80" />
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="1"
+                                                     Spacing="8">
+                                    <Label x:Name="FfmiHeightLabel"
+                                           Text="Height (cm)"
+                                           Style="{StaticResource BodyMuted}" />
+                                    <Entry x:Name="FfmiHeightEntry"
+                                           Keyboard="Numeric"
+                                           Placeholder="178" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label x:Name="FfmiBodyFatLabel"
+                                       Text="Body Fat (%)"
+                                       Style="{StaticResource BodyMuted}" />
+                                <Entry x:Name="FfmiBodyFatEntry"
+                                       Keyboard="Numeric"
+                                       Placeholder="15" />
+                            </VerticalStackLayout>
+
+                            <Button x:Name="CalculateFfmiBtn"
+                                    Text="Calculate FFMI"
+                                    Clicked="OnCalculateFfmiClicked" />
+
+                            <Label x:Name="FfmiStatusLabel"
+                                   TextColor="{StaticResource Danger}"
+                                   IsVisible="False"
+                                   FontSize="13" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border x:Name="FfmiResultCard"
+                            Style="{StaticResource CardBorder}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label x:Name="FfmiResultTitle"
+                                   Text="Result"
+                                   Style="{StaticResource SubHeadline}"
+                                   HorizontalTextAlignment="Start" />
+
+                            <Label x:Name="FfmiNormalizedLabel"
+                                   Text=""
+                                   FontSize="36"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource AccentGlow}" />
+                            <Label x:Name="FfmiNormalizedCaption"
+                                   Text="NORMALIZED FFMI"
+                                   Style="{StaticResource Eyebrow}" />
+
+                            <Label x:Name="FfmiSecondaryLabel"
+                                   Text="No FFMI calculated yet."
+                                   Style="{StaticResource BodyMuted}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
             </VerticalStackLayout>
         </ScrollView>
 

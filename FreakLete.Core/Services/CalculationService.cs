@@ -68,4 +68,30 @@ public static class CalculationService
 
 		return (jumpHeightCm / 100.0) / gctSeconds;
 	}
+
+	public static (double LeanBodyMassKg, double RawFfmi, double NormalizedFfmi) CalculateFfmi(
+		double weightKg, double heightCm, double bodyFatPercentage)
+	{
+		if (weightKg <= 0)
+		{
+			throw new ArgumentOutOfRangeException(nameof(weightKg));
+		}
+
+		if (heightCm <= 0)
+		{
+			throw new ArgumentOutOfRangeException(nameof(heightCm));
+		}
+
+		if (bodyFatPercentage < 0 || bodyFatPercentage >= 100)
+		{
+			throw new ArgumentOutOfRangeException(nameof(bodyFatPercentage));
+		}
+
+		double heightM = heightCm / 100.0;
+		double lbm = weightKg * (1 - bodyFatPercentage / 100.0);
+		double rawFfmi = lbm / (heightM * heightM);
+		double normalizedFfmi = rawFfmi + 6.1 * (1.8 - heightM);
+
+		return (lbm, rawFfmi, normalizedFfmi);
+	}
 }

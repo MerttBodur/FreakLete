@@ -62,4 +62,38 @@ public class CalculationServiceTests
 	{
 		Assert.Throws<ArgumentOutOfRangeException>(() => CalculationService.CalculateRsi(jumpHeightCm, gctSeconds));
 	}
+
+	[Fact]
+	public void CalculateFfmi_ReturnsExpectedValues()
+	{
+		// 80 kg, 178 cm, 15% BF
+		// LBM = 80 * (1 - 0.15) = 68
+		// rawFFMI = 68 / (1.78^2) = 68 / 3.1684 = 21.46
+		// normalizedFFMI = 21.46 + 6.1 * (1.8 - 1.78) = 21.46 + 0.122 = 21.58
+		var (lbm, raw, normalized) = CalculationService.CalculateFfmi(80, 178, 15);
+
+		Assert.Equal(68.0, lbm, precision: 1);
+		Assert.Equal(21.46, raw, precision: 1);
+		Assert.Equal(21.58, normalized, precision: 1);
+	}
+
+	[Fact]
+	public void CalculateFfmi_TallPerson_NormalizationReduces()
+	{
+		// 90 kg, 195 cm, 12% BF → normalized < raw for tall people
+		var (lbm, raw, normalized) = CalculationService.CalculateFfmi(90, 195, 12);
+
+		Assert.True(normalized < raw);
+		Assert.Equal(79.2, lbm, precision: 1);
+	}
+
+	[Theory]
+	[InlineData(0, 178, 15)]
+	[InlineData(80, 0, 15)]
+	[InlineData(80, 178, -1)]
+	[InlineData(80, 178, 100)]
+	public void CalculateFfmi_InvalidInput_Throws(double weight, double height, double bodyFat)
+	{
+		Assert.Throws<ArgumentOutOfRangeException>(() => CalculationService.CalculateFfmi(weight, height, bodyFat));
+	}
 }

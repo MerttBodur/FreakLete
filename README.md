@@ -21,7 +21,7 @@ The app is designed around a fast daily workflow:
 - browse starter templates or saved programs
 - build workouts with categorized exercise recommendations
 - review saved sessions from a calendar view
-- calculate 1RM and RSI values
+- calculate 1RM, RSI, and FFMI values
 - track athletic performance and movement goals in one profile
 
 ## Features
@@ -32,7 +32,7 @@ The app is designed around a fast daily workflow:
 - Exercise browser with recommended movements by category
 - Calendar-based workout history
 - Edit and delete support for saved workouts
-- Calculations page with 1RM and RSI tools
+- Calculations page with 1RM, RSI, and FFMI tools
 - Athletic performance tracking
 - Movement goal tracking
 - Profile and body metrics management
@@ -45,13 +45,13 @@ The app is designed around a fast daily workflow:
 
 ## Calculations
 
-Shipped today, the calculations surface is intentionally narrow:
+Shipped today, the calculations surface includes:
 - estimated `1RM` and rep-range output for loaded movements
 - `RSI` calculation from jump height and ground contact time
+- `FFMI` calculation (normalized and raw) when weight, height, and body-fat data all exist in the profile, with an empty-state CTA when profile data is missing
 - saved PR and athletic-performance records that support those surfaces
 
 Roadmap items, not shipped today:
-- `FFMI`, only when height, weight, and body-fat data all exist
 - lift-relative-strength displays such as `1RM / bodyweight`
 - percentile-driven lift and jump tiers based on public benchmark tables and competition-derived percentiles
 - vertical jump and standing broad jump benchmark layers
@@ -172,7 +172,7 @@ The production backend has also passed end-to-end smoke tests for auth, profile,
 
 ### Performance Standards & Guidance
 
-- Calculations intelligence: add `FFMI`, lift-relative-strength displays, percentile-driven lift/jump tiers, and air-time-to-vertical-jump conversion without presenting any of them as already shipped.
+- Calculations intelligence: add lift-relative-strength displays, percentile-driven lift/jump tiers, and air-time-to-vertical-jump conversion without presenting any of them as already shipped.
 - Profile level system: add `HeightCm` and `Sex`, limit v1 benchmarked movements to `Bench Press`, `Back Squat`, `Deadlift`, `Military/Overhead Press`, `Power Clean`, `Vertical Jump`, and `Single/Standing Broad Jump`, and use planned labels of `Beginner`, `Intermediate`, `Advanced`, and `Freak`.
 - Composite identity and tooltips: only show labels such as `Athlete`, `Powerlifter`, or `Hybrid` when enough supporting data exists, and add small explainer tooltips for `1RM`, `RSI`, `FFMI`, and benchmark terms.
 - Exercise demo media: start with optional demo metadata for Tier-1 movements only, while keeping `Instructions`, `CommonMistakes`, `Progression`, and `Regression` text as the fallback whenever media is absent.
