@@ -64,6 +64,13 @@ public class GooglePlayBillingService : IBillingService
 
         try
         {
+            // KNOWN LIMITATION (Phase 4 improvement):
+            // Plugin.InAppBilling does not support base plan / offer selection.
+            // When launching the purchase flow below, `basePlanId` is NOT sent to Google Play.
+            // The user will always see Google Play's default offer.
+            // This parameter is stored but backend verification corrects entitlement end dates
+            // based on the actual plan purchased from Google Play.
+            
             var purchase = await CrossInAppBilling.Current.PurchaseAsync(
                 productId, ItemType.Subscription, obfuscatedAccountId: null);
 
@@ -107,12 +114,8 @@ public class GooglePlayBillingService : IBillingService
             if (purchase is null)
                 return new BillingPurchaseResult { Status = BillingPurchaseStatus.Cancelled };
 
-            // Consume donation immediately so it can be purchased again
-            if (purchase.State == PurchaseState.Purchased)
-            {
-                await CrossInAppBilling.Current.ConsumePurchaseAsync(
-                    purchase.ProductId, purchase.PurchaseToken);
-            }
+            // NOTE: Do NOT consume on client-side. Server consumes after verification succeeds.
+            // This ensures ledger durability: if server sync fails, purchase can be retried.
 
             return new BillingPurchaseResult
             {

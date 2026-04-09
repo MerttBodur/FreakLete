@@ -92,6 +92,8 @@ public class BillingController : ControllerBase
                 OrderId = request.OrderId ?? "",
                 State = NormalizePurchaseState(request.PurchaseState),
                 EntitlementStartsAtUtc = DateTime.UtcNow,
+                // TEMPORARY: Set based on client-reported basePlanId; verification will correct this.
+                // (See VerifyAndUpdateSubscriptionAsync for server-side correction using actual Google Play data.)
                 EntitlementEndsAtUtc = kind == "subscription"
                     ? DateTime.UtcNow.AddMonths(request.BasePlanId == "annual" ? 12 : 1)
                     : DateTime.UtcNow,
@@ -123,7 +125,15 @@ public class BillingController : ControllerBase
         var result = await _playVerify.VerifySubscriptionAsync(
             purchase.PurchaseToken, purchase.ProductId, ct);
 
-        if (result is null) return; // verification unavailable, keep client-reported state
+        // SECURITY: If verification unavailable/fails, mark as unverified.
+        // Do NOT grant premium for unverified subscriptions.
+        if (result is null)
+        {
+            purchase.State = "verification_failed";
+            purchase.LastVerifiedAtUtc = DateTime.UtcNow;
+            await _db.SaveChangesAsync(ct);
+            return;
+        }
 
         purchase.State = result.State;
         purchase.EntitlementStartsAtUtc = result.EntitlementStartsAtUtc;

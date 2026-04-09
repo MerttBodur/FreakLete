@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace FreakLete.Api.Tests;
 
@@ -28,6 +29,13 @@ public class FreakLeteApiFactory : WebApplicationFactory<Program>, IAsyncLifetim
         builder.UseSetting("Jwt:Audience", "FreakLete.App");
         builder.UseSetting("Gemini:ApiKey", "fake-gemini-key-for-tests");
         builder.UseSetting("Gemini:Model", "gemini-2.5-flash-lite");
+
+        // TEST FIX: Disable EventLog provider to avoid permission errors in test/CI environment.
+        builder.ConfigureLogging(loggingBuilder =>
+        {
+            loggingBuilder.ClearProviders();
+            loggingBuilder.AddConsole();
+        });
     }
 
     public async Task InitializeAsync()

@@ -372,53 +372,6 @@
             </Border>
         </Grid>
 
-        <!-- Subscribe picker overlay -->
-        <Grid x:Name="SubscribeOverlay"
-              Grid.RowSpan="2"
-              IsVisible="False"
-              Opacity="0"
-              BackgroundColor="{StaticResource OverlayScrim}"
-              Padding="24">
-            <Grid.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnSubscribeOverlayDismiss" />
-            </Grid.GestureRecognizers>
-            <Border Style="{StaticResource CardBorder}"
-                    Padding="20"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Center"
-                    MaximumWidthRequest="420"
-                    BackgroundColor="{StaticResource SurfaceRaised}">
-                <VerticalStackLayout Spacing="14">
-                    <Label x:Name="SubscribePickerTitle"
-                           Text="Choose Plan"
-                           Style="{StaticResource SubHeadline}"
-                           HorizontalTextAlignment="Start" />
-
-                    <Button x:Name="BtnMonthly"
-                            Text="Monthly — $3/mo"
-                            Clicked="OnMonthlyClicked"
-                            FontFamily="OpenSansSemibold"
-                            FontSize="15"
-                            HeightRequest="48"
-                            CornerRadius="18" />
-
-                    <Button x:Name="BtnAnnual"
-                            Text="Annual — $30/yr"
-                            Clicked="OnAnnualClicked"
-                            FontFamily="OpenSansSemibold"
-                            FontSize="15"
-                            HeightRequest="48"
-                            CornerRadius="18" />
-
-                    <Button x:Name="BtnSubscribeCancel"
-                            Text="Cancel"
-                            Style="{StaticResource SecondaryButton}"
-                            Clicked="OnSubscribeOverlayDismiss"
-                            Margin="0,4,0,0" />
-                </VerticalStackLayout>
-            </Border>
-        </Grid>
-
         <!-- Toast banner -->
         <Border x:Name="ToastBanner"
                 Grid.RowSpan="2"

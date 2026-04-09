@@ -21,10 +21,13 @@ public class EntitlementService
     {
         var now = DateTime.UtcNow;
 
+        // SECURITY: Premium only for verified+active subscriptions within entitlement window.
+        // Exclude "verification_failed" state to prevent unverified purchases granting premium.
         var hasPremium = await _db.BillingPurchases.AnyAsync(p =>
             p.UserId == userId &&
             p.Kind == "subscription" &&
             p.State == "active" &&
+            p.State != "verification_failed" &&
             p.EntitlementEndsAtUtc > now, ct);
 
         return hasPremium ? "premium" : "free";

@@ -1,5 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using FreakLete.Api.Data;
 using FreakLete.Api.Entities;
@@ -76,7 +78,7 @@ public class BillingSyncIntegrationTests : IAsyncLifetime
 
         response.EnsureSuccessStatusCode();
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.Equal("active", body.GetProperty("state").GetString());
+    Assert.Equal("verification_failed", body.GetProperty("state").GetString());
         Assert.Equal("subscription", body.GetProperty("kind").GetString());
 
         // Verify record exists in DB
@@ -86,6 +88,7 @@ public class BillingSyncIntegrationTests : IAsyncLifetime
         Assert.NotNull(record);
         Assert.Equal("subscription", record.Kind);
         Assert.Equal("android", record.Platform);
+        Assert.Equal("verification_failed", record.State);
     }
 
     [Fact]
@@ -134,36 +137,32 @@ public class BillingSyncIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task Sync_ExpiredSubscription_StateReflected()
     {
+        var verifiedClient = await CreateAuthenticatedBillingClientWithSubscriptionResponseAsync(
+            BuildSubscriptionV2Json(DateTime.UtcNow.AddDays(-1), cancelled: false));
+
         var token = $"tok_{Guid.NewGuid():N}";
 
-        // First sync as active
-        await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        var response = await verifiedClient.PostAsJsonAsync("/api/billing/googleplay/sync", new
         {
             productId = "freaklete_premium",
             basePlanId = "monthly",
             purchaseToken = token,
-            purchaseState = 0 // purchased
-        });
-
-        // Second sync as cancelled
-        var response = await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
-        {
-            productId = "freaklete_premium",
-            basePlanId = "monthly",
-            purchaseToken = token,
-            purchaseState = 1 // cancelled
+            purchaseState = 0
         });
 
         response.EnsureSuccessStatusCode();
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.Equal("cancelled", body.GetProperty("state").GetString());
+        Assert.Equal("expired", body.GetProperty("state").GetString());
     }
 
     [Fact]
     public async Task Sync_Subscription_PremiumStatus()
     {
+        var verifiedClient = await CreateAuthenticatedBillingClientWithSubscriptionResponseAsync(
+            BuildSubscriptionV2Json(DateTime.UtcNow.AddDays(30), cancelled: false));
+
         var token = $"tok_{Guid.NewGuid():N}";
-        await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        await verifiedClient.PostAsJsonAsync("/api/billing/googleplay/sync", new
         {
             productId = "freaklete_premium",
             basePlanId = "monthly",
@@ -172,7 +171,7 @@ public class BillingSyncIntegrationTests : IAsyncLifetime
         });
 
         // Check billing status now returns premium
-        var statusResponse = await _client.GetAsync("/api/billing/status");
+        var statusResponse = await verifiedClient.GetAsync("/api/billing/status");
         statusResponse.EnsureSuccessStatusCode();
         var status = await statusResponse.Content.ReadFromJsonAsync<JsonElement>();
         Assert.Equal("premium", status.GetProperty("plan").GetString());
@@ -182,9 +181,12 @@ public class BillingSyncIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task Restore_Subscription_EntitlementRefreshed()
     {
+        var verifiedClient = await CreateAuthenticatedBillingClientWithSubscriptionResponseAsync(
+            BuildSubscriptionV2Json(DateTime.UtcNow.AddDays(365), cancelled: false));
+
         // Simulate: user has a subscription record that was synced
         var token = $"tok_{Guid.NewGuid():N}";
-        await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        await verifiedClient.PostAsJsonAsync("/api/billing/googleplay/sync", new
         {
             productId = "freaklete_premium",
             basePlanId = "annual",
@@ -192,10 +194,36 @@ public class BillingSyncIntegrationTests : IAsyncLifetime
             purchaseState = 0
         });
 
-        var statusResponse = await _client.GetAsync("/api/billing/status");
+        var statusResponse = await verifiedClient.GetAsync("/api/billing/status");
         statusResponse.EnsureSuccessStatusCode();
         var status = await statusResponse.Content.ReadFromJsonAsync<JsonElement>();
         Assert.True(status.GetProperty("isPremiumActive").GetBoolean());
+    }
+
+    [Fact]
+    public async Task Sync_VerifiedCancelledSubscription_StateReflected()
+    {
+        var verifiedClient = await CreateAuthenticatedBillingClientWithSubscriptionResponseAsync(
+            BuildSubscriptionV2Json(DateTime.UtcNow.AddDays(30), cancelled: true));
+
+        var token = $"tok_{Guid.NewGuid():N}";
+        var response = await verifiedClient.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        {
+            productId = "freaklete_premium",
+            basePlanId = "monthly",
+            purchaseToken = token,
+            purchaseState = 0
+        });
+
+        response.EnsureSuccessStatusCode();
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("cancelled", body.GetProperty("state").GetString());
+
+        var statusResponse = await verifiedClient.GetAsync("/api/billing/status");
+        statusResponse.EnsureSuccessStatusCode();
+        var status = await statusResponse.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("free", status.GetProperty("plan").GetString());
+        Assert.False(status.GetProperty("isPremiumActive").GetBoolean());
     }
 
     // ════════════════════════════════════════════════════════════════
@@ -289,5 +317,121 @@ public class BillingSyncIntegrationTests : IAsyncLifetime
 
         var nextAvailable = status.GetProperty("nutritionGuidanceNextAvailableAtUtc");
         Assert.Equal(JsonValueKind.Null, nextAvailable.ValueKind);
+    }
+
+    private async Task<HttpClient> CreateAuthenticatedBillingClientWithSubscriptionResponseAsync(string subscriptionVerifyJson)
+    {
+        var childFactory = _factory.WithWebHostBuilder(builder =>
+        {
+            builder.UseSetting("GooglePlay:PackageName", "com.freaklete.test");
+            builder.UseSetting("GooglePlay:ServiceAccountJsonBase64", CreateFakeServiceAccountJsonBase64());
+
+            builder.ConfigureServices(services =>
+            {
+                services.AddHttpClient<GeminiClient>()
+                    .ConfigurePrimaryHttpMessageHandler(() => _geminiHandler);
+
+                services.AddHttpClient<GooglePlayVerificationService>()
+                    .ConfigurePrimaryHttpMessageHandler(() => new FakeGooglePlayHttpMessageHandler(subscriptionVerifyJson));
+            });
+        });
+
+        var verifiedClient = childFactory.CreateClient();
+        var auth = await AuthTestHelper.RegisterAsync(verifiedClient);
+        AuthTestHelper.Authenticate(verifiedClient, auth.Token);
+        return verifiedClient;
+    }
+
+    private static string BuildSubscriptionV2Json(DateTime expiryUtc, bool cancelled)
+    {
+        var start = DateTime.UtcNow.AddDays(-7).ToString("O");
+        var expiry = expiryUtc.ToString("O");
+
+        return cancelled
+            ? $$"""
+              {
+                "startTime": "{{start}}",
+                "acknowledgementState": "ACKNOWLEDGED",
+                "lineItems": [{ "expiryTime": "{{expiry}}" }],
+                "canceledStateContext": { "userInitiatedCancellation": {} }
+              }
+              """
+            : $$"""
+              {
+                "startTime": "{{start}}",
+                "acknowledgementState": "ACKNOWLEDGED",
+                "lineItems": [{ "expiryTime": "{{expiry}}" }]
+              }
+              """;
+    }
+
+    private static string CreateFakeServiceAccountJsonBase64()
+    {
+        using var rsa = RSA.Create(2048);
+        var pkcs8 = Convert.ToBase64String(rsa.ExportPkcs8PrivateKey());
+        var pem = $"-----BEGIN PRIVATE KEY-----\n{InsertLineBreaks(pkcs8)}\n-----END PRIVATE KEY-----";
+
+        var json = JsonSerializer.Serialize(new
+        {
+            client_email = "freaklete-tests@example.iam.gserviceaccount.com",
+            private_key = pem,
+            token_uri = "https://oauth2.googleapis.com/token"
+        });
+
+        return Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+    }
+
+    private static string InsertLineBreaks(string text)
+    {
+        var sb = new StringBuilder();
+        for (var i = 0; i < text.Length; i += 64)
+        {
+            var chunkLength = Math.Min(64, text.Length - i);
+            sb.Append(text, i, chunkLength);
+            if (i + chunkLength < text.Length)
+                sb.Append('\n');
+        }
+
+        return sb.ToString();
+    }
+
+    private sealed class FakeGooglePlayHttpMessageHandler : HttpMessageHandler
+    {
+        private readonly string _subscriptionVerifyJson;
+
+        public FakeGooglePlayHttpMessageHandler(string subscriptionVerifyJson)
+        {
+            _subscriptionVerifyJson = subscriptionVerifyJson;
+        }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var url = request.RequestUri?.ToString() ?? string.Empty;
+
+            if (request.Method == HttpMethod.Post && url.Contains("oauth2.googleapis.com/token", StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.FromResult(CreateJsonResponse("""{ "access_token": "fake-access-token" }"""));
+            }
+
+            if (request.Method == HttpMethod.Get && url.Contains("/purchases/subscriptionsv2/tokens/", StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.FromResult(CreateJsonResponse(_subscriptionVerifyJson));
+            }
+
+            if (request.Method == HttpMethod.Post && url.Contains(":acknowledge", StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+            }
+
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
+        }
+
+        private static HttpResponseMessage CreateJsonResponse(string json)
+        {
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+        }
     }
 }

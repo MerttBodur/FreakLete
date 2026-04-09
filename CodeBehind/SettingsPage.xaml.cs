@@ -39,12 +39,8 @@ public partial class SettingsPage : ContentPage
 		LblManageSub.Text = AppLanguage.SettingsManageSubscription;
 		LblManageSubDesc.Text = AppLanguage.SettingsManageSubscriptionDesc;
 		DonatePickerTitle.Text = AppLanguage.SettingsDonateChooseAmount;
-		SubscribePickerTitle.Text = AppLanguage.SettingsSubscribeChoosePlan;
-		BtnMonthly.Text = $"{AppLanguage.SettingsMonthly} — $3/mo";
-		BtnAnnual.Text = $"{AppLanguage.SettingsAnnual} — $30/yr";
 		ToastText.Text = AppLanguage.SettingsComingSoonToast;
 		BtnDonateCancel.Text = AppLanguage.SettingsCancel;
-		BtnSubscribeCancel.Text = AppLanguage.SettingsCancel;
 	}
 
 	private async Task InitBillingStateAsync()
@@ -191,28 +187,14 @@ public partial class SettingsPage : ContentPage
 			return;
 		}
 
-		SubscribeOverlay.IsVisible = true;
-		await SubscribeOverlay.FadeTo(1, 200, Easing.CubicOut);
+		// Plugin.InAppBilling cannot select base plans/offers yet.
+		// Use a single honest subscription flow until real plan selection is supported.
+		await ExecuteSubscribeAsync("freaklete_premium");
 	}
 
-	private async void OnSubscribeOverlayDismiss(object? sender, EventArgs e)
+	private async Task ExecuteSubscribeAsync(string productId)
 	{
-		await SubscribeOverlay.FadeTo(0, 200, Easing.CubicIn);
-		SubscribeOverlay.IsVisible = false;
-	}
-
-	private async void OnMonthlyClicked(object? sender, EventArgs e) =>
-		await ExecuteSubscribeAsync("freaklete_premium", "monthly");
-
-	private async void OnAnnualClicked(object? sender, EventArgs e) =>
-		await ExecuteSubscribeAsync("freaklete_premium", "annual");
-
-	private async Task ExecuteSubscribeAsync(string productId, string basePlanId)
-	{
-		await SubscribeOverlay.FadeTo(0, 200, Easing.CubicIn);
-		SubscribeOverlay.IsVisible = false;
-
-		var result = await _billing.PurchaseSubscriptionAsync(productId, basePlanId);
+		var result = await _billing.PurchaseSubscriptionAsync(productId, "");
 		if (result.Status == BillingPurchaseStatus.Success && result.Purchase is not null)
 		{
 			await SyncPurchaseAsync(result.Purchase);
