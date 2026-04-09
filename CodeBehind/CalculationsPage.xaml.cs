@@ -1,4 +1,3 @@
-using System.Text;
 using FreakLete.Models;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,6 +54,8 @@ public partial class CalculationsPage : ContentPage
 		ConcentricTimeLbl.Text = AppLanguage.CalcConcentricTime;
 		CalculateBtn.Text = AppLanguage.CalcCalculate;
 		CalcRangeLabel.Text = AppLanguage.CalcCalculatedRange;
+		OneRmPrimaryCaptionLabel.Text = AppLanguage.CalcEstimated1RmCaption;
+		OneRmSecondaryLabel.Text = AppLanguage.CalcNoOneRmYet;
 		SavePrTitle.Text = AppLanguage.CalcSavePr;
 		MovementLabel.Text = AppLanguage.CalcMovement;
 		BrowsePrBtn.Text = AppLanguage.SharedBrowse;
@@ -73,7 +74,8 @@ public partial class CalculationsPage : ContentPage
 		GctLabel.Text = AppLanguage.CalcGctS;
 		CalculateRsiBtn.Text = AppLanguage.CalcCalculateRsi;
 		RsiResultTitle.Text = AppLanguage.CalcResult;
-		RsiResultLabel.Text = AppLanguage.CalcNoRsiYet;
+		RsiPrimaryCaptionLabel.Text = AppLanguage.CalcReactiveStrength;
+		RsiSecondaryLabel.Text = AppLanguage.CalcNoRsiYet;
 		FfmiTitleLabel.Text = AppLanguage.CalcFfmiTitle;
 		FfmiDescLabel.Text = AppLanguage.CalcFfmiDesc;
 		FfmiMissingDataLabel.Text = AppLanguage.CalcFfmiMissingData;
@@ -505,7 +507,8 @@ public partial class CalculationsPage : ContentPage
 
 	private void OnCalculateOneRmClicked(object? sender, EventArgs e)
 	{
-		ResultsLabel.Text = string.Empty;
+		OneRmPrimaryValueLabel.Text = string.Empty;
+		OneRmSecondaryLabel.Text = AppLanguage.CalcNoOneRmYet;
 		ClearLabel(OneRmStatusLabel);
 
 		OneRmInputParseResult inputResult = CalculationsPageLogic.ParseOneRmInputs(
@@ -521,27 +524,9 @@ public partial class CalculationsPage : ContentPage
 		}
 
 		double oneRm = CalculationService.CalculateOneRm(inputResult.WeightKg, inputResult.Reps, inputResult.Rir);
-		var output = new StringBuilder();
-
-		if (_selectedStrengthExerciseItem is not null)
-		{
-			output.AppendLine($"Movement: {_selectedStrengthExerciseItem.Name}");
-		}
-
-		IReadOnlyList<double> rmValues = CalculationService.BuildRmTable(oneRm, 8);
-		for (int rm = 1; rm <= rmValues.Count; rm++)
-		{
-			double rmWeight = rmValues[rm - 1];
-			output.AppendLine($"{rm}RM: {Math.Round(rmWeight, 1)} kg");
-		}
-
-		if (inputResult.ConcentricTimeSeconds.HasValue)
-		{
-			output.AppendLine();
-			output.AppendLine($"Concentric Time: {inputResult.ConcentricTimeSeconds.Value:0.##} s");
-		}
-
-		ResultsLabel.Text = output.ToString().TrimEnd();
+		OneRmPrimaryValueLabel.Text = CalculationsPageLogic.FormatDisplayMetric(oneRm, "kg", 1);
+		OneRmPrimaryCaptionLabel.Text = AppLanguage.CalcEstimated1RmCaption;
+		OneRmSecondaryLabel.Text = CalculationsPageLogic.BuildOneRmSecondaryText(oneRm);
 	}
 
 	private async void OnChoosePrExerciseClicked(object? sender, EventArgs e)
@@ -866,7 +851,9 @@ public partial class CalculationsPage : ContentPage
 		}
 
 		double rsi = CalculationService.CalculateRsi(jumpHeightCm, gctSeconds);
-		RsiResultLabel.Text = $"RSI: {rsi:0.00} | Height {jumpHeightCm:0.##} cm | GCT {gctSeconds:0.##} s";
+		RsiPrimaryValueLabel.Text = CalculationsPageLogic.FormatDisplayValue(rsi, 2);
+		RsiPrimaryCaptionLabel.Text = AppLanguage.CalcReactiveStrength;
+		RsiSecondaryLabel.Text = CalculationsPageLogic.BuildRsiSecondaryText(jumpHeightCm, gctSeconds);
 	}
 
 	private async Task LoadFfmiProfileDataAsync()
@@ -922,9 +909,9 @@ public partial class CalculationsPage : ContentPage
 
 		var (lbm, rawFfmi, normalizedFfmi) = CalculationService.CalculateFfmi(weightKg, heightCm, bodyFat);
 
-		FfmiNormalizedLabel.Text = normalizedFfmi.ToString("0.0");
+		FfmiNormalizedLabel.Text = CalculationsPageLogic.FormatDisplayValue(normalizedFfmi, 1);
 		FfmiNormalizedCaption.Text = AppLanguage.CalcFfmiNormalized;
-		FfmiSecondaryLabel.Text = $"{AppLanguage.CalcFfmiRaw}: {rawFfmi:0.0}  |  {AppLanguage.CalcFfmiLbm}: {lbm:0.1} kg";
+		FfmiSecondaryLabel.Text = CalculationsPageLogic.BuildFfmiSecondaryText(rawFfmi, lbm);
 	}
 
 	private static void ShowError(Label label, string message)

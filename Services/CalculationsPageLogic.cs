@@ -1,9 +1,52 @@
+using System.Globalization;
 using FreakLete.Models;
 
 namespace FreakLete.Services;
 
 public static class CalculationsPageLogic
 {
+	public static string FormatDisplayMetric(double value, string unit, int maxDecimals)
+	{
+		string pattern = maxDecimals switch
+		{
+			<= 0 => "0",
+			1 => "0.#",
+			2 => "0.##",
+			_ => "0.###"
+		};
+
+		return $"{value.ToString(pattern, CultureInfo.CurrentCulture)} {unit}";
+	}
+
+	public static string FormatDisplayValue(double value, int maxDecimals)
+	{
+		string pattern = maxDecimals switch
+		{
+			<= 0 => "0",
+			1 => "0.#",
+			2 => "0.##",
+			_ => "0.###"
+		};
+
+		return value.ToString(pattern, CultureInfo.CurrentCulture);
+	}
+
+	public static string BuildOneRmSecondaryText(double oneRm)
+	{
+		IReadOnlyList<double> rmValues = CalculationService.BuildRmTable(oneRm, 8);
+		return $"2RM {FormatDisplayMetric(rmValues[1], "kg", 1)} · 5RM {FormatDisplayMetric(rmValues[4], "kg", 1)} · 8RM {FormatDisplayMetric(rmValues[7], "kg", 1)}";
+	}
+
+	public static string BuildRsiSecondaryText(double jumpHeightCm, double gctSeconds)
+	{
+		return $"{AppLanguage.CalcJumpHeight}: {FormatDisplayMetric(jumpHeightCm, "cm", 2)} · {AppLanguage.CalcGctS}: {FormatDisplayMetric(gctSeconds, "s", 2)}";
+	}
+
+	public static string BuildFfmiSecondaryText(double rawFfmi, double leanBodyMassKg)
+	{
+		return $"{AppLanguage.CalcFfmiRaw}: {FormatDisplayValue(rawFfmi, 1)} · {AppLanguage.CalcFfmiLbm}: {FormatDisplayMetric(leanBodyMassKg, "kg", 1)}";
+	}
+
 	public static OneRmInputParseResult ParseOneRmInputs(
 		string? weightText,
 		string? repsText,

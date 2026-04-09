@@ -246,8 +246,16 @@
                                    Style="{StaticResource SubHeadline}"
                                    HorizontalTextAlignment="Start" />
 
-                            <Label x:Name="ResultsLabel"
+                            <Label x:Name="OneRmPrimaryValueLabel"
                                    Text=""
+                                   FontSize="36"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource AccentGlow}" />
+                            <Label x:Name="OneRmPrimaryCaptionLabel"
+                                   Text="Estimated 1RM"
+                                   Style="{StaticResource Eyebrow}" />
+                            <Label x:Name="OneRmSecondaryLabel"
+                                   Text="No 1RM calculated yet."
                                    LineBreakMode="WordWrap"
                                    Style="{StaticResource BodyMuted}" />
                         </VerticalStackLayout>
@@ -497,7 +505,15 @@
                                    Style="{StaticResource SubHeadline}"
                                    HorizontalTextAlignment="Start" />
 
-                            <Label x:Name="RsiResultLabel"
+                            <Label x:Name="RsiPrimaryValueLabel"
+                                   Text=""
+                                   FontSize="36"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource AccentGlow}" />
+                            <Label x:Name="RsiPrimaryCaptionLabel"
+                                   Text="Reactive Strength Index"
+                                   Style="{StaticResource Eyebrow}" />
+                            <Label x:Name="RsiSecondaryLabel"
                                    Text="No RSI calculated yet."
                                    Style="{StaticResource BodyMuted}" />
                         </VerticalStackLayout>

@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Reflection;
 using FreakLete.Models;
 using FreakLete.Services;
 
@@ -5,6 +7,11 @@ namespace FreakLete.Core.Tests;
 
 public class CalculationsPageLogicTests
 {
+	public CalculationsPageLogicTests()
+	{
+		SetLanguageAndCulture("en");
+	}
+
 	[Fact]
 	public void ParseOneRmInputs_WithValidValues_ReturnsParsedResult()
 	{
@@ -178,5 +185,51 @@ public class CalculationsPageLogicTests
 
 		Assert.False(result.IsValid);
 		Assert.Equal("Choose a movement before saving.", result.ErrorMessage);
+	}
+
+	[Fact]
+	public void BuildOneRmSecondaryText_FormatsRepRangeSummary()
+	{
+		SetLanguageAndCulture("en-US");
+
+		string result = CalculationsPageLogic.BuildOneRmSecondaryText(120);
+
+		Assert.Equal("2RM 112.5 kg · 5RM 102.9 kg · 8RM 94.7 kg", result);
+	}
+
+	[Fact]
+	public void BuildRsiSecondaryText_UsesCurrentCultureFormatting()
+	{
+		SetLanguageAndCulture("tr-TR");
+
+		string result = CalculationsPageLogic.BuildRsiSecondaryText(42.5, 0.21);
+
+		Assert.Equal("Sıçrama Yüksekliği (cm): 42,5 cm · YTS (s): 0,21 s", result);
+	}
+
+	[Fact]
+	public void BuildFfmiSecondaryText_UsesAdjustedLabels_And_LocalizedNumbers()
+	{
+		SetLanguageAndCulture("tr-TR");
+
+		string result = CalculationsPageLogic.BuildFfmiSecondaryText(21.46, 72.1);
+
+		Assert.Equal("Ham FFMI: 21,5 · Yağsız Kütle (kg): 72,1 kg", result);
+		Assert.Equal("Düzeltilmiş FFMI", AppLanguage.CalcFfmiNormalized);
+	}
+
+	private static void SetLanguageAndCulture(string cultureName)
+	{
+		var culture = new CultureInfo(cultureName);
+		CultureInfo.CurrentCulture = culture;
+		CultureInfo.CurrentUICulture = culture;
+		CultureInfo.DefaultThreadCurrentCulture = culture;
+		CultureInfo.DefaultThreadCurrentUICulture = culture;
+
+		string code = cultureName.StartsWith("tr", StringComparison.OrdinalIgnoreCase) ? "tr" : "en";
+		typeof(AppLanguage)
+			.GetProperty(nameof(AppLanguage.Code))!
+			.GetSetMethod(true)!
+			.Invoke(null, [code]);
 	}
 }

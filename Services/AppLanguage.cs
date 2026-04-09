@@ -263,9 +263,11 @@ public static class AppLanguage
 	public static string CalcCalculateRsi => IsTurkish ? "RSI Hesapla" : "Calculate RSI";
 	public static string CalcResult => IsTurkish ? "Sonuç" : "Result";
 	public static string CalcNoRsiYet => IsTurkish ? "Henüz RSI hesaplanmadı." : "No RSI calculated yet.";
+	public static string CalcNoOneRmYet => IsTurkish ? "Henüz 1RM hesaplanmadı." : "No 1RM calculated yet.";
 	public static string CalcChooseStrength => IsTurkish ? "Güç Hareketi Seç" : "Choose Strength Exercise";
 	public static string CalcChoosePr => IsTurkish ? "PR Hareketi Seç" : "Choose PR Movement";
 	public static string CalcEstimated1Rm => IsTurkish ? "TAHMİNİ 1RM (KG)" : "ESTIMATED 1RM (KG)";
+	public static string CalcEstimated1RmCaption => IsTurkish ? "Tahmini 1RM" : "Estimated 1RM";
 	public static string CalcBestValue => IsTurkish ? "EN İYİ DEĞER" : "BEST VALUE";
 	public static string FormatBestPr(DateTime date) => IsTurkish ? $"En iyi PR: {date:dd MMM yyyy}" : $"Best PR: {date:MMM dd, yyyy}";
 	public static string FormatProgress(string name) => IsTurkish ? $"{name} İlerlemesi" : $"{name} Progress";
@@ -291,7 +293,7 @@ public static class AppLanguage
 		: "FFMI requires weight, height, and body fat percentage in your profile.";
 	public static string CalcFfmiGoToProfile => IsTurkish ? "Profili Düzenle" : "Edit Profile";
 	public static string CalcFfmiCalculate => IsTurkish ? "FFMI Hesapla" : "Calculate FFMI";
-	public static string CalcFfmiNormalized => IsTurkish ? "NORMALİZE FFMI" : "NORMALIZED FFMI";
+	public static string CalcFfmiNormalized => IsTurkish ? "Düzeltilmiş FFMI" : "Adjusted FFMI";
 	public static string CalcFfmiRaw => IsTurkish ? "Ham FFMI" : "Raw FFMI";
 	public static string CalcFfmiLbm => IsTurkish ? "Yağsız Kütle (kg)" : "Lean Body Mass (kg)";
 	public static string CalcFfmiNoResult => IsTurkish ? "Henüz FFMI hesaplanmadı." : "No FFMI calculated yet.";
