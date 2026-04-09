@@ -6,7 +6,7 @@
              NavigationPage.HasNavigationBar="False"
              Title="FreakAI">
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto">
 
         <local:TopHeader Grid.Row="0"
                          Title="FreakAI" />
@@ -44,7 +44,98 @@
             </HorizontalStackLayout>
         </ScrollView>
 
-        <ScrollView Grid.Row="2"
+        <!-- Usage / Plan Card -->
+        <Border x:Name="UsageCard"
+                Grid.Row="2"
+                Style="{StaticResource CardBorder}"
+                BackgroundColor="{StaticResource SurfaceRaised}"
+                Padding="14,10"
+                Margin="12,4,12,0"
+                IsVisible="False">
+            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="6">
+                <!-- Plan badge -->
+                <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="8" VerticalOptions="Center">
+                    <Border BackgroundColor="{StaticResource AccentSoft}"
+                            StrokeThickness="0"
+                            Padding="8,3"
+                            StrokeShape="RoundRectangle 10">
+                        <Label x:Name="UsagePlanBadge"
+                               Text="Free Plan"
+                               FontSize="11"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource AccentGlow}" />
+                    </Border>
+                </HorizontalStackLayout>
+
+                <!-- Upgrade CTA (free only) -->
+                <Button x:Name="UsageUpgradeBtn"
+                        Grid.Row="0" Grid.Column="1"
+                        Text="Go Premium"
+                        FontSize="11"
+                        FontFamily="OpenSansSemibold"
+                        BackgroundColor="{StaticResource Accent}"
+                        TextColor="{StaticResource TextPrimary}"
+                        Padding="10,4"
+                        CornerRadius="10"
+                        HeightRequest="28"
+                        VerticalOptions="Center"
+                        Clicked="OnUsageUpgradeClicked" />
+
+                <!-- Quota metrics row -->
+                <HorizontalStackLayout Grid.Row="1" Grid.ColumnSpan="2" Spacing="14">
+                    <VerticalStackLayout Spacing="1">
+                        <Label x:Name="UsageChatLabel"
+                               Text="Chat"
+                               FontSize="10"
+                               FontFamily="OpenSansRegular"
+                               TextColor="{StaticResource TextMuted}" />
+                        <Label x:Name="UsageChatValue"
+                               Text="3/day"
+                               FontSize="13"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextPrimary}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="1">
+                        <Label x:Name="UsageGenerateLabel"
+                               Text="Generate"
+                               FontSize="10"
+                               FontFamily="OpenSansRegular"
+                               TextColor="{StaticResource TextMuted}" />
+                        <Label x:Name="UsageGenerateValue"
+                               Text="1/mo"
+                               FontSize="13"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextPrimary}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="1">
+                        <Label x:Name="UsageAnalyzeLabel"
+                               Text="Analyze"
+                               FontSize="10"
+                               FontFamily="OpenSansRegular"
+                               TextColor="{StaticResource TextMuted}" />
+                        <Label x:Name="UsageAnalyzeValue"
+                               Text="1/mo"
+                               FontSize="13"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextPrimary}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="1">
+                        <Label x:Name="UsageNutritionLabel"
+                               Text="Nutrition"
+                               FontSize="10"
+                               FontFamily="OpenSansRegular"
+                               TextColor="{StaticResource TextMuted}" />
+                        <Label x:Name="UsageNutritionValue"
+                               Text="Ready"
+                               FontSize="13"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="{StaticResource TextPrimary}" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Grid>
+        </Border>
+
+        <ScrollView Grid.Row="3"
                     x:Name="ChatScrollView"
                     Padding="16,0">
             <VerticalStackLayout x:Name="ChatContainer"
@@ -98,7 +189,7 @@
         </ScrollView>
 
         <!-- Loading indicator -->
-        <HorizontalStackLayout Grid.Row="3"
+        <HorizontalStackLayout Grid.Row="4"
                                x:Name="LoadingIndicator"
                                IsVisible="False"
                                Padding="20,8"
@@ -114,7 +205,7 @@
         </HorizontalStackLayout>
 
         <!-- Input area -->
-        <Border Grid.Row="4"
+        <Border Grid.Row="5"
                 Style="{StaticResource CardBorder}"
                 BackgroundColor="{StaticResource SurfaceRaised}"
                 Stroke="{StaticResource SurfaceBorder}"
@@ -144,7 +235,7 @@
             </Grid>
         </Border>
 
-        <local:BottomNavBar Grid.Row="5"
+        <local:BottomNavBar Grid.Row="6"
                             ActiveTab="freakai" />
 
     </Grid>

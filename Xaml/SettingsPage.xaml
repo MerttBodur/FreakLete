@@ -167,6 +167,41 @@
                     </Grid>
                 </Border>
 
+                <!-- Current Plan -->
+                <Border x:Name="CurrentPlanCard"
+                        Style="{StaticResource CardBorder}"
+                        Padding="16,14"
+                        IsVisible="False">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                        <Label Text="&#x1F4C4;"
+                               FontSize="20"
+                               VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label x:Name="LblCurrentPlan"
+                                   Text="Current Plan"
+                                   FontSize="15"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource TextPrimary}" />
+                            <Label x:Name="LblCurrentPlanDesc"
+                                   Text="Free"
+                                   FontSize="11"
+                                   FontFamily="OpenSansRegular"
+                                   TextColor="{StaticResource TextSecondary}" />
+                        </VerticalStackLayout>
+                        <Border Grid.Column="2"
+                                BackgroundColor="{StaticResource AccentSoft}"
+                                StrokeThickness="0"
+                                Padding="8,4"
+                                StrokeShape="RoundRectangle 10">
+                            <Label x:Name="LblCurrentPlanBadge"
+                                   Text=""
+                                   FontSize="10"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource AccentGlow}" />
+                        </Border>
+                    </Grid>
+                </Border>
+
                 <!-- Subscribe -->
                 <Border x:Name="SubscribeCard"
                         Style="{StaticResource CardBorder}"

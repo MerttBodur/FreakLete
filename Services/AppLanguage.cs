@@ -565,6 +565,54 @@ public static class AppLanguage
 		? "Yanıt alınamadı. Lütfen tekrar deneyin."
 		: "Failed to get response. Please try again.";
 
+	// ── FreakAI Usage Card / Paywall ───────────────────────────
+	public static string FreakAiPlanFree => IsTurkish ? "Ücretsiz Plan" : "Free Plan";
+	public static string FreakAiPlanPremium => IsTurkish ? "Premium Plan" : "Premium Plan";
+	public static string FreakAiPlanLabel => IsTurkish ? "PLAN" : "PLAN";
+	public static string FreakAiChatRemaining => IsTurkish ? "Sohbet" : "Chat";
+	public static string FreakAiGenerateRemaining => IsTurkish ? "Program Oluştur" : "Generate";
+	public static string FreakAiAnalyzeRemaining => IsTurkish ? "Analiz" : "Analyze";
+	public static string FreakAiNutritionAvailable => IsTurkish ? "Beslenme" : "Nutrition";
+	public static string FreakAiNutritionReady => IsTurkish ? "Hazır" : "Ready";
+	public static string FreakAiUnlimited => IsTurkish ? "Sınırsız" : "Unlimited";
+	public static string FreakAiUpgradeCta => IsTurkish ? "Premium'a Geç" : "Go Premium";
+	public static string FreakAiPremiumActive => IsTurkish ? "Premium aktif" : "Premium active";
+	public static string FormatRemainingToday(int n) => IsTurkish ? $"{n}/gün" : $"{n}/day";
+	public static string FormatRemainingMonth(int n) => IsTurkish ? $"{n}/ay" : $"{n}/mo";
+	public static string FormatNutritionNextAt(DateTime utc)
+	{
+		var local = utc.ToLocalTime();
+		return IsTurkish ? $"{local:dd MMM HH:mm}" : $"{local:MMM dd HH:mm}";
+	}
+
+	// ── FreakAI Quota Exhausted ────────────────────────────────
+	public static string QuotaExhaustedFree => IsTurkish
+		? "Ücretsiz kullanım hakkın doldu. Premium'a geçerek sınırsız erişim elde edebilirsin."
+		: "You've reached your free usage limit. Upgrade to Premium for unlimited access.";
+	public static string QuotaExhaustedPremium => IsTurkish
+		? "Günlük kullanım limitine ulaştın. Yarın tekrar dene."
+		: "You've reached the daily usage limit. Try again tomorrow.";
+	public static string QuotaUpgradeButton => IsTurkish ? "Premium'a Geç" : "Go Premium";
+	public static string FormatQuotaResetsAt(DateTime utc)
+	{
+		var local = utc.ToLocalTime();
+		return IsTurkish
+			? $"Limit {local:dd MMM HH:mm}'de sıfırlanır."
+			: $"Limit resets at {local:MMM dd HH:mm}.";
+	}
+
+	// ── Settings Billing Details ────────────────────────────────
+	public static string SettingsPlanFree => IsTurkish ? "Ücretsiz" : "Free";
+	public static string SettingsPlanPremium => IsTurkish ? "Premium" : "Premium";
+	public static string SettingsCurrentPlan => IsTurkish ? "Mevcut Plan" : "Current Plan";
+	public static string SettingsCurrentPlanDesc => IsTurkish ? "Aktif abonelik durumunuz" : "Your active subscription status";
+	public static string FormatRenewalDate(DateTime utc) => IsTurkish
+		? $"Yenileme: {utc.ToLocalTime():dd MMM yyyy}"
+		: $"Renews: {utc.ToLocalTime():MMM dd, yyyy}";
+	public static string FormatExpiryDate(DateTime utc) => IsTurkish
+		? $"Bitiş: {utc.ToLocalTime():dd MMM yyyy}"
+		: $"Expires: {utc.ToLocalTime():MMM dd, yyyy}";
+
 	// ── FreakAI Welcome Text ────────────────────────────────────
 	public static string WelcomeTitle => IsTurkish ? "FreakAI Koç" : "FreakAI Coach";
 	public static string WelcomeBody => IsTurkish

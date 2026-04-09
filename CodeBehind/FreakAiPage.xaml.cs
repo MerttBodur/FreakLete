@@ -9,6 +9,7 @@ public partial class FreakAiPage : ContentPage
 	private readonly List<FreakAiChatMessage> _history = [];
 	private bool _isSending;
 	private CancellationTokenSource? _loadingAnimationCts;
+	private BillingStatusResponse? _billingStatus;
 
 	public FreakAiPage()
 	{
@@ -38,12 +39,19 @@ public partial class FreakAiPage : ContentPage
 
 		// Input placeholder
 		MessageEditor.Placeholder = AppLanguage.InputPlaceholder;
+
+		// Usage card labels
+		UsageChatLabel.Text = AppLanguage.FreakAiChatRemaining;
+		UsageGenerateLabel.Text = AppLanguage.FreakAiGenerateRemaining;
+		UsageAnalyzeLabel.Text = AppLanguage.FreakAiAnalyzeRemaining;
+		UsageNutritionLabel.Text = AppLanguage.FreakAiNutritionAvailable;
+		UsageUpgradeBtn.Text = AppLanguage.FreakAiUpgradeCta;
 	}
 
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
-		await LoadActiveProgramCard();
+		await Task.WhenAll(LoadActiveProgramCard(), LoadBillingStatusAsync());
 	}
 
 	private async Task LoadActiveProgramCard()
@@ -69,26 +77,81 @@ public partial class FreakAiPage : ContentPage
 		}
 	}
 
-	// ── Quick actions (language-aware prompts) ──────────────
+	// ── Billing status ──────────────────────────────────────
+
+	private async Task LoadBillingStatusAsync()
+	{
+		try
+		{
+			var result = await _api.GetBillingStatusAsync();
+			if (result.Success && result.Data is not null)
+			{
+				_billingStatus = result.Data;
+				UpdateUsageCard();
+			}
+		}
+		catch
+		{
+			// Non-critical; card stays hidden
+		}
+	}
+
+	private void UpdateUsageCard()
+	{
+		if (_billingStatus is null) return;
+
+		UsageCard.IsVisible = true;
+
+		if (_billingStatus.IsPremiumActive)
+		{
+			UsagePlanBadge.Text = AppLanguage.FreakAiPlanPremium;
+			UsageUpgradeBtn.IsVisible = false;
+			UsageChatValue.Text = AppLanguage.FreakAiUnlimited;
+			UsageGenerateValue.Text = AppLanguage.FreakAiUnlimited;
+			UsageAnalyzeValue.Text = AppLanguage.FreakAiUnlimited;
+			UsageNutritionValue.Text = AppLanguage.FreakAiNutritionReady;
+		}
+		else
+		{
+			UsagePlanBadge.Text = AppLanguage.FreakAiPlanFree;
+			UsageUpgradeBtn.IsVisible = true;
+			UsageChatValue.Text = AppLanguage.FormatRemainingToday(_billingStatus.GeneralChatRemainingToday);
+			UsageGenerateValue.Text = AppLanguage.FormatRemainingMonth(_billingStatus.ProgramGenerateRemainingThisMonth);
+			UsageAnalyzeValue.Text = AppLanguage.FormatRemainingMonth(_billingStatus.ProgramAnalyzeRemainingThisMonth);
+			UsageNutritionValue.Text = _billingStatus.NutritionGuidanceNextAvailableAtUtc is null
+				? AppLanguage.FreakAiNutritionReady
+				: AppLanguage.FormatNutritionNextAt(_billingStatus.NutritionGuidanceNextAvailableAtUtc.Value);
+		}
+	}
+
+	private async void OnUsageUpgradeClicked(object? sender, EventArgs e)
+	{
+		await Navigation.PushAsync(new SettingsPage());
+	}
+
+	// ── Quick actions (language-aware prompts + intent) ──────
 
 	private void OnGenerateProgramClicked(object? sender, EventArgs e)
-		=> SendQuickMessage(AppLanguage.PromptGenerateProgram);
+		=> SendQuickMessage(AppLanguage.PromptGenerateProgram, "program_generate");
 
 	private void OnViewProgramClicked(object? sender, EventArgs e)
-		=> SendQuickMessage(AppLanguage.PromptViewProgram);
+		=> SendQuickMessage(AppLanguage.PromptViewProgram, "program_view");
 
 	private void OnAnalyzeTrainingClicked(object? sender, EventArgs e)
-		=> SendQuickMessage(AppLanguage.PromptAnalyzeTraining);
+		=> SendQuickMessage(AppLanguage.PromptAnalyzeTraining, "program_analyze");
 
 	private void OnNutritionHelpClicked(object? sender, EventArgs e)
-		=> SendQuickMessage(AppLanguage.PromptNutritionHelp);
+		=> SendQuickMessage(AppLanguage.PromptNutritionHelp, "nutrition_guidance");
 
-	private void SendQuickMessage(string message)
+	private void SendQuickMessage(string message, string? intent = null)
 	{
 		if (_isSending) return;
+		_pendingIntent = intent;
 		MessageEditor.Text = message;
 		OnSendClicked(null, EventArgs.Empty);
 	}
+
+	private string? _pendingIntent;
 
 	private async void OnSendClicked(object? sender, EventArgs e)
 	{
@@ -100,6 +163,12 @@ public partial class FreakAiPage : ContentPage
 		_isSending = true;
 		MessageEditor.Text = string.Empty;
 		SendButton.IsEnabled = false;
+
+		// Capture and clear pending intent.
+		// Quick actions set _pendingIntent explicitly; free-text leaves it null so the
+		// backend (source of truth) classifies the intent from the message content.
+		string? intent = _pendingIntent;
+		_pendingIntent = null;
 
 		// Hide welcome on first message
 		if (_history.Count == 0)
@@ -116,7 +185,7 @@ public partial class FreakAiPage : ContentPage
 
 		try
 		{
-			var result = await _api.FreakAiChatAsync(message, _history.Count > 1 ? _history.SkipLast(1).ToList() : null);
+			var result = await _api.FreakAiChatAsync(message, _history.Count > 1 ? _history.SkipLast(1).ToList() : null, intent);
 
 			HideLoadingIndicator();
 
@@ -137,6 +206,13 @@ public partial class FreakAiPage : ContentPage
 				{
 					await LoadActiveProgramCard();
 				}
+
+				// Refresh usage card after successful request
+				_ = LoadBillingStatusAsync();
+			}
+			else if (result.StatusCode == 429)
+			{
+				HandleQuotaExhausted(result.Error, result.QuotaResetsAt);
 			}
 			else
 			{
@@ -155,6 +231,62 @@ public partial class FreakAiPage : ContentPage
 			SendButton.IsEnabled = true;
 			await ScrollToBottom();
 		}
+	}
+
+	// ── Quota exhausted handling ─────────────────────────────
+
+	private void HandleQuotaExhausted(string? serverMessage, DateTime? resetsAt)
+	{
+		bool isPremium = _billingStatus?.IsPremiumActive ?? false;
+
+		// Use the server's specific quota message; fall back to generic strings only if absent.
+		string message = !string.IsNullOrWhiteSpace(serverMessage)
+			? serverMessage
+			: isPremium ? AppLanguage.QuotaExhaustedPremium : AppLanguage.QuotaExhaustedFree;
+
+		// Append reset time if the server provided it and it's in the future.
+		if (resetsAt.HasValue && resetsAt.Value > DateTime.UtcNow)
+			message += $"\n{AppLanguage.FormatQuotaResetsAt(resetsAt.Value)}";
+
+		AddChatBubble(message, isUser: false);
+
+		if (!isPremium)
+		{
+			AddUpgradeBubble();
+		}
+
+		// Refresh usage card
+		_ = LoadBillingStatusAsync();
+	}
+
+	private void AddUpgradeBubble()
+	{
+		var btn = new Button
+		{
+			Text = AppLanguage.QuotaUpgradeButton,
+			BackgroundColor = Color.FromArgb("#8B5CF6"),
+			TextColor = Colors.White,
+			FontFamily = "OpenSansSemibold",
+			FontSize = 13,
+			CornerRadius = 14,
+			Padding = new Thickness(16, 8),
+			HorizontalOptions = LayoutOptions.Start
+		};
+		btn.Clicked += async (_, _) => await Navigation.PushAsync(new SettingsPage());
+
+		var bubble = new Border
+		{
+			BackgroundColor = Color.FromArgb("#1A1A2E"),
+			StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(16) },
+			Stroke = Color.FromArgb("#333355"),
+			StrokeThickness = 1,
+			Padding = new Thickness(14, 10),
+			Margin = new Thickness(0, 0, 48, 0),
+			HorizontalOptions = LayoutOptions.Start,
+			Content = btn
+		};
+
+		ChatContainer.Children.Add(bubble);
 	}
 
 	// ── Loading indicator with progressive messages ──────────

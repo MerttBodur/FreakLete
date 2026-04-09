@@ -42,9 +42,11 @@ The app is designed around a fast daily workflow:
 - Settings page with language switching and secure change-password flow
 - FreakAI coach MVP with language-aware response mirroring
 - FreakAI quota enforcement with free/premium plan limits and backend source-of-truth
-- Android Google Play Billing: subscription (monthly/annual) and one-time donations
-- Server-side purchase verification, subscription acknowledge, and donation consume
+- FreakAI usage/plan card showing remaining quotas for free users; unlimited display for premium
+- Android Google Play Billing: subscription (`freaklete_premium`) and fixed-amount one-time donations ($1/$5/$10/$20)
+- Server-side purchase verification, subscription acknowledge, and donation consume (Android only; iOS/Mac/Windows billing not shipped)
 - Restore purchases and manage subscription flows on Android
+- Settings current-plan card showing active plan and renewal date
 - Cloud-backed persistence for profile, workouts, PRs, movement goals, and athletic performance
 
 ## Calculations
@@ -155,8 +157,8 @@ Automated testing now has multiple layers:
 - manual smoke testing remains a separate release-verification layer for end-to-end mobile flows
 
 Current verification note for this documentation refresh:
-- `FreakLete.Core.Tests` ran and passed `158/158`
-- `FreakLete.Api.Tests` exited with code `1` in this session after restore output, so it is not documented as green until the cause is diagnosed
+- `FreakLete.Core.Tests` ran and passed `167/167`
+- `FreakLete.Api.Tests` ran and passed `293/293`
 
 That automated coverage provides strong confidence in backend and core logic when the suites are green. Real MAUI page behavior and user-facing flows are verified through manual Android emulator smoke testing, which is the documented release-verification path.
 

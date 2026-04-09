@@ -38,10 +38,13 @@ public partial class SettingsPage : ContentPage
 		LblRestoreDesc.Text = AppLanguage.SettingsRestorePurchasesDesc;
 		LblManageSub.Text = AppLanguage.SettingsManageSubscription;
 		LblManageSubDesc.Text = AppLanguage.SettingsManageSubscriptionDesc;
+		LblCurrentPlan.Text = AppLanguage.SettingsCurrentPlan;
 		DonatePickerTitle.Text = AppLanguage.SettingsDonateChooseAmount;
 		ToastText.Text = AppLanguage.SettingsComingSoonToast;
 		BtnDonateCancel.Text = AppLanguage.SettingsCancel;
 	}
+
+	private BillingStatusResponse? _billingData;
 
 	private async Task InitBillingStateAsync()
 	{
@@ -49,6 +52,7 @@ public partial class SettingsPage : ContentPage
 		var status = await _api.GetBillingStatusAsync();
 		if (status.Success && status.Data is not null)
 		{
+			_billingData = status.Data;
 			_isPremium = status.Data.IsPremiumActive;
 			UpdatePremiumUI();
 		}
@@ -59,14 +63,30 @@ public partial class SettingsPage : ContentPage
 
 	private void UpdatePremiumUI()
 	{
+		// Current Plan card
+		CurrentPlanCard.IsVisible = true;
+		LblCurrentPlan.Text = AppLanguage.SettingsCurrentPlan;
+
 		if (_isPremium)
 		{
 			LblSubscribeBadge.Text = AppLanguage.SettingsPremiumActive;
+			LblCurrentPlanBadge.Text = AppLanguage.SettingsPlanPremium;
 			ManageSubCard.IsVisible = true;
+
+			if (_billingData?.SubscriptionEndsAtUtc is { } endDate)
+			{
+				LblCurrentPlanDesc.Text = AppLanguage.FormatRenewalDate(endDate);
+			}
+			else
+			{
+				LblCurrentPlanDesc.Text = AppLanguage.SettingsPlanPremium;
+			}
 		}
 		else
 		{
 			LblSubscribeBadge.Text = "";
+			LblCurrentPlanBadge.Text = AppLanguage.SettingsPlanFree;
+			LblCurrentPlanDesc.Text = AppLanguage.SettingsCurrentPlanDesc;
 			ManageSubCard.IsVisible = false;
 		}
 	}

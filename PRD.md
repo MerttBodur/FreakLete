@@ -91,10 +91,13 @@ Asagidaki basliklar artik roadmap maddesi degil, mevcut urunun parcasidir.
 - Initial FreakAI chat and coaching flow
 - FreakAI language mirroring
 - FreakAI free/premium quota enforcement (backend source-of-truth)
-- Android Google Play Billing: subscription (`freaklete_premium` monthly/annual) ve fixed donate SKUs (`donate_1`, `donate_5`, `donate_10`, `donate_20`)
-- Server-side purchase verification, subscription acknowledge, donation consume
+- Android Google Play Billing: subscription (`freaklete_premium`) ve fixed donate SKUs (`donate_1`, `donate_5`, `donate_10`, `donate_20`)
+- Server-side purchase verification, subscription acknowledge, donation consume (Android; iOS/Mac/Windows shipped degil)
 - Restore purchases ve manage subscription (Android)
 - Billing status endpoint ile plan/kota raporlama
+- FreakAI usage/plan card: free kullanicilara kalan kota gosterimi, premium kullanicilara "Unlimited" gosterimi
+- Settings current-plan card: aktif plan ve yenileme tarihi gosterimi
+- FreakAI 429 exhausted UX: backend'den gelen spesifik mesaj + reset zamani; free kullanicilara upgrade CTA
 - CRUD for key records
 
 ### 5.2 Product and UX
@@ -123,9 +126,8 @@ Not:
 - Mevcut test stratejisi: `FreakLete.Api.Tests` ve `FreakLete.Core.Tests` (blocking), plus manual Android emulator smoke testing (real verification)
 
 Bu dokuman guncellemesi icin mevcut verification note:
-- `FreakLete.Core.Tests` bu oturumda calisti ve `158/158` gecti
-- `FreakLete.Api.Tests` bu oturumda restore cikisindan sonra `exit code 1` ile sessiz kapandi
-- bu nedenle `FreakLete.Api.Tests` bu oturum icin green olarak belgelenmedi
+- `FreakLete.Core.Tests` calisti ve `167/167` gecti
+- `FreakLete.Api.Tests` calisti ve `293/293` gecti
 
 ### 5.4 Production Validation
 - Railway production backend canli
@@ -178,7 +180,7 @@ Bu ne demek:
 - live workout v1 aktif seans mantigi repo icinde mevcuttur
 - initial FreakAI katmani backend uzerinden cagrilabilir ve kullanicinin diliyle eslesecek sekilde yonlendirilebilir durumdadir
 - FreakAI quota enforcement (free/premium limits) backend source-of-truth olarak mevcuttur
-- Android Google Play Billing entegrasyonu shipped: subscription (monthly/annual) ve fixed donate SKUs ($1/$5/$10/$20)
+- Android Google Play Billing entegrasyonu shipped: subscription (`freaklete_premium`, tek akis — monthly/annual plan secimi UI'da henuz desteklenmiyor) ve fixed donate SKUs ($1/$5/$10/$20)
 - server-side purchase verification, acknowledge ve consume mantigi mevcuttur
 - restore purchases ve manage subscription akislari Android'de mevcuttur
 - billing status endpoint kullanici planini ve kota durumunu raporlar

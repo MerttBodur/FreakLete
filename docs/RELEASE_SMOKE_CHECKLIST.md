@@ -202,12 +202,33 @@ Run this checklist manually on Android emulator after the critical Profile flows
 - [ ] Send a follow-up message — conversation context maintained
 - [ ] Verify error state if network is off — user sees friendly error, not crash
 - [ ] Verify long messages (near 2000 chars) are accepted
+- [ ] **Free-text message path** — type a free-form message and send; server receives `intent: null` and classifies correctly; response arrives
+- [ ] **Quick action path** — tap "Generate Program"; button sends explicit `program_generate` intent to server; response arrives
+- [ ] **Free user quota exhaustion** — exhaust free chat quota; 429 response shows server's specific message; reset time appended if provided; upgrade CTA appears
+- [ ] **Premium user quota exhaustion** — exhaust premium daily cap (if reachable); 429 shows server's softer message; no upgrade CTA shown
+- [ ] **Usage card — free** — FreakAI screen loads; usage card shows Free Plan badge, per-day chat count, per-month generate/analyze counts, and nutrition availability
+- [ ] **Usage card — premium** — usage card shows Premium Plan badge and "Unlimited" for all quotas; upgrade button hidden
+- [ ] **Usage card refresh** — after a successful chat, usage card updates to reflect decremented quota
 
 ## Exercise Catalog
 
 - [ ] Browse exercise catalog — categories load
 - [ ] Search for an exercise by name — results appear
 - [ ] Filter by category — only matching exercises shown
+
+## Billing (Android)
+
+- [ ] **Billing status refresh** — open Settings; current plan card shows correct Free/Premium state loaded from `GET /api/billing/status`
+- [ ] **Premium unlock** — complete a real or test subscription purchase; billing sync called; Settings shows Premium plan and renewal date
+- [ ] **Restore purchases** — tap Restore; previously purchased subscription restored; plan card updates
+- [ ] **Donate purchase** — tap Donate, choose an amount; purchase flow completes; success toast shown
+- [ ] **Manage subscription deep link** — tap Manage Subscription (premium only); Google Play subscriptions page opens in external browser
+- [ ] **Billing unavailable** — test with Play Store unavailable; billing-dependent buttons show graceful "unavailable" toast
+
+## Calculations / FFMI
+
+- [ ] **FFMI happy path** — profile has weight, height (cm), and body fat %; FFMI card shows normalized FFMI, raw FFMI, and lean body mass
+- [ ] **FFMI missing data path** — profile missing one or more of weight/height/body fat; FFMI card shows empty-state CTA to fill profile
 
 ## Account
 
@@ -228,12 +249,13 @@ Run this checklist manually on Android emulator after the critical Profile flows
 | PRs (CRUD, isolation) | 13 API tests | UI date picker, list sorting |
 | Athletic Performance | 14 API tests | UI filtering UX |
 | Movement Goals | 12 API tests | UI deadline display |
-| FreakAI (chat, errors, tools) | 31 API tests | Real Gemini responses, UI chat scroll |
+| FreakAI (chat, errors, tools, quota) | 31+ API tests | Real Gemini responses, UI chat scroll, 429 metadata UX |
+| Billing (sync, status, entitlement) | included in API tests | Android Play purchase flow, restore, manage sub deep link |
 | Exercise Catalog | 14 API tests | UI browsing, image loading |
 | Sport Catalog | 11 API tests | UI display |
-| Calculations | 22 API + 16 Core | UI input validation UX |
+| Calculations (1RM, RSI, FFMI) | 22 API + 16 Core | UI input validation UX, FFMI empty-state path |
 | Core logic | 106 Core tests | — |
-| **Total** | **297 tests** | |
+| **Total** | **293 API + 167 Core** | |
 
 ## What Remains Unautomated
 

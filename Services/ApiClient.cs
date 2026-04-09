@@ -214,9 +214,9 @@ public class ApiClient : IApiClient
 
 	// ── FreakAI ──────────────────────────────────────────
 
-	public Task<ApiResult<FreakAiChatResponse>> FreakAiChatAsync(string message, List<FreakAiChatMessage>? history)
+	public Task<ApiResult<FreakAiChatResponse>> FreakAiChatAsync(string message, List<FreakAiChatMessage>? history, string? intent = null)
 	{
-		var request = new { message, history };
+		var request = new { message, history, intent };
 		return PostAsync<FreakAiChatResponse>("api/freakai/chat", request);
 	}
 
@@ -368,8 +368,33 @@ public class ApiClient : IApiClient
 				: ApiResult<T>.Fail("Boş yanıt alındı.");
 		}
 
+		int statusCode = (int)response.StatusCode;
+		if (statusCode == 429)
+		{
+			try
+			{
+				var body = await response.Content.ReadAsStringAsync();
+				using var doc = JsonDocument.Parse(body);
+				string message = doc.RootElement.TryGetProperty("message", out var msg)
+					? msg.GetString() ?? "Kullanım limitine ulaşıldı."
+					: "Kullanım limitine ulaşıldı.";
+				DateTime? resetsAt = null;
+				if (doc.RootElement.TryGetProperty("resetsAtUtc", out var resetsAtProp) &&
+				    resetsAtProp.ValueKind != JsonValueKind.Null &&
+				    resetsAtProp.TryGetDateTime(out var dt))
+				{
+					resetsAt = dt;
+				}
+				return ApiResult<T>.Quota(message, resetsAt);
+			}
+			catch
+			{
+				return ApiResult<T>.Fail("Kullanım limitine ulaşıldı.", 429);
+			}
+		}
+
 		var error = await ReadError(response);
-		return ApiResult<T>.Fail(error, (int)response.StatusCode);
+		return ApiResult<T>.Fail(error, statusCode);
 	}
 
 	private static async Task<string> ReadError(HttpResponseMessage response)
@@ -397,9 +422,13 @@ public class ApiResult<T>
 	public T? Data { get; init; }
 	public string? Error { get; init; }
 	public int StatusCode { get; init; }
+	/// <summary>Populated when StatusCode == 429. UTC time when the quota window resets.</summary>
+	public DateTime? QuotaResetsAt { get; init; }
 
 	public static ApiResult<T> Ok(T data) => new() { Success = true, Data = data, StatusCode = 200 };
 	public static ApiResult<T> Fail(string error, int statusCode = 0) => new() { Success = false, Error = error, StatusCode = statusCode };
+	public static ApiResult<T> Quota(string message, DateTime? resetsAt) =>
+		new() { Success = false, Error = message, StatusCode = 429, QuotaResetsAt = resetsAt };
 }
 
 // ── Response DTOs ───────────────────────────────────────
