@@ -41,6 +41,10 @@ The app is designed around a fast daily workflow:
 - App-wide `EN/TR` language switching with runtime page refresh
 - Settings page with language switching and secure change-password flow
 - FreakAI coach MVP with language-aware response mirroring
+- FreakAI quota enforcement with free/premium plan limits and backend source-of-truth
+- Android Google Play Billing: subscription (monthly/annual) and one-time donations
+- Server-side purchase verification, subscription acknowledge, and donation consume
+- Restore purchases and manage subscription flows on Android
 - Cloud-backed persistence for profile, workouts, PRs, movement goals, and athletic performance
 
 ## Calculations
@@ -162,7 +166,9 @@ The production backend has also passed end-to-end smoke tests for auth, profile,
 
 ### Near-Term Shipped Reality Gaps
 
-- Android Play Store release flow
+- iOS/Mac/Windows billing integration (Android-first billing is shipped)
+- Custom donation amounts (only fixed $1/$5/$10/$20 SKUs shipped)
+- RTDN / PubSub real-time billing notifications (sync-based approach shipped)
 - iOS release preparation
 - Dashboard-first UI V2 across Home, Workout, Calendar, Calculations, Profile, New Workout, and FreakAI
 - Tracking analytics dashboards for PR, bodyweight, workout count, and consistency trends

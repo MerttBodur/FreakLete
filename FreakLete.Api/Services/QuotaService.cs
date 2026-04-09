@@ -123,21 +123,20 @@ public class QuotaService
 
     private async Task<DateTime?> GetNextAvailableAsync(int userId, string intent, int rollingDays, CancellationToken ct)
     {
-        var oldest = await _db.AiUsageRecords
-            .Where(r => r.UserId == userId && r.Intent == intent && !r.WasBlocked)
-            .OrderBy(r => r.OccurredAtUtc)
-            .Select(r => r.OccurredAtUtc)
-            .LastOrDefaultAsync(ct);
+        var now = DateTime.UtcNow;
+        var windowStart = now.AddDays(-rollingDays);
 
-        if (oldest == default)
-            return null;
-
-        // Earliest record in window expires after rollingDays
+        // Find the earliest usage within the current rolling window.
+        // When this record falls outside the window, the user can use again.
         var earliestInWindow = await _db.AiUsageRecords
-            .Where(r => r.UserId == userId && r.Intent == intent && !r.WasBlocked)
+            .Where(r => r.UserId == userId && r.Intent == intent && !r.WasBlocked
+                        && r.OccurredAtUtc >= windowStart)
             .OrderBy(r => r.OccurredAtUtc)
             .Select(r => r.OccurredAtUtc)
             .FirstOrDefaultAsync(ct);
+
+        if (earliestInWindow == default)
+            return null;
 
         return earliestInWindow.AddDays(rollingDays);
     }

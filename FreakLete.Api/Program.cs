@@ -41,6 +41,7 @@ builder.Services.AddScoped<CoachProfileService>();
 builder.Services.AddScoped<StarterTemplateSeedService>();
 builder.Services.AddScoped<EntitlementService>();
 builder.Services.AddScoped<QuotaService>();
+builder.Services.AddHttpClient<GooglePlayVerificationService>();
 
 // Gemini AI — key from user-secrets (local) or env var Gemini__ApiKey (Railway)
 var geminiApiKey = builder.Configuration["Gemini:ApiKey"]

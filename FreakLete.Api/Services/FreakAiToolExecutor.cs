@@ -18,6 +18,20 @@ public class FreakAiToolExecutor
         WriteIndented = false
     };
 
+    /// <summary>
+    /// Tool names executed during the current request scope.
+    /// Used by controller to promote intent when mutating tools are called.
+    /// </summary>
+    public HashSet<string> ExecutedTools { get; } = [];
+
+    private static readonly HashSet<string> ProgramMutatingTools =
+        ["create_program", "adjust_program", "swap_exercise"];
+
+    /// <summary>
+    /// Returns true if any program-mutating tool was called during this request.
+    /// </summary>
+    public bool DidMutateProgramGenerate => ExecutedTools.Overlaps(ProgramMutatingTools);
+
     public FreakAiToolExecutor(AppDbContext db, TrainingSummaryService summaryService, ILogger<FreakAiToolExecutor> logger)
     {
         _db = db;
@@ -28,6 +42,7 @@ public class FreakAiToolExecutor
     public async Task<string> ExecuteToolAsync(int userId, string toolName, JsonElement? args)
     {
         _logger.LogInformation("Executing tool {Tool} for user {UserId}", toolName, userId);
+        ExecutedTools.Add(toolName);
 
         return toolName switch
         {

@@ -227,6 +227,11 @@ public class ApiClient : IApiClient
 		return GetAsync<BillingStatusResponse>("api/billing/status");
 	}
 
+	public Task<ApiResult<GooglePlaySyncResponse>> SyncGooglePlayPurchaseAsync(GooglePlaySyncRequest request)
+	{
+		return PostAsync<GooglePlaySyncResponse>("api/billing/googleplay/sync", request);
+	}
+
 	// ── Training Programs ────────────────────────────────
 
 	public Task<ApiResult<List<TrainingProgramListResponse>>> GetTrainingProgramsAsync()
@@ -556,6 +561,26 @@ public class BillingStatusResponse
 	public int ProgramGenerateRemainingThisMonth { get; set; }
 	public int ProgramAnalyzeRemainingThisMonth { get; set; }
 	public DateTime? NutritionGuidanceNextAvailableAtUtc { get; set; }
+}
+
+// ── Billing Sync DTOs ───────────────────────────────
+
+public class GooglePlaySyncRequest
+{
+	public string ProductId { get; set; } = "";
+	public string? BasePlanId { get; set; }
+	public string PurchaseToken { get; set; } = "";
+	public string? OrderId { get; set; }
+	public int PurchaseState { get; set; }
+	public bool IsAcknowledged { get; set; }
+	public string? RawPayloadJson { get; set; }
+}
+
+public class GooglePlaySyncResponse
+{
+	public string State { get; set; } = "";
+	public DateTime? EntitlementEndsAtUtc { get; set; }
+	public string Kind { get; set; } = "";
 }
 
 // ── FreakAI DTOs ────────────────────────────────────────

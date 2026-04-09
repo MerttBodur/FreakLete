@@ -23,6 +23,12 @@ public static class MauiProgram
 		builder.Services.AddSingleton<UserSession>();
 		builder.Services.AddSingleton<ApiClient>();
 
+#if ANDROID
+		builder.Services.AddSingleton<IBillingService, GooglePlayBillingService>();
+#else
+		builder.Services.AddSingleton<IBillingService, NoOpBillingService>();
+#endif
+
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif

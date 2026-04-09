@@ -11,17 +11,20 @@ namespace FreakLete.Api.Controllers;
 public class FreakAiController : ControllerBase
 {
     private readonly FreakAiOrchestrator _orchestrator;
+    private readonly FreakAiToolExecutor _toolExecutor;
     private readonly QuotaService _quota;
     private readonly EntitlementService _entitlement;
     private readonly ILogger<FreakAiController> _logger;
 
     public FreakAiController(
         FreakAiOrchestrator orchestrator,
+        FreakAiToolExecutor toolExecutor,
         QuotaService quota,
         EntitlementService entitlement,
         ILogger<FreakAiController> logger)
     {
         _orchestrator = orchestrator;
+        _toolExecutor = toolExecutor;
         _quota = quota;
         _entitlement = entitlement;
         _logger = logger;
@@ -70,9 +73,19 @@ public class FreakAiController : ControllerBase
         {
             var reply = await _orchestrator.ChatAsync(userId, request.Message, request.History, ct);
 
+            // Promote intent if Gemini called program-mutating tools
+            var recordedIntent = intent;
+            if (_toolExecutor.DidMutateProgramGenerate && intent != FreakAiUsageIntent.ProgramGenerate)
+            {
+                _logger.LogInformation(
+                    "Promoting intent {Original} -> program_generate for user {UserId} (tools: {Tools})",
+                    intent, userId, string.Join(", ", _toolExecutor.ExecutedTools));
+                recordedIntent = FreakAiUsageIntent.ProgramGenerate;
+            }
+
             // Record successful usage
             var currentPlan = await _entitlement.ResolvePlanAsync(userId, ct);
-            await _quota.RecordUsageAsync(userId, intent, currentPlan, wasBlocked: false, ct: ct);
+            await _quota.RecordUsageAsync(userId, recordedIntent, currentPlan, wasBlocked: false, ct: ct);
 
             return Ok(new FreakAiChatResponse { Reply = reply });
         }

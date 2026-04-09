@@ -139,10 +139,9 @@
 
                 <!-- Donate -->
                 <Border Style="{StaticResource CardBorder}"
-                        Padding="16,14"
-                        Opacity="0.5">
+                        Padding="16,14">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnComingSoonClicked" />
+                        <TapGestureRecognizer Tapped="OnDonateClicked" />
                     </Border.GestureRecognizers>
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
                         <Label Text="&#x2764;"
@@ -160,26 +159,20 @@
                                    FontFamily="OpenSansRegular"
                                    TextColor="{StaticResource TextSecondary}" />
                         </VerticalStackLayout>
-                        <Border Grid.Column="2"
-                                BackgroundColor="{StaticResource AccentSoft}"
-                                StrokeThickness="0"
-                                Padding="8,4"
-                                StrokeShape="RoundRectangle 10">
-                            <Label x:Name="LblDonateBadge"
-                                   Text="Soon"
-                                   FontSize="10"
-                                   FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource AccentGlow}" />
-                        </Border>
+                        <Label Grid.Column="2"
+                               Text="&#x203A;"
+                               FontSize="22"
+                               TextColor="{StaticResource TextMuted}"
+                               VerticalOptions="Center" />
                     </Grid>
                 </Border>
 
                 <!-- Subscribe -->
-                <Border Style="{StaticResource CardBorder}"
-                        Padding="16,14"
-                        Opacity="0.5">
+                <Border x:Name="SubscribeCard"
+                        Style="{StaticResource CardBorder}"
+                        Padding="16,14">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnComingSoonClicked" />
+                        <TapGestureRecognizer Tapped="OnSubscribeClicked" />
                     </Border.GestureRecognizers>
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
                         <Label Text="&#x1F451;"
@@ -203,11 +196,73 @@
                                 Padding="8,4"
                                 StrokeShape="RoundRectangle 10">
                             <Label x:Name="LblSubscribeBadge"
-                                   Text="Soon"
+                                   Text=""
                                    FontSize="10"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource AccentGlow}" />
                         </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Manage Subscription (visible only when premium) -->
+                <Border x:Name="ManageSubCard"
+                        Style="{StaticResource CardBorder}"
+                        Padding="16,14"
+                        IsVisible="False">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnManageSubscriptionClicked" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                        <Label Text="&#x2699;"
+                               FontSize="20"
+                               VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label x:Name="LblManageSub"
+                                   Text="Manage Subscription"
+                                   FontSize="15"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource TextPrimary}" />
+                            <Label x:Name="LblManageSubDesc"
+                                   Text="Manage your subscription on Google Play"
+                                   FontSize="11"
+                                   FontFamily="OpenSansRegular"
+                                   TextColor="{StaticResource TextSecondary}" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="2"
+                               Text="&#x203A;"
+                               FontSize="22"
+                               TextColor="{StaticResource TextMuted}"
+                               VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Restore Purchases -->
+                <Border Style="{StaticResource CardBorder}"
+                        Padding="16,14">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRestorePurchasesClicked" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                        <Label Text="&#x1F504;"
+                               FontSize="20"
+                               VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label x:Name="LblRestore"
+                                   Text="Restore Purchases"
+                                   FontSize="15"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource TextPrimary}" />
+                            <Label x:Name="LblRestoreDesc"
+                                   Text="Restore your previous purchases"
+                                   FontSize="11"
+                                   FontFamily="OpenSansRegular"
+                                   TextColor="{StaticResource TextSecondary}" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="2"
+                               Text="&#x203A;"
+                               FontSize="22"
+                               TextColor="{StaticResource TextMuted}"
+                               VerticalOptions="Center" />
                     </Grid>
                 </Border>
 
@@ -261,7 +316,110 @@
             </Border>
         </Grid>
 
-        <!-- Coming soon toast -->
+        <!-- Donate picker overlay -->
+        <Grid x:Name="DonateOverlay"
+              Grid.RowSpan="2"
+              IsVisible="False"
+              Opacity="0"
+              BackgroundColor="{StaticResource OverlayScrim}"
+              Padding="24">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnDonateOverlayDismiss" />
+            </Grid.GestureRecognizers>
+            <Border Style="{StaticResource CardBorder}"
+                    Padding="20"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    MaximumWidthRequest="420"
+                    BackgroundColor="{StaticResource SurfaceRaised}">
+                <VerticalStackLayout Spacing="14">
+                    <Label x:Name="DonatePickerTitle"
+                           Text="Choose Donation Amount"
+                           Style="{StaticResource SubHeadline}"
+                           HorizontalTextAlignment="Start" />
+
+                    <Button Text="$1"
+                            Clicked="OnDonate1Clicked"
+                            FontFamily="OpenSansSemibold"
+                            FontSize="15"
+                            HeightRequest="48"
+                            CornerRadius="18" />
+                    <Button Text="$5"
+                            Clicked="OnDonate5Clicked"
+                            FontFamily="OpenSansSemibold"
+                            FontSize="15"
+                            HeightRequest="48"
+                            CornerRadius="18" />
+                    <Button Text="$10"
+                            Clicked="OnDonate10Clicked"
+                            FontFamily="OpenSansSemibold"
+                            FontSize="15"
+                            HeightRequest="48"
+                            CornerRadius="18" />
+                    <Button Text="$20"
+                            Clicked="OnDonate20Clicked"
+                            FontFamily="OpenSansSemibold"
+                            FontSize="15"
+                            HeightRequest="48"
+                            CornerRadius="18" />
+
+                    <Button x:Name="BtnDonateCancel"
+                            Text="Cancel"
+                            Style="{StaticResource SecondaryButton}"
+                            Clicked="OnDonateOverlayDismiss"
+                            Margin="0,4,0,0" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Subscribe picker overlay -->
+        <Grid x:Name="SubscribeOverlay"
+              Grid.RowSpan="2"
+              IsVisible="False"
+              Opacity="0"
+              BackgroundColor="{StaticResource OverlayScrim}"
+              Padding="24">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnSubscribeOverlayDismiss" />
+            </Grid.GestureRecognizers>
+            <Border Style="{StaticResource CardBorder}"
+                    Padding="20"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    MaximumWidthRequest="420"
+                    BackgroundColor="{StaticResource SurfaceRaised}">
+                <VerticalStackLayout Spacing="14">
+                    <Label x:Name="SubscribePickerTitle"
+                           Text="Choose Plan"
+                           Style="{StaticResource SubHeadline}"
+                           HorizontalTextAlignment="Start" />
+
+                    <Button x:Name="BtnMonthly"
+                            Text="Monthly — $3/mo"
+                            Clicked="OnMonthlyClicked"
+                            FontFamily="OpenSansSemibold"
+                            FontSize="15"
+                            HeightRequest="48"
+                            CornerRadius="18" />
+
+                    <Button x:Name="BtnAnnual"
+                            Text="Annual — $30/yr"
+                            Clicked="OnAnnualClicked"
+                            FontFamily="OpenSansSemibold"
+                            FontSize="15"
+                            HeightRequest="48"
+                            CornerRadius="18" />
+
+                    <Button x:Name="BtnSubscribeCancel"
+                            Text="Cancel"
+                            Style="{StaticResource SecondaryButton}"
+                            Clicked="OnSubscribeOverlayDismiss"
+                            Margin="0,4,0,0" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Toast banner -->
         <Border x:Name="ToastBanner"
                 Grid.RowSpan="2"
                 IsVisible="False"

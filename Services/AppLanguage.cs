@@ -70,6 +70,23 @@ public static class AppLanguage
 	public static string SettingsSubscribeDesc => IsTurkish ? "Premium özelliklerin kilidini açın" : "Unlock premium features";
 	public static string SettingsComingSoon => IsTurkish ? "Yakında" : "Soon";
 	public static string SettingsComingSoonToast => IsTurkish ? "Bu özellik yakında eklenecek!" : "This feature is coming soon!";
+	public static string SettingsRestorePurchases => IsTurkish ? "Satın Alımları Geri Yükle" : "Restore Purchases";
+	public static string SettingsRestorePurchasesDesc => IsTurkish ? "Önceki satın alımlarınızı geri yükleyin" : "Restore your previous purchases";
+	public static string SettingsManageSubscription => IsTurkish ? "Aboneliği Yönet" : "Manage Subscription";
+	public static string SettingsManageSubscriptionDesc => IsTurkish ? "Google Play'de aboneliğinizi yönetin" : "Manage your subscription on Google Play";
+	public static string SettingsPremiumActive => IsTurkish ? "Premium" : "Premium";
+	public static string SettingsDonateChooseAmount => IsTurkish ? "Bağış Tutarı Seçin" : "Choose Donation Amount";
+	public static string SettingsSubscribeChoosePlan => IsTurkish ? "Plan Seçin" : "Choose Plan";
+	public static string SettingsMonthly => IsTurkish ? "Aylık" : "Monthly";
+	public static string SettingsAnnual => IsTurkish ? "Yıllık" : "Annual";
+	public static string SettingsPurchaseSuccess => IsTurkish ? "Satın alma başarılı!" : "Purchase successful!";
+	public static string SettingsPurchaseCancelled => IsTurkish ? "Satın alma iptal edildi." : "Purchase cancelled.";
+	public static string SettingsPurchaseError => IsTurkish ? "Satın alma hatası oluştu." : "Purchase error occurred.";
+	public static string SettingsRestoreSuccess => IsTurkish ? "Satın alımlar geri yüklendi." : "Purchases restored.";
+	public static string SettingsRestoreEmpty => IsTurkish ? "Geri yüklenecek satın alım bulunamadı." : "No purchases found to restore.";
+	public static string SettingsBillingUnavailable => IsTurkish
+		? "Satın alma şu anda yalnızca Android'de kullanılabilir."
+		: "Purchases are currently only available on Android.";
 	public static string SettingsSelectLanguage => IsTurkish ? "Dil Seçin" : "Select Language";
 	public static string SettingsCancel => IsTurkish ? "İptal" : "Cancel";
 	public static string SettingsLanguageChanged => IsTurkish ? "Dil Türkçe olarak ayarlandı." : "Language set to English.";

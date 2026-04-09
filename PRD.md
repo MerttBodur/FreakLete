@@ -90,6 +90,11 @@ Asagidaki basliklar artik roadmap maddesi degil, mevcut urunun parcasidir.
 - Secure change-password flow
 - Initial FreakAI chat and coaching flow
 - FreakAI language mirroring
+- FreakAI free/premium quota enforcement (backend source-of-truth)
+- Android Google Play Billing: subscription (`freaklete_premium` monthly/annual) ve fixed donate SKUs (`donate_1`, `donate_5`, `donate_10`, `donate_20`)
+- Server-side purchase verification, subscription acknowledge, donation consume
+- Restore purchases ve manage subscription (Android)
+- Billing status endpoint ile plan/kota raporlama
 - CRUD for key records
 
 ### 5.2 Product and UX
@@ -157,6 +162,8 @@ Bu dokuman guncellemesi icin mevcut verification note:
 - ProgramWeek
 - ProgramSession
 - ProgramExercise
+- BillingPurchase
+- AiUsageRecord
 
 ### 6.4 Current State
 Bugunku uygulama cloud-backed mobile product foundation'ina ulasmistir.
@@ -170,6 +177,11 @@ Bu ne demek:
 - starter template akisi public browse + authenticated clone mantigi ile kurulmustur
 - live workout v1 aktif seans mantigi repo icinde mevcuttur
 - initial FreakAI katmani backend uzerinden cagrilabilir ve kullanicinin diliyle eslesecek sekilde yonlendirilebilir durumdadir
+- FreakAI quota enforcement (free/premium limits) backend source-of-truth olarak mevcuttur
+- Android Google Play Billing entegrasyonu shipped: subscription (monthly/annual) ve fixed donate SKUs ($1/$5/$10/$20)
+- server-side purchase verification, acknowledge ve consume mantigi mevcuttur
+- restore purchases ve manage subscription akislari Android'de mevcuttur
+- billing status endpoint kullanici planini ve kota durumunu raporlar
 
 ## 7. Backend Durumu
 Backend tarafi artik "direction" seviyesinde degil, aktif production katmanidir.
@@ -536,6 +548,10 @@ Asagidaki basliklar artik "gelecek is" degil:
 - starter template browse + clone flow
 - live workout v1
 - FreakAI language mirroring
+- FreakAI free/premium quota enforcement
+- Android Google Play Billing (subscription + donation)
+- server-side purchase verification + acknowledge + consume
+- restore purchases + manage subscription (Android)
 
 ## 11. Product Risks
 - cloud migration sirasinda local SQLite ile backend verisinin cakisabilmesi
@@ -551,8 +567,9 @@ Su an bir sonraki faz icin odak disi sayilabilecek basliklar:
 - leaderboard
 - social feed
 - friends system
-- monetization
-- subscription flow
+- iOS/Mac/Windows billing (Android-first shipped)
+- custom donation amounts (sabit SKU'lar shipped)
+- RTDN / PubSub real-time billing notifications
 - coaching marketplace
 - AI recommendation implementation
 - iOS release execution
