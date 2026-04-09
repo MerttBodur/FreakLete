@@ -72,6 +72,11 @@
 		<PackageReference Include="Plugin.InAppBilling" Version="8.0.4" />
 	</ItemGroup>
 
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
+		<!-- Native Google Play Billing bindings for offer-token-aware subscription purchases -->
+		<PackageReference Include="Xamarin.Android.Google.BillingClient" Version="6.2.1" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="FreakLete.Core\FreakLete.Core.csproj" />
 	</ItemGroup>

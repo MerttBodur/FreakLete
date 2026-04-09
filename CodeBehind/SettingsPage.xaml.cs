@@ -34,6 +34,9 @@ public partial class SettingsPage : ContentPage
 		LblDonateDesc.Text = AppLanguage.SettingsDonateDesc;
 		LblSubscribe.Text = AppLanguage.SettingsSubscribe;
 		LblSubscribeDesc.Text = AppLanguage.SettingsSubscribeDesc;
+		SubscribePickerTitle.Text = AppLanguage.SettingsChoosePlan;
+		BtnSubscribeMonthly.Text = AppLanguage.SettingsPlanMonthly;
+		BtnSubscribeAnnual.Text = AppLanguage.SettingsPlanAnnual;
 		LblRestore.Text = AppLanguage.SettingsRestorePurchases;
 		LblRestoreDesc.Text = AppLanguage.SettingsRestorePurchasesDesc;
 		LblManageSub.Text = AppLanguage.SettingsManageSubscription;
@@ -207,14 +210,39 @@ public partial class SettingsPage : ContentPage
 			return;
 		}
 
-		// Plugin.InAppBilling cannot select base plans/offers yet.
-		// Use a single honest subscription flow until real plan selection is supported.
-		await ExecuteSubscribeAsync("freaklete_premium");
+		// Show plan picker: user selects monthly or annual.
+		SubscribePickerTitle.Text = AppLanguage.SettingsChoosePlan;
+		BtnSubscribeMonthly.Text = AppLanguage.SettingsPlanMonthly;
+		BtnSubscribeAnnual.Text = AppLanguage.SettingsPlanAnnual;
+		BtnSubscribeCancel.Text = AppLanguage.SettingsCancel;
+
+		SubscribeOverlay.IsVisible = true;
+		await SubscribeOverlay.FadeTo(1, 200, Easing.CubicOut);
 	}
 
-	private async Task ExecuteSubscribeAsync(string productId)
+	private async void OnSubscribeOverlayDismiss(object? sender, EventArgs e)
 	{
-		var result = await _billing.PurchaseSubscriptionAsync(productId, "");
+		await SubscribeOverlay.FadeTo(0, 200, Easing.CubicIn);
+		SubscribeOverlay.IsVisible = false;
+	}
+
+	private async void OnSubscribeMonthlyClicked(object? sender, EventArgs e)
+	{
+		await SubscribeOverlay.FadeTo(0, 200, Easing.CubicIn);
+		SubscribeOverlay.IsVisible = false;
+		await ExecuteSubscribeAsync("freaklete_premium", "monthly");
+	}
+
+	private async void OnSubscribeAnnualClicked(object? sender, EventArgs e)
+	{
+		await SubscribeOverlay.FadeTo(0, 200, Easing.CubicIn);
+		SubscribeOverlay.IsVisible = false;
+		await ExecuteSubscribeAsync("freaklete_premium", "annual");
+	}
+
+	private async Task ExecuteSubscribeAsync(string productId, string basePlanId)
+	{
+		var result = await _billing.PurchaseSubscriptionAsync(productId, basePlanId);
 		if (result.Status == BillingPurchaseStatus.Success && result.Purchase is not null)
 		{
 			await SyncPurchaseAsync(result.Purchase);

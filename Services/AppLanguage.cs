@@ -604,6 +604,9 @@ public static class AppLanguage
 	// ── Settings Billing Details ────────────────────────────────
 	public static string SettingsPlanFree => IsTurkish ? "Ücretsiz" : "Free";
 	public static string SettingsPlanPremium => IsTurkish ? "Premium" : "Premium";
+	public static string SettingsChoosePlan => IsTurkish ? "Plan Seçin" : "Choose Plan";
+	public static string SettingsPlanMonthly => IsTurkish ? "Aylık" : "Monthly";
+	public static string SettingsPlanAnnual => IsTurkish ? "Yıllık" : "Annual";
 	public static string SettingsCurrentPlan => IsTurkish ? "Mevcut Plan" : "Current Plan";
 	public static string SettingsCurrentPlanDesc => IsTurkish ? "Aktif abonelik durumunuz" : "Your active subscription status";
 	public static string FormatRenewalDate(DateTime utc) => IsTurkish
