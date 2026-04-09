@@ -7,6 +7,8 @@ namespace FreakLete.Services;
 public class NoOpBillingService : IBillingService
 {
     public bool IsAvailable => false;
+    public bool CanPurchaseDonations => false;
+    public bool CanPurchaseSubscriptions => false;
 
     public Task<bool> ConnectAsync() => Task.FromResult(false);
 

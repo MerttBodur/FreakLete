@@ -148,9 +148,9 @@ public partial class SettingsPage : ContentPage
 
 	private async void OnDonateClicked(object? sender, TappedEventArgs e)
 	{
-		if (!_billing.IsAvailable)
+		if (!SettingsBillingAvailability.CanOpenDonatePicker(_billing))
 		{
-			await ShowToast(AppLanguage.SettingsBillingUnavailable);
+			await ShowToast(SettingsBillingAvailability.GetDonateUnavailableMessage());
 			return;
 		}
 
@@ -204,9 +204,9 @@ public partial class SettingsPage : ContentPage
 			return;
 		}
 
-		if (!_billing.IsAvailable)
+		if (!SettingsBillingAvailability.CanOpenSubscribePicker(_billing))
 		{
-			await ShowToast(AppLanguage.SettingsBillingUnavailable);
+			await ShowToast(SettingsBillingAvailability.GetSubscribeUnavailableMessage());
 			return;
 		}
 
@@ -242,6 +242,12 @@ public partial class SettingsPage : ContentPage
 
 	private async Task ExecuteSubscribeAsync(string productId, string basePlanId)
 	{
+		if (!SettingsBillingAvailability.CanOpenSubscribePicker(_billing))
+		{
+			await ShowToast(SettingsBillingAvailability.GetSubscribeUnavailableMessage());
+			return;
+		}
+
 		var result = await _billing.PurchaseSubscriptionAsync(productId, basePlanId);
 		if (result.Status == BillingPurchaseStatus.Success && result.Purchase is not null)
 		{

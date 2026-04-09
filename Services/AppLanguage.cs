@@ -87,6 +87,12 @@ public static class AppLanguage
 	public static string SettingsBillingUnavailable => IsTurkish
 		? "Satın alma şu anda yalnızca Android'de kullanılabilir."
 		: "Purchases are currently only available on Android.";
+	public static string SettingsDonationUnavailable => IsTurkish
+		? "Bağış satın alımı şu anda kullanılamıyor."
+		: "Donations are currently unavailable.";
+	public static string SettingsSubscriptionUnavailable => IsTurkish
+		? "Abonelik satın alımı şu anda kullanılamıyor."
+		: "Subscriptions are currently unavailable.";
 	public static string SettingsSelectLanguage => IsTurkish ? "Dil Seçin" : "Select Language";
 	public static string SettingsCancel => IsTurkish ? "İptal" : "Cancel";
 	public static string SettingsLanguageChanged => IsTurkish ? "Dil Türkçe olarak ayarlandı." : "Language set to English.";

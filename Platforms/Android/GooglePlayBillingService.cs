@@ -13,12 +13,15 @@ namespace FreakLete.Services;
 public class GooglePlayBillingService : IBillingService
 {
     private BillingClient? _billingClient;
-    private bool _connected;
+    private bool _donationsConnected;
+    private bool _subscriptionsConnected;
 
     private TaskCompletionSource<BillingPurchaseResult>? _pendingSubscriptionTcs;
     private string? _pendingBasePlanId;
 
-    public bool IsAvailable => _connected;
+    public bool IsAvailable => CanPurchaseDonations || CanPurchaseSubscriptions;
+    public bool CanPurchaseDonations => _donationsConnected;
+    public bool CanPurchaseSubscriptions => _subscriptionsConnected && _billingClient is { IsReady: true };
 
     // ── Connect ─────────────────────────────────────────────
 
@@ -26,33 +29,22 @@ public class GooglePlayBillingService : IBillingService
     {
         try
         {
-            bool pluginConnected = await CrossInAppBilling.Current.ConnectAsync();
+            _donationsConnected = await CrossInAppBilling.Current.ConnectAsync();
 
             var activity = Platform.CurrentActivity as Activity;
             if (activity is null)
             {
-                _connected = pluginConnected;
-                return pluginConnected;
+                HandleSubscriptionDisconnected();
+                return IsAvailable;
             }
 
-            var tcs = new TaskCompletionSource<bool>();
-
-            _billingClient = BillingClient.NewBuilder(activity)
-                .SetListener(new PurchasesUpdatedListener(this))
-                .EnablePendingPurchases()
-                .Build();
-
-            _billingClient.StartConnection(new BillingStateListener(
-                onConnected: () => tcs.TrySetResult(true),
-                onDisconnected: () => tcs.TrySetResult(false)));
-
-            bool nativeConnected = await tcs.Task;
-            _connected = pluginConnected || nativeConnected;
-            return _connected;
+            await EnsureSubscriptionConnectionAsync(activity);
+            return IsAvailable;
         }
         catch (Exception)
         {
-            _connected = false;
+            _donationsConnected = false;
+            HandleSubscriptionDisconnected();
             return false;
         }
     }
@@ -62,7 +54,16 @@ public class GooglePlayBillingService : IBillingService
     public async Task<IReadOnlyList<BillingProduct>> GetProductsAsync(
         IEnumerable<string> productIds, BillingProductType type)
     {
-        if (!_connected) return [];
+        if (type == BillingProductType.Subscription)
+        {
+            var activity = Platform.CurrentActivity as Activity;
+            if (activity is null || !await EnsureSubscriptionConnectionAsync(activity))
+                return [];
+        }
+        else if (!CanPurchaseDonations)
+        {
+            return [];
+        }
 
         try
         {
@@ -94,11 +95,14 @@ public class GooglePlayBillingService : IBillingService
 
     public async Task<BillingPurchaseResult> PurchaseSubscriptionAsync(string productId, string basePlanId)
     {
-        if (_billingClient is null || !_billingClient.IsReady)
+        var activity = Platform.CurrentActivity as Activity;
+        if (activity is null || !await EnsureSubscriptionConnectionAsync(activity))
             return new BillingPurchaseResult { Status = BillingPurchaseStatus.Unavailable };
 
         try
         {
+            var billingClient = _billingClient!;
+
             // 1. Query product details to get the offer token for the requested base plan.
             var queryParams = QueryProductDetailsParams.NewBuilder()
                 .SetProductList(
@@ -110,7 +114,7 @@ public class GooglePlayBillingService : IBillingService
                 ])
                 .Build();
 
-            var queryResult = await _billingClient.QueryProductDetailsAsync(queryParams);
+            var queryResult = await billingClient.QueryProductDetailsAsync(queryParams);
 
             if (queryResult.Result.ResponseCode != BillingResponseCode.Ok
                 || queryResult.ProductDetails is null or { Count: 0 })
@@ -171,15 +175,7 @@ public class GooglePlayBillingService : IBillingService
             _pendingSubscriptionTcs = new TaskCompletionSource<BillingPurchaseResult>();
             _pendingBasePlanId = basePlanId;
 
-            var activity = Platform.CurrentActivity as Activity;
-            if (activity is null)
-            {
-                _pendingSubscriptionTcs = null;
-                _pendingBasePlanId = null;
-                return new BillingPurchaseResult { Status = BillingPurchaseStatus.Unavailable };
-            }
-
-            var launchResult = _billingClient.LaunchBillingFlow(activity, billingFlowParams);
+            var launchResult = billingClient.LaunchBillingFlow(activity, billingFlowParams);
             if (launchResult.ResponseCode != BillingResponseCode.Ok)
             {
                 _pendingSubscriptionTcs = null;
@@ -260,7 +256,7 @@ public class GooglePlayBillingService : IBillingService
 
     public async Task<BillingPurchaseResult> PurchaseDonationAsync(string productId)
     {
-        if (!_connected)
+        if (!CanPurchaseDonations)
             return new BillingPurchaseResult { Status = BillingPurchaseStatus.Unavailable };
 
         try
@@ -296,7 +292,7 @@ public class GooglePlayBillingService : IBillingService
 
     public async Task<IReadOnlyList<BillingPurchaseRecord>> RestorePurchasesAsync()
     {
-        if (!_connected) return [];
+        if (!IsAvailable) return [];
 
         try
         {
@@ -324,7 +320,9 @@ public class GooglePlayBillingService : IBillingService
     {
         try { _ = CrossInAppBilling.Current.DisconnectAsync(); } catch { }
         try { _billingClient?.EndConnection(); } catch { }
-        _connected = false;
+        _donationsConnected = false;
+        HandleSubscriptionDisconnected();
+        _billingClient = null;
     }
 
     // ── Helpers ──────────────────────────────────────────────
@@ -347,6 +345,56 @@ public class GooglePlayBillingService : IBillingService
         IsAutoRenewing = p.AutoRenewing,
         RawJson = p.OriginalJson ?? ""
     };
+
+    private async Task<bool> EnsureSubscriptionConnectionAsync(Activity activity)
+    {
+        if (CanPurchaseSubscriptions)
+            return true;
+
+        var tcs = new TaskCompletionSource<bool>();
+
+        try { _billingClient?.EndConnection(); } catch { }
+
+        _billingClient = BillingClient.NewBuilder(activity)
+            .SetListener(new PurchasesUpdatedListener(this))
+            .EnablePendingPurchases()
+            .Build();
+
+        _billingClient.StartConnection(new BillingStateListener(
+            onConnected: () =>
+            {
+                _subscriptionsConnected = true;
+                tcs.TrySetResult(true);
+            },
+            onDisconnected: () =>
+            {
+                HandleSubscriptionDisconnected();
+                tcs.TrySetResult(false);
+            }));
+
+        bool connected = await tcs.Task;
+        if (!connected)
+            HandleSubscriptionDisconnected();
+
+        return connected;
+    }
+
+    internal void HandleSubscriptionDisconnected()
+    {
+        _subscriptionsConnected = false;
+
+        if (_pendingSubscriptionTcs is not null)
+        {
+            _pendingSubscriptionTcs.TrySetResult(new BillingPurchaseResult
+            {
+                Status = BillingPurchaseStatus.Unavailable,
+                ErrorMessage = "Google Play Billing disconnected."
+            });
+        }
+
+        _pendingSubscriptionTcs = null;
+        _pendingBasePlanId = null;
+    }
 
     // ── Inner Java listener classes ───────────────────────────
 

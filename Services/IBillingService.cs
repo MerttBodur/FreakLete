@@ -6,8 +6,14 @@ namespace FreakLete.Services;
 /// </summary>
 public interface IBillingService
 {
-    /// <summary>Whether the billing client is connected and ready.</summary>
+    /// <summary>Whether any billing capability is currently available.</summary>
     bool IsAvailable { get; }
+
+    /// <summary>Whether one-time donation purchases can be started.</summary>
+    bool CanPurchaseDonations { get; }
+
+    /// <summary>Whether subscription purchases can be started.</summary>
+    bool CanPurchaseSubscriptions { get; }
 
     /// <summary>Connect to the billing backend. Call once on app start.</summary>
     Task<bool> ConnectAsync();
