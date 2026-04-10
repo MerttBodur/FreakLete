@@ -532,6 +532,25 @@ public static class AppLanguage
 		: "Max weights and reps in the last 7 days";
 	public static string ChartChange => IsTurkish ? "Değiştir" : "Change";
 	public static string ChartNoData => IsTurkish ? "Henüz veri yok" : "No data yet";
+	public static string ChartRange14Days => IsTurkish ? "14 Gün" : "14 Days";
+	public static string ChartRange1Month => IsTurkish ? "1 Ay" : "1 Month";
+	public static string ChartRange3Months => IsTurkish ? "3 Ay" : "3 Months";
+	public static string ChartRange6Months => IsTurkish ? "6 Ay" : "6 Months";
+	public static string ChartSubtitleDays14 => IsTurkish
+		? "Son 14 günün en iyi değerleri"
+		: "Best values in the last 14 days";
+	public static string ChartSubtitleMonth1 => IsTurkish
+		? "Son 1 ayın günlük en iyi değerleri"
+		: "Daily best values in the last month";
+	public static string ChartSubtitleMonths3 => IsTurkish
+		? "Son 3 ayın haftalık en iyi değerleri"
+		: "Weekly best values in the last 3 months";
+	public static string ChartSubtitleMonths6 => IsTurkish
+		? "Son 6 ayın aylık en iyi değerleri"
+		: "Monthly best values in the last 6 months";
+	public static string[] ChartMonthAbbreviations => IsTurkish
+		? ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
+		: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 	// ── Confirm Dialog ──────────────────────────────────────────
 	public static string ConfirmAction => IsTurkish ? "İŞLEMİ ONAYLA" : "CONFIRM ACTION";

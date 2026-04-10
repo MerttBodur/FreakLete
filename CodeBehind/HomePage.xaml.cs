@@ -13,7 +13,13 @@ public partial class HomePage : ContentPage
 
 	private string _exercise1Name = "Bench Press";
 	private string _exercise2Name = "Squat";
+
 	private List<WorkoutResponse>? _allWorkouts;
+	private List<PrEntryResponse>? _allPrEntries;
+	private List<AthleticPerformanceResponse>? _allAthleticEntries;
+
+	private ChartDataHelper.ChartRange _selectedRange = ChartDataHelper.ChartRange.Days14;
+
 	private int _pickingExerciseSlot; // 0 = not picking, 1 = picking ex1, 2 = picking ex2
 	private sealed record QuickCard(TrainingProgramListResponse Program, bool IsStarter);
 
@@ -23,6 +29,8 @@ public partial class HomePage : ContentPage
 		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 		ApplyLanguage();
+
+		ComparisonChart.RangeChanged += OnChartRangeChanged;
 	}
 
 	private void ApplyLanguage()
@@ -84,23 +92,28 @@ public partial class HomePage : ContentPage
 		UserNameLabel.Text = profile.FirstName;
 		WorkoutCountLabel.Text = profile.TotalWorkouts.ToString();
 
-		// Load workouts and training programs in parallel
-		var workoutsTask = _api.GetWorkoutsAsync();
-		var programsTask = _api.GetTrainingProgramsAsync();
+		// Load all data sources in parallel
+		var workoutsTask    = _api.GetWorkoutsAsync();
+		var programsTask    = _api.GetTrainingProgramsAsync();
+		var prTask          = _api.GetPrEntriesAsync();
+		var athleticTask    = _api.GetAthleticPerformancesAsync();
 
-		await Task.WhenAll(workoutsTask, programsTask);
+		await Task.WhenAll(workoutsTask, programsTask, prTask, athleticTask);
 
-		// Process comparison chart
-		var workoutResult = workoutsTask.Result;
-		if (workoutResult.Success && workoutResult.Data is not null)
-		{
-			_allWorkouts = workoutResult.Data;
-			UpdateComparisonChart();
-		}
+		// Comparison chart data
+		var workoutResult  = workoutsTask.Result;
+		var prResult       = prTask.Result;
+		var athleticResult = athleticTask.Result;
 
-		// Process quick workouts — show user programs + starter templates
-		var programsResult = programsTask.Result;
-		var starterResult = await _api.GetStarterTemplatesAsync();
+		_allWorkouts       = workoutResult.Success  && workoutResult.Data  is not null ? workoutResult.Data  : [];
+		_allPrEntries      = prResult.Success        && prResult.Data       is not null ? prResult.Data       : [];
+		_allAthleticEntries = athleticResult.Success && athleticResult.Data is not null ? athleticResult.Data : [];
+
+		UpdateComparisonChart();
+
+		// Quick workouts
+		var programsResult  = programsTask.Result;
+		var starterResult   = await _api.GetStarterTemplatesAsync();
 
 		var quickCards = new List<QuickCard>();
 
@@ -121,67 +134,50 @@ public partial class HomePage : ContentPage
 			BuildQuickWorkoutCards(quickCards.Take(6).ToList());
 	}
 
-	private void UpdateComparisonChart()
+	private void OnChartRangeChanged(object? sender, ChartDataHelper.ChartRange range)
 	{
-		if (_allWorkouts is null || _allWorkouts.Count == 0)
-		{
-			ComparisonChart.Exercise1Name = _exercise1Name;
-			ComparisonChart.Exercise2Name = _exercise2Name;
-			return;
-		}
-
-		var today = DateTime.Now.Date;
-		var exercise1Data = new List<float>();
-		var exercise2Data = new List<float>();
-		var dayLabels = new List<string>();
-
-		var dayAbbr = AppLanguage.HomeDayAbbreviations;
-
-		for (int i = 6; i >= 0; i--)
-		{
-			var targetDate = today.AddDays(-i);
-			dayLabels.Add(dayAbbr[(int)targetDate.DayOfWeek]);
-
-			float max1 = 0, max2 = 0;
-
-			var dayWorkouts = _allWorkouts
-				.Where(w => w.WorkoutDate.Date == targetDate);
-
-			foreach (var workout in dayWorkouts)
-			{
-				if (workout.Exercises is null) continue;
-				foreach (var ex in workout.Exercises)
-				{
-					if (string.Equals(ex.ExerciseName, _exercise1Name, StringComparison.OrdinalIgnoreCase)
-						&& ex.Metric1Value.HasValue)
-						max1 = Math.Max(max1, (float)ex.Metric1Value.Value);
-
-					if (string.Equals(ex.ExerciseName, _exercise2Name, StringComparison.OrdinalIgnoreCase)
-						&& ex.Metric1Value.HasValue)
-						max2 = Math.Max(max2, (float)ex.Metric1Value.Value);
-				}
-			}
-
-			exercise1Data.Add(max1);
-			exercise2Data.Add(max2);
-		}
-
-		ComparisonChart.Exercise1Name = _exercise1Name;
-		ComparisonChart.Exercise2Name = _exercise2Name;
-		ComparisonChart.Exercise1Data = exercise1Data;
-		ComparisonChart.Exercise2Data = exercise2Data;
-		ComparisonChart.Exercise1Delta = CalculateDelta(exercise1Data);
-		ComparisonChart.Exercise2Delta = CalculateDelta(exercise2Data);
-		ComparisonChart.DayLabels = dayLabels;
+		_selectedRange = range;
+		UpdateComparisonChart();
 	}
 
-	private static string CalculateDelta(List<float> data)
+	private void UpdateComparisonChart()
+	{
+		var today      = DateTime.Now.Date;
+		var dayAbbr    = AppLanguage.HomeDayAbbreviations;
+		var monthAbbr  = AppLanguage.ChartMonthAbbreviations;
+
+		var (data1, labels1) = ChartDataHelper.BuildBuckets(
+			_exercise1Name, _selectedRange, today,
+			_allWorkouts, _allPrEntries, _allAthleticEntries,
+			dayAbbr, monthAbbr);
+
+		var (data2, _) = ChartDataHelper.BuildBuckets(
+			_exercise2Name, _selectedRange, today,
+			_allWorkouts, _allPrEntries, _allAthleticEntries,
+			dayAbbr, monthAbbr);
+
+		string unit1 = ChartDataHelper.UnitForExercise(_exercise1Name, _allPrEntries, _allAthleticEntries, _allWorkouts);
+		string unit2 = ChartDataHelper.UnitForExercise(_exercise2Name, _allPrEntries, _allAthleticEntries, _allWorkouts);
+
+		ComparisonChart.Exercise1Name  = _exercise1Name;
+		ComparisonChart.Exercise2Name  = _exercise2Name;
+		ComparisonChart.Exercise1Data  = data1;
+		ComparisonChart.Exercise2Data  = data2;
+		ComparisonChart.AxisLabels     = labels1;
+		ComparisonChart.Exercise1Unit  = unit1;
+		ComparisonChart.Exercise2Unit  = unit2;
+		ComparisonChart.Exercise1Delta = CalculateDelta(data1, unit1);
+		ComparisonChart.Exercise2Delta = CalculateDelta(data2, unit2);
+		ComparisonChart.SelectedRange  = _selectedRange;
+	}
+
+	private static string CalculateDelta(List<float> data, string unit)
 	{
 		float firstNonZero = data.FirstOrDefault(v => v > 0);
 		float last = data.LastOrDefault(v => v > 0);
 		if (firstNonZero <= 0 || last <= 0) return "-";
 		float diff = last - firstNonZero;
-		return diff >= 0 ? $"+{diff:0}kg" : $"{diff:0}kg";
+		return diff >= 0 ? $"+{diff:0}{unit}" : $"{diff:0}{unit}";
 	}
 
 	private async void OnChangeComparisonExercisesClicked(object? sender, EventArgs e)

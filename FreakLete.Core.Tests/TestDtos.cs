@@ -77,6 +77,65 @@ public class SaveCoachProfileRequest
     public string? CurrentPainPoints { get; set; }
 }
 
+// ── Chart / Workout DTOs (for ChartDataHelper tests) ────────
+
+public class WorkoutResponse
+{
+    public int Id { get; set; }
+    public string WorkoutName { get; set; } = "";
+    public DateTime WorkoutDate { get; set; }
+    public List<ExerciseEntryDto> Exercises { get; set; } = [];
+}
+
+public class ExerciseEntryDto
+{
+    public string ExerciseName { get; set; } = "";
+    public string ExerciseCategory { get; set; } = "";
+    public string TrackingMode { get; set; } = "Strength";
+    public int Sets { get; set; }
+    public int Reps { get; set; }
+    public int? RIR { get; set; }
+    public int? RestSeconds { get; set; }
+    public double? GroundContactTimeMs { get; set; }
+    public double? ConcentricTimeSeconds { get; set; }
+    public double? Metric1Value { get; set; }
+    public string Metric1Unit { get; set; } = "";
+    public double? Metric2Value { get; set; }
+    public string Metric2Unit { get; set; } = "";
+}
+
+public class PrEntryResponse
+{
+    public int Id { get; set; }
+    public string ExerciseName { get; set; } = "";
+    public string ExerciseCategory { get; set; } = "";
+    public string TrackingMode { get; set; } = "";
+    public int Weight { get; set; }
+    public int Reps { get; set; }
+    public int? RIR { get; set; }
+    public double? Metric1Value { get; set; }
+    public string Metric1Unit { get; set; } = "";
+    public double? Metric2Value { get; set; }
+    public string Metric2Unit { get; set; } = "";
+    public double? GroundContactTimeMs { get; set; }
+    public double? ConcentricTimeSeconds { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
+public class AthleticPerformanceResponse
+{
+    public int Id { get; set; }
+    public string MovementName { get; set; } = "";
+    public string MovementCategory { get; set; } = "";
+    public double Value { get; set; }
+    public string Unit { get; set; } = "";
+    public double? SecondaryValue { get; set; }
+    public string SecondaryUnit { get; set; } = "";
+    public double? GroundContactTimeMs { get; set; }
+    public double? ConcentricTimeSeconds { get; set; }
+    public DateTime RecordedAt { get; set; }
+}
+
 // ── Training Program DTOs (for SessionPickerHelper tests) ───
 
 public class TrainingProgramResponse

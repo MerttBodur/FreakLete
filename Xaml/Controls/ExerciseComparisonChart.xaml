@@ -29,7 +29,7 @@
                            FontSize="11"
                            FontFamily="OpenSansRegular"
                            TextColor="{StaticResource TextSecondary}"
-                           Text="Max weights and reps in the last 7 days" />
+                           Text="Best values in the last 14 days" />
                 </VerticalStackLayout>
                 <Border Grid.Column="1"
                         StrokeShape="RoundRectangle 10"
@@ -47,6 +47,58 @@
                     </Border.GestureRecognizers>
                 </Border>
             </Grid>
+
+            <!-- Range selector -->
+            <HorizontalStackLayout x:Name="RangeSelectorRow" Spacing="6">
+                <Border x:Name="RangeBtn14"
+                        StrokeShape="RoundRectangle 10"
+                        Stroke="Transparent"
+                        Padding="10,5">
+                    <Label x:Name="RangeLabel14"
+                           FontSize="11"
+                           FontFamily="OpenSansSemibold"
+                           HorizontalTextAlignment="Center" />
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRange14Tapped" />
+                    </Border.GestureRecognizers>
+                </Border>
+                <Border x:Name="RangeBtn1M"
+                        StrokeShape="RoundRectangle 10"
+                        Stroke="Transparent"
+                        Padding="10,5">
+                    <Label x:Name="RangeLabel1M"
+                           FontSize="11"
+                           FontFamily="OpenSansSemibold"
+                           HorizontalTextAlignment="Center" />
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRange1MTapped" />
+                    </Border.GestureRecognizers>
+                </Border>
+                <Border x:Name="RangeBtn3M"
+                        StrokeShape="RoundRectangle 10"
+                        Stroke="Transparent"
+                        Padding="10,5">
+                    <Label x:Name="RangeLabel3M"
+                           FontSize="11"
+                           FontFamily="OpenSansSemibold"
+                           HorizontalTextAlignment="Center" />
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRange3MTapped" />
+                    </Border.GestureRecognizers>
+                </Border>
+                <Border x:Name="RangeBtn6M"
+                        StrokeShape="RoundRectangle 10"
+                        Stroke="Transparent"
+                        Padding="10,5">
+                    <Label x:Name="RangeLabel6M"
+                           FontSize="11"
+                           FontFamily="OpenSansSemibold"
+                           HorizontalTextAlignment="Center" />
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRange6MTapped" />
+                    </Border.GestureRecognizers>
+                </Border>
+            </HorizontalStackLayout>
 
             <!-- Progress badges -->
             <HorizontalStackLayout Spacing="8">
