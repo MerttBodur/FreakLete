@@ -93,6 +93,33 @@ public static class AppLanguage
 	public static string SettingsSubscriptionUnavailable => IsTurkish
 		? "Abonelik satın alımı şu anda kullanılamıyor."
 		: "Subscriptions are currently unavailable.";
+	public static string SettingsPurchaseAlreadyOwned => IsTurkish
+		? "Bu ürün zaten sahip olduğunuz bir ürün."
+		: "You already own this item.";
+	// Donate-specific success (sync verified)
+	public static string SettingsDonateSuccess => IsTurkish
+		? "Bağışınız alındı, teşekkürler!"
+		: "Donation received, thank you!";
+	// Subscribe-specific success (sync verified)
+	public static string SettingsSubscribeSuccess => IsTurkish
+		? "Aboneliğiniz aktifleştirildi!"
+		: "Subscription activated!";
+	// Sync network/config failure
+	public static string SettingsSyncFailed => IsTurkish
+		? "Satın alma Play'de tamamlandı fakat sunucuya gönderilemedi. Satın alımları geri yükle seçeneğini deneyin."
+		: "Purchase completed on Play but could not reach the server. Try Restore Purchases.";
+	// Sync reached server but verification state was not confirmed
+	public static string SettingsSyncVerificationFailed => IsTurkish
+		? "Satın alma doğrulanamadı. Lütfen Satın Alımları Geri Yükle seçeneğini deneyin."
+		: "Purchase could not be verified. Please try Restore Purchases.";
+	// Restore: purchases found but none could be synced
+	public static string SettingsRestoreAllFailed => IsTurkish
+		? "Satın alımlar bulundu fakat sunucuya kaydedilemedi. Lütfen daha sonra tekrar deneyin."
+		: "Purchases found but could not be synced to the server. Please try again later.";
+	// Restore: some synced, some failed
+	public static string SettingsRestorePartial => IsTurkish
+		? "Satın alımlarınızın bir kısmı geri yüklendi."
+		: "Some purchases were restored successfully.";
 	public static string SettingsSelectLanguage => IsTurkish ? "Dil Seçin" : "Select Language";
 	public static string SettingsCancel => IsTurkish ? "İptal" : "Cancel";
 	public static string SettingsLanguageChanged => IsTurkish ? "Dil Türkçe olarak ayarlandı." : "Language set to English.";

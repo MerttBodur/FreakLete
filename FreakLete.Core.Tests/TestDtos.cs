@@ -77,6 +77,27 @@ public class SaveCoachProfileRequest
     public string? CurrentPainPoints { get; set; }
 }
 
+// ── Billing Sync DTOs (for SettingsBillingLogic tests) ──────
+
+public class GooglePlaySyncRequest
+{
+    public string ProductId { get; set; } = "";
+    public string? BasePlanId { get; set; }
+    public string PurchaseToken { get; set; } = "";
+    public string? OrderId { get; set; }
+    public int PurchaseState { get; set; }
+    public bool IsAcknowledged { get; set; }
+    public string? RawPayloadJson { get; set; }
+}
+
+public class GooglePlaySyncResponse
+{
+    public string State { get; set; } = "";
+    public DateTime? EntitlementEndsAtUtc { get; set; }
+    public string Kind { get; set; } = "";
+}
+
+
 // ── Chart / Workout DTOs (for ChartDataHelper tests) ────────
 
 public class WorkoutResponse

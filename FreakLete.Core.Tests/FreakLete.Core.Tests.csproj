@@ -35,6 +35,7 @@
     <Compile Include="..\\Services\\AppLanguage.cs" Link="Linked\\AppLanguage.cs" />
     <Compile Include="..\\Services\\ChartDataHelper.cs" Link="Linked\\ChartDataHelper.cs" />
     <Compile Include="..\\Services\\SettingsBillingAvailability.cs" Link="Linked\\SettingsBillingAvailability.cs" />
+    <Compile Include="..\\Services\\SettingsBillingLogic.cs" Link="Linked\\SettingsBillingLogic.cs" />
     <Compile Include="..\\Xaml\\ViewModels\\AthleteProfileViewModel.cs" Link="Linked\\AthleteProfileViewModel.cs" />
     <Compile Include="..\\Xaml\\ViewModels\\CoachProfileViewModel.cs" Link="Linked\\CoachProfileViewModel.cs" />
   </ItemGroup>

@@ -51,7 +51,6 @@ public partial class SettingsPage : ContentPage
 
 	private async Task InitBillingStateAsync()
 	{
-		// Check premium status from API
 		var status = await _api.GetBillingStatusAsync();
 		if (status.Success && status.Data is not null)
 		{
@@ -60,13 +59,11 @@ public partial class SettingsPage : ContentPage
 			UpdatePremiumUI();
 		}
 
-		// Connect billing client
 		await _billing.ConnectAsync();
 	}
 
 	private void UpdatePremiumUI()
 	{
-		// Current Plan card
 		CurrentPlanCard.IsVisible = true;
 		LblCurrentPlan.Text = AppLanguage.SettingsCurrentPlan;
 
@@ -77,13 +74,9 @@ public partial class SettingsPage : ContentPage
 			ManageSubCard.IsVisible = true;
 
 			if (_billingData?.SubscriptionEndsAtUtc is { } endDate)
-			{
 				LblCurrentPlanDesc.Text = AppLanguage.FormatRenewalDate(endDate);
-			}
 			else
-			{
 				LblCurrentPlanDesc.Text = AppLanguage.SettingsPlanPremium;
-			}
 		}
 		else
 		{
@@ -164,8 +157,8 @@ public partial class SettingsPage : ContentPage
 		DonateOverlay.IsVisible = false;
 	}
 
-	private async void OnDonate1Clicked(object? sender, EventArgs e) => await ExecuteDonateAsync("donate_1");
-	private async void OnDonate5Clicked(object? sender, EventArgs e) => await ExecuteDonateAsync("donate_5");
+	private async void OnDonate1Clicked(object? sender, EventArgs e)  => await ExecuteDonateAsync("donate_1");
+	private async void OnDonate5Clicked(object? sender, EventArgs e)  => await ExecuteDonateAsync("donate_5");
 	private async void OnDonate10Clicked(object? sender, EventArgs e) => await ExecuteDonateAsync("donate_10");
 	private async void OnDonate20Clicked(object? sender, EventArgs e) => await ExecuteDonateAsync("donate_20");
 
@@ -175,23 +168,29 @@ public partial class SettingsPage : ContentPage
 		DonateOverlay.IsVisible = false;
 
 		var result = await _billing.PurchaseDonationAsync(productId);
+
+		SettingsBillingLogic.SyncOutcome? syncOutcome = null;
+
 		if (result.Status == BillingPurchaseStatus.Success && result.Purchase is not null)
 		{
-			await SyncPurchaseAsync(result.Purchase);
-			await ShowToast(AppLanguage.SettingsPurchaseSuccess);
+			// Play purchase succeeded — now sync with backend.
+			// Sync failure must NOT show success toast.
+			var syncResult = await _api.SyncGooglePlayPurchaseAsync(new GooglePlaySyncRequest
+			{
+				ProductId      = result.Purchase.ProductId,
+				BasePlanId     = result.Purchase.BasePlanId,
+				PurchaseToken  = result.Purchase.PurchaseToken,
+				OrderId        = result.Purchase.OrderId,
+				PurchaseState  = result.Purchase.PurchaseState,
+				IsAcknowledged = result.Purchase.IsAcknowledged,
+				RawPayloadJson = result.Purchase.RawJson
+			});
+
+			syncOutcome = SettingsBillingLogic.ClassifyDonateSyncResult(syncResult);
 		}
-		else if (result.Status == BillingPurchaseStatus.Cancelled)
-		{
-			await ShowToast(AppLanguage.SettingsPurchaseCancelled);
-		}
-		else if (result.Status == BillingPurchaseStatus.Unavailable)
-		{
-			await ShowToast(AppLanguage.SettingsBillingUnavailable);
-		}
-		else
-		{
-			await ShowToast(AppLanguage.SettingsPurchaseError);
-		}
+
+		var message = SettingsBillingLogic.DonateToastMessage(result.Status, syncOutcome);
+		await ShowToast(message);
 	}
 
 	// ── Subscribe ───────────────────────────────────────────
@@ -210,11 +209,10 @@ public partial class SettingsPage : ContentPage
 			return;
 		}
 
-		// Show plan picker: user selects monthly or annual.
 		SubscribePickerTitle.Text = AppLanguage.SettingsChoosePlan;
-		BtnSubscribeMonthly.Text = AppLanguage.SettingsPlanMonthly;
-		BtnSubscribeAnnual.Text = AppLanguage.SettingsPlanAnnual;
-		BtnSubscribeCancel.Text = AppLanguage.SettingsCancel;
+		BtnSubscribeMonthly.Text  = AppLanguage.SettingsPlanMonthly;
+		BtnSubscribeAnnual.Text   = AppLanguage.SettingsPlanAnnual;
+		BtnSubscribeCancel.Text   = AppLanguage.SettingsCancel;
 
 		SubscribeOverlay.IsVisible = true;
 		await SubscribeOverlay.FadeTo(1, 200, Easing.CubicOut);
@@ -249,24 +247,31 @@ public partial class SettingsPage : ContentPage
 		}
 
 		var result = await _billing.PurchaseSubscriptionAsync(productId, basePlanId);
+
+		SettingsBillingLogic.SyncOutcome syncOutcome = SettingsBillingLogic.SyncOutcome.SyncFailed;
+
 		if (result.Status == BillingPurchaseStatus.Success && result.Purchase is not null)
 		{
-			await SyncPurchaseAsync(result.Purchase);
-			await RefreshBillingStatusAsync();
-			await ShowToast(AppLanguage.SettingsPurchaseSuccess);
+			var syncResult = await _api.SyncGooglePlayPurchaseAsync(new GooglePlaySyncRequest
+			{
+				ProductId      = result.Purchase.ProductId,
+				BasePlanId     = result.Purchase.BasePlanId,
+				PurchaseToken  = result.Purchase.PurchaseToken,
+				OrderId        = result.Purchase.OrderId,
+				PurchaseState  = result.Purchase.PurchaseState,
+				IsAcknowledged = result.Purchase.IsAcknowledged,
+				RawPayloadJson = result.Purchase.RawJson
+			});
+
+			syncOutcome = SettingsBillingLogic.ClassifySyncResult(syncResult);
+
+			// Only refresh premium UI when backend has verified the purchase.
+			if (SettingsBillingLogic.ShouldRefreshAfterSubscribe(result.Status, syncOutcome))
+				await RefreshBillingStatusAsync();
 		}
-		else if (result.Status == BillingPurchaseStatus.Cancelled)
-		{
-			await ShowToast(AppLanguage.SettingsPurchaseCancelled);
-		}
-		else if (result.Status == BillingPurchaseStatus.Unavailable)
-		{
-			await ShowToast(AppLanguage.SettingsBillingUnavailable);
-		}
-		else
-		{
-			await ShowToast(AppLanguage.SettingsPurchaseError);
-		}
+
+		var message = SettingsBillingLogic.SubscribeToastMessage(result.Status, syncOutcome);
+		await ShowToast(message);
 	}
 
 	// ── Restore ─────────────────────────────────────────────
@@ -280,19 +285,39 @@ public partial class SettingsPage : ContentPage
 		}
 
 		var purchases = await _billing.RestorePurchasesAsync();
+
 		if (purchases.Count == 0)
 		{
 			await ShowToast(AppLanguage.SettingsRestoreEmpty);
 			return;
 		}
 
+		// Sync each purchase and track individual outcomes.
+		var outcomes = new List<SettingsBillingLogic.SyncOutcome>();
+
 		foreach (var purchase in purchases)
 		{
-			await SyncPurchaseAsync(purchase);
+			var syncResult = await _api.SyncGooglePlayPurchaseAsync(new GooglePlaySyncRequest
+			{
+				ProductId      = purchase.ProductId,
+				BasePlanId     = purchase.BasePlanId,
+				PurchaseToken  = purchase.PurchaseToken,
+				OrderId        = purchase.OrderId,
+				PurchaseState  = purchase.PurchaseState,
+				IsAcknowledged = purchase.IsAcknowledged,
+				RawPayloadJson = purchase.RawJson
+			});
+
+			outcomes.Add(SettingsBillingLogic.ClassifySyncResult(syncResult));
 		}
 
-		await RefreshBillingStatusAsync();
-		await ShowToast(AppLanguage.SettingsRestoreSuccess);
+		var restoreOutcome = SettingsBillingLogic.ClassifyRestoreOutcome(outcomes);
+
+		// Only refresh premium UI if at least one purchase was verified.
+		if (SettingsBillingLogic.ShouldRefreshAfterRestore(restoreOutcome))
+			await RefreshBillingStatusAsync();
+
+		await ShowToast(SettingsBillingLogic.RestoreToastMessage(restoreOutcome));
 	}
 
 	// ── Manage Subscription ─────────────────────────────────
@@ -311,27 +336,14 @@ public partial class SettingsPage : ContentPage
 		}
 	}
 
-	// ── Sync + Refresh ──────────────────────────────────────
-
-	private async Task SyncPurchaseAsync(BillingPurchaseRecord purchase)
-	{
-		await _api.SyncGooglePlayPurchaseAsync(new GooglePlaySyncRequest
-		{
-			ProductId = purchase.ProductId,
-			BasePlanId = purchase.BasePlanId,
-			PurchaseToken = purchase.PurchaseToken,
-			OrderId = purchase.OrderId,
-			PurchaseState = purchase.PurchaseState,
-			IsAcknowledged = purchase.IsAcknowledged,
-			RawPayloadJson = purchase.RawJson
-		});
-	}
+	// ── Billing refresh ─────────────────────────────────────
 
 	private async Task RefreshBillingStatusAsync()
 	{
 		var status = await _api.GetBillingStatusAsync();
 		if (status.Success && status.Data is not null)
 		{
+			_billingData = status.Data;
 			_isPremium = status.Data.IsPremiumActive;
 			UpdatePremiumUI();
 		}
