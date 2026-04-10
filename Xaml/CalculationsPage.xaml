@@ -261,6 +261,44 @@
                         </VerticalStackLayout>
                     </Border>
 
+                    <!-- 1RM Insight Card -->
+                    <Border x:Name="OneRmInsightCard"
+                            Style="{StaticResource CardBorder}"
+                            IsVisible="False">
+                        <VerticalStackLayout Spacing="8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label x:Name="OneRmInsightTitleLabel"
+                                       Grid.Column="0"
+                                       Text="Analysis"
+                                       Style="{StaticResource SubHeadline}"
+                                       FontSize="15" />
+                                <Border Grid.Column="1"
+                                        x:Name="OneRmInsightBandBadge"
+                                        StrokeShape="RoundRectangle 10"
+                                        Stroke="Transparent"
+                                        BackgroundColor="{StaticResource AccentSoft}"
+                                        Padding="10,4">
+                                    <Label x:Name="OneRmInsightBandLabel"
+                                           FontSize="11"
+                                           FontFamily="OpenSansSemibold"
+                                           TextColor="{StaticResource AccentGlow}" />
+                                </Border>
+                            </Grid>
+                            <Label x:Name="OneRmInsightSummaryLabel"
+                                   Style="{StaticResource BodyMuted}"
+                                   LineBreakMode="WordWrap" />
+                            <Label x:Name="OneRmInsightSportLabel"
+                                   Style="{StaticResource BodyMuted}"
+                                   FontSize="12"
+                                   LineBreakMode="WordWrap" />
+                            <Label x:Name="OneRmInsightGlobalLabel"
+                                   FontSize="11"
+                                   FontFamily="OpenSansRegular"
+                                   TextColor="{StaticResource TextMuted}"
+                                   LineBreakMode="WordWrap" />
+                        </VerticalStackLayout>
+                    </Border>
+
                     <Border Style="{StaticResource CardBorder}">
                         <VerticalStackLayout Spacing="12">
                             <Label x:Name="SavePrTitle"
@@ -518,6 +556,44 @@
                                    Style="{StaticResource BodyMuted}" />
                         </VerticalStackLayout>
                     </Border>
+
+                    <!-- RSI Insight Card -->
+                    <Border x:Name="RsiInsightCard"
+                            Style="{StaticResource CardBorder}"
+                            IsVisible="False">
+                        <VerticalStackLayout Spacing="8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label x:Name="RsiInsightTitleLabel"
+                                       Grid.Column="0"
+                                       Text="Analysis"
+                                       Style="{StaticResource SubHeadline}"
+                                       FontSize="15" />
+                                <Border Grid.Column="1"
+                                        x:Name="RsiInsightBandBadge"
+                                        StrokeShape="RoundRectangle 10"
+                                        Stroke="Transparent"
+                                        BackgroundColor="{StaticResource AccentSoft}"
+                                        Padding="10,4">
+                                    <Label x:Name="RsiInsightBandLabel"
+                                           FontSize="11"
+                                           FontFamily="OpenSansSemibold"
+                                           TextColor="{StaticResource AccentGlow}" />
+                                </Border>
+                            </Grid>
+                            <Label x:Name="RsiInsightSummaryLabel"
+                                   Style="{StaticResource BodyMuted}"
+                                   LineBreakMode="WordWrap" />
+                            <Label x:Name="RsiInsightSportLabel"
+                                   Style="{StaticResource BodyMuted}"
+                                   FontSize="12"
+                                   LineBreakMode="WordWrap" />
+                            <Label x:Name="RsiInsightGlobalLabel"
+                                   FontSize="11"
+                                   FontFamily="OpenSansRegular"
+                                   TextColor="{StaticResource TextMuted}"
+                                   LineBreakMode="WordWrap" />
+                        </VerticalStackLayout>
+                    </Border>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout x:Name="FfmiSection"
@@ -615,6 +691,44 @@
                             <Label x:Name="FfmiSecondaryLabel"
                                    Text="No FFMI calculated yet."
                                    Style="{StaticResource BodyMuted}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- FFMI Insight Card -->
+                    <Border x:Name="FfmiInsightCard"
+                            Style="{StaticResource CardBorder}"
+                            IsVisible="False">
+                        <VerticalStackLayout Spacing="8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label x:Name="FfmiInsightTitleLabel"
+                                       Grid.Column="0"
+                                       Text="Analysis"
+                                       Style="{StaticResource SubHeadline}"
+                                       FontSize="15" />
+                                <Border Grid.Column="1"
+                                        x:Name="FfmiInsightBandBadge"
+                                        StrokeShape="RoundRectangle 10"
+                                        Stroke="Transparent"
+                                        BackgroundColor="{StaticResource AccentSoft}"
+                                        Padding="10,4">
+                                    <Label x:Name="FfmiInsightBandLabel"
+                                           FontSize="11"
+                                           FontFamily="OpenSansSemibold"
+                                           TextColor="{StaticResource AccentGlow}" />
+                                </Border>
+                            </Grid>
+                            <Label x:Name="FfmiInsightSummaryLabel"
+                                   Style="{StaticResource BodyMuted}"
+                                   LineBreakMode="WordWrap" />
+                            <Label x:Name="FfmiInsightSportLabel"
+                                   Style="{StaticResource BodyMuted}"
+                                   FontSize="12"
+                                   LineBreakMode="WordWrap" />
+                            <Label x:Name="FfmiInsightGlobalLabel"
+                                   FontSize="11"
+                                   FontFamily="OpenSansRegular"
+                                   TextColor="{StaticResource TextMuted}"
+                                   LineBreakMode="WordWrap" />
                         </VerticalStackLayout>
                     </Border>
                 </VerticalStackLayout>

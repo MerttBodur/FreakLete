@@ -2,14 +2,14 @@
 
 ## Current Status
 
-Current position: `Phase 2 complete`
+Current position: `Phase 3 complete`
 
 Completed so far:
 - `Phase 1` completed: calculations polish
 - `Phase 2` completed: homepage comparison chart fix
+- `Phase 3` completed: settings billing repair
 
 Immediate work still pending:
-- `Phase 3` pending: settings billing repair
 - `Phase 4` pending: calculation insights v1
 
 Backlog / noted items:
@@ -18,14 +18,14 @@ Backlog / noted items:
 
 Summary:
 - total phases in this plan: `6`
-- completed: `2`
-- remaining: `4`
+- completed: `3`
+- remaining: `3`
 
-## Phase 1 — Calculations Polish
+## Phase 1 - Calculations Polish
 Status: `Completed`
 
 Delivered:
-- FFMI result caption changed from normalized wording to `Adjusted FFMI / Düzeltilmiş FFMI`
+- FFMI result caption changed from normalized wording to `Adjusted FFMI / Duzeltilmis FFMI`
 - FFMI secondary line moved to locale-safe formatting
 - 1RM and RSI result surfaces aligned to the FFMI result card pattern
 - result hierarchy now uses:
@@ -37,7 +37,7 @@ Acceptance reached:
 - formatting compiles
 - core tests passed
 
-## Phase 2 — Homepage Comparison Chart Fix
+## Phase 2 - Homepage Comparison Chart Fix
 Status: `Completed`
 
 Delivered:
@@ -46,12 +46,12 @@ Delivered:
   - PR entries
   - athletic performance records
 - selectable time ranges added:
-  - `14 Gün`
+  - `14 Gun`
   - `1 Ay`
   - `3 Ay`
   - `6 Ay`
 - bucket strategy implemented:
-  - `14 Gün`: daily
+  - `14 Gun`: daily
   - `1 Ay`: daily
   - `3 Ay`: weekly
   - `6 Ay`: monthly
@@ -64,35 +64,40 @@ Acceptance reached:
 Known minor note:
 - `3 Ay` weekly labels may need device-level readability check
 
-## Phase 3 — Settings Billing Repair
-Status: `Pending`
+## Phase 3 - Settings Billing Repair
+Status: `Completed`
 Priority: `Immediate`
 
 Goal:
-- make `Bağış Yap` and `Abone Ol` flows truly reliable on Android + Railway/internal track
+- make `Bagis Yap` and `Abone Ol` flows reliable on Android + Railway/internal track
 
-Required work:
-- separate purchase success from backend sync success
-- do not show false success when sync or verification fails
-- handle these outcomes explicitly:
+Delivered:
+- purchase success and backend sync success are handled separately
+- fake success toasts for sync or verification failures were removed
+- explicit outcome handling now exists for:
   - cancelled
   - unavailable
   - already owned
   - sync failed
   - verification failed
-  - Play unavailable
-  - backend verification/config missing
-- refresh billing status only after a valid sync result
-- keep donate / subscribe / restore flows consistent
+  - restore empty
+  - restore partial success
+  - restore full success
+- premium UI refresh is gated on verified sync only
+- donate / subscribe / restore flows use testable billing outcome logic
+- donate follow-up fix completed:
+  - backend donate state `completed` now maps to success without relaxing subscription security
 
-Acceptance criteria:
-- no fake success UX remains
-- premium UI only updates after verified successful sync
+Acceptance reached:
+- no fake success UX remains in logic layer
+- premium UI updates only after verified successful sync
 - restore flow reports full / partial / empty outcomes correctly
-- Android build passes
-- directly affected tests pass
+- directly affected billing logic tests pass
 
-## Phase 4 — Calculation Insights V1
+Known runtime note:
+- real Play internal track verification still depends on Android device + Railway Google Play configuration
+
+## Phase 4 - Calculation Insights V1
 Status: `Pending`
 Priority: `Immediate`
 
@@ -100,9 +105,10 @@ Goal:
 - after `1RM`, `RSI`, and `FFMI` calculation, show a simple deterministic analysis band
 
 Target labels:
-- `Geliştirilmeli`
-- `İdare Eder`
-- `İyi`
+- `Gelistirilmeli`
+- `Idare Eder`
+- `Iyi`
+- `Advanced`
 - `Elit`
 
 Rules:
@@ -110,6 +116,22 @@ Rules:
 - use sport-specific context when supported
 - also show global athlete context
 - unsupported norm profiles must not get fake tiers
+
+Planned follow-up note:
+- the long-term band schema should be:
+  - `NeedsWork`
+  - `Adequate`
+  - `Good`
+  - `Advanced`
+  - `Elite`
+- `Advanced` should sit between `Good` and `Elite`
+- `Elite` should represent more extreme top-end thresholds than the first simple version
+- example future directions:
+  - bench press around `1.75x BW`
+  - power clean around `1.50x BW`
+  - back squat around `2.25x BW`
+- these exact elite thresholds are **not** part of the current implementation phase
+- they require a separate benchmark research pass before being shipped
 
 Scope:
 - support only safe metrics / supported movements first
@@ -126,7 +148,7 @@ Acceptance criteria:
 - unsupported cases fall back to raw result only
 - logic is deterministic and test-covered
 
-## Phase 5 — Home Content Pack
+## Phase 5 - Home Content Pack
 Status: `Planned`
 Priority: `Backlog`
 
@@ -139,7 +161,7 @@ Expected scope:
 - starter template pool expands with new useful ready-made programs
 - home/program surfaces stay aligned with current design language
 
-## Phase 6 — Leaderboard Groundwork
+## Phase 6 - Leaderboard Groundwork
 Status: `Planned`
 Priority: `Backlog`
 
@@ -157,16 +179,17 @@ Expected direction:
 ## Working Order
 
 Recommended execution order from here:
-1. `Phase 3` — Settings Billing Repair
-2. `Phase 4` — Calculation Insights V1
-3. `Phase 5` — Home Content Pack
-4. `Phase 6` — Leaderboard Groundwork
+1. `Phase 4` - Calculation Insights V1
+2. `Phase 5` - Home Content Pack
+3. `Phase 6` - Leaderboard Groundwork
 
 ## Verification Notes
 
 Completed verification already reported:
 - calculations polish tests/build passed
 - chart helper tests passed
+- settings billing outcome logic tests passed
+- donate sync classification follow-up tests passed
 
 Still needs real runtime smoke on device:
 - homepage chart range readability

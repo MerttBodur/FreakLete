@@ -26,6 +26,11 @@ public partial class CalculationsPage : ContentPage
 	private List<ExerciseGroup> _exerciseGroups = [];
 	private ExerciseGroup? _selectedExerciseGroup;
 
+	// Profile data for insight context (loaded on FFMI tab open)
+	private string? _profileSex;
+	private string? _profileSport;
+	private double? _profileBodyweightKg;
+
 	public CalculationsPage()
 	{
 		InitializeComponent();
@@ -87,6 +92,10 @@ public partial class CalculationsPage : ContentPage
 		FfmiResultTitle.Text = AppLanguage.CalcResult;
 		FfmiNormalizedCaption.Text = AppLanguage.CalcFfmiNormalized;
 		FfmiSecondaryLabel.Text = AppLanguage.CalcFfmiNoResult;
+
+		OneRmInsightTitleLabel.Text = AppLanguage.InsightTitle;
+		RsiInsightTitleLabel.Text = AppLanguage.InsightTitle;
+		FfmiInsightTitleLabel.Text = AppLanguage.InsightTitle;
 	}
 
 	protected override void OnDisappearing()
@@ -527,6 +536,24 @@ public partial class CalculationsPage : ContentPage
 		OneRmPrimaryValueLabel.Text = CalculationsPageLogic.FormatDisplayMetric(oneRm, "kg", 1);
 		OneRmPrimaryCaptionLabel.Text = AppLanguage.CalcEstimated1RmCaption;
 		OneRmSecondaryLabel.Text = CalculationsPageLogic.BuildOneRmSecondaryText(oneRm);
+
+		ShowOneRmInsight(oneRm);
+	}
+
+	private void ShowOneRmInsight(double oneRm)
+	{
+		string movementName = _selectedStrengthExerciseItem?.Name ?? "";
+		var insight = CalculationInsightResolver.ResolveOneRm(movementName, oneRm, _profileBodyweightKg);
+		if (insight is null)
+		{
+			OneRmInsightCard.IsVisible = false;
+			return;
+		}
+		OneRmInsightBandLabel.Text = insight.BandLabel;
+		OneRmInsightSummaryLabel.Text = insight.Summary;
+		OneRmInsightSportLabel.Text = insight.SportContext;
+		OneRmInsightGlobalLabel.Text = insight.GlobalContext;
+		OneRmInsightCard.IsVisible = true;
 	}
 
 	private async void OnChoosePrExerciseClicked(object? sender, EventArgs e)
@@ -854,6 +881,23 @@ public partial class CalculationsPage : ContentPage
 		RsiPrimaryValueLabel.Text = CalculationsPageLogic.FormatDisplayValue(rsi, 2);
 		RsiPrimaryCaptionLabel.Text = AppLanguage.CalcReactiveStrength;
 		RsiSecondaryLabel.Text = CalculationsPageLogic.BuildRsiSecondaryText(jumpHeightCm, gctSeconds);
+
+		ShowRsiInsight(rsi);
+	}
+
+	private void ShowRsiInsight(double rsi)
+	{
+		var insight = CalculationInsightResolver.ResolveRsi(rsi, _profileSport);
+		if (insight is null)
+		{
+			RsiInsightCard.IsVisible = false;
+			return;
+		}
+		RsiInsightBandLabel.Text = insight.BandLabel;
+		RsiInsightSummaryLabel.Text = insight.Summary;
+		RsiInsightSportLabel.Text = insight.SportContext;
+		RsiInsightGlobalLabel.Text = insight.GlobalContext;
+		RsiInsightCard.IsVisible = true;
 	}
 
 	private async Task LoadFfmiProfileDataAsync()
@@ -864,6 +908,12 @@ public partial class CalculationsPage : ContentPage
 		if (!result.Success || result.Data is null) return;
 
 		var profile = result.Data;
+
+		// Store profile context for insight resolvers
+		_profileSex = string.IsNullOrWhiteSpace(profile.Sex) ? null : profile.Sex;
+		_profileSport = string.IsNullOrWhiteSpace(profile.SportName) ? null : profile.SportName;
+		_profileBodyweightKg = profile.WeightKg;
+
 		bool hasFfmiData = profile.WeightKg.HasValue
 						&& profile.HeightCm.HasValue
 						&& profile.BodyFatPercentage.HasValue;
@@ -912,6 +962,23 @@ public partial class CalculationsPage : ContentPage
 		FfmiNormalizedLabel.Text = CalculationsPageLogic.FormatDisplayValue(normalizedFfmi, 1);
 		FfmiNormalizedCaption.Text = AppLanguage.CalcFfmiNormalized;
 		FfmiSecondaryLabel.Text = CalculationsPageLogic.BuildFfmiSecondaryText(rawFfmi, lbm);
+
+		ShowFfmiInsight(normalizedFfmi);
+	}
+
+	private void ShowFfmiInsight(double normalizedFfmi)
+	{
+		var insight = CalculationInsightResolver.ResolveFfmi(normalizedFfmi, _profileSex);
+		if (insight is null)
+		{
+			FfmiInsightCard.IsVisible = false;
+			return;
+		}
+		FfmiInsightBandLabel.Text = insight.BandLabel;
+		FfmiInsightSummaryLabel.Text = insight.Summary;
+		FfmiInsightSportLabel.Text = insight.SportContext;
+		FfmiInsightGlobalLabel.Text = insight.GlobalContext;
+		FfmiInsightCard.IsVisible = true;
 	}
 
 	private static void ShowError(Label label, string message)

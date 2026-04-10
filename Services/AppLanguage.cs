@@ -331,6 +331,108 @@ public static class AppLanguage
 	public static string CalcFfmiHeightError => IsTurkish ? "Boy pozitif bir sayı olmalıdır." : "Height must be a positive number.";
 	public static string CalcFfmiBodyFatError => IsTurkish ? "Vücut yağ oranı 0 ile 100 arasında olmalıdır." : "Body fat must be between 0 and 100.";
 
+	// ── Calculation Insights ────────────────────────────────────
+	public static string InsightTitle => IsTurkish ? "Analiz" : "Analysis";
+
+	public static string InsightBandLabel(CalculationInsightResolver.InsightBand band) => band switch
+	{
+		CalculationInsightResolver.InsightBand.NeedsWork => IsTurkish ? "Gelistirilmeli" : "Needs Work",
+		CalculationInsightResolver.InsightBand.Adequate  => IsTurkish ? "Idare Eder"    : "Adequate",
+		CalculationInsightResolver.InsightBand.Good      => IsTurkish ? "Iyi"           : "Good",
+		CalculationInsightResolver.InsightBand.Elite     => IsTurkish ? "Elit"          : "Elite",
+		_                                                 => ""
+	};
+
+	// 1RM
+	public static string InsightOneRmSummary(CalculationInsightResolver.InsightBand band, string ratio) => band switch
+	{
+		CalculationInsightResolver.InsightBand.NeedsWork => IsTurkish
+			? $"Vücut ağırlığına göre kaldırma oranın ({ratio}x) henüz temel eşiğin altında. Teknik ve kuvvet geliştirmeye odaklan."
+			: $"Your bodyweight-relative lift ratio ({ratio}x) is below the baseline threshold. Focus on technique and progressive overload.",
+		CalculationInsightResolver.InsightBand.Adequate  => IsTurkish
+			? $"Kaldırma oranın ({ratio}x) antrenmanlı sporcu kitlesinde orta düzeyde. Düzenli antrenmanla ilerleyebilirsin."
+			: $"Your lift ratio ({ratio}x) sits in the mid-range for trained athletes. Consistent training should push this higher.",
+		CalculationInsightResolver.InsightBand.Good      => IsTurkish
+			? $"Kaldırma oranın ({ratio}x) antrenmanlı popülasyonun üst diliminde. Güçlü bir taban var."
+			: $"Your lift ratio ({ratio}x) places you in the upper tier of the trained population. Solid foundation.",
+		CalculationInsightResolver.InsightBand.Elite     => IsTurkish
+			? $"Kaldırma oranın ({ratio}x) rekabetçi sporcu eşiğinde veya üzerinde. Bu seviyeye ulaşmak ciddi antrenman gerektirir."
+			: $"Your lift ratio ({ratio}x) meets or exceeds competitive athlete thresholds. Reaching this level requires serious training commitment.",
+		_                                                  => ""
+	};
+
+	public static string InsightOneRmSportContext(CalculationInsightResolver.InsightBand band, string movement) => IsTurkish
+		? $"{movement} için güç antrenmanı yapan sporculara göre değerlendirme."
+		: $"Evaluated against strength-trained athletes working with {movement}.";
+
+	public static string InsightOneRmGlobalContext(CalculationInsightResolver.InsightBand band) => IsTurkish
+		? "Referans: Antrenman geçmişi olan geniş sporcu popülasyonu verileri."
+		: "Reference: Broad trained-athlete population data.";
+
+	// RSI
+	public static string InsightRsiSummary(CalculationInsightResolver.InsightBand band, string rsiStr) => band switch
+	{
+		CalculationInsightResolver.InsightBand.NeedsWork => IsTurkish
+			? $"RSI değerin ({rsiStr}) temel sporcu eşiğinin altında. Reaktif güç antrenmanı faydalı olacaktır."
+			: $"Your RSI ({rsiStr}) is below the general athlete baseline. Reactive strength training would be beneficial.",
+		CalculationInsightResolver.InsightBand.Adequate  => IsTurkish
+			? $"RSI değerin ({rsiStr}) genel sporcu ortalamasına yakın. Patlayıcı çalışmalar ile gelişim mümkün."
+			: $"Your RSI ({rsiStr}) is near the general athlete average. Plyometric and reactive work can move this upward.",
+		CalculationInsightResolver.InsightBand.Good      => IsTurkish
+			? $"RSI değerin ({rsiStr}) antrenmanlı sporcu grubunda iyi bir seviyede."
+			: $"Your RSI ({rsiStr}) is at a solid level for trained athletes.",
+		CalculationInsightResolver.InsightBand.Elite     => IsTurkish
+			? $"RSI değerin ({rsiStr}) elit sporcu eşiğinde. Reaktif güç açısından üst dilimdesin."
+			: $"Your RSI ({rsiStr}) is at the elite athlete threshold. You're in the top tier for reactive strength.",
+		_                                                  => ""
+	};
+
+	public static string InsightRsiSportContext(CalculationInsightResolver.InsightBand band, string? sport) =>
+		!string.IsNullOrWhiteSpace(sport)
+			? (IsTurkish
+				? $"{sport} sporunda reaktif güç kritik bir performans bileşenidir."
+				: $"Reactive strength is a critical performance component in {sport}.")
+			: (IsTurkish
+				? "Reaktif güç; sıçrama, sprint ve çeviklik gerektiren sporlarda kritik bir bileşendir."
+				: "Reactive strength is critical in sports requiring jumping, sprinting, and agility.");
+
+	public static string InsightRsiGlobalContext(CalculationInsightResolver.InsightBand band) => IsTurkish
+		? "Referans: Genel sporcu popülasyonu RSI bant eşikleri (1.0 / 2.0 / 3.0)."
+		: "Reference: General athlete population RSI band thresholds (1.0 / 2.0 / 3.0).";
+
+	// FFMI
+	public static string InsightFfmiSummary(CalculationInsightResolver.InsightBand band, string ffmiStr) => band switch
+	{
+		CalculationInsightResolver.InsightBand.NeedsWork => IsTurkish
+			? $"Düzeltilmiş FFMI değerin ({ffmiStr}) antrenmanlı sporcu tabanının altında. Protein alımı ve hipertrofi çalışması faydalı olabilir."
+			: $"Your adjusted FFMI ({ffmiStr}) is below the trained-athlete baseline. Hypertrophy-focused training and protein intake may help.",
+		CalculationInsightResolver.InsightBand.Adequate  => IsTurkish
+			? $"FFMI değerin ({ffmiStr}) aktif popülasyonun orta kesiminde."
+			: $"Your FFMI ({ffmiStr}) sits in the middle range of the active population.",
+		CalculationInsightResolver.InsightBand.Good      => IsTurkish
+			? $"FFMI değerin ({ffmiStr}) antrenmanlı sporcu grubunda iyi bir yağsız kütle düzeyini gösteriyor."
+			: $"Your FFMI ({ffmiStr}) reflects a solid lean mass level in the trained-athlete group.",
+		CalculationInsightResolver.InsightBand.Elite     => IsTurkish
+			? $"FFMI değerin ({ffmiStr}) rekabetçi sporcu tabanının üst diliminde."
+			: $"Your FFMI ({ffmiStr}) is in the upper tier of the competitive athlete baseline.",
+		_                                                  => ""
+	};
+
+	public static string InsightFfmiSportContext(CalculationInsightResolver.InsightBand band) => IsTurkish
+		? "Yağsız kütle indeksi, güç/kütle sporlarda performansla ilişkili bir göstergedir."
+		: "Lean mass index is a performance-relevant indicator in strength and physique sports.";
+
+	public static string InsightFfmiGlobalContext(CalculationInsightResolver.InsightBand band, string? sex)
+	{
+		bool isFemale = sex is not null && (sex.Equals("female", StringComparison.OrdinalIgnoreCase)
+			|| sex.Equals("f", StringComparison.OrdinalIgnoreCase)
+			|| sex.Equals("kadin", StringComparison.OrdinalIgnoreCase)
+			|| sex.Equals("kadın", StringComparison.OrdinalIgnoreCase));
+		return IsTurkish
+			? $"Referans: {(isFemale ? "Kadın" : "Erkek")} sporcu popülasyonu FFMI bantları."
+			: $"Reference: {(isFemale ? "Female" : "Male")} athlete population FFMI bands.";
+	}
+
 	// ── Profile Page ────────────────────────────────────────────
 	public static string ProfileWorkouts => IsTurkish ? "Antrenman" : "Workouts";
 	public static string ProfileSavedPrs => IsTurkish ? "PR'lar" : "Saved PRs";
