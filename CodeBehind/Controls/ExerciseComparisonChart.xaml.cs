@@ -1,6 +1,4 @@
 using FreakLete.Services;
-using Microcharts;
-using SkiaSharp;
 
 namespace FreakLete;
 
@@ -232,85 +230,156 @@ public partial class ExerciseComparisonChart : ContentView
         var data2  = Exercise2Data;
         var labels = AxisLabels;
 
-        bool hasData = (data1 != null && data1.Any(v => v > 0)) ||
-                       (data2 != null && data2.Any(v => v > 0));
+        bool hasData = (data1 != null && data1.Count > 0) ||
+                       (data2 != null && data2.Count > 0);
 
         EmptyStateLabel.IsVisible = !hasData;
-        ChartView1.IsVisible = hasData;
-        ChartView2.IsVisible = hasData;
+        ComparisonChartView.IsVisible = hasData;
         LegendRow.IsVisible = hasData;
 
         if (!hasData) return;
 
-        float allMax = 0;
-        if (data1 != null) allMax = Math.Max(allMax, data1.Max());
-        if (data2 != null) allMax = Math.Max(allMax, data2.Max());
-        if (allMax == 0) allMax = 1;
+        ComparisonChartView.Drawable = new DualLineChartDrawable(data1, data2, labels);
+        ComparisonChartView.Invalidate();
+    }
 
-        var accentColor      = SKColor.Parse("#8B5CF6");
-        var successColor     = SKColor.Parse("#22C55E");
-        var transparentBg    = SKColor.Parse("#00000000");
-        var labelColor       = SKColor.Parse("#B3B2C5");
+    // ── Custom dual straight-line chart drawable ──────────────────────────────
 
-        if (data1 != null && data1.Count > 0)
+    private sealed class DualLineChartDrawable : IDrawable
+    {
+        private readonly List<float>?  _series1;
+        private readonly List<float>?  _series2;
+        private readonly List<string>? _labels;
+
+        public DualLineChartDrawable(List<float>? s1, List<float>? s2, List<string>? labels)
         {
-            var entries1 = new List<ChartEntry>();
-            for (int i = 0; i < data1.Count; i++)
-            {
-                entries1.Add(new ChartEntry(data1[i])
-                {
-                    Color      = accentColor,
-                    Label      = labels != null && i < labels.Count ? labels[i] : "",
-                    ValueLabel = data1[i] > 0 ? data1[i].ToString("0") : ""
-                });
-            }
-
-            ChartView1.Chart = new LineChart
-            {
-                Entries                  = entries1,
-                BackgroundColor          = transparentBg,
-                LineSize                 = 3,
-                PointSize                = 6,
-                LabelColor               = labelColor,
-                LabelTextSize            = 24,
-                ValueLabelTextSize       = 20,
-                MinValue                 = 0,
-                MaxValue                 = allMax,
-                LineMode                 = LineMode.Spline,
-                PointMode                = PointMode.Circle,
-                ValueLabelOrientation    = Orientation.Horizontal,
-                LabelOrientation         = Orientation.Horizontal
-            };
+            _series1 = s1;
+            _series2 = s2;
+            _labels  = labels;
         }
 
-        if (data2 != null && data2.Count > 0)
+        public void Draw(ICanvas canvas, RectF dirtyRect)
         {
-            var entries2 = new List<ChartEntry>();
-            for (int i = 0; i < data2.Count; i++)
+            float w = dirtyRect.Width;
+            float h = dirtyRect.Height;
+            const float padLeft   = 42f;
+            const float padRight  = 12f;
+            const float padTop    = 14f;
+            const float padBottom = 30f;
+            float chartW = w - padLeft - padRight;
+            float chartH = h - padTop - padBottom;
+
+            // Determine shared y scale across both series
+            float allMax = 0f;
+            if (_series1 is { Count: > 0 }) allMax = Math.Max(allMax, _series1.Max());
+            if (_series2 is { Count: > 0 }) allMax = Math.Max(allMax, _series2.Max());
+            if (allMax <= 0) return;
+            float yScale = allMax * 1.1f; // 10% headroom
+
+            // Grid lines + Y-axis labels
+            canvas.FontSize   = 9;
+            canvas.FontColor  = Color.FromArgb("#5A5474");
+            canvas.StrokeColor = Color.FromArgb("#2A2540");
+            canvas.StrokeSize  = 1;
+            for (int g = 0; g <= 3; g++)
             {
-                entries2.Add(new ChartEntry(data2[i])
-                {
-                    Color      = successColor,
-                    Label      = "",
-                    ValueLabel = data2[i] > 0 ? data2[i].ToString("0") : ""
-                });
+                float ratio = g / 3f;
+                float gy = padTop + chartH - (ratio * chartH);
+                double val = ratio * yScale;
+                canvas.DrawLine(padLeft, gy, padLeft + chartW, gy);
+                canvas.DrawString($"{val:0.#}", 0, gy - 8, padLeft - 4, 16,
+                    HorizontalAlignment.Right, VerticalAlignment.Center);
             }
 
-            ChartView2.Chart = new LineChart
+            float labelY = padTop + chartH + 8;
+
+            // Draw series 1 (accent)
+            DrawSeries(canvas, _series1, _labels, padLeft, padTop, chartW, chartH, yScale, labelY,
+                Color.FromArgb("#8B5CF6"), Color.FromArgb("#A78BFA"), drawLabels: true);
+
+            // Draw series 2 (success green) — no x-axis labels (already drawn by series1)
+            DrawSeries(canvas, _series2, null, padLeft, padTop, chartW, chartH, yScale, labelY,
+                Color.FromArgb("#22C55E"), Color.FromArgb("#4ADE80"), drawLabels: false);
+        }
+
+        private static void DrawSeries(
+            ICanvas canvas,
+            List<float>? series,
+            List<string>? labels,
+            float padLeft, float padTop, float chartW, float chartH, float yScale, float labelY,
+            Color lineColor, Color dotColor, bool drawLabels)
+        {
+            if (series is null || series.Count == 0) return;
+
+            int n = series.Count;
+            float[] xs = new float[n];
+            float[] ys = new float[n];
+
+            for (int i = 0; i < n; i++)
             {
-                Entries               = entries2,
-                BackgroundColor       = transparentBg,
-                LineSize              = 3,
-                PointSize             = 6,
-                LabelColor            = transparentBg,
-                ValueLabelTextSize    = 20,
-                MinValue              = 0,
-                MaxValue              = allMax,
-                LineMode              = LineMode.Spline,
-                PointMode             = PointMode.Circle,
-                ValueLabelOrientation = Orientation.Horizontal,
-                LabelOrientation      = Orientation.Horizontal
-            };
+                xs[i] = n == 1
+                    ? padLeft + chartW / 2f
+                    : padLeft + (chartW * i / (n - 1));
+                float ratio = yScale > 0 ? series[i] / yScale : 0f;
+                ys[i] = padTop + chartH - (ratio * chartH);
+            }
+
+            // Area fill (subtle gradient)
+            if (n >= 2)
+            {
+                var areaPath = new PathF();
+                areaPath.MoveTo(xs[0], padTop + chartH);
+                for (int i = 0; i < n; i++)
+                    areaPath.LineTo(xs[i], ys[i]);
+                areaPath.LineTo(xs[n - 1], padTop + chartH);
+                areaPath.Close();
+
+                canvas.SetFillPaint(new LinearGradientPaint(
+                [
+                    new PaintGradientStop(0f, lineColor.WithAlpha(0.18f)),
+                    new PaintGradientStop(1f, lineColor.WithAlpha(0.01f))
+                ],
+                new Point(0, 0), new Point(0, 1)), new RectF(padLeft, padTop, chartW, chartH));
+                canvas.FillPath(areaPath);
+            }
+
+            // Straight line segments
+            if (n >= 2)
+            {
+                canvas.StrokeColor    = lineColor;
+                canvas.StrokeSize     = 2.5f;
+                canvas.StrokeLineCap  = LineCap.Round;
+                canvas.StrokeLineJoin = LineJoin.Round;
+                var linePath = new PathF();
+                linePath.MoveTo(xs[0], ys[0]);
+                for (int i = 1; i < n; i++)
+                    linePath.LineTo(xs[i], ys[i]);
+                canvas.DrawPath(linePath);
+            }
+
+            // Dots with glow ring
+            for (int i = 0; i < n; i++)
+            {
+                canvas.FillColor = lineColor.WithAlpha(0.2f);
+                canvas.FillCircle(xs[i], ys[i], 8);
+                canvas.FillColor = dotColor;
+                canvas.FillCircle(xs[i], ys[i], 4);
+                canvas.FillColor = Colors.White;
+                canvas.FillCircle(xs[i], ys[i], 1.5f);
+            }
+
+            // X-axis labels (series1 only)
+            if (drawLabels && labels is not null)
+            {
+                canvas.FontSize  = 10;
+                canvas.FontColor = Color.FromArgb("#B3B2C5");
+                for (int i = 0; i < n; i++)
+                {
+                    string lbl = i < labels.Count ? labels[i] : "";
+                    canvas.DrawString(lbl, xs[i] - 22, labelY, 44, 20,
+                        HorizontalAlignment.Center, VerticalAlignment.Top);
+                }
+            }
         }
     }
 }

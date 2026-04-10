@@ -142,42 +142,38 @@ public partial class HomePage : ContentPage
 
 	private void UpdateComparisonChart()
 	{
-		var today      = DateTime.Now.Date;
-		var dayAbbr    = AppLanguage.HomeDayAbbreviations;
-		var monthAbbr  = AppLanguage.ChartMonthAbbreviations;
+		var today     = DateTime.Now.Date;
+		var monthAbbr = AppLanguage.ChartMonthAbbreviations;
 
-		var (data1, labels1) = ChartDataHelper.BuildBuckets(
+		var (values1, labels1) = ChartDataHelper.BuildSparsePoints(
 			_exercise1Name, _selectedRange, today,
 			_allWorkouts, _allPrEntries, _allAthleticEntries,
-			dayAbbr, monthAbbr);
+			monthAbbr);
 
-		var (data2, _) = ChartDataHelper.BuildBuckets(
+		var (values2, _) = ChartDataHelper.BuildSparsePoints(
 			_exercise2Name, _selectedRange, today,
 			_allWorkouts, _allPrEntries, _allAthleticEntries,
-			dayAbbr, monthAbbr);
+			monthAbbr);
 
 		string unit1 = ChartDataHelper.UnitForExercise(_exercise1Name, _allPrEntries, _allAthleticEntries, _allWorkouts);
 		string unit2 = ChartDataHelper.UnitForExercise(_exercise2Name, _allPrEntries, _allAthleticEntries, _allWorkouts);
 
 		ComparisonChart.Exercise1Name  = _exercise1Name;
 		ComparisonChart.Exercise2Name  = _exercise2Name;
-		ComparisonChart.Exercise1Data  = data1;
-		ComparisonChart.Exercise2Data  = data2;
+		ComparisonChart.Exercise1Data  = values1;
+		ComparisonChart.Exercise2Data  = values2;
 		ComparisonChart.AxisLabels     = labels1;
 		ComparisonChart.Exercise1Unit  = unit1;
 		ComparisonChart.Exercise2Unit  = unit2;
-		ComparisonChart.Exercise1Delta = CalculateDelta(data1, unit1);
-		ComparisonChart.Exercise2Delta = CalculateDelta(data2, unit2);
+		ComparisonChart.Exercise1Delta = FormatDelta(ChartDataHelper.ComputeDelta(values1), unit1);
+		ComparisonChart.Exercise2Delta = FormatDelta(ChartDataHelper.ComputeDelta(values2), unit2);
 		ComparisonChart.SelectedRange  = _selectedRange;
 	}
 
-	private static string CalculateDelta(List<float> data, string unit)
+	private static string FormatDelta(float? delta, string unit)
 	{
-		float firstNonZero = data.FirstOrDefault(v => v > 0);
-		float last = data.LastOrDefault(v => v > 0);
-		if (firstNonZero <= 0 || last <= 0) return "-";
-		float diff = last - firstNonZero;
-		return diff >= 0 ? $"+{diff:0}{unit}" : $"{diff:0}{unit}";
+		if (delta is null) return "-";
+		return delta >= 0 ? $"+{delta:0}{unit}" : $"{delta:0}{unit}";
 	}
 
 	private async void OnChangeComparisonExercisesClicked(object? sender, EventArgs e)

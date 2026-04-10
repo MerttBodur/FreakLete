@@ -320,7 +320,7 @@ public static class AppLanguage
 		: "FFMI requires weight, height, and body fat percentage in your profile.";
 	public static string CalcFfmiGoToProfile => IsTurkish ? "Profili Düzenle" : "Edit Profile";
 	public static string CalcFfmiCalculate => IsTurkish ? "FFMI Hesapla" : "Calculate FFMI";
-	public static string CalcFfmiNormalized => IsTurkish ? "Düzeltilmiş FFMI" : "Adjusted FFMI";
+	public static string CalcFfmiNormalized => "FFMI";
 	public static string CalcFfmiRaw => IsTurkish ? "Ham FFMI" : "Raw FFMI";
 	public static string CalcFfmiLbm => IsTurkish ? "Yağsız Kütle (kg)" : "Lean Body Mass (kg)";
 	public static string CalcFfmiNoResult => IsTurkish ? "Henüz FFMI hesaplanmadı." : "No FFMI calculated yet.";
@@ -404,8 +404,8 @@ public static class AppLanguage
 	public static string InsightFfmiSummary(CalculationInsightResolver.InsightBand band, string ffmiStr) => band switch
 	{
 		CalculationInsightResolver.InsightBand.NeedsWork => IsTurkish
-			? $"Düzeltilmiş FFMI değerin ({ffmiStr}) antrenmanlı sporcu tabanının altında. Protein alımı ve hipertrofi çalışması faydalı olabilir."
-			: $"Your adjusted FFMI ({ffmiStr}) is below the trained-athlete baseline. Hypertrophy-focused training and protein intake may help.",
+			? $"FFMI değerin ({ffmiStr}) antrenmanlı sporcu tabanının altında. Protein alımı ve hipertrofi çalışması faydalı olabilir."
+			: $"Your FFMI ({ffmiStr}) is below the trained-athlete baseline. Hypertrophy-focused training and protein intake may help.",
 		CalculationInsightResolver.InsightBand.Adequate  => IsTurkish
 			? $"FFMI değerin ({ffmiStr}) aktif popülasyonun orta kesiminde."
 			: $"Your FFMI ({ffmiStr}) sits in the middle range of the active population.",

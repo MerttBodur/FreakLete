@@ -117,7 +117,187 @@ public static class ChartDataHelper
     }
 
     /// <summary>
+    /// Builds sparse event-based points for one exercise within the given range.
+    /// Only days/buckets with at least one real logged event produce a point.
+    /// No zero-fill for missing days. Labels correspond to actual event dates.
+    /// </summary>
+    public static (List<float> Values, List<string> Labels) BuildSparsePoints(
+        string exerciseName,
+        ChartRange range,
+        DateTime today,
+        IReadOnlyList<WorkoutResponse>? workouts,
+        IReadOnlyList<PrEntryResponse>? prEntries,
+        IReadOnlyList<AthleticPerformanceResponse>? athleticEntries,
+        string[] monthAbbr)
+    {
+        var cfg = GetBucketConfig(range);
+        int totalDays = RangeDays(range);
+        var cutoff = today.AddDays(-totalDays).Date;
+
+        // Collect all event dates with best values within range
+        // Key: bucket identity (date for daily, weekEnd for weekly, yyyyMM for monthly)
+        var buckets = new SortedDictionary<DateTime, float>();
+
+        if (cfg.IsDaily)
+        {
+            // Each actual logged date becomes a point
+            if (workouts is not null)
+                foreach (var w in workouts.Where(w => w.WorkoutDate.Date >= cutoff))
+                    foreach (var ex in w.Exercises.Where(e =>
+                        string.Equals(e.ExerciseName, exerciseName, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        float v = BestValueFromWorkoutEntry(ex);
+                        if (v > 0)
+                            buckets[w.WorkoutDate.Date] = Math.Max(buckets.GetValueOrDefault(w.WorkoutDate.Date), v);
+                    }
+
+            if (prEntries is not null)
+                foreach (var pr in prEntries.Where(p =>
+                    p.CreatedAt.Date >= cutoff &&
+                    string.Equals(p.ExerciseName, exerciseName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    float v = BestValueFromPrEntry(pr);
+                    if (v > 0)
+                        buckets[pr.CreatedAt.Date] = Math.Max(buckets.GetValueOrDefault(pr.CreatedAt.Date), v);
+                }
+
+            if (athleticEntries is not null)
+                foreach (var ath in athleticEntries.Where(a =>
+                    a.RecordedAt.Date >= cutoff &&
+                    string.Equals(a.MovementName, exerciseName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    float v = BestValueFromAthleticEntry(ath);
+                    if (v > 0)
+                        buckets[ath.RecordedAt.Date] = Math.Max(buckets.GetValueOrDefault(ath.RecordedAt.Date), v);
+                }
+        }
+        else if (cfg.IsWeekly)
+        {
+            // Bin events into 7-day buckets; bucket key = week-end date
+            if (workouts is not null)
+                foreach (var w in workouts.Where(w => w.WorkoutDate.Date >= cutoff))
+                    foreach (var ex in w.Exercises.Where(e =>
+                        string.Equals(e.ExerciseName, exerciseName, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        float v = BestValueFromWorkoutEntry(ex);
+                        if (v > 0)
+                        {
+                            var key = WeekBucketKey(w.WorkoutDate.Date, today);
+                            buckets[key] = Math.Max(buckets.GetValueOrDefault(key), v);
+                        }
+                    }
+
+            if (prEntries is not null)
+                foreach (var pr in prEntries.Where(p =>
+                    p.CreatedAt.Date >= cutoff &&
+                    string.Equals(p.ExerciseName, exerciseName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    float v = BestValueFromPrEntry(pr);
+                    if (v > 0)
+                    {
+                        var key = WeekBucketKey(pr.CreatedAt.Date, today);
+                        buckets[key] = Math.Max(buckets.GetValueOrDefault(key), v);
+                    }
+                }
+
+            if (athleticEntries is not null)
+                foreach (var ath in athleticEntries.Where(a =>
+                    a.RecordedAt.Date >= cutoff &&
+                    string.Equals(a.MovementName, exerciseName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    float v = BestValueFromAthleticEntry(ath);
+                    if (v > 0)
+                    {
+                        var key = WeekBucketKey(ath.RecordedAt.Date, today);
+                        buckets[key] = Math.Max(buckets.GetValueOrDefault(key), v);
+                    }
+                }
+        }
+        else // Monthly
+        {
+            // Bin events into calendar-month buckets; key = first day of month
+            if (workouts is not null)
+                foreach (var w in workouts.Where(w => w.WorkoutDate.Date >= cutoff))
+                    foreach (var ex in w.Exercises.Where(e =>
+                        string.Equals(e.ExerciseName, exerciseName, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        float v = BestValueFromWorkoutEntry(ex);
+                        if (v > 0)
+                        {
+                            var key = new DateTime(w.WorkoutDate.Year, w.WorkoutDate.Month, 1);
+                            buckets[key] = Math.Max(buckets.GetValueOrDefault(key), v);
+                        }
+                    }
+
+            if (prEntries is not null)
+                foreach (var pr in prEntries.Where(p =>
+                    p.CreatedAt.Date >= cutoff &&
+                    string.Equals(p.ExerciseName, exerciseName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    float v = BestValueFromPrEntry(pr);
+                    if (v > 0)
+                    {
+                        var key = new DateTime(pr.CreatedAt.Year, pr.CreatedAt.Month, 1);
+                        buckets[key] = Math.Max(buckets.GetValueOrDefault(key), v);
+                    }
+                }
+
+            if (athleticEntries is not null)
+                foreach (var ath in athleticEntries.Where(a =>
+                    a.RecordedAt.Date >= cutoff &&
+                    string.Equals(a.MovementName, exerciseName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    float v = BestValueFromAthleticEntry(ath);
+                    if (v > 0)
+                    {
+                        var key = new DateTime(ath.RecordedAt.Year, ath.RecordedAt.Month, 1);
+                        buckets[key] = Math.Max(buckets.GetValueOrDefault(key), v);
+                    }
+                }
+        }
+
+        // Convert sorted buckets to parallel value/label lists
+        var values = new List<float>();
+        var labels = new List<string>();
+
+        foreach (var kv in buckets)
+        {
+            values.Add(kv.Value);
+            labels.Add(cfg.IsMonthly
+                ? monthAbbr[kv.Key.Month - 1]
+                : cfg.IsWeekly
+                    ? $"W{monthAbbr[kv.Key.Month - 1]}{kv.Key.Day:00}"
+                    : kv.Key.ToString("MMM d"));
+        }
+
+        return (values, labels);
+    }
+
+    /// <summary>
+    /// Delta between the first and last real data points (ignores zeros).
+    /// Returns null when fewer than 2 real points exist.
+    /// </summary>
+    public static float? ComputeDelta(IReadOnlyList<float> values)
+    {
+        if (values is null || values.Count < 2) return null;
+        float first = values[0];
+        float last  = values[^1];
+        if (first <= 0 || last <= 0) return null;
+        return last - first;
+    }
+
+    // Snap a date to the nearest week-end anchor relative to 'today'
+    private static DateTime WeekBucketKey(DateTime date, DateTime today)
+    {
+        int daysFromToday = (today.Date - date.Date).Days;
+        int weekIndex = daysFromToday / 7;
+        return today.Date.AddDays(-(weekIndex * 7));
+    }
+
+    /// <summary>
     /// Builds bucketed (data, labels) from merged sources for one exercise.
+    /// Kept for backward compatibility with existing tests.
+    /// Prefer BuildSparsePoints for new rendering.
     /// </summary>
     public static (List<float> Data, List<string> Labels) BuildBuckets(
         string exerciseName,
@@ -138,28 +318,24 @@ public static class ChartDataHelper
 
         if (cfg.IsDaily)
         {
-            // One bucket per day
             for (int i = cfg.BucketCount - 1; i >= 0; i--)
             {
                 var day = today.AddDays(-i);
                 labels.Add(dayAbbr[(int)day.DayOfWeek]);
                 float best = 0f;
 
-                // Workout entries
                 if (workouts is not null)
                     foreach (var w in workouts.Where(w => w.WorkoutDate.Date == day.Date))
                         foreach (var ex in w.Exercises.Where(e =>
                             string.Equals(e.ExerciseName, exerciseName, StringComparison.OrdinalIgnoreCase)))
                             best = Math.Max(best, BestValueFromWorkoutEntry(ex));
 
-                // PR entries
                 if (prEntries is not null)
                     foreach (var pr in prEntries.Where(p =>
                         p.CreatedAt.Date == day.Date &&
                         string.Equals(p.ExerciseName, exerciseName, StringComparison.OrdinalIgnoreCase)))
                         best = Math.Max(best, BestValueFromPrEntry(pr));
 
-                // Athletic
                 if (athleticEntries is not null)
                     foreach (var ath in athleticEntries.Where(a =>
                         a.RecordedAt.Date == day.Date &&
@@ -171,7 +347,6 @@ public static class ChartDataHelper
         }
         else if (cfg.IsWeekly)
         {
-            // Buckets: cfg.BucketCount weeks back from today
             for (int i = cfg.BucketCount - 1; i >= 0; i--)
             {
                 var weekEnd = today.AddDays(-i * 7);

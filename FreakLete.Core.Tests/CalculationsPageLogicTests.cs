@@ -215,7 +215,7 @@ public class CalculationsPageLogicTests
 		string result = CalculationsPageLogic.BuildFfmiSecondaryText(21.46, 72.1);
 
 		Assert.Equal("Ham FFMI: 21,5 · Yağsız Kütle (kg): 72,1 kg", result);
-		Assert.Equal("Düzeltilmiş FFMI", AppLanguage.CalcFfmiNormalized);
+		Assert.Equal("FFMI", AppLanguage.CalcFfmiNormalized);
 	}
 
 	private static void SetLanguageAndCulture(string cultureName)
