@@ -1,7 +1,9 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using FreakLete.Api.Data;
 using FreakLete.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -80,6 +82,75 @@ builder.Services.AddHttpClient<GeminiClient>()
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
+// Rate limiting — brute force / credential stuffing protection
+// Disabled in Testing environment so integration tests are not throttled.
+var isTestEnvironment = builder.Environment.IsEnvironment("Testing");
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = 429;
+    options.OnRejected = async (ctx, _) =>
+    {
+        ctx.HttpContext.Response.ContentType = "application/json";
+        await ctx.HttpContext.Response.WriteAsJsonAsync(
+            new { message = "Çok fazla istek gönderildi. Lütfen biraz bekleyin." });
+    };
+
+    // login: 5 per minute, partitioned by IP
+    options.AddPolicy("auth-login", httpCtx =>
+    {
+        if (isTestEnvironment)
+            return RateLimitPartition.GetNoLimiter("test");
+
+        var ip = httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        return RateLimitPartition.GetFixedWindowLimiter(
+            $"login:{ip}",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            });
+    });
+
+    // register: 3 per 10 minutes by IP
+    options.AddPolicy("auth-register", httpCtx =>
+    {
+        if (isTestEnvironment)
+            return RateLimitPartition.GetNoLimiter("test");
+
+        var ip = httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        return RateLimitPartition.GetFixedWindowLimiter(
+            $"register:{ip}",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 3,
+                Window = TimeSpan.FromMinutes(10),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            });
+    });
+
+    // change-password: 5 per 10 minutes by authenticated user id + IP
+    options.AddPolicy("auth-change-password", httpCtx =>
+    {
+        if (isTestEnvironment)
+            return RateLimitPartition.GetNoLimiter("test");
+
+        var ip = httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        var userId = httpCtx.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "anon";
+        return RateLimitPartition.GetFixedWindowLimiter(
+            $"change-password:{userId}:{ip}",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(10),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            });
+    });
+});
+
 var app = builder.Build();
 
 // Apply pending migrations on startup (skip in Testing — test fixture owns the lifecycle)
@@ -147,6 +218,7 @@ app.MapGet("/api/health", async (AppDbContext db, IWebHostEnvironment env) =>
 });
 
 app.UseHttpsRedirection();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

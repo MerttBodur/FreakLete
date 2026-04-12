@@ -553,6 +553,9 @@ public static class AppLanguage
 	public static string ProfileDeleteConfirm => IsTurkish
 		? "Bu işlem geri alınamaz. Tüm verileriniz silinecek."
 		: "This action cannot be undone. All your data will be deleted.";
+	public static string ProfileDeletePasswordPrompt => IsTurkish
+		? "Devam etmek için mevcut şifrenizi girin."
+		: "Enter your current password to continue.";
 
 	// ── NewWorkout Page ─────────────────────────────────────────
 	public static string NewWorkoutTitle => IsTurkish ? "Yeni Antrenman" : "New Workout";

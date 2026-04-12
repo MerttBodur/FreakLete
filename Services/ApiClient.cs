@@ -102,9 +102,27 @@ public class ApiClient : IApiClient
 		return PutWithResponseAsync<UserProfileResponse>("api/auth/profile/coach", request);
 	}
 
-	public Task<ApiResult<bool>> DeleteAccountAsync()
+	public async Task<ApiResult<bool>> DeleteAccountAsync(string currentPassword)
 	{
-		return DeleteAsync("api/auth/account");
+		try
+		{
+			AttachToken();
+			var request = new HttpRequestMessage(HttpMethod.Delete, "api/auth/account")
+			{
+				Content = JsonContent.Create(new { currentPassword }, options: JsonOptions)
+			};
+			var response = await _http.SendAsync(request);
+
+			if (response.IsSuccessStatusCode)
+				return ApiResult<bool>.Ok(true);
+
+			var error = await ReadError(response);
+			return ApiResult<bool>.Fail(error, (int)response.StatusCode);
+		}
+		catch (Exception ex)
+		{
+			return ApiResult<bool>.Fail($"Bağlantı hatası: {ex.Message}");
+		}
 	}
 
 	// ── Athletic Performance ───────────────────────────

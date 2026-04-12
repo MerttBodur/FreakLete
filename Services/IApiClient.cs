@@ -18,5 +18,5 @@ public interface IApiClient
 	Task<ApiResult<MovementGoalResponse>> CreateMovementGoalAsync(object data);
 	Task<ApiResult<bool>> UpdateMovementGoalAsync(int id, object data);
 	Task<ApiResult<bool>> DeleteMovementGoalAsync(int id);
-	Task<ApiResult<bool>> DeleteAccountAsync();
+	Task<ApiResult<bool>> DeleteAccountAsync(string currentPassword);
 }

@@ -5,6 +5,7 @@ using FreakLete.Api.Services;
 using FreakLete.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace FreakLete.Api.Controllers;
@@ -28,16 +29,24 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [EnableRateLimiting("auth-register")]
     public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request)
     {
-        if (await _db.Users.AnyAsync(u => u.Email == request.Email))
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+
+        if (!request.Password.Any(char.IsUpper))
+            return BadRequest(new { message = "Şifre en az 1 büyük harf içermelidir." });
+        if (!request.Password.Any(c => !char.IsLetterOrDigit(c)))
+            return BadRequest(new { message = "Şifre en az 1 özel karakter içermelidir." });
+
+        if (await _db.Users.AnyAsync(u => u.Email == normalizedEmail))
             return Conflict(new { message = "Bu e-posta adresi zaten kayıtlı." });
 
         var user = new User
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
-            Email = request.Email,
+            Email = normalizedEmail,
             PasswordHash = PasswordHasher.HashPassword(request.Password),
             CreatedAt = DateTime.UtcNow
         };
@@ -55,9 +64,11 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting("auth-login")]
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
     {
-        var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == normalizedEmail);
         if (user is null || !PasswordHasher.VerifyPassword(request.Password, user.PasswordHash))
             return Unauthorized(new { message = "E-posta veya şifre hatalı." });
 
@@ -72,13 +83,15 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpPost("change-password")]
+    [EnableRateLimiting("auth-change-password")]
     public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
     {
         var userId = User.GetUserId();
         var user = await _db.Users.FindAsync(userId);
         if (user is null) return NotFound();
 
-        if (!string.Equals(user.Email, request.Email, StringComparison.OrdinalIgnoreCase))
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        if (!string.Equals(user.Email, normalizedEmail, StringComparison.Ordinal))
             return BadRequest(new { message = "E-posta adresi hesabınızla eşleşmiyor." });
 
         if (!PasswordHasher.VerifyPassword(request.CurrentPassword, user.PasswordHash))
@@ -178,11 +191,14 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpDelete("account")]
-    public async Task<IActionResult> DeleteAccount()
+    public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountRequest request)
     {
         var userId = User.GetUserId();
         var user = await _db.Users.FindAsync(userId);
         if (user is null) return NotFound();
+
+        if (!PasswordHasher.VerifyPassword(request.CurrentPassword, user.PasswordHash))
+            return BadRequest(new { message = "Şifre doğrulaması başarısız." });
 
         _db.Users.Remove(user);
         await _db.SaveChangesAsync();

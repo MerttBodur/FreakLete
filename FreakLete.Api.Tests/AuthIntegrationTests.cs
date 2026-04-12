@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FreakLete.Api.Tests;
 
@@ -261,20 +262,187 @@ public class AuthIntegrationTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
+    // ── Email normalization ────────────────────────────────────────
+
+    [Fact]
+    public async Task Register_StoresNormalizedEmail()
+    {
+        var email = $"UPPER-{Guid.NewGuid():N}@Example.COM";
+        var result = await AuthTestHelper.RegisterAsync(_client, email: email);
+
+        Assert.Equal(email.ToLowerInvariant(), result.Email);
+    }
+
+    [Fact]
+    public async Task Login_WorksWithUpperCaseEmail_WhenStoredNormalized()
+    {
+        var email = $"mixed-{Guid.NewGuid():N}@example.com";
+        await AuthTestHelper.RegisterAsync(_client, email: email, password: "TestPassword123!");
+
+        var result = await AuthTestHelper.LoginAsync(_client, email.ToUpperInvariant(), "TestPassword123!");
+        Assert.False(string.IsNullOrEmpty(result.Token));
+    }
+
+    [Fact]
+    public async Task Register_DuplicateEmail_DifferentCase_Returns409()
+    {
+        var email = $"case-{Guid.NewGuid():N}@example.com";
+        await AuthTestHelper.RegisterAsync(_client, email: email);
+
+        var response = await _client.PostAsJsonAsync("/api/auth/register", new
+        {
+            firstName = "Dup",
+            lastName = "User",
+            email = email.ToUpperInvariant(),
+            password = "TestPassword123!"
+        });
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+    }
+
+    // ── Password policy (register) ─────────────────────────────────
+
+    [Fact]
+    public async Task Register_PasswordWithoutUppercase_Returns400()
+    {
+        var response = await _client.PostAsJsonAsync("/api/auth/register", new
+        {
+            firstName = "Test",
+            lastName = "User",
+            email = $"pw-{Guid.NewGuid():N}@example.com",
+            password = "nouppercase1!"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Register_PasswordWithoutSpecialChar_Returns400()
+    {
+        var response = await _client.PostAsJsonAsync("/api/auth/register", new
+        {
+            firstName = "Test",
+            lastName = "User",
+            email = $"pw-{Guid.NewGuid():N}@example.com",
+            password = "NoSpecialChar1"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
     // ── Delete account ─────────────────────────────────────────────
 
     [Fact]
-    public async Task DeleteAccount_RemovesUserAndInvalidatesProfile()
+    public async Task DeleteAccount_WrongPassword_Returns400()
+    {
+        var auth = await AuthTestHelper.RegisterAsync(_client, password: "TestPassword123!");
+        var authedClient = _factory.CreateClient();
+        AuthTestHelper.Authenticate(authedClient, auth.Token);
+
+        var response = await authedClient.SendAsync(
+            new HttpRequestMessage(HttpMethod.Delete, "/api/auth/account")
+            {
+                Content = JsonContent.Create(new { currentPassword = "WrongPassword1!" })
+            });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteAccount_NoBody_IsRejected()
     {
         var auth = await AuthTestHelper.RegisterAsync(_client);
         var authedClient = _factory.CreateClient();
         AuthTestHelper.Authenticate(authedClient, auth.Token);
 
-        var deleteResponse = await authedClient.DeleteAsync("/api/auth/account");
+        var response = await authedClient.DeleteAsync("/api/auth/account");
+
+        // No body: ASP.NET Core returns 415 (no content-type) or 400 (model validation) —
+        // either way the request is rejected and the account is not deleted.
+        Assert.True(
+            response.StatusCode == HttpStatusCode.BadRequest ||
+            response.StatusCode == HttpStatusCode.UnsupportedMediaType,
+            $"Expected rejection but got {response.StatusCode}");
+    }
+
+    [Fact]
+    public async Task DeleteAccount_RemovesUserAndInvalidatesProfile()
+    {
+        const string password = "TestPassword123!";
+        var auth = await AuthTestHelper.RegisterAsync(_client, password: password);
+        var authedClient = _factory.CreateClient();
+        AuthTestHelper.Authenticate(authedClient, auth.Token);
+
+        var deleteResponse = await authedClient.SendAsync(
+            new HttpRequestMessage(HttpMethod.Delete, "/api/auth/account")
+            {
+                Content = JsonContent.Create(new { currentPassword = password })
+            });
         Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
 
         // Profile should now return 404 (user is gone, but token still parses — user lookup fails)
         var profileResponse = await authedClient.GetAsync("/api/auth/profile");
         Assert.Equal(HttpStatusCode.NotFound, profileResponse.StatusCode);
+    }
+
+    // ── Rate limiting ──────────────────────────────────────────────
+    // Each test spins up an isolated child factory so the in-memory rate
+    // limiter state starts fresh and doesn't bleed into other tests.
+
+    [Fact]
+    public async Task Login_RateLimit_Returns429AfterThreshold()
+    {
+        // Use a non-Testing environment so rate limiting is active.
+        var rlFactory = _factory.WithWebHostBuilder(b => b.UseEnvironment("Production"));
+        var client = rlFactory.CreateClient();
+
+        // login policy: 5 per minute — exhaust the limit
+        for (int i = 0; i < 5; i++)
+        {
+            await client.PostAsJsonAsync("/api/auth/login", new
+            {
+                email = "rl-test@example.com",
+                password = "AnyPassword1!"
+            });
+        }
+
+        // 6th attempt must be rejected
+        var response = await client.PostAsJsonAsync("/api/auth/login", new
+        {
+            email = "rl-test@example.com",
+            password = "AnyPassword1!"
+        });
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Register_RateLimit_Returns429AfterThreshold()
+    {
+        // register policy: 3 per 10 minutes
+        var rlFactory = _factory.WithWebHostBuilder(b => b.UseEnvironment("Production"));
+        var client = rlFactory.CreateClient();
+
+        for (int i = 0; i < 3; i++)
+        {
+            await client.PostAsJsonAsync("/api/auth/register", new
+            {
+                firstName = "Test",
+                lastName = "User",
+                email = $"rl-reg-{Guid.NewGuid():N}@example.com",
+                password = "TestPassword123!"
+            });
+        }
+
+        // 4th attempt must be rejected
+        var response = await client.PostAsJsonAsync("/api/auth/register", new
+        {
+            firstName = "Test",
+            lastName = "User",
+            email = $"rl-reg-{Guid.NewGuid():N}@example.com",
+            password = "TestPassword123!"
+        });
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
     }
 }

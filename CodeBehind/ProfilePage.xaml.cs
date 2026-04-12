@@ -1258,7 +1258,18 @@ public partial class ProfilePage : ContentPage
 			return;
 		}
 
-		var result = await _api.DeleteAccountAsync();
+		var password = await DisplayPromptAsync(
+			AppLanguage.ProfileDeleteTitle,
+			AppLanguage.ProfileDeletePasswordPrompt,
+			keyboard: Keyboard.Default,
+			maxLength: 128);
+
+		if (string.IsNullOrEmpty(password))
+		{
+			return;
+		}
+
+		var result = await _api.DeleteAccountAsync(password);
 		if (result.Success)
 		{
 			_session.SignOut();
