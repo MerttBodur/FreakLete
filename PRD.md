@@ -136,6 +136,28 @@ Bu dokuman guncellemesi icin mevcut verification note:
 - Register / login / profile / workouts / PR / athletic performance / movement goals / delete account production'da dogrulandi
 - Signed Android AAB uretilmis durumda
 
+### 5.5 Google Play Release Readiness (Android)
+Tamamlanan:
+- Plugin.InAppBilling 10.0.0 + PBL 8.1.0 (Google Play Billing Library 8)
+- Release AAB: `bin/Release/net10.0-android/publish/com.mert.freaklete-Signed.aab`
+- `android:allowBackup="false"` manifest'te set edildi
+- Release network config HTTPS-only; debug config 10.0.2.2 cleartext korunuyor
+- Privacy policy taslagi: `docs/PRIVACY_POLICY.md`
+- Account deletion dokumani (in-app + web path): `docs/ACCOUNT_DELETION.md`
+- Play Data Safety worksheet: `docs/PLAY_DATA_SAFETY.md`
+- Health Apps declaration worksheet: `docs/PLAY_HEALTH_APPS_DECLARATION.md`
+
+Submission oncesi hala gerekli olanlar:
+- Privacy policy'yi bir public URL'de host etmek (ornegin `https://freaklete.app/privacy`)
+- Account deletion web formunu yayinlamak (`https://freaklete.app/account-deletion`) — Play zorunlulugu
+- Play Console Data Safety formunu `docs/PLAY_DATA_SAFETY.md` referansiyla doldurmak
+- Play Console Health Apps declaration'i tamamlamak
+- Play Store long description'a medikal disclaimer eklemek
+- App icine Privacy Policy linki eklemek (URL host edildikten sonra)
+- Play Console'da release signing yapilandirmak
+- Play Console'da urun olusturmak: `freaklete_premium`, `donate_1/5/10/20`
+- İlk yukleme oncesinde versionCode ve versionName degerlerini ayarlamak
+
 ## 6. Mevcut Mimari
 
 ### 6.1 Mobile App

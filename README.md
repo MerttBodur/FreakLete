@@ -164,6 +164,32 @@ That automated coverage provides strong confidence in backend and core logic whe
 
 The production backend has also passed end-to-end smoke tests for auth, profile, workouts, PRs, athletic performance, movement goals, and account deletion.
 
+## Google Play Release Readiness
+
+### Completed
+
+- Plugin.InAppBilling 10.0.0 + Google Play Billing Library 8.1.0 (PBL 8)
+- Release AAB build: `bin/Release/net10.0-android/publish/com.mert.freaklete-Signed.aab`
+- `android:allowBackup="false"` in manifest
+- Release network config: HTTPS-only, no cleartext exceptions
+- Debug network config: 10.0.2.2 cleartext preserved for emulator local backend
+- Privacy policy draft: `docs/PRIVACY_POLICY.md`
+- Account deletion doc (in-app + web path): `docs/ACCOUNT_DELETION.md`
+- Play Data Safety worksheet: `docs/PLAY_DATA_SAFETY.md`
+- Health Apps declaration worksheet: `docs/PLAY_HEALTH_APPS_DECLARATION.md`
+
+### Still Required Before Submission
+
+- **Host privacy policy** at a public URL (e.g., `https://freaklete.app/privacy`)
+- **Publish account deletion web form** at `https://freaklete.app/account-deletion` — required by Google Play for apps with account creation
+- **Fill Play Console Data Safety form** using `docs/PLAY_DATA_SAFETY.md` as reference
+- **Complete Health Apps declaration** in Play Console using `docs/PLAY_HEALTH_APPS_DECLARATION.md` as reference
+- Add medical disclaimer to Play Store long description (see `docs/PLAY_HEALTH_APPS_DECLARATION.md`)
+- Add Privacy Policy link in app settings/profile once the hosted URL is live
+- Configure release signing in Play Console (upload key / Play App Signing)
+- Create Play Console products: `freaklete_premium` (subscription), `donate_1/5/10/20` (consumable)
+- Set version code and version name before first Play Store upload
+
 ## Roadmap
 
 ### Near-Term Shipped Reality Gaps
