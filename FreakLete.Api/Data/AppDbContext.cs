@@ -238,6 +238,7 @@ public class AppDbContext : DbContext
             e.Property(b => b.PurchaseToken).HasMaxLength(500);
             e.Property(b => b.OrderId).HasMaxLength(200);
             e.Property(b => b.State).HasMaxLength(20);
+            e.Property(b => b.RawPayloadJson).HasMaxLength(10000);
         });
 
         // AiUsageRecord

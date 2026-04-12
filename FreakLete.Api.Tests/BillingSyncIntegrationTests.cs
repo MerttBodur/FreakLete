@@ -227,6 +227,238 @@ public class BillingSyncIntegrationTests : IAsyncLifetime
     }
 
     // ════════════════════════════════════════════════════════════════
+    //  PHASE 4: PRODUCT ALLOWLIST VALIDATION
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task Sync_InvalidSubscriptionProduct_Returns400()
+    {
+        var response = await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        {
+            productId = "unknown_product",
+            basePlanId = "monthly",
+            purchaseToken = $"tok_{Guid.NewGuid():N}",
+            purchaseState = 0
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Sync_MissingSubscriptionBasePlanId_Returns400()
+    {
+        var response = await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        {
+            productId = "freaklete_premium",
+            // no basePlanId
+            purchaseToken = $"tok_{Guid.NewGuid():N}",
+            purchaseState = 0
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Sync_InvalidSubscriptionBasePlanId_Returns400()
+    {
+        var response = await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        {
+            productId = "freaklete_premium",
+            basePlanId = "quarterly",
+            purchaseToken = $"tok_{Guid.NewGuid():N}",
+            purchaseState = 0
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Sync_InvalidDonationProduct_Returns400()
+    {
+        var response = await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        {
+            productId = "donate_999",
+            purchaseToken = $"tok_{Guid.NewGuid():N}",
+            purchaseState = 0
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("donate_1")]
+    [InlineData("donate_5")]
+    [InlineData("donate_10")]
+    [InlineData("donate_20")]
+    public async Task Sync_ValidDonationProducts_AreAccepted(string productId)
+    {
+        var response = await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        {
+            productId,
+            purchaseToken = $"tok_{Guid.NewGuid():N}",
+            purchaseState = 0
+        });
+        response.EnsureSuccessStatusCode();
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  PHASE 4: PURCHASE TOKEN OWNERSHIP PROTECTION
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task Sync_SameTokenByDifferentUser_Returns409_DoesNotMutate()
+    {
+        // User 1 registers and syncs a token
+        var token = $"tok_{Guid.NewGuid():N}";
+        await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        {
+            productId = "freaklete_premium",
+            basePlanId = "monthly",
+            purchaseToken = token,
+            purchaseState = 0
+        });
+
+        // Verify original state
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var record = await db.BillingPurchases.FirstAsync(p => p.PurchaseToken == token);
+            Assert.Equal("verification_failed", record.State);
+        }
+
+        // User 2 registers and tries to sync the same token
+        var user2Client = _factory.CreateClient();
+        var auth2 = await AuthTestHelper.RegisterAsync(user2Client);
+        AuthTestHelper.Authenticate(user2Client, auth2.Token);
+
+        var response = await user2Client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        {
+            productId = "freaklete_premium",
+            basePlanId = "monthly",
+            purchaseToken = token,
+            purchaseState = 0,
+            orderId = "stolen_order"
+        });
+
+        Assert.True(
+            response.StatusCode == HttpStatusCode.Conflict ||
+            response.StatusCode == HttpStatusCode.Forbidden,
+            $"Expected 409 or 403, got {response.StatusCode}");
+
+        // Confirm original record is unchanged
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var record = await db.BillingPurchases.FirstAsync(p => p.PurchaseToken == token);
+            Assert.NotEqual("stolen_order", record.OrderId);
+        }
+    }
+
+    [Fact]
+    public async Task Sync_SameUserIdempotentResync_Succeeds()
+    {
+        var token = $"tok_{Guid.NewGuid():N}";
+        var payload = new
+        {
+            productId = "freaklete_premium",
+            basePlanId = "monthly",
+            purchaseToken = token,
+            purchaseState = 0
+        };
+
+        var r1 = await _client.PostAsJsonAsync("/api/billing/googleplay/sync", payload);
+        r1.EnsureSuccessStatusCode();
+
+        var r2 = await _client.PostAsJsonAsync("/api/billing/googleplay/sync", payload);
+        r2.EnsureSuccessStatusCode();
+
+        // Only one record
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        Assert.Equal(1, await db.BillingPurchases.CountAsync(p => p.PurchaseToken == token));
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  PHASE 4: VERIFICATION STATE HARDENING
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task Sync_SubscriptionVerificationNull_Returns_VerificationFailed_NoPremiuım()
+    {
+        // No GooglePlay config → VerifySubscriptionAsync returns null
+        var token = $"tok_{Guid.NewGuid():N}";
+        var response = await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        {
+            productId = "freaklete_premium",
+            basePlanId = "monthly",
+            purchaseToken = token,
+            purchaseState = 0
+        });
+
+        response.EnsureSuccessStatusCode();
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("verification_failed", body.GetProperty("state").GetString());
+
+        // Billing status must remain free — no premium grant
+        var statusResponse = await _client.GetAsync("/api/billing/status");
+        statusResponse.EnsureSuccessStatusCode();
+        var status = await statusResponse.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("free", status.GetProperty("plan").GetString());
+        Assert.False(status.GetProperty("isPremiumActive").GetBoolean());
+    }
+
+    [Fact]
+    public async Task Sync_DonationVerificationNull_Returns_VerificationFailed()
+    {
+        // No GooglePlay config → VerifyDonationAsync returns null
+        var token = $"tok_{Guid.NewGuid():N}";
+        var response = await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        {
+            productId = "donate_5",
+            purchaseToken = token,
+            purchaseState = 0
+        });
+
+        response.EnsureSuccessStatusCode();
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("verification_failed", body.GetProperty("state").GetString());
+    }
+
+    [Fact]
+    public async Task Sync_DonationVerificationSuccess_Returns_Completed()
+    {
+        var donationJson = """{ "purchaseState": 0, "consumptionState": 0 }""";
+        var verifiedClient = await CreateAuthenticatedBillingClientWithDonationResponseAsync(donationJson);
+
+        var token = $"tok_{Guid.NewGuid():N}";
+        var response = await verifiedClient.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        {
+            productId = "donate_5",
+            purchaseToken = token,
+            purchaseState = 0
+        });
+
+        response.EnsureSuccessStatusCode();
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("completed", body.GetProperty("state").GetString());
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  PHASE 4: RAW PAYLOAD MAX LENGTH
+    // ════════════════════════════════════════════════════════════════
+
+    [Fact]
+    public async Task Sync_RawPayloadJsonAboveMaxLength_Returns400()
+    {
+        var oversizedPayload = new string('x', 10001);
+        var response = await _client.PostAsJsonAsync("/api/billing/googleplay/sync", new
+        {
+            productId = "freaklete_premium",
+            basePlanId = "monthly",
+            purchaseToken = $"tok_{Guid.NewGuid():N}",
+            purchaseState = 0,
+            rawPayloadJson = oversizedPayload
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    // ════════════════════════════════════════════════════════════════
     //  PHASE 2 REGRESSION: TOOL-CALL BASED QUOTA ACCOUNTING
     // ════════════════════════════════════════════════════════════════
 
@@ -319,6 +551,29 @@ public class BillingSyncIntegrationTests : IAsyncLifetime
         Assert.Equal(JsonValueKind.Null, nextAvailable.ValueKind);
     }
 
+    private async Task<HttpClient> CreateAuthenticatedBillingClientWithDonationResponseAsync(string donationVerifyJson)
+    {
+        var childFactory = _factory.WithWebHostBuilder(builder =>
+        {
+            builder.UseSetting("GooglePlay:PackageName", "com.freaklete.test");
+            builder.UseSetting("GooglePlay:ServiceAccountJsonBase64", CreateFakeServiceAccountJsonBase64());
+
+            builder.ConfigureServices(services =>
+            {
+                services.AddHttpClient<GeminiClient>()
+                    .ConfigurePrimaryHttpMessageHandler(() => _geminiHandler);
+
+                services.AddHttpClient<GooglePlayVerificationService>()
+                    .ConfigurePrimaryHttpMessageHandler(() => new FakeGooglePlayHttpMessageHandler(null, donationVerifyJson));
+            });
+        });
+
+        var verifiedClient = childFactory.CreateClient();
+        var auth = await AuthTestHelper.RegisterAsync(verifiedClient);
+        AuthTestHelper.Authenticate(verifiedClient, auth.Token);
+        return verifiedClient;
+    }
+
     private async Task<HttpClient> CreateAuthenticatedBillingClientWithSubscriptionResponseAsync(string subscriptionVerifyJson)
     {
         var childFactory = _factory.WithWebHostBuilder(builder =>
@@ -332,7 +587,7 @@ public class BillingSyncIntegrationTests : IAsyncLifetime
                     .ConfigurePrimaryHttpMessageHandler(() => _geminiHandler);
 
                 services.AddHttpClient<GooglePlayVerificationService>()
-                    .ConfigurePrimaryHttpMessageHandler(() => new FakeGooglePlayHttpMessageHandler(subscriptionVerifyJson));
+                    .ConfigurePrimaryHttpMessageHandler(() => new FakeGooglePlayHttpMessageHandler(subscriptionVerifyJson, null));
             });
         });
 
@@ -397,11 +652,13 @@ public class BillingSyncIntegrationTests : IAsyncLifetime
 
     private sealed class FakeGooglePlayHttpMessageHandler : HttpMessageHandler
     {
-        private readonly string _subscriptionVerifyJson;
+        private readonly string? _subscriptionVerifyJson;
+        private readonly string? _donationVerifyJson;
 
-        public FakeGooglePlayHttpMessageHandler(string subscriptionVerifyJson)
+        public FakeGooglePlayHttpMessageHandler(string? subscriptionVerifyJson, string? donationVerifyJson)
         {
             _subscriptionVerifyJson = subscriptionVerifyJson;
+            _donationVerifyJson = donationVerifyJson;
         }
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -415,10 +672,24 @@ public class BillingSyncIntegrationTests : IAsyncLifetime
 
             if (request.Method == HttpMethod.Get && url.Contains("/purchases/subscriptionsv2/tokens/", StringComparison.OrdinalIgnoreCase))
             {
-                return Task.FromResult(CreateJsonResponse(_subscriptionVerifyJson));
+                if (_subscriptionVerifyJson is not null)
+                    return Task.FromResult(CreateJsonResponse(_subscriptionVerifyJson));
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
+            }
+
+            if (request.Method == HttpMethod.Get && url.Contains("/purchases/products/", StringComparison.OrdinalIgnoreCase))
+            {
+                if (_donationVerifyJson is not null)
+                    return Task.FromResult(CreateJsonResponse(_donationVerifyJson));
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
             }
 
             if (request.Method == HttpMethod.Post && url.Contains(":acknowledge", StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+            }
+
+            if (request.Method == HttpMethod.Post && url.Contains(":consume", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
             }

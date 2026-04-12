@@ -20,5 +20,6 @@ public class GooglePlayPurchaseSyncRequest
 
     public bool IsAcknowledged { get; set; }
 
+    [MaxLength(10000)]
     public string? RawPayloadJson { get; set; }
 }

@@ -79,7 +79,7 @@ public class GooglePlayVerificationService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error verifying subscription {Token}", purchaseToken[..Math.Min(10, purchaseToken.Length)]);
+            _logger.LogError(ex, "Error verifying subscription for product {ProductId}", productId);
             return null;
         }
     }

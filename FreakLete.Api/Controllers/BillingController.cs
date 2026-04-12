@@ -59,21 +59,52 @@ public class BillingController : ControllerBase
     /// Idempotent sync of a Google Play purchase.
     /// Upserts BillingPurchase, verifies with Google, updates entitlement.
     /// </summary>
+    // ── Allowlists ───────────────────────────────────────────
+    private static readonly HashSet<string> AllowedSubscriptionProductIds =
+        new(StringComparer.Ordinal) { "freaklete_premium" };
+
+    private static readonly HashSet<string> AllowedSubscriptionBasePlanIds =
+        new(StringComparer.Ordinal) { "monthly", "annual" };
+
+    private static readonly HashSet<string> AllowedDonationProductIds =
+        new(StringComparer.Ordinal) { "donate_1", "donate_5", "donate_10", "donate_20" };
+
     [HttpPost("googleplay/sync")]
     public async Task<IActionResult> SyncGooglePlayPurchase(GooglePlayPurchaseSyncRequest request)
     {
         var userId = User.GetUserId();
         var ct = HttpContext.RequestAborted;
 
-        var kind = IsDonateProduct(request.ProductId) ? "donation" : "subscription";
+        // ── Product allowlist validation ───────────────────────
+        // Determine kind by allowlist membership — not by prefix heuristic.
+        bool isDonation = AllowedDonationProductIds.Contains(request.ProductId);
+        bool isSubscription = AllowedSubscriptionProductIds.Contains(request.ProductId);
 
-        // Upsert: find existing by platform + purchaseToken
+        if (!isDonation && !isSubscription)
+            return BadRequest(new { message = "Geçersiz ürün." });
+
+        if (isSubscription)
+        {
+            if (string.IsNullOrEmpty(request.BasePlanId))
+                return BadRequest(new { message = "Abonelik için basePlanId zorunludur." });
+
+            if (!AllowedSubscriptionBasePlanIds.Contains(request.BasePlanId))
+                return BadRequest(new { message = "Geçersiz abonelik planı." });
+        }
+
+        var kind = isDonation ? "donation" : "subscription";
+
+        // ── Upsert: find existing by platform + purchaseToken ──
         var existing = await _db.BillingPurchases.FirstOrDefaultAsync(
             p => p.Platform == "android" && p.PurchaseToken == request.PurchaseToken, ct);
 
         if (existing is not null)
         {
-            // Idempotent update
+            // ── Purchase token ownership protection ──────────────
+            if (existing.UserId != userId)
+                return Conflict(new { message = "Satın alma işlemi doğrulanamadı." });
+
+            // Idempotent update (same user, same token)
             existing.OrderId = request.OrderId ?? existing.OrderId;
             existing.State = NormalizePurchaseState(request.PurchaseState);
             existing.RawPayloadJson = request.RawPayloadJson;
@@ -112,7 +143,7 @@ public class BillingController : ControllerBase
             await VerifyAndConsumeDonationAsync(existing, ct);
 
         _logger.LogInformation(
-            "Google Play sync: user={UserId}, product={Product}, kind={Kind}, state={State}",
+            "Google Play sync: userId={UserId}, productId={ProductId}, kind={Kind}, state={State}",
             userId, request.ProductId, kind, existing.State);
 
         return Ok(new { existing.State, existing.EntitlementEndsAtUtc, kind });
@@ -163,7 +194,13 @@ public class BillingController : ControllerBase
         var result = await _playVerify.VerifyDonationAsync(
             purchase.PurchaseToken, purchase.ProductId, ct);
 
-        if (result is null) return;
+        if (result is null)
+        {
+            purchase.State = "verification_failed";
+            purchase.LastVerifiedAtUtc = DateTime.UtcNow;
+            await _db.SaveChangesAsync(ct);
+            return;
+        }
 
         if (result.IsPurchased)
             purchase.State = "completed";
@@ -183,9 +220,6 @@ public class BillingController : ControllerBase
         purchase.LastVerifiedAtUtc = DateTime.UtcNow;
         await _db.SaveChangesAsync(ct);
     }
-
-    private static bool IsDonateProduct(string productId) =>
-        productId.StartsWith("donate_", StringComparison.Ordinal);
 
     private static string NormalizePurchaseState(int state) => state switch
     {

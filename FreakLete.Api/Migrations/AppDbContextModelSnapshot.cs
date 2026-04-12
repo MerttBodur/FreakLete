@@ -168,7 +168,8 @@ namespace FreakLete.Api.Migrations
                         .HasColumnType("character varying(500)");
 
                     b.Property<string>("RawPayloadJson")
-                        .HasColumnType("text");
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)");
 
                     b.Property<string>("State")
                         .IsRequired()
