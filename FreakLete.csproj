@@ -43,7 +43,7 @@
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 	</PropertyGroup>
@@ -69,13 +69,19 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
-		<PackageReference Include="Plugin.InAppBilling" Version="8.0.4" />
+		<!-- Plugin.InAppBilling 10.0.0 supports .NET 10 + PBL 8; transitively pulls BillingClient 8.x -->
+		<PackageReference Include="Plugin.InAppBilling" Version="10.0.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
-		<!-- Native Google Play Billing bindings for offer-token-aware subscription purchases -->
-		<PackageReference Include="Xamarin.Android.Google.BillingClient" Version="6.2.1" />
+		<!-- Explicit PBL 8 binding — ExcludeAssets prevents duplicate AAR downloads via .targets -->
+		<PackageReference Include="Xamarin.Android.Google.BillingClient" Version="8.1.0"
+		                  ExcludeAssets="build;buildTransitive" />
 	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<AndroidPackageFormat>aab</AndroidPackageFormat>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="FreakLete.Core\FreakLete.Core.csproj" />

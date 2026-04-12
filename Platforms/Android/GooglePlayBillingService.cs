@@ -114,19 +114,22 @@ public class GooglePlayBillingService : IBillingService
                 ])
                 .Build();
 
-            var queryResult = await billingClient.QueryProductDetailsAsync(queryParams);
+            var queryTcs = new TaskCompletionSource<(BillingResult Result, IList<ProductDetails>? Details)>();
+            billingClient.QueryProductDetails(queryParams, new ProductDetailsListener(
+                (br, qr) => queryTcs.TrySetResult((br, qr?.ProductDetailsList))));
+            var (queryBillingResult, productDetailsList) = await queryTcs.Task;
 
-            if (queryResult.Result.ResponseCode != BillingResponseCode.Ok
-                || queryResult.ProductDetails is null or { Count: 0 })
+            if (queryBillingResult.ResponseCode != BillingResponseCode.Ok
+                || productDetailsList is null or { Count: 0 })
             {
                 return new BillingPurchaseResult
                 {
                     Status = BillingPurchaseStatus.Error,
-                    ErrorMessage = $"Product query failed: {queryResult.Result.DebugMessage}"
+                    ErrorMessage = $"Product query failed: {queryBillingResult.DebugMessage}"
                 };
             }
 
-            var productDetails = queryResult.ProductDetails[0];
+            var productDetails = productDetailsList[0];
 
             // 2. Find the offer token for the requested basePlanId.
             var offerDetails = productDetails.GetSubscriptionOfferDetails();
@@ -355,9 +358,13 @@ public class GooglePlayBillingService : IBillingService
 
         try { _billingClient?.EndConnection(); } catch { }
 
+        var pendingPurchasesParams = PendingPurchasesParams.NewBuilder()
+            .EnableOneTimeProducts()
+            .Build();
+
         _billingClient = BillingClient.NewBuilder(activity)
             .SetListener(new PurchasesUpdatedListener(this))
-            .EnablePendingPurchases()
+            .EnablePendingPurchases(pendingPurchasesParams)
             .Build();
 
         _billingClient.StartConnection(new BillingStateListener(
@@ -397,6 +404,14 @@ public class GooglePlayBillingService : IBillingService
     }
 
     // ── Inner Java listener classes ───────────────────────────
+
+    private sealed class ProductDetailsListener(
+        Action<BillingResult, QueryProductDetailsResult?> callback)
+        : Java.Lang.Object, IProductDetailsResponseListener
+    {
+        public void OnProductDetailsResponse(BillingResult billingResult, QueryProductDetailsResult queryProductDetailsResult)
+            => callback(billingResult, queryProductDetailsResult);
+    }
 
     private sealed class PurchasesUpdatedListener(GooglePlayBillingService service)
         : Java.Lang.Object, IPurchasesUpdatedListener
