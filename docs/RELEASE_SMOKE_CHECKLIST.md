@@ -7,6 +7,77 @@
 
 ---
 
+## Phase 5: Internal Track Real-Device Smoke
+
+Run after Phase 4 is complete and the signed AAB is uploaded to the internal testing track.
+Full execution guide: `docs/PLAY_INTERNAL_TESTING_GUIDE.md`
+
+### Track & Install
+
+- [ ] Signed AAB uploaded to internal testing track (`com.mert.freaklete-Signed.aab`, ~31 MB)
+- [ ] Tester account added as license tester (Setup > License testing)
+- [ ] Tester account on internal testing track opt-in list
+- [ ] App installed on device via Play Store using opt-in URL
+- [ ] `versionCode` and `versionName` on installed build match uploaded AAB
+
+### Backend Connectivity
+
+- [ ] `curl https://freaklete-production.up.railway.app/api/health` → `{"status":"healthy"}` HTTP 200
+- [ ] Login/register hits production backend (no 401, no network error)
+- [ ] JWT token persists across app restart
+
+### Billing Status
+
+- [ ] Settings plan card loads without error
+- [ ] Default state shows Free plan
+
+### Subscription — Monthly
+
+- [ ] Tap Subscribe → Monthly; purchase sheet shows 3.00 USD/month
+- [ ] Purchase completes; success toast shown
+- [ ] Settings plan card updates to Premium with renewal date
+- [ ] FreakAI usage card shows Unlimited (Premium)
+
+### Subscription — Annual
+
+- [ ] Tap Subscribe → Annual; purchase sheet shows 30.00 USD/year
+- [ ] Purchase completes; success toast shown
+- [ ] Settings plan card updates to Premium with renewal date
+
+### Restore Purchases
+
+- [ ] Reinstall or clear data; login with same account
+- [ ] Tap Restore Purchases; plan card updates to Premium
+- [ ] FreakAI usage card shows Unlimited after restore
+
+### Manage Subscription
+
+- [ ] Tap Manage Subscription (Premium only); Google Play subscriptions page opens in browser
+
+### Donations
+
+- [ ] `donate_1`: purchase sheet shows 1.00 USD; completes; success toast shown
+- [ ] `donate_5`: purchase sheet shows 5.00 USD; completes; success toast shown
+- [ ] `donate_10`: purchase sheet shows 10.00 USD; completes; success toast shown
+- [ ] `donate_20`: purchase sheet shows 20.00 USD; completes; success toast shown
+
+### Edge Cases
+
+- [ ] Cancel/back during purchase — no crash, graceful return
+- [ ] Billing unavailable — buttons show graceful unavailable message, no crash
+
+### Backend Sync
+
+- [ ] Post-purchase sync returns `verified`/`completed` (confirmed via Settings plan card)
+- [ ] Railway logs show billing sync HTTP 200 (no secrets in log output)
+
+### Logout / Reauth
+
+- [ ] Logout then login with premium account — plan card shows Premium
+- [ ] FreakAI usage card remains Unlimited after re-login
+
+---
+
 ## Phase 4: Play Console & Backend Readiness
 
 Complete this section before uploading the first AAB to the internal testing track.

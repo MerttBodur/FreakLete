@@ -149,6 +149,9 @@ Tamamlanan:
 - Play Console urun setup checklist: `docs/PLAY_CONSOLE_SETUP.md` (product id'ler, base plan id'ler, fiyatlar, contract tablosu)
 - Production backend env checklist: `docs/PRODUCTION_BACKEND_CHECKLIST.md` (Railway env var listesi, auto-migrate davranisi, health check)
 - Release smoke checklist Phase 4 gatesleri eklendi: `docs/RELEASE_SMOKE_CHECKLIST.md`
+- Internal track real-device smoke execution guide: `docs/PLAY_INTERNAL_TESTING_GUIDE.md`
+- Release smoke checklist Phase 5 gatesleri eklendi (install, billing, sync, edge cases)
+- Core.Tests static dil leak duzeltildi: `SettingsBillingAvailabilityTests` artik dil durumunu sifirlayarak calisiyor
 
 Submission oncesi hala gerekli olanlar (manuel):
 - Privacy policy'yi bir public URL'de host etmek (ornegin `https://freaklete.app/privacy`)
@@ -161,6 +164,7 @@ Submission oncesi hala gerekli olanlar (manuel):
 - Play Console'da urunleri `docs/PLAY_CONSOLE_SETUP.md` referansiyla olusturmak: `freaklete_premium` (base plan: `monthly`, `annual`), `donate_1/5/10/20`
 - Railway env var'larini `docs/PRODUCTION_BACKEND_CHECKLIST.md` referansiyla set etmek: JWT, Gemini, GooglePlay service account
 - İlk yukleme oncesinde versionCode ve versionName degerlerini ayarlamak
+- `docs/PLAY_INTERNAL_TESTING_GUIDE.md` referansiyla internal track real-device smoke testini gerceklestirmek (guide hazir; manuel yurutme gerekiyor)
 
 ## 6. Mevcut Mimari
 

@@ -1,9 +1,24 @@
+using System.Globalization;
 using FreakLete.Services;
 
 namespace FreakLete.Core.Tests;
 
 public class SettingsBillingAvailabilityTests
 {
+    // AppLanguage.Code is static; other test classes (e.g. CalculationsPageLogicTests)
+    // set it to "tr" and xUnit does not reset static state between classes.
+    // Reset to English before any test that asserts English-language strings.
+    private static void ResetToEnglish()
+    {
+        typeof(AppLanguage)
+            .GetProperty(nameof(AppLanguage.Code))!
+            .GetSetMethod(true)!
+            .Invoke(null, ["en"]);
+        var en = new CultureInfo("en");
+        CultureInfo.DefaultThreadCurrentCulture = en;
+        CultureInfo.DefaultThreadCurrentUICulture = en;
+    }
+
     [Fact]
     public void DonatePicker_Uses_Donation_Readiness_Only()
     {
@@ -16,6 +31,7 @@ public class SettingsBillingAvailabilityTests
     [Fact]
     public void SubscribePicker_Stays_Closed_When_Only_Donations_Are_Ready()
     {
+        ResetToEnglish();
         var billing = new FakeBillingService(canPurchaseDonations: true, canPurchaseSubscriptions: false);
 
         Assert.False(SettingsBillingAvailability.CanOpenSubscribePicker(billing));
@@ -25,6 +41,7 @@ public class SettingsBillingAvailabilityTests
     [Fact]
     public void DonateUnavailableMessage_Is_Specific()
     {
+        ResetToEnglish();
         Assert.Equal("Donations are currently unavailable.", SettingsBillingAvailability.GetDonateUnavailableMessage());
     }
 

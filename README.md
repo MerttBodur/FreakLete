@@ -180,6 +180,9 @@ The production backend has also passed end-to-end smoke tests for auth, profile,
 - Play Console product setup checklist: `docs/PLAY_CONSOLE_SETUP.md`
 - Production backend env checklist: `docs/PRODUCTION_BACKEND_CHECKLIST.md`
 - Release smoke checklist updated with Phase 4 play/backend readiness gates: `docs/RELEASE_SMOKE_CHECKLIST.md`
+- Internal testing execution guide: `docs/PLAY_INTERNAL_TESTING_GUIDE.md`
+- Release smoke checklist updated with Phase 5 internal track smoke gates
+- Core.Tests static language state leak fixed: `SettingsBillingAvailabilityTests` now resets `AppLanguage.Code` to English before string-asserting tests
 
 ### Still Required Before Submission
 
@@ -193,6 +196,7 @@ The production backend has also passed end-to-end smoke tests for auth, profile,
 - **Create Play Console products** per `docs/PLAY_CONSOLE_SETUP.md`: `freaklete_premium` (subscription with `monthly`/`annual` base plans), `donate_1/5/10/20` (consumable)
 - **Set Railway env vars** per `docs/PRODUCTION_BACKEND_CHECKLIST.md`: JWT, Gemini, GooglePlay service account
 - Set version code and version name before first Play Store upload
+- **Execute internal track real-device smoke** per `docs/PLAY_INTERNAL_TESTING_GUIDE.md` (guide prepared; manual execution required)
 
 ## Roadmap
 
