@@ -35,7 +35,7 @@ public class GeminiClient
         var url = $"https://generativelanguage.googleapis.com/v1beta/models/{_options.Model}:generateContent?key={_options.ApiKey}";
 
         var json = JsonSerializer.Serialize(request, JsonOpts);
-        _logger.LogDebug("Gemini request: {Json}", json);
+        _logger.LogDebug("Gemini request sent to model {Model}", _options.Model);
 
         using var content = new StringContent(json, Encoding.UTF8, "application/json");
         var response = await _http.PostAsync(url, content, cancellationToken);
@@ -44,11 +44,11 @@ public class GeminiClient
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError("Gemini API error {Status}: {Body}", response.StatusCode, responseBody);
-            throw new InvalidOperationException($"Gemini API error: {response.StatusCode} — {responseBody}");
+            _logger.LogError("Gemini API error {Status} from model {Model}", response.StatusCode, _options.Model);
+            throw new InvalidOperationException($"Gemini API error: {response.StatusCode}");
         }
 
-        _logger.LogDebug("Gemini response: {Body}", responseBody);
+        _logger.LogDebug("Gemini response received from model {Model}", _options.Model);
 
         return JsonSerializer.Deserialize<GeminiResponse>(responseBody, JsonOpts)
             ?? throw new InvalidOperationException("Failed to deserialize Gemini response");

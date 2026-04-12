@@ -11,9 +11,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// JWT Authentication
+// JWT Authentication — validate key strength at startup
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key is not configured. Set via appsettings or Jwt__Key env var.");
+
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+if (string.IsNullOrWhiteSpace(jwtIssuer))
+    throw new InvalidOperationException("Jwt:Issuer is not configured.");
+if (string.IsNullOrWhiteSpace(jwtAudience))
+    throw new InvalidOperationException("Jwt:Audience is not configured.");
+
+var placeholderKeys = new[]
+{
+    "OVERRIDE_VIA_ENVIRONMENT_OR_APPSETTINGS",
+    "OVERRIDE_VIA_ENVIRONMENT_VARIABLE"
+};
+if (placeholderKeys.Contains(jwtKey, StringComparer.OrdinalIgnoreCase))
+    throw new InvalidOperationException("Jwt:Key is still a placeholder value. Set a real secret.");
+if (Encoding.UTF8.GetByteCount(jwtKey) < 32)
+    throw new InvalidOperationException("Jwt:Key must be at least 32 UTF-8 bytes for HS256.");
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -23,8 +42,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     });
@@ -78,31 +97,52 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+else
+{
+    app.UseExceptionHandler(errApp => errApp.Run(async ctx =>
+    {
+        ctx.Response.StatusCode = 500;
+        ctx.Response.ContentType = "application/json";
+        await ctx.Response.WriteAsJsonAsync(new { status = "error", message = "An unexpected error occurred." });
+    }));
+}
 
 // Health check — verifies DB connectivity
-app.MapGet("/api/health", async (AppDbContext db) =>
+app.MapGet("/api/health", async (AppDbContext db, IWebHostEnvironment env) =>
 {
+    var isDevelopment = env.IsDevelopment();
     try
     {
         var canConnect = await db.Database.CanConnectAsync();
-        var pending = await db.Database.GetPendingMigrationsAsync();
-        var pendingList = pending.ToList();
-        return Results.Ok(new
+        var pendingList = (await db.Database.GetPendingMigrationsAsync()).ToList();
+        var healthy = canConnect && pendingList.Count == 0;
+
+        if (isDevelopment)
         {
-            status = canConnect ? "healthy" : "unhealthy",
-            database = canConnect,
-            pendingMigrations = pendingList.Count,
-            migrations = pendingList
-        });
+            var body = new
+            {
+                status = healthy ? "healthy" : "unhealthy",
+                database = canConnect,
+                pendingMigrations = pendingList.Count,
+                migrations = pendingList
+            };
+            return healthy ? Results.Ok(body) : Results.Json(body, statusCode: 503);
+        }
+        else
+        {
+            var body = new { status = healthy ? "healthy" : "unhealthy" };
+            return healthy ? Results.Ok(body) : Results.Json(body, statusCode: 503);
+        }
     }
     catch (Exception ex)
     {
-        return Results.Ok(new
-        {
-            status = "unhealthy",
-            database = false,
-            error = ex.Message
-        });
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Health check failed");
+
+        if (isDevelopment)
+            return Results.Json(new { status = "unhealthy", error = ex.Message }, statusCode: 503);
+
+        return Results.Json(new { status = "unhealthy" }, statusCode: 503);
     }
 });
 
