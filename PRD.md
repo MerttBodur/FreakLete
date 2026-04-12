@@ -151,7 +151,11 @@ Tamamlanan:
 - Release smoke checklist Phase 4 gatesleri eklendi: `docs/RELEASE_SMOKE_CHECKLIST.md`
 - Internal track real-device smoke execution guide: `docs/PLAY_INTERNAL_TESTING_GUIDE.md`
 - Release smoke checklist Phase 5 gatesleri eklendi (install, billing, sync, edge cases)
-- Core.Tests static dil leak duzeltildi: `SettingsBillingAvailabilityTests` artik dil durumunu sifirlayarak calisiyor
+- Core.Tests static dil leak kokeninden duzeltildi: `CalculationsPageLogicTests` artik `IDisposable` implement ediyor ve her Turkish test sonrasi dili sifirlıyor; `SettingsBillingAvailabilityTests` da koruma olarak reset ekliyor
+- Release signing checklist: `docs/RELEASE_SIGNING_CHECKLIST.md` (upload key vs debug keystore farki, disaster recovery)
+- Release candidate checklist (tum blocking gates + rollout stratejisi): `docs/RELEASE_CANDIDATE_CHECKLIST.md`
+- Play pre-launch report ve production rollout rehberi: `docs/PLAY_PRELAUNCH_AND_ROLLOUT.md`
+- Version metadata notu: ilk yukleme versionCode 1; her yeni yukleme `ApplicationVersion` artirimi gerektirir
 
 Submission oncesi hala gerekli olanlar (manuel):
 - Privacy policy'yi bir public URL'de host etmek (ornegin `https://freaklete.app/privacy`)
@@ -164,7 +168,10 @@ Submission oncesi hala gerekli olanlar (manuel):
 - Play Console'da urunleri `docs/PLAY_CONSOLE_SETUP.md` referansiyla olusturmak: `freaklete_premium` (base plan: `monthly`, `annual`), `donate_1/5/10/20`
 - Railway env var'larini `docs/PRODUCTION_BACKEND_CHECKLIST.md` referansiyla set etmek: JWT, Gemini, GooglePlay service account
 - İlk yukleme oncesinde versionCode ve versionName degerlerini ayarlamak
+- Upload key ile AAB imzalamak (debug keystore degil) — `docs/RELEASE_SIGNING_CHECKLIST.md`
 - `docs/PLAY_INTERNAL_TESTING_GUIDE.md` referansiyla internal track real-device smoke testini gerceklestirmek (guide hazir; manuel yurutme gerekiyor)
+- `docs/PLAY_PRELAUNCH_AND_ROLLOUT.md` referansiyla Play pre-launch report'u incelemek ve blocking crash/ANR'lari cozumlemek
+- `docs/RELEASE_CANDIDATE_CHECKLIST.md` staged rollout stratejisine gore production rollout'u baslatmak
 
 ## 6. Mevcut Mimari
 

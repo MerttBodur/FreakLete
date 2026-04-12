@@ -182,21 +182,26 @@ The production backend has also passed end-to-end smoke tests for auth, profile,
 - Release smoke checklist updated with Phase 4 play/backend readiness gates: `docs/RELEASE_SMOKE_CHECKLIST.md`
 - Internal testing execution guide: `docs/PLAY_INTERNAL_TESTING_GUIDE.md`
 - Release smoke checklist updated with Phase 5 internal track smoke gates
-- Core.Tests static language state leak fixed: `SettingsBillingAvailabilityTests` now resets `AppLanguage.Code` to English before string-asserting tests
+- Core.Tests static language state leak fixed: `CalculationsPageLogicTests` now implements `IDisposable` and restores English after each test; `SettingsBillingAvailabilityTests` resets before English string assertions
+- Release signing checklist: `docs/RELEASE_SIGNING_CHECKLIST.md`
+- Release candidate checklist (all blocking gates + rollout strategy): `docs/RELEASE_CANDIDATE_CHECKLIST.md`
+- Play pre-launch report and rollout guide: `docs/PLAY_PRELAUNCH_AND_ROLLOUT.md`
+- Version metadata note: first upload uses versionCode 1; every subsequent upload must increment `ApplicationVersion`
 
-### Still Required Before Submission
+### Still Required Before Submission (All Manual)
 
+- **Generate upload key** and sign AAB with it (not debug keystore) — see `docs/RELEASE_SIGNING_CHECKLIST.md`
 - **Host privacy policy** at a public URL (e.g., `https://freaklete.app/privacy`)
 - **Publish account deletion web form** at `https://freaklete.app/account-deletion` — required by Google Play for apps with account creation
 - **Fill Play Console Data Safety form** using `docs/PLAY_DATA_SAFETY.md` as reference
 - **Complete Health Apps declaration** in Play Console using `docs/PLAY_HEALTH_APPS_DECLARATION.md` as reference
-- Add medical disclaimer to Play Store long description (see `docs/PLAY_HEALTH_APPS_DECLARATION.md`)
+- Add medical disclaimer to Play Store long description
 - Add Privacy Policy link in app settings/profile once the hosted URL is live
-- Configure release signing in Play Console (upload key / Play App Signing)
 - **Create Play Console products** per `docs/PLAY_CONSOLE_SETUP.md`: `freaklete_premium` (subscription with `monthly`/`annual` base plans), `donate_1/5/10/20` (consumable)
 - **Set Railway env vars** per `docs/PRODUCTION_BACKEND_CHECKLIST.md`: JWT, Gemini, GooglePlay service account
-- Set version code and version name before first Play Store upload
-- **Execute internal track real-device smoke** per `docs/PLAY_INTERNAL_TESTING_GUIDE.md` (guide prepared; manual execution required)
+- **Execute internal track real-device smoke** per `docs/PLAY_INTERNAL_TESTING_GUIDE.md`
+- **Review Play pre-launch report** per `docs/PLAY_PRELAUNCH_AND_ROLLOUT.md`; resolve any blocking crashes/ANRs
+- **Production rollout** per staged rollout strategy in `docs/RELEASE_CANDIDATE_CHECKLIST.md`
 
 ## Roadmap
 

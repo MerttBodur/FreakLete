@@ -5,10 +5,17 @@ using FreakLete.Services;
 
 namespace FreakLete.Core.Tests;
 
-public class CalculationsPageLogicTests
+public class CalculationsPageLogicTests : IDisposable
 {
 	public CalculationsPageLogicTests()
 	{
+		SetLanguageAndCulture("en");
+	}
+
+	public void Dispose()
+	{
+		// Restore English culture after each test so Turkish-setting tests
+		// do not leak static CultureInfo / AppLanguage.Code into other test classes.
 		SetLanguageAndCulture("en");
 	}
 
