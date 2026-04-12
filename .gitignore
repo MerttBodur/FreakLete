@@ -3,6 +3,11 @@
 bin/
 obj/
 out/
+artifacts/
+publish/
+Release/
+*.binlog
+*.sarif
 
 # User-specific files
 
@@ -40,6 +45,8 @@ Thumbs.db
 .android/
 *.apk
 *.ap_
+*.aab
+*.idsig
 
 # MAUI / Xamarin build artifacts
 
@@ -57,10 +64,32 @@ packages/
 *.tmp
 *.temp
 
-# Emulator / device files
+# Signing / keystores
 
 *.keystore
 *.jks
+*.p12
+*.pfx
+*.pem
+*.key
+*.cer
+*.crt
+android-keystore.properties
+signing.properties
+local.properties
+
+# Secrets and environment
+
+.env
+.env.*
+!.env.example
+secrets.json
+google-services.json
+GoogleService-Info.plist
+
+# Security folder
+
+Security/
 
 # Local config
 
@@ -71,4 +100,17 @@ appsettings.Development.json
 *.db3
 *.sqlite
 *.sqlite3
+
+# Test results and coverage
+
+TestResults/
+coverage/
+CoverageReport/
+*.trx
+*.coverage
+*.coveragexml
+*.lcov
+*.opencover.xml
+*.cobertura.xml
+
 .claude/
