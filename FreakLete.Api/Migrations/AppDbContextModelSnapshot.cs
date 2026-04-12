@@ -788,6 +788,10 @@ namespace FreakLete.Api.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<int>("TokenVersion")
+                        .HasDefaultValue(0)
+                        .HasColumnType("integer");
+
                     b.Property<int?>("TrainingDaysPerWeek")
                         .HasColumnType("integer");
 

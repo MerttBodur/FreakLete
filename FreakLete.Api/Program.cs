@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using System.Threading.RateLimiting;
 using FreakLete.Api.Data;
@@ -47,6 +48,33 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = jwtIssuer,
             ValidAudience = jwtAudience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var userIdStr = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var versionStr = context.Principal?.FindFirstValue("token_version");
+
+                if (!int.TryParse(userIdStr, out var userId) ||
+                    !int.TryParse(versionStr, out var tokenVersion))
+                {
+                    context.Fail("Missing or unparseable token claims.");
+                    return;
+                }
+
+                var db = context.HttpContext.RequestServices
+                    .GetRequiredService<FreakLete.Api.Data.AppDbContext>();
+
+                var user = await db.Users.AsNoTracking()
+                    .Where(u => u.Id == userId)
+                    .Select(u => new { u.TokenVersion })
+                    .FirstOrDefaultAsync();
+
+                if (user is null || user.TokenVersion != tokenVersion)
+                    context.Fail("Token has been invalidated.");
+            }
         };
     });
 

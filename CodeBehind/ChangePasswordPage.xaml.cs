@@ -7,11 +7,13 @@ namespace FreakLete;
 public partial class ChangePasswordPage : ContentPage
 {
 	private readonly ApiClient _api;
+	private readonly UserSession _session;
 
 	public ChangePasswordPage(string? prefillEmail = null)
 	{
 		InitializeComponent();
 		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
+		_session = MauiProgram.Services.GetRequiredService<UserSession>();
 
 		if (!string.IsNullOrWhiteSpace(prefillEmail))
 			EmailEntry.Text = prefillEmail;
@@ -90,10 +92,11 @@ public partial class ChangePasswordPage : ContentPage
 
 		if (result.Success)
 		{
-			CurrentPasswordEntry.Text = string.Empty;
-			NewPasswordEntry.Text = string.Empty;
-			NewPasswordRepeatEntry.Text = string.Empty;
-			ShowSuccess(AppLanguage.ChangePasswordSuccess);
+			_session.SignOut();
+			MainThread.BeginInvokeOnMainThread(async () =>
+			{
+				await TabNavigationHelper.ResetToRootAsync(Navigation, () => new LoginPage(), false);
+			});
 		}
 		else
 		{

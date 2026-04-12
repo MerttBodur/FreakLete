@@ -380,9 +380,9 @@ public class AuthIntegrationTests : IAsyncLifetime
             });
         Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
 
-        // Profile should now return 404 (user is gone, but token still parses — user lookup fails)
+        // OnTokenValidated finds no user in DB → 401 before controller runs
         var profileResponse = await authedClient.GetAsync("/api/auth/profile");
-        Assert.Equal(HttpStatusCode.NotFound, profileResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, profileResponse.StatusCode);
     }
 
     // ── Rate limiting ──────────────────────────────────────────────
@@ -444,5 +444,141 @@ public class AuthIntegrationTests : IAsyncLifetime
         });
 
         Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+    }
+
+    // ── Token version / revocation ─────────────────────────────────
+
+    [Fact]
+    public async Task OldToken_Returns401_AfterPasswordChange()
+    {
+        var email = $"tv-old-{Guid.NewGuid():N}@example.com";
+        const string oldPassword = "OldPassword1!";
+        const string newPassword = "NewPassword1!";
+
+        var auth = await AuthTestHelper.RegisterAsync(_client, email: email, password: oldPassword);
+        var oldClient = _factory.CreateClient();
+        AuthTestHelper.Authenticate(oldClient, auth.Token);
+
+        // Verify old token works before change
+        var beforeResponse = await oldClient.GetAsync("/api/auth/profile");
+        Assert.Equal(HttpStatusCode.OK, beforeResponse.StatusCode);
+
+        // Change password (increments TokenVersion)
+        var authedClient = _factory.CreateClient();
+        AuthTestHelper.Authenticate(authedClient, auth.Token);
+        var changeResponse = await authedClient.PostAsJsonAsync("/api/auth/change-password", new
+        {
+            email,
+            currentPassword = oldPassword,
+            newPassword,
+            newPasswordRepeat = newPassword
+        });
+        Assert.Equal(HttpStatusCode.OK, changeResponse.StatusCode);
+
+        // Old token now has stale token_version — must be rejected
+        var afterResponse = await oldClient.GetAsync("/api/auth/profile");
+        Assert.Equal(HttpStatusCode.Unauthorized, afterResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task NewLoginToken_Works_AfterPasswordChange()
+    {
+        var email = $"tv-new-{Guid.NewGuid():N}@example.com";
+        const string oldPassword = "OldPassword1!";
+        const string newPassword = "NewPassword1!";
+
+        var auth = await AuthTestHelper.RegisterAsync(_client, email: email, password: oldPassword);
+        var authedClient = _factory.CreateClient();
+        AuthTestHelper.Authenticate(authedClient, auth.Token);
+
+        await authedClient.PostAsJsonAsync("/api/auth/change-password", new
+        {
+            email,
+            currentPassword = oldPassword,
+            newPassword,
+            newPasswordRepeat = newPassword
+        });
+
+        // Fresh login issues a token with the new TokenVersion
+        var newAuth = await AuthTestHelper.LoginAsync(_client, email, newPassword);
+        var newClient = _factory.CreateClient();
+        AuthTestHelper.Authenticate(newClient, newAuth.Token);
+
+        var profileResponse = await newClient.GetAsync("/api/auth/profile");
+        Assert.Equal(HttpStatusCode.OK, profileResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Token_Returns401_AfterAccountDeletion()
+    {
+        const string password = "TestPassword123!";
+        var auth = await AuthTestHelper.RegisterAsync(_client, password: password);
+        var authedClient = _factory.CreateClient();
+        AuthTestHelper.Authenticate(authedClient, auth.Token);
+
+        var deleteResponse = await authedClient.SendAsync(
+            new HttpRequestMessage(HttpMethod.Delete, "/api/auth/account")
+            {
+                Content = JsonContent.Create(new { currentPassword = password })
+            });
+        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+
+        // User no longer in DB — OnTokenValidated fails with 401
+        var profileResponse = await authedClient.GetAsync("/api/auth/profile");
+        Assert.Equal(HttpStatusCode.Unauthorized, profileResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task TokenWithoutVersionClaim_IsRejected()
+    {
+        // A JWT missing the token_version claim — OnTokenValidated must reject it
+        var token = BuildCustomToken(userId: 999, includeVersionClaim: false, tokenVersion: 0);
+        var client = _factory.CreateClient();
+        AuthTestHelper.Authenticate(client, token);
+
+        var response = await client.GetAsync("/api/auth/profile");
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task TokenWithMismatchedVersion_IsRejected()
+    {
+        var email = $"tv-mismatch-{Guid.NewGuid():N}@example.com";
+        var auth = await AuthTestHelper.RegisterAsync(_client, email: email);
+
+        // DB has TokenVersion=0; token claims version 99
+        var token = BuildCustomToken(userId: auth.UserId, includeVersionClaim: true, tokenVersion: 99);
+        var client = _factory.CreateClient();
+        AuthTestHelper.Authenticate(client, token);
+
+        var response = await client.GetAsync("/api/auth/profile");
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    private static string BuildCustomToken(int userId, bool includeVersionClaim, int tokenVersion)
+    {
+        const string testKey = "TestJwtKey-AtLeast32Characters-Long-Enough-For-HS256!";
+        var signingKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+            System.Text.Encoding.UTF8.GetBytes(testKey));
+
+        var claims = new List<System.Security.Claims.Claim>
+        {
+            new(System.Security.Claims.ClaimTypes.NameIdentifier, userId.ToString()),
+            new(System.Security.Claims.ClaimTypes.Email, "test@example.com"),
+            new(System.Security.Claims.ClaimTypes.GivenName, "Test")
+        };
+
+        if (includeVersionClaim)
+            claims.Add(new System.Security.Claims.Claim("token_version", tokenVersion.ToString()));
+
+        var token = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(
+            issuer: "FreakLete.Api",
+            audience: "FreakLete.App",
+            claims: claims,
+            expires: DateTime.UtcNow.AddDays(7),
+            signingCredentials: new Microsoft.IdentityModel.Tokens.SigningCredentials(
+                signingKey, Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256));
+
+        return new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler().WriteToken(token);
     }
 }

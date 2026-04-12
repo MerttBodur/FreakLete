@@ -110,6 +110,7 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "Şifre en az 1 özel karakter içermelidir." });
 
         user.PasswordHash = PasswordHasher.HashPassword(request.NewPassword);
+        user.TokenVersion += 1;
         await _db.SaveChangesAsync();
 
         return Ok(new { message = "Şifre başarıyla değiştirildi." });

@@ -15,6 +15,7 @@ public class User
     public string SportName { get; set; } = string.Empty;
     public string Position { get; set; } = string.Empty;
     public string GymExperienceLevel { get; set; } = string.Empty;
+    public int TokenVersion { get; set; } = 0;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Coach profile fields
