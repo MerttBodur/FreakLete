@@ -177,6 +177,9 @@ The production backend has also passed end-to-end smoke tests for auth, profile,
 - Account deletion doc (in-app + web path): `docs/ACCOUNT_DELETION.md`
 - Play Data Safety worksheet: `docs/PLAY_DATA_SAFETY.md`
 - Health Apps declaration worksheet: `docs/PLAY_HEALTH_APPS_DECLARATION.md`
+- Play Console product setup checklist: `docs/PLAY_CONSOLE_SETUP.md`
+- Production backend env checklist: `docs/PRODUCTION_BACKEND_CHECKLIST.md`
+- Release smoke checklist updated with Phase 4 play/backend readiness gates: `docs/RELEASE_SMOKE_CHECKLIST.md`
 
 ### Still Required Before Submission
 
@@ -187,7 +190,8 @@ The production backend has also passed end-to-end smoke tests for auth, profile,
 - Add medical disclaimer to Play Store long description (see `docs/PLAY_HEALTH_APPS_DECLARATION.md`)
 - Add Privacy Policy link in app settings/profile once the hosted URL is live
 - Configure release signing in Play Console (upload key / Play App Signing)
-- Create Play Console products: `freaklete_premium` (subscription), `donate_1/5/10/20` (consumable)
+- **Create Play Console products** per `docs/PLAY_CONSOLE_SETUP.md`: `freaklete_premium` (subscription with `monthly`/`annual` base plans), `donate_1/5/10/20` (consumable)
+- **Set Railway env vars** per `docs/PRODUCTION_BACKEND_CHECKLIST.md`: JWT, Gemini, GooglePlay service account
 - Set version code and version name before first Play Store upload
 
 ## Roadmap

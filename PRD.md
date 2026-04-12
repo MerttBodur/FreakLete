@@ -146,8 +146,11 @@ Tamamlanan:
 - Account deletion dokumani (in-app + web path): `docs/ACCOUNT_DELETION.md`
 - Play Data Safety worksheet: `docs/PLAY_DATA_SAFETY.md`
 - Health Apps declaration worksheet: `docs/PLAY_HEALTH_APPS_DECLARATION.md`
+- Play Console urun setup checklist: `docs/PLAY_CONSOLE_SETUP.md` (product id'ler, base plan id'ler, fiyatlar, contract tablosu)
+- Production backend env checklist: `docs/PRODUCTION_BACKEND_CHECKLIST.md` (Railway env var listesi, auto-migrate davranisi, health check)
+- Release smoke checklist Phase 4 gatesleri eklendi: `docs/RELEASE_SMOKE_CHECKLIST.md`
 
-Submission oncesi hala gerekli olanlar:
+Submission oncesi hala gerekli olanlar (manuel):
 - Privacy policy'yi bir public URL'de host etmek (ornegin `https://freaklete.app/privacy`)
 - Account deletion web formunu yayinlamak (`https://freaklete.app/account-deletion`) — Play zorunlulugu
 - Play Console Data Safety formunu `docs/PLAY_DATA_SAFETY.md` referansiyla doldurmak
@@ -155,7 +158,8 @@ Submission oncesi hala gerekli olanlar:
 - Play Store long description'a medikal disclaimer eklemek
 - App icine Privacy Policy linki eklemek (URL host edildikten sonra)
 - Play Console'da release signing yapilandirmak
-- Play Console'da urun olusturmak: `freaklete_premium`, `donate_1/5/10/20`
+- Play Console'da urunleri `docs/PLAY_CONSOLE_SETUP.md` referansiyla olusturmak: `freaklete_premium` (base plan: `monthly`, `annual`), `donate_1/5/10/20`
+- Railway env var'larini `docs/PRODUCTION_BACKEND_CHECKLIST.md` referansiyla set etmek: JWT, Gemini, GooglePlay service account
 - İlk yukleme oncesinde versionCode ve versionName degerlerini ayarlamak
 
 ## 6. Mevcut Mimari

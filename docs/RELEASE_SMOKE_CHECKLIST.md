@@ -7,6 +7,50 @@
 
 ---
 
+## Phase 4: Play Console & Backend Readiness
+
+Complete this section before uploading the first AAB to the internal testing track.
+
+### Play Console Products
+
+- [ ] Subscription `freaklete_premium` created and **Active**
+- [ ] Base plan `monthly` (3.00 USD/month) created and **Active**
+- [ ] Base plan `annual` (30.00 USD/year) created and **Active**
+- [ ] One-time product `donate_1` (1.00 USD) created and **Active**
+- [ ] One-time product `donate_5` (5.00 USD) created and **Active**
+- [ ] One-time product `donate_10` (10.00 USD) created and **Active**
+- [ ] One-time product `donate_20` (20.00 USD) created and **Active**
+- [ ] License testers configured under Setup > License testing
+
+### Backend Environment
+
+- [ ] `ConnectionStrings__DefaultConnection` set in Railway
+- [ ] `Jwt__Key` set (≥ 32 bytes, not a placeholder)
+- [ ] `Jwt__Issuer` set
+- [ ] `Jwt__Audience` set
+- [ ] `Gemini__ApiKey` set
+- [ ] `Gemini__Model` set (or defaults to `gemini-2.5-flash-lite`)
+- [ ] `GooglePlay__PackageName` = `com.mert.freaklete`
+- [ ] `GooglePlay__ServiceAccountJsonBase64` set
+- [ ] `ASPNETCORE_ENVIRONMENT` = `Production`
+
+### Migration & Health
+
+- [ ] Railway deploy logs show no migration errors
+- [ ] Railway deploy logs show no startup exceptions
+- [ ] `curl https://freaklete-production.up.railway.app/api/health` → `{"status":"healthy"}` HTTP 200
+
+### First Purchase Sync
+
+- [ ] Upload signed AAB to internal testing track
+- [ ] Complete test subscription purchase with a license tester account
+- [ ] Backend billing sync returns `verified` / `completed` status
+- [ ] Settings screen shows Premium plan and renewal date after sync
+- [ ] Test donation purchase — consume succeeds, success toast shown
+- [ ] Restore Purchases re-grants entitlement from existing subscription
+
+---
+
 ## Automated Test Prerequisites
 
 - [ ] `dotnet test FreakLete.Api.Tests` — all pass (blocking)
