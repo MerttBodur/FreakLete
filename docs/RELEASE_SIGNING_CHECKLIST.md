@@ -90,18 +90,34 @@ unzip -p com.mert.freaklete-Signed.aab META-INF/*.RSA | keytool -printcert
 
 ---
 
-## 7. Disaster Recovery
+## 7. Upload Key Rotation and Recovery
 
-If the upload key is lost:
+### If the upload key is compromised (not lost)
 
-1. Google Play allows requesting a key reset once per lifetime — go to Play Console > App integrity > Request key upgrade
+Google Play supports requesting an upload key reset to replace a compromised key:
+
+1. Go to Play Console > App integrity > Request key upgrade
+2. Generate a new keystore and upload key
+3. Submit the new upload certificate to Google; Google will re-associate your app with the new key
+4. Remove the old keystore from all storage locations after the new key is approved
+5. Record rotation date: `[YYYY-MM-DD — owner: <name>]`
+
+### If the upload key is lost
+
+1. Google Play allows one key reset per app lifetime — go to Play Console > App integrity > Request key upgrade
 2. The process requires identity verification and may take several days
-3. Until resolved, no new releases can be uploaded
+3. Until resolved, no new releases can be uploaded to any track
 
-**Mitigations:**
+**Play App Signing protects users even after upload key loss:**
+- Google re-signs APKs with the **app signing key** before delivery
+- The app signing key is held by Google and cannot be lost or exported
+- Loss of the upload key prevents uploads but does not break existing installs
+
+**Upload key backup requirements:**
 - Store the keystore file in at least two secure locations (e.g., encrypted cloud storage + local encrypted backup)
-- Record the key alias and store the keystore password in a password manager
-- Do not rely on the `.android/debug.keystore` — it is not suitable for production
+- **Never store the keystore or its password in this repository or any path under the project directory**
+- Record the key alias in a password manager; record the keystore password in the same password manager
+- Do not rely on `.android/debug.keystore` — it is not suitable for production and is not backed up
 
 ---
 

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using System.Threading.RateLimiting;
+using FreakLete.Api;
 using FreakLete.Api.Data;
 using FreakLete.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -114,6 +115,10 @@ builder.Services.AddOpenApi();
 // Rate limiting — brute force / credential stuffing protection
 // Disabled in Testing environment so integration tests are not throttled.
 var isTestEnvironment = builder.Environment.IsEnvironment("Testing");
+
+// Security retention cleanup — disabled in Testing (test fixture manages data lifecycle).
+if (!isTestEnvironment)
+    builder.Services.AddHostedService<SecurityRetentionCleanupService>();
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = 429;
@@ -182,15 +187,33 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
-// Apply pending migrations on startup (skip in Testing — test fixture owns the lifecycle)
+// Apply pending migrations on startup.
+// Testing: always skipped — test fixture owns the lifecycle.
+// Development: auto-migrates by default (Database:AutoMigrate not set → true).
+// Production / all other envs: only if Database:AutoMigrate is explicitly "true".
+// Railway: set env var Database__AutoMigrate=true to enable on deploy.
 if (!app.Environment.IsEnvironment("Testing"))
 {
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.MigrateAsync();
+    var autoMigrate = DatabaseStartupConfig.ShouldAutoMigrate(
+        app.Configuration, app.Environment.IsDevelopment());
 
-    var seeder = scope.ServiceProvider.GetRequiredService<StarterTemplateSeedService>();
-    await seeder.SeedAsync();
+    if (autoMigrate)
+    {
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.MigrateAsync();
+
+        var seeder = scope.ServiceProvider.GetRequiredService<StarterTemplateSeedService>();
+        await seeder.SeedAsync();
+    }
+    else
+    {
+        var startupLogger = app.Services.GetRequiredService<ILogger<Program>>();
+        startupLogger.LogWarning(
+            "Auto-migrate is disabled (Database:AutoMigrate not set to true for this environment). " +
+            "Apply pending migrations manually before starting. " +
+            "Railway: set Database__AutoMigrate=true to enable on deploy.");
+    }
 }
 
 if (app.Environment.IsDevelopment())

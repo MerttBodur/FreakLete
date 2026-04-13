@@ -11,8 +11,8 @@ Complete sections in order. Do not proceed to the next section if any blocking i
 
 Run before every release candidate build:
 
-- [ ] `dotnet test .\FreakLete.Api.Tests\FreakLete.Api.Tests.csproj -v:m` — **all pass** (last known: 333/333)
-- [ ] `dotnet test .\FreakLete.Core.Tests\FreakLete.Core.Tests.csproj -v:m` — **all pass** (last known: 341/341)
+- [ ] `dotnet test .\FreakLete.Api.Tests\FreakLete.Api.Tests.csproj -v:m` — **all pass**
+- [ ] `dotnet test .\FreakLete.Core.Tests\FreakLete.Core.Tests.csproj -v:m` — **all pass**
 - [ ] `dotnet publish .\FreakLete.csproj -f net10.0-android -c Release -p:AndroidPackageFormat=aab` — **succeeds, 0 errors**
 
 ---
@@ -44,8 +44,16 @@ Run before every release candidate build:
 - [ ] Subscription `freaklete_premium` active with base plans `monthly` and `annual` (reference: `docs/PLAY_CONSOLE_SETUP.md`)
 - [ ] One-time products `donate_1`, `donate_5`, `donate_10`, `donate_20` all active
 - [ ] All Railway env vars set (reference: `docs/PRODUCTION_BACKEND_CHECKLIST.md`)
-- [ ] `GET https://freaklete-production.up.railway.app/api/health` → `{"status":"healthy"}` HTTP 200
+- [ ] `Database__AutoMigrate=true` explicitly set in Railway Variables (or pending migrations applied manually)
+- [ ] `GET https://freaklete-production.up.railway.app/api/health` → `{"status":"healthy"}` HTTP 200 — confirms no pending migrations
 - [ ] Railway deployment logs show no migration errors or startup exceptions
+- [ ] Retention cleanup configured: `SecurityRetention__AuthLoginAttemptDays` and `SecurityRetention__GooglePlayRtdnEventDays` set or confirmed that defaults (30d / 90d) are acceptable
+- [ ] Secret rotation status recorded:
+  - [ ] `Jwt__Key` — last rotated: `[date — owner]`
+  - [ ] `GooglePlay__RealTimeDeveloperNotificationSecret` — last rotated: `[date — owner]`
+  - [ ] `GooglePlay__ServiceAccountJsonBase64` — last rotated: `[date — owner]`
+  - [ ] `Gemini__ApiKey` — last rotated: `[date — owner]`
+  - [ ] Upload keystore — last backed up: `[date — location]` (reference: `docs/RELEASE_SIGNING_CHECKLIST.md §7`)
 
 ---
 

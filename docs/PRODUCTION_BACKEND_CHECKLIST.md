@@ -55,6 +55,14 @@ Set all of the following in the Railway project environment (Variables tab):
 | Variable | Expected value | Notes |
 |---|---|---|
 | `ASPNETCORE_ENVIRONMENT` | `Production` | Controls exception handler, OpenAPI endpoint visibility, and health check detail level |
+| `Database__AutoMigrate` | `true` | **Required for Railway deploys.** Production default is `false`. Set to `true` to apply pending EF migrations on startup. If unset, migrations are skipped and `/api/health` returns 503 if pending migrations exist. |
+
+### Security Retention (Optional — defaults are safe)
+
+| Variable | Default | Notes |
+|---|---|---|
+| `SecurityRetention__AuthLoginAttemptDays` | `30` | Rows older than this are deleted by the background cleanup service every 24 h |
+| `SecurityRetention__GooglePlayRtdnEventDays` | `90` | Rows older than this are deleted by the background cleanup service every 24 h |
 
 ---
 
@@ -99,27 +107,61 @@ https://freaklete-production.up.railway.app/api/billing/googleplay/rtdn?secret=<
 
 ## 2. Auto-Migration Behavior
 
-`Program.cs` runs `db.Database.MigrateAsync()` on startup for all non-Testing environments:
+`Program.cs` resolves auto-migrate via `DatabaseStartupConfig.ShouldAutoMigrate`:
 
-```csharp
-if (!app.Environment.IsEnvironment("Testing"))
-{
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.MigrateAsync();
-    ...
-}
-```
+| Environment | `Database:AutoMigrate` not set | Explicit `true` | Explicit `false` |
+|---|---|---|---|
+| Development | auto-migrates | auto-migrates | skipped |
+| Production / other | **skipped** | auto-migrates | skipped |
+| Testing | always skipped (test fixture owns lifecycle) | — | — |
 
-This means:
-- All pending EF Core migrations are applied automatically when the server starts
-- The `BillingRawPayloadMaxLength` migration and any subsequent migrations are applied without manual intervention
-- If a migration fails, the server will fail to start — check Railway deployment logs
+**Railway Production:**
+- Set `Database__AutoMigrate=true` in Railway Variables tab to enable automatic migration on deploy.
+- If not set, the server starts but logs a warning; `/api/health` returns 503 if pending migrations exist.
+- If a migration fails at startup, the server will not finish starting — check Railway deployment logs.
 
 **Still recommended before each release:**
 - Verify migration applied cleanly by checking `/api/health` after deploy
 - Review Railway deployment logs for migration output
 - If a migration contains destructive DDL (column drops, type changes), test against a staging DB first
+
+## 2b. Secret Rotation Runbooks
+
+> Do NOT record actual secret values here. Record rotation dates and owners instead.
+
+### JWT Key Rotation
+
+1. Generate a new key: `openssl rand -hex 32`
+2. Update `Jwt__Key` in Railway Variables tab
+3. **All existing JWTs are immediately invalidated** — users must re-login
+4. Monitor login errors in Railway logs for ~5 minutes after deploy
+5. Record rotation date: `[YYYY-MM-DD — owner: <name>]`
+
+### RTDN Secret Rotation
+
+1. Generate a new secret: `openssl rand -hex 32`
+2. Update `GooglePlay__RealTimeDeveloperNotificationSecret` in Railway Variables tab
+3. Update the Pub/Sub push subscription URL in Google Cloud Console if using query param delivery:
+   `https://freaklete-production.up.railway.app/api/billing/googleplay/rtdn?secret=<NEW_SECRET>`
+4. Old RTDN pushes with the previous secret will return 401 and be retried by Pub/Sub (up to retry policy limit)
+5. Record rotation date: `[YYYY-MM-DD — owner: <name>]`
+
+### Google Service Account Key Rotation
+
+1. In Google Cloud Console: IAM > Service Accounts > select account > Keys > Add Key
+2. Download the new JSON key
+3. Base64-encode: `base64 -w 0 new-service-account.json`
+4. Update `GooglePlay__ServiceAccountJsonBase64` in Railway Variables tab
+5. Revoke the old key in Google Cloud Console
+6. Delete the local JSON file; never commit it
+7. Record rotation date: `[YYYY-MM-DD — owner: <name>]`
+
+### Gemini API Key Rotation
+
+1. In Google AI Studio: create a new API key
+2. Update `Gemini__ApiKey` in Railway Variables tab
+3. Revoke the old key in Google AI Studio
+4. Record rotation date: `[YYYY-MM-DD — owner: <name>]`
 
 ---
 
@@ -164,12 +206,14 @@ Google Play purchase verification requires:
 Run this sequence before each production release:
 
 - [ ] All required env vars set in Railway (including `GooglePlay__RealTimeDeveloperNotificationSecret`)
+- [ ] `Database__AutoMigrate=true` set in Railway (or migrations applied manually)
 - [ ] `GET /api/health` returns `{ "status": "healthy" }` with HTTP 200
 - [ ] Railway deployment logs show no migration errors
 - [ ] Railway deployment logs show no startup exceptions (Jwt, Gemini, DB)
 - [ ] `X-Forwarded-For` and `X-Forwarded-Proto` headers forwarded correctly by Railway proxy (verify via login attempt log or `/api/health` scheme)
 - [ ] Test purchase with license tester confirms billing sync reaches backend
 - [ ] Entitlement endpoint returns correct plan after sync
+- [ ] Secret rotation dates recorded (JWT, RTDN, service account, Gemini) — see §2b
 
 ---
 
