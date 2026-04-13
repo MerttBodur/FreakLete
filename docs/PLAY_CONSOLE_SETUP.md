@@ -110,7 +110,69 @@ The following IDs are load-bearing. Any rename requires a coordinated change acr
 
 ---
 
-## 7. After Setup
+## 7. Real-Time Developer Notifications (RTDN) via Pub/Sub
+
+RTDN delivers server-push subscription lifecycle events (renewal, cancellation, expiry, refund) to the backend without waiting for the next client sync.
+
+### Google Cloud Pub/Sub setup
+
+1. In [Google Cloud Console](https://console.cloud.google.com/):
+   - Enable the **Pub/Sub API** for the project linked to Play Console
+   - Create a **Topic** (e.g. `play-rtdn`)
+   - Grant the Google Play service account `pubsub.topics.publish` permission on that topic
+   - Create a **Push Subscription** on the topic:
+     - Delivery type: **Push**
+     - Endpoint URL: `https://freaklete-production.up.railway.app/api/billing/googleplay/rtdn`
+     - Add custom attribute or configure the endpoint URL with a secret query param — however, FreakLete uses a **custom header** instead (see below)
+
+2. Because Pub/Sub push does not natively support custom headers, use one of these approaches:
+   - **Option A (recommended):** Append the secret as a URL query parameter and read it from `Request.Query` — update endpoint to check `?secret=...` instead of the header
+   - **Option B:** Place a lightweight reverse proxy (Cloud Run, NGINX) in front that injects the `X-FreakLete-RTDN-Secret` header before forwarding to Railway
+   - **Option C (current implementation):** Configure Pub/Sub to push to a URL that includes the secret in the path: `...rtdn?key=<secret>` — not supported in the current header-based implementation; choose Option A or B
+
+   > The current implementation reads `X-FreakLete-RTDN-Secret` header. If Google Pub/Sub cannot inject headers, switch to query-parameter validation or use an intermediary.
+
+3. In Play Console:
+   - Navigate to **Monetize > Real-time developer notifications**
+   - Set the **Pub/Sub topic** to the topic you created
+   - Click **Send test notification** and verify the backend returns 200
+
+### Railway environment variable
+
+| Variable | Value |
+|---|---|
+| `GooglePlay__RealTimeDeveloperNotificationSecret` | Random secret string, ≥ 32 characters |
+
+Generate a secret:
+```bash
+openssl rand -hex 32
+```
+
+Set in Railway dashboard → Variables. Never commit this value.
+
+### Security notes
+
+- Endpoint is public but requires the `X-FreakLete-RTDN-Secret` header to match the configured secret
+- Missing secret config → 503 (endpoint disabled, not silently accepting)
+- Wrong secret → 401
+- Purchase tokens are **never logged** — only a SHA-256 fingerprint is stored in `GooglePlayRtdnEvents`
+- Duplicate `messageId` values are idempotent — second call returns 200 without re-processing
+- `oneTimeProductNotification` events are silently ignored (200 returned)
+
+### Event table
+
+RTDN events are stored in `GooglePlayRtdnEvents`:
+
+| ProcessingState | Meaning |
+|---|---|
+| `processed` | Subscription verify succeeded, entitlement updated |
+| `verification_failed` | Google Play verify returned null; state set to `verification_failed` |
+| `ignored_unknown_token` | Purchase token not in DB; client sync creates the record on next open |
+| `duplicate` | `messageId` already processed; no mutation |
+
+---
+
+## 8. After Setup
 
 Once all products are active and testers are configured:
 

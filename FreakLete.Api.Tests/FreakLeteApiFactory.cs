@@ -68,5 +68,7 @@ public class FreakLeteApiFactory : WebApplicationFactory<Program>, IAsyncLifetim
             """TRUNCATE TABLE "Users" CASCADE""");
         await db.Database.ExecuteSqlRawAsync(
             """TRUNCATE TABLE "AuthLoginAttempts" """);
+        await db.Database.ExecuteSqlRawAsync(
+            """TRUNCATE TABLE "GooglePlayRtdnEvents" """);
     }
 }

@@ -1,3 +1,6 @@
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 using FreakLete.Api.Data;
 using FreakLete.Api.DTOs.Billing;
 using FreakLete.Api.Entities;
@@ -18,19 +21,24 @@ public class BillingController : ControllerBase
     private readonly AppDbContext _db;
     private readonly GooglePlayVerificationService _playVerify;
     private readonly ILogger<BillingController> _logger;
+    private readonly IConfiguration _config;
+
+    private const string ExpectedPackageName = "com.mert.freaklete";
 
     public BillingController(
         EntitlementService entitlement,
         QuotaService quota,
         AppDbContext db,
         GooglePlayVerificationService playVerify,
-        ILogger<BillingController> logger)
+        ILogger<BillingController> logger,
+        IConfiguration config)
     {
         _entitlement = entitlement;
         _quota = quota;
         _db = db;
         _playVerify = playVerify;
         _logger = logger;
+        _config = config;
     }
 
     [HttpGet("status")]
@@ -149,6 +157,146 @@ public class BillingController : ControllerBase
         return Ok(new { existing.State, existing.EntitlementEndsAtUtc, kind });
     }
 
+    // ── RTDN (Real-Time Developer Notifications) ─────────────
+
+    /// <summary>
+    /// Google Pub/Sub push endpoint for subscription lifecycle events.
+    /// Protected by shared secret header; not user-authenticated.
+    /// </summary>
+    [HttpPost("googleplay/rtdn")]
+    [AllowAnonymous]
+    public async Task<IActionResult> RtdnPush([FromBody] PubSubPushBody body)
+    {
+        var configuredSecret = _config["GooglePlay:RealTimeDeveloperNotificationSecret"];
+        if (string.IsNullOrEmpty(configuredSecret))
+            return StatusCode(503, new { message = "RTDN not configured." });
+
+        var providedSecret = Request.Headers["X-FreakLete-RTDN-Secret"].FirstOrDefault();
+        if (!string.Equals(providedSecret, configuredSecret, StringComparison.Ordinal))
+            return Unauthorized();
+
+        if (body.Message?.Data is null)
+            return BadRequest();
+
+        string rtdnJson;
+        try
+        {
+            var bytes = Convert.FromBase64String(body.Message.Data);
+            rtdnJson = Encoding.UTF8.GetString(bytes);
+        }
+        catch
+        {
+            return BadRequest();
+        }
+
+        JsonElement rtdn;
+        try
+        {
+            rtdn = JsonSerializer.Deserialize<JsonElement>(rtdnJson);
+        }
+        catch
+        {
+            return BadRequest();
+        }
+
+        if (rtdn.TryGetProperty("packageName", out var pkgEl))
+        {
+            var pkg = pkgEl.GetString();
+            if (pkg is not null && pkg != ExpectedPackageName)
+            {
+                _logger.LogWarning("RTDN: Package name mismatch, got {PackageName}", pkg);
+                return BadRequest(new { message = "Package name mismatch." });
+            }
+        }
+
+        var messageId = body.Message.MessageId ?? Guid.NewGuid().ToString();
+
+        if (rtdn.TryGetProperty("oneTimeProductNotification", out _))
+        {
+            _logger.LogInformation("RTDN: oneTimeProductNotification ignored, messageId={MessageId}", messageId);
+            return Ok(new { status = "ignored" });
+        }
+
+        if (!rtdn.TryGetProperty("subscriptionNotification", out var subNotifEl))
+        {
+            _logger.LogInformation("RTDN: No subscriptionNotification, messageId={MessageId}", messageId);
+            return Ok(new { status = "ignored" });
+        }
+
+        if (!subNotifEl.TryGetProperty("purchaseToken", out var tokenEl) ||
+            !subNotifEl.TryGetProperty("subscriptionId", out var subIdEl) ||
+            !subNotifEl.TryGetProperty("notificationType", out var ntEl))
+            return BadRequest();
+
+        var purchaseToken = tokenEl.GetString() ?? string.Empty;
+        var productId = subIdEl.GetString() ?? string.Empty;
+        var notificationType = ntEl.GetInt32();
+
+        var ct = HttpContext.RequestAborted;
+
+        var duplicate = await _db.GooglePlayRtdnEvents
+            .AnyAsync(e => e.MessageId == messageId, ct);
+        if (duplicate)
+        {
+            _logger.LogInformation("RTDN: Duplicate messageId={MessageId}, skipping", messageId);
+            return Ok(new { status = "duplicate" });
+        }
+
+        var tokenFingerprint = ComputeSha256Hex(purchaseToken);
+
+        var rtdnEvent = new GooglePlayRtdnEvent
+        {
+            MessageId = messageId,
+            PurchaseTokenFingerprint = tokenFingerprint,
+            ProductId = productId,
+            NotificationType = notificationType,
+            ReceivedAtUtc = DateTime.UtcNow,
+            ProcessingState = "processing"
+        };
+        _db.GooglePlayRtdnEvents.Add(rtdnEvent);
+        await _db.SaveChangesAsync(ct);
+
+        var purchase = await _db.BillingPurchases.FirstOrDefaultAsync(
+            p => p.Platform == "android" && p.PurchaseToken == purchaseToken && p.Kind == "subscription", ct);
+
+        if (purchase is null)
+        {
+            rtdnEvent.ProcessingState = "ignored_unknown_token";
+            rtdnEvent.ProcessedAtUtc = DateTime.UtcNow;
+            await _db.SaveChangesAsync(ct);
+            _logger.LogInformation(
+                "RTDN: Unknown token, messageId={MessageId}, notificationType={Type}, productId={ProductId}",
+                messageId, notificationType, productId);
+            return Ok(new { status = "ignored" });
+        }
+
+        var result = await _playVerify.VerifySubscriptionAsync(purchase.PurchaseToken, purchase.ProductId, ct);
+
+        if (result is null)
+        {
+            purchase.State = "verification_failed";
+            purchase.LastVerifiedAtUtc = DateTime.UtcNow;
+            rtdnEvent.ProcessingState = "verification_failed";
+        }
+        else
+        {
+            purchase.State = result.State;
+            purchase.EntitlementStartsAtUtc = result.EntitlementStartsAtUtc;
+            purchase.EntitlementEndsAtUtc = result.EntitlementEndsAtUtc;
+            purchase.LastVerifiedAtUtc = DateTime.UtcNow;
+            rtdnEvent.ProcessingState = "processed";
+        }
+
+        rtdnEvent.ProcessedAtUtc = DateTime.UtcNow;
+        await _db.SaveChangesAsync(ct);
+
+        _logger.LogInformation(
+            "RTDN: messageId={MessageId}, notificationType={Type}, productId={ProductId}, state={State}",
+            messageId, notificationType, productId, purchase.State);
+
+        return Ok(new { status = rtdnEvent.ProcessingState });
+    }
+
     // ── Private helpers ──────────────────────────────────────
 
     private async Task VerifyAndUpdateSubscriptionAsync(BillingPurchase purchase, CancellationToken ct)
@@ -219,6 +367,12 @@ public class BillingController : ControllerBase
 
         purchase.LastVerifiedAtUtc = DateTime.UtcNow;
         await _db.SaveChangesAsync(ct);
+    }
+
+    private static string ComputeSha256Hex(string input)
+    {
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
+        return Convert.ToHexString(bytes).ToLowerInvariant();
     }
 
     private static string NormalizePurchaseState(int state) => state switch

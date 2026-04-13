@@ -40,6 +40,7 @@ Set all of the following in the Railway project environment (Variables tab):
 |---|---|---|
 | `GooglePlay__PackageName` | `com.mert.freaklete` | Must match the Play Console app package exactly |
 | `GooglePlay__ServiceAccountJsonBase64` | Base64-encoded service account JSON | Service account must have **Pub/Sub Viewer** + **Order Management** roles in Play Console |
+| `GooglePlay__RealTimeDeveloperNotificationSecret` | Random secret ≥ 32 chars | RTDN push endpoint protection. Missing → endpoint returns 503. Generate with `openssl rand -hex 32`. |
 
 > **How to generate `GooglePlay__ServiceAccountJsonBase64`:**
 > 1. In Google Play Console: Setup > API access > Link to a Google Cloud project
@@ -137,4 +138,4 @@ Run this sequence before each production release:
 - Release signing (Play App Signing — managed in Play Console, not Railway)
 - `versionCode` / `versionName` bump (in `FreakLete.csproj` before AAB build)
 - Play Console product creation (see `docs/PLAY_CONSOLE_SETUP.md`)
-- RTDN / PubSub setup (not shipped; sync-on-open approach used instead)
+- RTDN / PubSub infrastructure setup (endpoint shipped; Pub/Sub topic/subscription must be wired in Google Cloud Console — see `docs/PLAY_CONSOLE_SETUP.md` §7)

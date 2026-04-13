@@ -21,6 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<BillingPurchase> BillingPurchases => Set<BillingPurchase>();
     public DbSet<AiUsageRecord> AiUsageRecords => Set<AiUsageRecord>();
     public DbSet<AuthLoginAttempt> AuthLoginAttempts => Set<AuthLoginAttempt>();
+    public DbSet<GooglePlayRtdnEvent> GooglePlayRtdnEvents => Set<GooglePlayRtdnEvent>();
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -241,6 +242,17 @@ public class AppDbContext : DbContext
             e.Property(b => b.OrderId).HasMaxLength(200);
             e.Property(b => b.State).HasMaxLength(20);
             e.Property(b => b.RawPayloadJson).HasMaxLength(10000);
+        });
+
+        // GooglePlayRtdnEvent
+        modelBuilder.Entity<GooglePlayRtdnEvent>(e =>
+        {
+            e.HasKey(r => r.Id);
+            e.HasIndex(r => r.MessageId).IsUnique();
+            e.Property(r => r.MessageId).HasMaxLength(200);
+            e.Property(r => r.PurchaseTokenFingerprint).HasMaxLength(64);
+            e.Property(r => r.ProductId).HasMaxLength(100);
+            e.Property(r => r.ProcessingState).HasMaxLength(30);
         });
 
         // AuthLoginAttempt
