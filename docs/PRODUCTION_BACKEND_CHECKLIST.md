@@ -58,6 +58,45 @@ Set all of the following in the Railway project environment (Variables tab):
 
 ---
 
+## 1b. Production Hosting Hardening (Phase 4)
+
+### Forwarded Headers
+
+`Program.cs` enables `UseForwardedHeaders` in all non-Testing environments:
+
+```csharp
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+```
+
+- **X-Forwarded-For**: Real client IP is reflected in `HttpContext.Connection.RemoteIpAddress`. Login attempt rate-limiting partitions on this value.
+- **X-Forwarded-Proto**: Real scheme (`https`) is reflected in `HttpContext.Request.IsHttps`. HSTS and HTTPS redirect behave correctly.
+- **KnownNetworks**: Default (loopback 127.0.0.0/8 trusted). Railway's internal proxy connects via loopback — no additional config required. If Railway uses a non-loopback proxy address, add it: `options.KnownProxies.Add(IPAddress.Parse("<ip>"))`. Clearing both lists trusts all proxies (acceptable behind Railway's controlled network, but less restrictive).
+
+### HSTS
+
+`UseHsts()` is enabled in all non-Development, non-Testing environments. This adds `Strict-Transport-Security` to HTTPS responses, instructing browsers to use HTTPS for all subsequent requests.
+
+### RTDN Query Secret (Pub/Sub Direct Push)
+
+The RTDN endpoint accepts the shared secret in two ways:
+
+| Method | Header | Example |
+|---|---|---|
+| Header (preferred) | `X-FreakLete-RTDN-Secret: <secret>` | Cloud Run proxy or NGINX injects header |
+| Query param (MVP) | `?secret=<secret>` | Configure Pub/Sub push URL directly |
+
+**Pub/Sub push URL with query secret (MVP):**
+```
+https://freaklete-production.up.railway.app/api/billing/googleplay/rtdn?secret=<RTDN_SECRET>
+```
+
+> **Risk note:** Query params appear in access logs and server-side request logging. The header approach (via Cloud Run proxy) is more secure for production. Use query param only as MVP until a proxy is in place.
+
+---
+
 ## 2. Auto-Migration Behavior
 
 `Program.cs` runs `db.Database.MigrateAsync()` on startup for all non-Testing environments:
@@ -124,10 +163,11 @@ Google Play purchase verification requires:
 
 Run this sequence before each production release:
 
-- [ ] All required env vars set in Railway
+- [ ] All required env vars set in Railway (including `GooglePlay__RealTimeDeveloperNotificationSecret`)
 - [ ] `GET /api/health` returns `{ "status": "healthy" }` with HTTP 200
 - [ ] Railway deployment logs show no migration errors
 - [ ] Railway deployment logs show no startup exceptions (Jwt, Gemini, DB)
+- [ ] `X-Forwarded-For` and `X-Forwarded-Proto` headers forwarded correctly by Railway proxy (verify via login attempt log or `/api/health` scheme)
 - [ ] Test purchase with license tester confirms billing sync reaches backend
 - [ ] Entitlement endpoint returns correct plan after sync
 

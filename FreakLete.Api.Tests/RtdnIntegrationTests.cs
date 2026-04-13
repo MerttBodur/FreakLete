@@ -239,6 +239,31 @@ public class RtdnIntegrationTests : IAsyncLifetime
         Assert.Equal("free", status.GetProperty("plan").GetString());
     }
 
+    // ── Query param secret ─────────────────────────────────────────
+
+    [Fact]
+    public async Task Rtdn_ValidQuerySecret_Returns200Ignored()
+    {
+        // No header — secret supplied via ?secret= query param (Pub/Sub direct-push MVP)
+        var client = CreateRtdnClient();
+        var rtdnJson = BuildOneTimeProductRtdnJson($"tok-qs-{Guid.NewGuid():N}", "donate_5", 1);
+        var msgId = $"msg-qs-valid-{Guid.NewGuid():N}";
+        var response = await SendRtdnWithQuerySecretAsync(client, TestSecret, BuildPubSubBody(msgId, rtdnJson));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("ignored", body.GetProperty("status").GetString());
+    }
+
+    [Fact]
+    public async Task Rtdn_WrongQuerySecret_Returns401()
+    {
+        var client = CreateRtdnClient();
+        var rtdnJson = BuildOneTimeProductRtdnJson($"tok-qs-bad-{Guid.NewGuid():N}", "donate_5", 1);
+        var response = await SendRtdnWithQuerySecretAsync(client, "wrong-secret-value",
+            BuildPubSubBody($"msg-qs-bad-{Guid.NewGuid():N}", rtdnJson));
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
     // ── Helpers ────────────────────────────────────────────────────
 
     private HttpClient CreateRtdnClient() =>
@@ -282,6 +307,18 @@ public class RtdnIntegrationTests : IAsyncLifetime
         };
         if (secret is not null)
             req.Headers.Add("X-FreakLete-RTDN-Secret", secret);
+        return await client.SendAsync(req);
+    }
+
+    private static async Task<HttpResponseMessage> SendRtdnWithQuerySecretAsync(HttpClient client, string? secret, object body)
+    {
+        var url = secret is not null
+            ? $"/api/billing/googleplay/rtdn?secret={Uri.EscapeDataString(secret)}"
+            : "/api/billing/googleplay/rtdn";
+        var req = new HttpRequestMessage(HttpMethod.Post, url)
+        {
+            Content = JsonContent.Create(body)
+        };
         return await client.SendAsync(req);
     }
 

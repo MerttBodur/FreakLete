@@ -4,6 +4,7 @@ using System.Threading.RateLimiting;
 using FreakLete.Api.Data;
 using FreakLete.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -204,6 +205,30 @@ else
         ctx.Response.ContentType = "application/json";
         await ctx.Response.WriteAsJsonAsync(new { status = "error", message = "An unexpected error occurred." });
     }));
+}
+
+// ── Forwarded headers (must run before HSTS, HTTPS redirect, and auth) ──────
+// Recovers real client IP and scheme from Railway/reverse proxy headers.
+// Default KnownNetworks includes loopback (127.0.0.0/8); Railway's internal proxy
+// typically connects from loopback, so this works without clearing KnownNetworks.
+// If Railway's proxy uses a non-loopback address, add it:
+//   options.KnownProxies.Add(IPAddress.Parse("<railway-proxy-ip>"))
+// or clear both lists to trust all proxies (see docs/PRODUCTION_BACKEND_CHECKLIST.md).
+// Skipped in Testing so integration tests control RemoteIpAddress directly.
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    });
+}
+
+// ── HSTS ─────────────────────────────────────────────────────────────────────
+// Instructs browsers to use HTTPS exclusively. Skipped in development (local HTTP)
+// and in Testing so test clients are not affected.
+if (!app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Testing"))
+{
+    app.UseHsts();
 }
 
 // Health check — verifies DB connectivity

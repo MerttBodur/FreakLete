@@ -1,6 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 
 namespace FreakLete.Api.Tests;
 
@@ -608,6 +611,58 @@ public class AuthIntegrationTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
     }
 
+    // ── Forwarded headers / IP partitioning ───────────────────────
+    // TestServer.SendAsync sets RemoteIpAddress directly on the HttpContext before the pipeline
+    // runs. This lets us test IP-based partitioning without a real proxy chain.
+    // In production, UseForwardedHeaders (Program.cs) updates RemoteIpAddress from X-Forwarded-For
+    // before AuthController runs, so the same partitioning logic uses the real client IP.
+
+    [Fact]
+    public async Task Login_DifferentRemoteIpAddresses_CreateIndependentAttemptPartitions()
+    {
+        // TestServer.SendAsync sets RemoteIpAddress before the pipeline — AuthController
+        // partitions login attempts by email + RemoteIpAddress.
+        var server = _factory.Server;
+
+        var email1 = $"fwd-a-{Guid.NewGuid():N}@example.com";
+        var email2 = $"fwd-b-{Guid.NewGuid():N}@example.com";
+        await AuthTestHelper.RegisterAsync(_client, email: email1, password: "CorrectPass1!");
+        await AuthTestHelper.RegisterAsync(_client, email: email2, password: "CorrectPass1!");
+
+        var ip1 = System.Net.IPAddress.Parse("10.0.0.1");
+        var ip2 = System.Net.IPAddress.Parse("10.0.0.2");
+
+        // 5 failures for email1 from IP 10.0.0.1
+        for (int i = 0; i < 5; i++)
+            await LoginViaServerAsync(server, email1, "WrongPass1!", remoteIp: ip1);
+
+        // email1 + 10.0.0.1 must be blocked (5 failures in window)
+        Assert.Equal(429, await LoginViaServerAsync(server, email1, "WrongPass1!", remoteIp: ip1));
+
+        // email1 + 10.0.0.2 must NOT be blocked — different IP partition
+        Assert.Equal(200, await LoginViaServerAsync(server, email1, "CorrectPass1!", remoteIp: ip2));
+
+        // email2 + 10.0.0.1 must NOT be blocked — different email partition
+        Assert.Equal(200, await LoginViaServerAsync(server, email2, "CorrectPass1!", remoteIp: ip1));
+    }
+
+    [Fact]
+    public async Task Login_XForwardedProtoHttps_DoesNotRedirect()
+    {
+        // Production env so ForwardedHeaders middleware runs — X-Forwarded-Proto=https sets IsHttps.
+        // UseHttpsRedirection must skip (already HTTPS) — endpoint returns 401, not a 30x redirect.
+        var fwdFactory = _factory.WithWebHostBuilder(b => b.UseEnvironment("Production"));
+        var server = fwdFactory.Server;
+
+        var status = await LoginViaServerAsync(server,
+            $"proto-{Guid.NewGuid():N}@example.com", "TestPass1!",
+            remoteIp: System.Net.IPAddress.Loopback,
+            forwardedFor: "10.0.0.1", forwardedProto: "https");
+
+        // Endpoint reached (401 wrong creds) — not a redirect
+        Assert.True(status < 300 || status >= 400, $"Expected non-redirect but got {status}");
+    }
+
     // ── Token version / revocation ─────────────────────────────────
 
     [Fact]
@@ -742,5 +797,37 @@ public class AuthIntegrationTests : IAsyncLifetime
                 signingKey, Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256));
 
         return new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    /// <summary>
+    /// Sends a POST /api/auth/login directly via TestServer.SendAsync, which allows setting
+    /// RemoteIpAddress = loopback before the pipeline runs. ForwardedHeaders middleware (Production env)
+    /// trusts the loopback connection and updates RemoteIpAddress from X-Forwarded-For.
+    /// Returns the HTTP status code.
+    /// </summary>
+    private static async Task<int> LoginViaServerAsync(
+        TestServer server, string email, string password,
+        System.Net.IPAddress? remoteIp = null,
+        string? forwardedFor = null, string? forwardedProto = null)
+    {
+        var bodyBytes = Encoding.UTF8.GetBytes(
+            JsonSerializer.Serialize(new { email, password }));
+
+        var ctx = await server.SendAsync(httpCtx =>
+        {
+            if (remoteIp is not null)
+                httpCtx.Connection.RemoteIpAddress = remoteIp;
+            httpCtx.Request.Method = "POST";
+            httpCtx.Request.Path = "/api/auth/login";
+            httpCtx.Request.ContentType = "application/json";
+            httpCtx.Request.ContentLength = bodyBytes.Length;
+            httpCtx.Request.Body = new MemoryStream(bodyBytes);
+            if (forwardedFor is not null)
+                httpCtx.Request.Headers["X-Forwarded-For"] = forwardedFor;
+            if (forwardedProto is not null)
+                httpCtx.Request.Headers["X-Forwarded-Proto"] = forwardedProto;
+        });
+
+        return ctx.Response.StatusCode;
     }
 }

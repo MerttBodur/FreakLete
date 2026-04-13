@@ -126,11 +126,19 @@ RTDN delivers server-push subscription lifecycle events (renewal, cancellation, 
      - Add custom attribute or configure the endpoint URL with a secret query param — however, FreakLete uses a **custom header** instead (see below)
 
 2. Because Pub/Sub push does not natively support custom headers, use one of these approaches:
-   - **Option A (recommended):** Append the secret as a URL query parameter and read it from `Request.Query` — update endpoint to check `?secret=...` instead of the header
-   - **Option B:** Place a lightweight reverse proxy (Cloud Run, NGINX) in front that injects the `X-FreakLete-RTDN-Secret` header before forwarding to Railway
-   - **Option C (current implementation):** Configure Pub/Sub to push to a URL that includes the secret in the path: `...rtdn?key=<secret>` — not supported in the current header-based implementation; choose Option A or B
 
-   > The current implementation reads `X-FreakLete-RTDN-Secret` header. If Google Pub/Sub cannot inject headers, switch to query-parameter validation or use an intermediary.
+   - **Option A — Query param (MVP, currently supported):**  
+     Configure the push subscription endpoint URL with the secret as a query parameter:
+     ```
+     https://freaklete-production.up.railway.app/api/billing/googleplay/rtdn?secret=<RTDN_SECRET>
+     ```
+     The endpoint accepts the secret via `?secret=...` as a fallback when the header is absent.  
+     > **Risk:** Query params appear in access logs. Use this only as MVP until a proxy is in place.
+
+   - **Option B — Cloud Run / NGINX proxy (recommended for production):**  
+     Place a lightweight reverse proxy in front that injects the `X-FreakLete-RTDN-Secret` header before forwarding to Railway. Pub/Sub pushes to the proxy; the proxy injects the header and forwards to Railway.
+
+   > The endpoint accepts the secret from **either** the `X-FreakLete-RTDN-Secret` header (Option B) or the `?secret=` query param (Option A). Header takes precedence if both are present.
 
 3. In Play Console:
    - Navigate to **Monetize > Real-time developer notifications**

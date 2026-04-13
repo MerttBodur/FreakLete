@@ -172,6 +172,12 @@ public class BillingController : ControllerBase
             return StatusCode(503, new { message = "RTDN not configured." });
 
         var providedSecret = Request.Headers["X-FreakLete-RTDN-Secret"].FirstOrDefault();
+        // Query param fallback: Google Pub/Sub cannot inject custom headers into push requests.
+        // Configure the push endpoint URL as: .../rtdn?secret=<RTDN_SECRET>
+        // NOTE: query params may appear in access logs — prefer a Cloud Run proxy (header injection) in production.
+        if (string.IsNullOrEmpty(providedSecret))
+            providedSecret = Request.Query["secret"].FirstOrDefault();
+
         if (!string.Equals(providedSecret, configuredSecret, StringComparison.Ordinal))
             return Unauthorized();
 
