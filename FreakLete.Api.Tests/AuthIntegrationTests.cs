@@ -385,6 +385,168 @@ public class AuthIntegrationTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.Unauthorized, profileResponse.StatusCode);
     }
 
+    // ── Login attempt tracking (email+IP brute-force protection) ──
+
+    [Fact]
+    public async Task Login_FiveFailedAttempts_SixthReturns429()
+    {
+        var email = $"bf-{Guid.NewGuid():N}@example.com";
+        await AuthTestHelper.RegisterAsync(_client, email: email, password: "CorrectPassword1!");
+
+        // 5 failed attempts — all return 401
+        for (int i = 0; i < 5; i++)
+        {
+            var r = await _client.PostAsJsonAsync("/api/auth/login", new
+            {
+                email,
+                password = "WrongPassword1!"
+            });
+            Assert.Equal(HttpStatusCode.Unauthorized, r.StatusCode);
+        }
+
+        // 6th attempt — blocked before password verify
+        var blocked = await _client.PostAsJsonAsync("/api/auth/login", new
+        {
+            email,
+            password = "WrongPassword1!"
+        });
+        Assert.Equal(HttpStatusCode.TooManyRequests, blocked.StatusCode);
+    }
+
+    [Fact]
+    public async Task Login_DifferentEmail_SameIP_DoesNotShareAttemptState()
+    {
+        var email1 = $"bf-a-{Guid.NewGuid():N}@example.com";
+        var email2 = $"bf-b-{Guid.NewGuid():N}@example.com";
+        await AuthTestHelper.RegisterAsync(_client, email: email1, password: "CorrectPassword1!");
+        await AuthTestHelper.RegisterAsync(_client, email: email2, password: "CorrectPassword1!");
+
+        // Exhaust limit for email1
+        for (int i = 0; i < 5; i++)
+        {
+            await _client.PostAsJsonAsync("/api/auth/login", new
+            {
+                email = email1,
+                password = "WrongPassword1!"
+            });
+        }
+
+        // email2 partition is independent — valid login must succeed
+        var result = await AuthTestHelper.LoginAsync(_client, email2, "CorrectPassword1!");
+        Assert.False(string.IsNullOrEmpty(result.Token));
+    }
+
+    [Fact]
+    public async Task Login_BlockedEmail_Returns429_BeforePasswordVerify()
+    {
+        var email = $"bf-block-{Guid.NewGuid():N}@example.com";
+        await AuthTestHelper.RegisterAsync(_client, email: email, password: "CorrectPassword1!");
+
+        for (int i = 0; i < 5; i++)
+        {
+            await _client.PostAsJsonAsync("/api/auth/login", new
+            {
+                email,
+                password = "WrongPassword1!"
+            });
+        }
+
+        // Even correct password returns 429 — no 401
+        var blocked = await _client.PostAsJsonAsync("/api/auth/login", new
+        {
+            email,
+            password = "CorrectPassword1!"
+        });
+        Assert.Equal(HttpStatusCode.TooManyRequests, blocked.StatusCode);
+    }
+
+    [Fact]
+    public async Task Login_NonexistentEmail_FailedAttemptsCount()
+    {
+        var email = $"bf-nouser-{Guid.NewGuid():N}@example.com";
+
+        for (int i = 0; i < 5; i++)
+        {
+            var r = await _client.PostAsJsonAsync("/api/auth/login", new
+            {
+                email,
+                password = "AnyPassword1!"
+            });
+            Assert.Equal(HttpStatusCode.Unauthorized, r.StatusCode);
+        }
+
+        var blocked = await _client.PostAsJsonAsync("/api/auth/login", new
+        {
+            email,
+            password = "AnyPassword1!"
+        });
+        Assert.Equal(HttpStatusCode.TooManyRequests, blocked.StatusCode);
+    }
+
+    [Fact]
+    public async Task Login_SuccessfulLogin_RecordsSuccessAndReturnsToken()
+    {
+        var email = $"bf-ok-{Guid.NewGuid():N}@example.com";
+        const string password = "CorrectPassword1!";
+        await AuthTestHelper.RegisterAsync(_client, email: email, password: password);
+
+        // 2 failures then a success
+        for (int i = 0; i < 2; i++)
+        {
+            await _client.PostAsJsonAsync("/api/auth/login", new
+            {
+                email,
+                password = "WrongPassword1!"
+            });
+        }
+
+        var result = await AuthTestHelper.LoginAsync(_client, email, password);
+        Assert.False(string.IsNullOrEmpty(result.Token));
+    }
+
+    [Fact]
+    public async Task Login_429Response_DoesNotRevealAccountExistence()
+    {
+        // email that was never registered — after limit it returns 429
+        var noneEmail = $"bf-ghost-{Guid.NewGuid():N}@example.com";
+        for (int i = 0; i < 5; i++)
+        {
+            await _client.PostAsJsonAsync("/api/auth/login", new
+            {
+                email = noneEmail,
+                password = "AnyPassword1!"
+            });
+        }
+
+        var ghostBlocked = await _client.PostAsJsonAsync("/api/auth/login", new
+        {
+            email = noneEmail,
+            password = "AnyPassword1!"
+        });
+
+        // registered email — exhaust then block
+        var realEmail = $"bf-real-{Guid.NewGuid():N}@example.com";
+        await AuthTestHelper.RegisterAsync(_client, email: realEmail, password: "RealPassword1!");
+        for (int i = 0; i < 5; i++)
+        {
+            await _client.PostAsJsonAsync("/api/auth/login", new
+            {
+                email = realEmail,
+                password = "WrongPassword1!"
+            });
+        }
+
+        var realBlocked = await _client.PostAsJsonAsync("/api/auth/login", new
+        {
+            email = realEmail,
+            password = "WrongPassword1!"
+        });
+
+        // Both must return 429, not 404/200 difference
+        Assert.Equal(HttpStatusCode.TooManyRequests, ghostBlocked.StatusCode);
+        Assert.Equal(HttpStatusCode.TooManyRequests, realBlocked.StatusCode);
+    }
+
     // ── Rate limiting ──────────────────────────────────────────────
     // Each test spins up an isolated child factory so the in-memory rate
     // limiter state starts fresh and doesn't bleed into other tests.

@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<ProgramExercise> ProgramExercises => Set<ProgramExercise>();
     public DbSet<BillingPurchase> BillingPurchases => Set<BillingPurchase>();
     public DbSet<AiUsageRecord> AiUsageRecords => Set<AiUsageRecord>();
+    public DbSet<AuthLoginAttempt> AuthLoginAttempts => Set<AuthLoginAttempt>();
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -240,6 +241,15 @@ public class AppDbContext : DbContext
             e.Property(b => b.OrderId).HasMaxLength(200);
             e.Property(b => b.State).HasMaxLength(20);
             e.Property(b => b.RawPayloadJson).HasMaxLength(10000);
+        });
+
+        // AuthLoginAttempt
+        modelBuilder.Entity<AuthLoginAttempt>(e =>
+        {
+            e.HasKey(a => a.Id);
+            e.HasIndex(a => new { a.NormalizedEmail, a.IpAddress, a.OccurredAtUtc });
+            e.Property(a => a.NormalizedEmail).HasMaxLength(256);
+            e.Property(a => a.IpAddress).HasMaxLength(64);
         });
 
         // AiUsageRecord

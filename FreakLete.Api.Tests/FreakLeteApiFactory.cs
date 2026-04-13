@@ -66,5 +66,7 @@ public class FreakLeteApiFactory : WebApplicationFactory<Program>, IAsyncLifetim
         // Truncate cascade from Users wipes everything
         await db.Database.ExecuteSqlRawAsync(
             """TRUNCATE TABLE "Users" CASCADE""");
+        await db.Database.ExecuteSqlRawAsync(
+            """TRUNCATE TABLE "AuthLoginAttempts" """);
     }
 }

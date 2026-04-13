@@ -68,13 +68,43 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
     {
         var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        // Opportunistic cleanup: purge records older than 30 days
+        var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
+        await _db.AuthLoginAttempts
+            .Where(a => a.OccurredAtUtc < thirtyDaysAgo)
+            .ExecuteDeleteAsync();
+
+        // Account-targeted brute-force check: 5 failed attempts / 15 min per email+IP
+        var windowStart = DateTime.UtcNow.AddMinutes(-15);
+        var recentFailedCount = await _db.AuthLoginAttempts
+            .CountAsync(a => a.NormalizedEmail == normalizedEmail
+                          && a.IpAddress == ipAddress
+                          && !a.WasSuccessful
+                          && a.OccurredAtUtc >= windowStart);
+
+        if (recentFailedCount >= 5)
+            return StatusCode(429, new { message = "E-posta veya şifre hatalı." });
+
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == normalizedEmail);
-        if (user is null || !PasswordHasher.VerifyPassword(request.Password, user.PasswordHash))
+        var passwordValid = user is not null && PasswordHasher.VerifyPassword(request.Password, user.PasswordHash);
+
+        _db.AuthLoginAttempts.Add(new AuthLoginAttempt
+        {
+            NormalizedEmail = normalizedEmail,
+            IpAddress = ipAddress,
+            OccurredAtUtc = DateTime.UtcNow,
+            WasSuccessful = passwordValid
+        });
+        await _db.SaveChangesAsync();
+
+        if (!passwordValid)
             return Unauthorized(new { message = "E-posta veya şifre hatalı." });
 
         return Ok(new AuthResponse
         {
-            UserId = user.Id,
+            UserId = user!.Id,
             Email = user.Email,
             FirstName = user.FirstName,
             Token = _tokenService.GenerateToken(user)
