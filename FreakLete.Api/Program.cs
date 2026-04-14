@@ -5,12 +5,28 @@ using FreakLete.Api;
 using FreakLete.Api.Data;
 using FreakLete.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Console/debug logging works consistently on Windows dev machines, Railway, and tests.
+// The Windows EventLog provider can fail without elevated permissions during local runs.
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+if (builder.Environment.IsDevelopment())
+{
+    var dataProtectionKeysPath = Path.Combine(builder.Environment.ContentRootPath, ".keys");
+    Directory.CreateDirectory(dataProtectionKeysPath);
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath))
+        .SetApplicationName("FreakLete.Api");
+}
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -293,7 +309,10 @@ app.MapGet("/api/health", async (AppDbContext db, IWebHostEnvironment env) =>
     }
 });
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Testing"))
+{
+    app.UseHttpsRedirection();
+}
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();

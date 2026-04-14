@@ -94,6 +94,7 @@ Security/
 # Local config
 
 appsettings.Development.json
+FreakLete.Api/.keys/
 
 # Local databases
 

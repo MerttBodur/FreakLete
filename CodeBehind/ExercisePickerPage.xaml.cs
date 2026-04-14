@@ -26,10 +26,7 @@ public partial class ExercisePickerPage : ContentPage
 		_onSelected = onSelected;
 		_allowedCategories = allowedCategories.ToList();
 
-		HeaderView.Title = pageTitle;
-		PageTitleLabel.Text = pageTitle;
-		BadgeLabel.Text = AppLanguage.ExPickerBadge;
-		DescLabel.Text = AppLanguage.ExPickerDesc;
+		HeaderView.Title = string.Empty;
 		SearchEntry.Placeholder = AppLanguage.ExPickerSearchPlaceholder;
 
 		BuildCategories();
@@ -50,8 +47,6 @@ public partial class ExercisePickerPage : ContentPage
 
 	private void OnLanguageChanged()
 	{
-		BadgeLabel.Text = AppLanguage.ExPickerBadge;
-		DescLabel.Text = AppLanguage.ExPickerDesc;
 		SearchEntry.Placeholder = AppLanguage.ExPickerSearchPlaceholder;
 		OnPropertyChanged(nameof(ViewText));
 	}

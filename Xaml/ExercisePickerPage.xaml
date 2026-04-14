@@ -15,21 +15,6 @@
                              ShowBackButton="True"
                              BackClicked="OnHeaderBackClicked" />
 
-            <Border Style="{StaticResource AccentCardBorder}">
-                <VerticalStackLayout Spacing="10">
-                    <Label x:Name="BadgeLabel"
-                           Text="EXERCISE BROWSER"
-                           Style="{StaticResource Eyebrow}" />
-                    <Label x:Name="PageTitleLabel"
-                           Text="Choose Exercise"
-                           Style="{StaticResource Headline}"
-                           HorizontalTextAlignment="Start" />
-                    <Label x:Name="DescLabel"
-                           Text=""
-                           Style="{StaticResource BodyMuted}" />
-                </VerticalStackLayout>
-            </Border>
-
             <Border Style="{StaticResource CardBorder}"
                     BackgroundColor="{StaticResource SurfaceRaised}">
                 <Entry x:Name="SearchEntry"
@@ -104,5 +89,4 @@
     </Grid>
 
 </ContentPage>
-
 
