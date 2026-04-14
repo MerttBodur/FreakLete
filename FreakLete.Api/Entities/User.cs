@@ -18,6 +18,11 @@ public class User
     public int TokenVersion { get; set; } = 0;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    // Profile photo (stored as bytea in PostgreSQL; max 2 MB enforced at controller)
+    public byte[]? ProfilePhotoBytes { get; set; }
+    public string? ProfilePhotoContentType { get; set; }
+    public DateTime? ProfilePhotoUpdatedAtUtc { get; set; }
+
     // Coach profile fields
     public int? TrainingDaysPerWeek { get; set; }
     public int? PreferredSessionDurationMinutes { get; set; }

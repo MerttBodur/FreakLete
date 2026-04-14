@@ -38,6 +38,7 @@ When your account is deleted (via either method), the following data is permanen
 |---|---|
 | Account credentials (email, hashed password) | Yes |
 | Profile data (name, DOB, weight, height, sex, sport, experience level, coach fields) | Yes |
+| Profile photo | Yes |
 | Workout sessions and exercise entries | Yes |
 | Personal records (PRs) | Yes |
 | Athletic performance records | Yes |

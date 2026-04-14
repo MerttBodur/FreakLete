@@ -31,7 +31,7 @@ All production API traffic uses HTTPS. "Encrypted in transit: Yes" applies to al
 
 | Field | Value |
 |---|---|
-| **Data type** | Name, Email address |
+| **Data type** | Name, Email address, Profile photo (user-provided image) |
 | **Collected?** | Yes |
 | **Shared?** | No (not shared with third parties; stored in our backend only) |
 | **Purpose** | Account creation and authentication |
@@ -92,6 +92,7 @@ All production API traffic uses HTTPS. "Encrypted in transit: Yes" applies to al
 |---|---|---|---|---|---|
 | Name | Yes | No | Account auth | Yes | Yes |
 | Email | Yes | No | Account auth | Yes | Yes |
+| Profile photo (user-provided image) | Yes | No | Profile avatar personalisation | Yes | Yes |
 | Body metrics (weight, height, body fat, sex, DOB) | Yes | With Gemini (service provider) | App features + AI coaching | Yes | Yes |
 | Fitness data (workouts, exercises, PRs, athletic perf) | Yes | With Gemini (service provider) | App features + AI coaching | Yes | Yes |
 | Training preferences/goals | Yes | With Gemini (service provider) | AI coaching personalisation | Yes | Yes |

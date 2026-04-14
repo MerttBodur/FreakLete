@@ -137,6 +137,7 @@ public partial class ProfilePage : ContentPage
 		GoalActionButton.Text = AppLanguage.SharedSave;
 		GoalCancelButton.Text = AppLanguage.SharedCancel;
 		MovementGoalsEmptyLabel.Text = AppLanguage.ProfileNoGoals;
+		ChangePhotoLabel.Text = AppLanguage.ProfileChangePhoto;
 		SettingsBtn.Text = AppLanguage.ProfileSettings;
 		LogoutBtn.Text = AppLanguage.ProfileLogout;
 		DeleteAccountBtn.Text = AppLanguage.ProfileDeleteAccount;
@@ -241,6 +242,9 @@ public partial class ProfilePage : ContentPage
 
 		WorkoutCountLabel.Text = _profile.TotalWorkouts.ToString();
 		OneRmPrCountLabel.Text = _profile.TotalPrs.ToString();
+
+		// Load profile photo in background; don't block profile load
+		_ = LoadProfilePhotoAsync();
 
 		// Create or rehydrate the coach ViewModel
 		_coachVm = new CoachProfileViewModel(_api.SaveCoachProfileAsync);
@@ -1554,5 +1558,123 @@ public partial class ProfilePage : ContentPage
 		public string GoalMetricLabel { get; set; } = string.Empty;
 		public double TargetValue { get; set; }
 		public string Unit { get; set; } = string.Empty;
+	}
+
+	// ── Profile Photo ────────────────────────────────────────────
+
+	private async Task LoadProfilePhotoAsync()
+	{
+		var result = await _api.GetProfilePhotoAsync();
+		if (result.Success && result.Data is { Length: > 0 })
+		{
+			var bytes = result.Data;
+			MainThread.BeginInvokeOnMainThread(() =>
+			{
+				ProfilePhotoImage.Source = ImageSource.FromStream(() => new MemoryStream(bytes));
+				ProfilePhotoImage.IsVisible = true;
+				InitialsLabel.IsVisible = false;
+			});
+		}
+		else
+		{
+			MainThread.BeginInvokeOnMainThread(() =>
+			{
+				ProfilePhotoImage.IsVisible = false;
+				InitialsLabel.IsVisible = true;
+			});
+		}
+	}
+
+	private async void OnAvatarTapped(object? sender, TappedEventArgs e)
+	{
+		bool hasPhoto = ProfilePhotoImage.IsVisible;
+		string[] buttons = hasPhoto
+			? [AppLanguage.ProfileChoosePhoto, AppLanguage.ProfileRemovePhoto]
+			: [AppLanguage.ProfileChoosePhoto];
+
+		var action = await DisplayActionSheet(
+			AppLanguage.ProfileChangePhoto,
+			AppLanguage.SharedCancel,
+			null,
+			buttons);
+
+		if (action == AppLanguage.ProfileChoosePhoto)
+			await PickAndUploadPhotoAsync();
+		else if (action == AppLanguage.ProfileRemovePhoto)
+			await RemovePhotoAsync();
+	}
+
+	private async Task PickAndUploadPhotoAsync()
+	{
+		try
+		{
+			var photo = await MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions
+			{
+				Title = AppLanguage.ProfileChoosePhoto
+			});
+
+			if (photo is null) return;
+
+			await using var stream = await photo.OpenReadAsync();
+
+			if (stream.Length > 2 * 1024 * 1024)
+			{
+				await DisplayAlert(AppLanguage.SharedError, AppLanguage.ProfilePhotoTooLarge, AppLanguage.SharedOk);
+				return;
+			}
+
+			var contentType = photo.ContentType ?? "image/jpeg";
+			var result = await _api.UploadProfilePhotoAsync(stream, contentType, photo.FileName);
+
+			if (result.Success)
+			{
+				await LoadProfilePhotoAsync();
+				ShowSuccess(AppLanguage.ProfilePhotoUpdated);
+			}
+			else if (result.StatusCode == 400)
+			{
+				var errorMsg = result.Error ?? string.Empty;
+				var msg = (errorMsg.Contains("büyük") || errorMsg.Contains("large"))
+					? AppLanguage.ProfilePhotoTooLarge
+					: (errorMsg.Contains("tür") || errorMsg.Contains("type"))
+						? AppLanguage.ProfilePhotoUnsupportedType
+						: errorMsg.Length > 0 ? errorMsg : AppLanguage.ProfilePhotoUploadFailed;
+				await DisplayAlert(AppLanguage.SharedError, msg, AppLanguage.SharedOk);
+			}
+			else
+			{
+				await DisplayAlert(AppLanguage.SharedError,
+					result.Error ?? AppLanguage.ProfilePhotoUploadFailed,
+					AppLanguage.SharedOk);
+			}
+		}
+		catch (Exception ex) when (ex is FeatureNotSupportedException or PermissionException)
+		{
+			await DisplayAlert(AppLanguage.SharedError, AppLanguage.ProfilePhotoUploadFailed, AppLanguage.SharedOk);
+		}
+		catch (Exception)
+		{
+			await DisplayAlert(AppLanguage.SharedError, AppLanguage.ProfilePhotoUploadFailed, AppLanguage.SharedOk);
+		}
+	}
+
+	private async Task RemovePhotoAsync()
+	{
+		var result = await _api.DeleteProfilePhotoAsync();
+		if (result.Success)
+		{
+			MainThread.BeginInvokeOnMainThread(() =>
+			{
+				ProfilePhotoImage.IsVisible = false;
+				InitialsLabel.IsVisible = true;
+			});
+			ShowSuccess(AppLanguage.ProfilePhotoRemoved);
+		}
+		else
+		{
+			await DisplayAlert(AppLanguage.SharedError,
+				result.Error ?? AppLanguage.ProfilePhotoUploadFailed,
+				AppLanguage.SharedOk);
+		}
 	}
 }

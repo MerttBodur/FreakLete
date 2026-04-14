@@ -125,6 +125,54 @@ public class ApiClient : IApiClient
 		}
 	}
 
+	// ── Profile Photo ─────────────────────────────────
+
+	public async Task<ApiResult<UploadProfilePhotoResponse>> UploadProfilePhotoAsync(
+		Stream fileStream, string contentType, string fileName)
+	{
+		try
+		{
+			AttachToken();
+			var streamContent = new StreamContent(fileStream);
+			streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+			var formData = new MultipartFormDataContent();
+			formData.Add(streamContent, "file", fileName);
+			var response = await _http.PostAsync("api/profilephoto", formData);
+			return await HandleResponse<UploadProfilePhotoResponse>(response);
+		}
+		catch (Exception ex)
+		{
+			return ApiResult<UploadProfilePhotoResponse>.Fail($"Bağlantı hatası: {ex.Message}");
+		}
+	}
+
+	public async Task<ApiResult<byte[]>> GetProfilePhotoAsync()
+	{
+		try
+		{
+			AttachToken();
+			var response = await _http.GetAsync("api/profilephoto");
+			if (response.IsSuccessStatusCode)
+			{
+				var bytes = await response.Content.ReadAsByteArrayAsync();
+				return ApiResult<byte[]>.Ok(bytes);
+			}
+			if ((int)response.StatusCode == 404)
+				return ApiResult<byte[]>.Fail("not_found", 404);
+			var error = await ReadError(response);
+			return ApiResult<byte[]>.Fail(error, (int)response.StatusCode);
+		}
+		catch (Exception ex)
+		{
+			return ApiResult<byte[]>.Fail($"Bağlantı hatası: {ex.Message}");
+		}
+	}
+
+	public Task<ApiResult<bool>> DeleteProfilePhotoAsync()
+	{
+		return DeleteAsync("api/profilephoto");
+	}
+
 	// ── Athletic Performance ───────────────────────────
 
 	public Task<ApiResult<List<AthleticPerformanceResponse>>> GetAthleticPerformancesAsync()
@@ -487,6 +535,11 @@ public class UserProfileResponse
 	public string PrimaryTrainingGoal { get; set; } = "";
 	public string SecondaryTrainingGoal { get; set; } = "";
 	public string DietaryPreference { get; set; } = "";
+}
+
+public class UploadProfilePhotoResponse
+{
+	public DateTime ProfilePhotoUpdatedAtUtc { get; set; }
 }
 
 public class AthleticPerformanceResponse

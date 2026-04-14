@@ -433,6 +433,20 @@ public static class AppLanguage
 			: $"Reference: {(isFemale ? "Female" : "Male")} athlete population FFMI bands.";
 	}
 
+	// ── Profile Page — Photo ────────────────────────────────────
+	public static string ProfileChangePhoto => IsTurkish ? "Fotoğrafı Değiştir" : "Change Photo";
+	public static string ProfileChoosePhoto => IsTurkish ? "Fotoğraf Seç" : "Choose Photo";
+	public static string ProfileRemovePhoto => IsTurkish ? "Fotoğrafı Kaldır" : "Remove Photo";
+	public static string ProfilePhotoUpdated => IsTurkish ? "Fotoğraf güncellendi" : "Photo Updated";
+	public static string ProfilePhotoRemoved => IsTurkish ? "Fotoğraf kaldırıldı" : "Photo Removed";
+	public static string ProfilePhotoUploadFailed => IsTurkish ? "Fotoğraf yüklenemedi" : "Photo Upload Failed";
+	public static string ProfilePhotoTooLarge => IsTurkish
+		? "Fotoğraf çok büyük. En fazla 2 MB olmalı."
+		: "Photo Too Large. Maximum 2 MB allowed.";
+	public static string ProfilePhotoUnsupportedType => IsTurkish
+		? "Desteklenmeyen fotoğraf türü."
+		: "Unsupported Photo Type.";
+
 	// ── Profile Page ────────────────────────────────────────────
 	public static string ProfileWorkouts => IsTurkish ? "Antrenman" : "Workouts";
 	public static string ProfileSavedPrs => IsTurkish ? "PR'lar" : "Saved PRs";

@@ -868,6 +868,16 @@ namespace FreakLete.Api.Migrations
                         .HasDefaultValue(0)
                         .HasColumnType("integer");
 
+                    b.Property<byte[]>("ProfilePhotoBytes")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("ProfilePhotoContentType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("ProfilePhotoUpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int?>("TrainingDaysPerWeek")
                         .HasColumnType("integer");
 

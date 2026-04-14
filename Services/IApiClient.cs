@@ -19,4 +19,7 @@ public interface IApiClient
 	Task<ApiResult<bool>> UpdateMovementGoalAsync(int id, object data);
 	Task<ApiResult<bool>> DeleteMovementGoalAsync(int id);
 	Task<ApiResult<bool>> DeleteAccountAsync(string currentPassword);
+	Task<ApiResult<UploadProfilePhotoResponse>> UploadProfilePhotoAsync(Stream fileStream, string contentType, string fileName);
+	Task<ApiResult<byte[]>> GetProfilePhotoAsync();
+	Task<ApiResult<bool>> DeleteProfilePhotoAsync();
 }

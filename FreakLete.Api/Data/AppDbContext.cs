@@ -74,6 +74,7 @@ public class AppDbContext : DbContext
             e.Property(u => u.SecondaryTrainingGoal).HasMaxLength(200);
             e.Property(u => u.DietaryPreference).HasMaxLength(200);
             e.Property(u => u.TokenVersion).HasDefaultValue(0);
+            e.Property(u => u.ProfilePhotoContentType).HasMaxLength(50);
         });
 
         // Workout

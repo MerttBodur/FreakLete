@@ -31,6 +31,7 @@ When you complete your athlete or coach profile, you may provide:
 - Gym experience level
 - Training preferences (days/week, session duration, equipment, goals, dietary preference)
 - Physical limitations or injury history (coach profile fields)
+- **Profile photo** — a user-provided image uploaded voluntarily to personalise your profile avatar. Stored encrypted in our database; not shared with third parties or used for AI responses.
 
 All of this data is provided voluntarily and is used solely to personalise your in-app experience and AI coaching responses.
 

@@ -13,13 +13,16 @@
 
                 <!-- Centered Hero Identity -->
                 <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,14,0,4">
-                    <!-- Initials Avatar Ring -->
+                    <!-- Avatar Ring — tap to change photo -->
                     <Border x:Name="AvatarRing"
                             StrokeShape="RoundRectangle 44"
                             StrokeThickness="3"
                             WidthRequest="88"
                             HeightRequest="88"
                             HorizontalOptions="Center">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnAvatarTapped" />
+                        </Border.GestureRecognizers>
                         <Border.Stroke>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                 <GradientStop Color="{StaticResource Accent}" Offset="0.0" />
@@ -32,14 +35,30 @@
                                 <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
                             </LinearGradientBrush>
                         </Border.Background>
-                        <Label x:Name="InitialsLabel"
-                               Text="?"
-                               FontSize="30"
-                               FontFamily="OpenSansSemibold"
-                               TextColor="{StaticResource AccentGlow}"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center" />
+                        <Grid>
+                            <Label x:Name="InitialsLabel"
+                                   Text="?"
+                                   FontSize="30"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource AccentGlow}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                            <Image x:Name="ProfilePhotoImage"
+                                   IsVisible="False"
+                                   Aspect="AspectFill"
+                                   HorizontalOptions="Fill"
+                                   VerticalOptions="Fill" />
+                        </Grid>
                     </Border>
+                    <Label x:Name="ChangePhotoLabel"
+                           FontSize="11"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource AccentGlow}"
+                           HorizontalTextAlignment="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnAvatarTapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
                     <Label x:Name="FullNameLabel"
                            Text="Your Name"
                            FontSize="26"
@@ -153,8 +172,8 @@
                     </Border>
                 </Grid>
 
-                <!-- Highlights Section -->
-                <VerticalStackLayout x:Name="HighlightsSection" Spacing="10">
+                <!-- Highlights Section (hidden until feature is ready) -->
+                <VerticalStackLayout x:Name="HighlightsSection" Spacing="10" IsVisible="False">
                     <Label x:Name="HighlightsLabel"
                            FontSize="18"
                            FontFamily="OpenSansSemibold"
