@@ -1,6 +1,6 @@
 namespace FreakLete.Services;
 
-public class UserSession : ISessionProvider
+public class UserSession
 {
 	private const string CurrentUserIdKey = "current_user_id";
 	private const string TokenKey = "auth_token";

@@ -51,7 +51,7 @@ public partial class ProfilePage : ContentPage
 	];
 
 	private readonly IApiClient _api;
-	private readonly ISessionProvider _session;
+	private readonly UserSession _session;
 	private UserProfileResponse? _profile;
 	private int? _editingPerformanceId;
 	private int? _editingGoalId;
