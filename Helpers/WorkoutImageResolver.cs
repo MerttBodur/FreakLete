@@ -4,11 +4,11 @@ public static class WorkoutImageResolver
 {
     private static readonly Dictionary<string, string> TemplateImageMap = new(StringComparer.OrdinalIgnoreCase)
     {
-        { "Full Body Foundation 3-Day", "workout_fullbody_foundation" },
-        { "In-Season Maintenance 2-Day", "workout_inseason_maintenance" },
-        { "Strength Base 5x5", "workout_fullbody_foundation" },
-        { "Upper/Lower Performance 4-Day", "workout_fullbody_foundation" },
-        { "5/3/1 Strength 4-Day", "workout_fullbody_foundation" },
+        { "Full Body Foundation 3-Day", "workout_fullbody" },
+        { "Strength Base 5x5",          "workout_5x5" },
+        { "Upper/Lower Performance 4-Day", "workout_upperlower" },
+        { "In-Season Maintenance 2-Day", "workout_maintenance" },
+        { "5/3/1 Strength 4-Day",        "workout_531" },
     };
 
     // Deterministic fallback colors for templates without a specific image.
