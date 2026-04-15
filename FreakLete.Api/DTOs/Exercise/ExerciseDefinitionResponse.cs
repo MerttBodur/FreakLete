@@ -26,4 +26,6 @@ public class ExerciseDefinitionResponse
     public string AthleticQuality { get; set; } = string.Empty;
     public string NervousSystemLoad { get; set; } = string.Empty;
     public int RecommendedRank { get; set; }
+    public string? MediaUrl { get; set; }
+    public string? ThumbnailUrl { get; set; }
 }

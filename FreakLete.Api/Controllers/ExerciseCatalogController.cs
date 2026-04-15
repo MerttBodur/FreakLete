@@ -94,6 +94,8 @@ public class ExerciseCatalogController : ControllerBase
         MovementPattern = e.MovementPattern,
         AthleticQuality = e.AthleticQuality,
         NervousSystemLoad = e.NervousSystemLoad,
-        RecommendedRank = e.RecommendedRank
+        RecommendedRank = e.RecommendedRank,
+        MediaUrl = e.MediaUrl,
+        ThumbnailUrl = e.ThumbnailUrl
     };
 }

@@ -33,4 +33,6 @@ public class ExerciseDefinition
     public string Progression { get; set; } = string.Empty;
     public string Regression { get; set; } = string.Empty;
     public int RecommendedRank { get; set; }
+    public string? MediaUrl { get; set; }
+    public string? ThumbnailUrl { get; set; }
 }
