@@ -1,0 +1,69 @@
+<h2>Mimari Yaklaşım Seçimi</h2>
+<p class="subtitle">WorkoutPage → Katalog → Egzersiz Detayı akışı için 3 farklı yapı</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1D1828;border-radius:10px;padding:16px;font-size:12px;color:#B3B2C5;line-height:1.8">
+      <div style="color:#8B5CF6;font-weight:600;margin-bottom:8px">⭐ ÖNERİLEN</div>
+      <div style="color:#F7F7FB">WorkoutPage</div>
+      <div style="margin-left:12px;color:#A78BFA">↓ "Egzersiz Kataloğu" kartı</div>
+      <div style="color:#F7F7FB">ExerciseCatalogPage <span style="color:#8B5CF6">(YENİ)</span></div>
+      <div style="margin-left:12px;color:#B3B2C5">Browse + arama</div>
+      <div style="margin-left:12px;color:#A78BFA">↓ egzersize tap</div>
+      <div style="color:#F7F7FB">ExerciseDetailPage <span style="color:#8B5CF6">(YENİ)</span></div>
+      <div style="margin-left:12px;color:#B3B2C5">Video + tam bilgi</div>
+    </div>
+    <div class="card-body">
+      <h3>A — İki Yeni Sayfa</h3>
+      <p>CatalogPage (browse/arama) + DetailPage (video + full info). Temiz ayrım, her sayfa tek amaca hizmet eder.</p>
+      <div class="pros-cons" style="margin-top:8px">
+        <div class="pros"><h4>Artı</h4><ul><li>Sorumluluklar net ayrılmış</li><li>Her sayfa bağımsız geliştirilebilir</li><li>Picker akışına dokunulmuyor</li></ul></div>
+        <div class="cons"><h4>Eksi</h4><ul><li>İki sayfa birden yazılacak</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1D1828;border-radius:10px;padding:16px;font-size:12px;color:#B3B2C5;line-height:1.8">
+      <div style="color:#F7F7FB">WorkoutPage</div>
+      <div style="margin-left:12px;color:#A78BFA">↓ kart</div>
+      <div style="color:#F7F7FB">ExercisePickerPage <span style="color:#F59E0B">(DUAL-MODE)</span></div>
+      <div style="margin-left:12px;color:#B3B2C5">picker modu = seç+ekle</div>
+      <div style="margin-left:12px;color:#B3B2C5">katalog modu = sadece bak</div>
+      <div style="margin-left:12px;color:#A78BFA">↓ tap</div>
+      <div style="color:#F7F7FB">ExerciseDetailPage <span style="color:#8B5CF6">(YENİ)</span></div>
+    </div>
+    <div class="card-body">
+      <h3>B — Picker'ı Çift Modlu Yap</h3>
+      <p>Mevcut ExercisePickerPage'e "view-only" modu ekle. Tek katalog sayfası korunur, sadece "Ekle" butonu gizlenir.</p>
+      <div class="pros-cons" style="margin-top:8px">
+        <div class="pros"><h4>Artı</h4><ul><li>Kod tekrarı yok</li><li>Bir sayfa az yazılır</li></ul></div>
+        <div class="cons"><h4>Eksi</h4><ul><li>Picker mantığı kirlenebilir</li><li>İki farklı UX amacı tek sayfada</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1D1828;border-radius:10px;padding:16px;font-size:12px;color:#B3B2C5;line-height:1.8">
+      <div style="color:#F7F7FB">WorkoutPage</div>
+      <div style="margin-left:12px;color:#A78BFA">↓ kart</div>
+      <div style="color:#F7F7FB">ExerciseCatalogPage <span style="color:#8B5CF6">(YENİ)</span></div>
+      <div style="margin-left:12px;color:#A78BFA">↓ tap</div>
+      <div style="color:#F7F7FB;background:#251F33;padding:4px 8px;border-radius:6px;display:inline-block">Bottom Sheet Modal</div>
+      <div style="margin-left:12px;color:#B3B2C5">Video + detay yukarı kayar</div>
+      <div style="margin-left:12px;color:#B3B2C5">(tam sayfa geçiş yok)</div>
+    </div>
+    <div class="card-body">
+      <h3>C — Katalog + Bottom Sheet</h3>
+      <p>CatalogPage üzerinde egzersize tap edilince tam sayfa geçiş yerine bottom sheet açılır. Video + bilgi sheet içinde gösterilir.</p>
+      <div class="pros-cons" style="margin-top:8px">
+        <div class="pros"><h4>Artı</h4><ul><li>Katalog bağlamı kaybolmaz</li><li>Hızlı geri dönüş</li></ul></div>
+        <div class="cons"><h4>Eksi</h4><ul><li>MAUI'de bottom sheet karmaşık</li><li>Video + full content sıkışabilir</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px">Öneri: <strong>A</strong> — Temiz ayrım, bakımı kolay, picker akışına dokunulmuyor. Ekstra sayfa maliyeti düşük.</p>

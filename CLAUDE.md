@@ -105,3 +105,61 @@ Use a concise completion format like this:
 - No filler, preamble, or pleasantries.
 - Run tools first, show result, then stop. Do not narrate.
 - Drop articles ("Me fix code" not "I will fix the code").
+
+## Project Structure
+```
+FreakLete/                    # MAUI mobile app root
+├── Xaml/                     # XAML pages and controls
+│   ├── Controls/             # Shared UI components
+│   └── ViewModels/           # Page ViewModels
+├── CodeBehind/               # Page code-behind files
+├── Models/                   # Client-side models
+├── Services/                 # Mobile service layer
+├── Helpers/                  # Utility helpers
+├── Resources/Styles/         # Colors.xaml, Styles.xaml
+└── Platforms/Android/        # Android-specific config
+
+FreakLete.Api/                # ASP.NET Core backend
+├── Controllers/              # API endpoints
+├── Services/                 # Business logic
+├── Entities/                 # EF Core entities
+├── DTOs/                     # Request/response contracts
+├── Data/                     # DbContext
+└── Migrations/               # EF Core migrations
+
+FreakLete.Core/               # Shared calculation logic
+└── Services/                 # 1RM, RSI, FFMI calculators
+
+FreakLete.Api.Tests/          # Backend integration tests
+FreakLete.Core.Tests/         # Core logic unit tests
+docs/                         # Release and Play Store checklists
+```
+
+## Tech Stack
+- Mobile: .NET MAUI, C#, XAML
+- Backend: ASP.NET Core Web API, EF Core, PostgreSQL
+- Auth: JWT + SecureStorage
+- Deploy: Railway (backend), Docker
+- Billing: Google Play Billing (Android only)
+- AI: FreakAI via Gemini backend proxy
+
+## Build and Test Commands
+```bash
+# Run core logic tests
+dotnet test FreakLete.Core.Tests
+
+# Run API integration tests
+dotnet test FreakLete.Api.Tests
+
+# Build backend
+dotnet build FreakLete.Api
+
+# Build Android (release)
+dotnet publish FreakLete.csproj -f net10.0-android -c Release
+```
+
+## Key Documents
+- `PRD.md` — product roadmap, shipped features, phase plan
+- `DESIGN.md` — visual design system, color tokens, typography, components
+- `CODEX.md` — senior developer role guide (broader ownership mode)
+- `docs/` — Play Store checklists, release signing, smoke test guides
