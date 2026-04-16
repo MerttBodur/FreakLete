@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FreakLete.Core.Tier;
 
 namespace FreakLete.Core.Tests;
@@ -42,5 +43,92 @@ public class TierResolverTests
     public void ResolveInverse_ReturnsCorrectTier(double value, TierLevel expected)
     {
         Assert.Equal(expected, TierResolver.ResolveInverse(value, SprintMale));
+    }
+
+    [Fact]
+    public void GetThresholds_Tier1_ReturnsOwnArrayForMale()
+    {
+        var deadlift = new ExerciseTierConfig(
+            "conventionaldeadlift",
+            "StrengthRatio",
+            ThresholdsMale: [1.0, 1.5, 2.0, 2.5, 3.0],
+            ThresholdsFemale: [0.7, 1.0, 1.4, 1.8, 2.2],
+            TierParentId: null,
+            TierScale: null);
+        var all = new Dictionary<string, ExerciseTierConfig> { [deadlift.CatalogId] = deadlift };
+
+        var result = TierResolver.GetThresholds(deadlift, "Male", all);
+
+        Assert.Equal([1.0, 1.5, 2.0, 2.5, 3.0], result);
+    }
+
+    [Fact]
+    public void GetThresholds_Tier1_ReturnsFemaleWhenSexIsFemale()
+    {
+        var deadlift = new ExerciseTierConfig(
+            "conventionaldeadlift", "StrengthRatio",
+            [1.0, 1.5, 2.0, 2.5, 3.0],
+            [0.7, 1.0, 1.4, 1.8, 2.2],
+            null, null);
+        var all = new Dictionary<string, ExerciseTierConfig> { [deadlift.CatalogId] = deadlift };
+
+        var result = TierResolver.GetThresholds(deadlift, "Female", all);
+
+        Assert.Equal([0.7, 1.0, 1.4, 1.8, 2.2], result);
+    }
+
+    [Fact]
+    public void GetThresholds_Tier2_ScalesParentArray()
+    {
+        var deadlift = new ExerciseTierConfig(
+            "conventionaldeadlift", "StrengthRatio",
+            [1.0, 1.5, 2.0, 2.5, 3.0],
+            [0.7, 1.0, 1.4, 1.8, 2.2],
+            null, null);
+        var rackPull = new ExerciseTierConfig(
+            "rackpull", "StrengthRatio",
+            [], [],
+            TierParentId: "conventionaldeadlift",
+            TierScale: 1.1);
+        var all = new Dictionary<string, ExerciseTierConfig>
+        {
+            [deadlift.CatalogId] = deadlift,
+            [rackPull.CatalogId] = rackPull
+        };
+
+        var result = TierResolver.GetThresholds(rackPull, "Male", all);
+
+        double[] expected = [1.1, 1.65, 2.2, 2.75, 3.3];
+        Assert.Equal(expected.Length, result.Length);
+        for (int i = 0; i < expected.Length; i++)
+            Assert.InRange(result[i], expected[i] - 1e-9, expected[i] + 1e-9);
+    }
+
+    [Fact]
+    public void GetThresholds_Tier2_MissingParent_ReturnsEmptyArray()
+    {
+        var orphan = new ExerciseTierConfig(
+            "orphan", "StrengthRatio", [], [],
+            TierParentId: "missingparent", TierScale: 1.0);
+        var all = new Dictionary<string, ExerciseTierConfig> { [orphan.CatalogId] = orphan };
+
+        var result = TierResolver.GetThresholds(orphan, "Male", all);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void GetThresholds_SexEmpty_DefaultsToMale()
+    {
+        var bench = new ExerciseTierConfig(
+            "benchpress", "StrengthRatio",
+            [0.5, 1.0, 1.25, 1.5, 1.75],
+            [0.35, 0.7, 0.9, 1.1, 1.35],
+            null, null);
+        var all = new Dictionary<string, ExerciseTierConfig> { [bench.CatalogId] = bench };
+
+        var result = TierResolver.GetThresholds(bench, "", all);
+
+        Assert.Equal([0.5, 1.0, 1.25, 1.5, 1.75], result);
     }
 }
