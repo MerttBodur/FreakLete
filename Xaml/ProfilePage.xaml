@@ -183,6 +183,24 @@
                     <VerticalStackLayout x:Name="HighlightsContainer" Spacing="8" />
                 </VerticalStackLayout>
 
+                <!-- Exercise Tiers -->
+                <Border Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Exercise Tiers"
+                               Style="{StaticResource SubHeadline}"
+                               HorizontalTextAlignment="Start" />
+
+                        <Label x:Name="TierEmptyLabel"
+                               Text="No tier yet — log a PR to see your level."
+                               FontFamily="OpenSansRegular"
+                               FontSize="14"
+                               TextColor="{StaticResource TextMuted}"
+                               IsVisible="False" />
+
+                        <VerticalStackLayout x:Name="TierCardsContainer" Spacing="10" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Divider -->
                 <BoxView HeightRequest="1"
                          Color="{StaticResource SurfaceBorder}"

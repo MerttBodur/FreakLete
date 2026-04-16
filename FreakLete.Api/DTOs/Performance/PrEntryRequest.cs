@@ -22,4 +22,7 @@ public class PrEntryRequest
     public string? Metric2Unit { get; set; }
     public double? GroundContactTimeMs { get; set; }
     public double? ConcentricTimeSeconds { get; set; }
+
+    [MaxLength(100)]
+    public string? CatalogId { get; set; }
 }

@@ -251,10 +251,14 @@ public partial class ProfilePage : ContentPage
 		_coachVm.HydrateFromProfile(_profile);
 		SyncCoachUI();
 
-		// Load athletic performances and goals in parallel, capture counts
+		// Load athletic performances, goals and tiers in parallel
 		var perfResultTask = _api.GetAthleticPerformancesAsync();
 		var goalsResultTask = _api.GetMovementGoalsAsync();
-		await Task.WhenAll(perfResultTask, goalsResultTask);
+		var tierResultTask = _api.GetExerciseTiersAsync();
+		await Task.WhenAll(perfResultTask, goalsResultTask, tierResultTask);
+
+		var tierResult = tierResultTask.Result;
+		RenderTierCards(tierResult.Success ? tierResult.Data : null);
 
 		var perfResult = perfResultTask.Result;
 		var goalsResult = goalsResultTask.Result;
@@ -1528,6 +1532,71 @@ public partial class ProfilePage : ContentPage
 		InjuryHistoryEditor.Text = _coachVm.InjuryHistoryText;
 		CurrentPainEditor.Text = _coachVm.PainPointsText;
 		PhysicalLimitationsEditor.Text = _coachVm.LimitationsText;
+	}
+
+	private void RenderTierCards(List<ExerciseTierResponse>? tiers)
+	{
+		TierCardsContainer.Children.Clear();
+
+		if (tiers is null || tiers.Count == 0)
+		{
+			TierEmptyLabel.IsVisible = true;
+			return;
+		}
+		TierEmptyLabel.IsVisible = false;
+
+		foreach (var t in tiers)
+			TierCardsContainer.Children.Add(BuildTierCard(t));
+	}
+
+	private static Border BuildTierCard(ExerciseTierResponse t)
+	{
+		var name = new Label
+		{
+			Text = t.ExerciseName,
+			FontFamily = "OpenSansSemibold",
+			FontSize = 15,
+			TextColor = GetProfileColor("TextPrimary", "#F7F7FB")
+		};
+		var tierLbl = new Label
+		{
+			Text = t.TierLevel,
+			FontFamily = "OpenSansSemibold",
+			FontSize = 13,
+			TextColor = GetProfileColor("AccentGlow", "#A78BFA")
+		};
+		var metric = new Label
+		{
+			Text = t.Ratio is not null
+				? $"{t.RawValue:0.#} kg · x{t.Ratio:0.00} BW"
+				: $"{t.RawValue:0.##}",
+			FontFamily = "OpenSansRegular",
+			FontSize = 13,
+			TextColor = GetProfileColor("TextSecondary", "#B3B2C5")
+		};
+
+		var header = new Grid
+		{
+			ColumnDefinitions =
+			{
+				new ColumnDefinition(GridLength.Star),
+				new ColumnDefinition(GridLength.Auto)
+			}
+		};
+		Grid.SetColumn(name, 0);
+		Grid.SetColumn(tierLbl, 1);
+		header.Children.Add(name);
+		header.Children.Add(tierLbl);
+
+		var stack = new VerticalStackLayout { Spacing = 6 };
+		stack.Children.Add(header);
+		stack.Children.Add(metric);
+
+		return new Border
+		{
+			Style = (Style)Application.Current!.Resources["CardBorder"],
+			Content = stack
+		};
 	}
 
 	// ── Inner model classes ───────────────────────────────────────────

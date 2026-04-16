@@ -235,8 +235,7 @@ public partial class HomePage : ContentPage
 			{
 				imageArea.Children.Add(new Image
 				{
-					Source = ImageSource.FromStream(async (ct) =>
-						await FileSystem.OpenAppPackageFileAsync(imageName + ".png")),
+					Source = imageName + ".png",
 					Aspect = Aspect.AspectFill,
 					HorizontalOptions = LayoutOptions.Fill,
 					VerticalOptions = LayoutOptions.Fill

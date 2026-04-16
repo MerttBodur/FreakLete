@@ -1,3 +1,5 @@
+using FreakLete.Api.DTOs.Tier;
+
 namespace FreakLete.Api.DTOs.Performance;
 
 public class PrEntryResponse
@@ -16,4 +18,5 @@ public class PrEntryResponse
     public double? GroundContactTimeMs { get; set; }
     public double? ConcentricTimeSeconds { get; set; }
     public DateTime CreatedAt { get; set; }
+    public TierResultDto? Tier { get; set; }
 }

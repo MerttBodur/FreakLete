@@ -14,10 +14,12 @@ namespace FreakLete.Api.Controllers;
 public class PrEntriesController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly IExerciseTierService _tierService;
 
-    public PrEntriesController(AppDbContext db)
+    public PrEntriesController(AppDbContext db, IExerciseTierService tierService)
     {
         _db = db;
+        _tierService = tierService;
     }
 
     [HttpGet]
@@ -65,7 +67,20 @@ public class PrEntriesController : ControllerBase
 
         _db.PrEntries.Add(entry);
         await _db.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetById), new { id = entry.Id }, MapToResponse(entry));
+
+        var tier = await _tierService.RecalculateTierAsync(
+            userId,
+            request.CatalogId,
+            request.ExerciseName,
+            request.TrackingMode,
+            request.Weight,
+            request.Reps,
+            request.RIR,
+            athleticRawValue: request.Metric1Value);
+
+        var response = MapToResponse(entry);
+        response.Tier = tier;
+        return CreatedAtAction(nameof(GetById), new { id = entry.Id }, response);
     }
 
     [HttpPut("{id}")]

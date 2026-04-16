@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using FreakLete.Models;
 
 namespace FreakLete.Services;
 
@@ -196,6 +197,9 @@ public class ApiClient : IApiClient
 	}
 
 	// ── Movement Goals ─────────────────────────────────
+
+	public Task<ApiResult<List<ExerciseTierResponse>>> GetExerciseTiersAsync()
+		=> GetAsync<List<ExerciseTierResponse>>("api/profile/tiers");
 
 	public Task<ApiResult<List<MovementGoalResponse>>> GetMovementGoalsAsync()
 	{

@@ -1,3 +1,5 @@
+using FreakLete.Models;
+
 namespace FreakLete.Services;
 
 /// <summary>
@@ -22,4 +24,5 @@ public interface IApiClient
 	Task<ApiResult<UploadProfilePhotoResponse>> UploadProfilePhotoAsync(Stream fileStream, string contentType, string fileName);
 	Task<ApiResult<byte[]>> GetProfilePhotoAsync();
 	Task<ApiResult<bool>> DeleteProfilePhotoAsync();
+	Task<ApiResult<List<ExerciseTierResponse>>> GetExerciseTiersAsync();
 }
