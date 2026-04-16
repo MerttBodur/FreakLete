@@ -35,4 +35,9 @@ public class ExerciseDefinition
     public int RecommendedRank { get; set; }
     public string? MediaUrl { get; set; }
     public string? ThumbnailUrl { get; set; }
+    public string TierType { get; set; } = string.Empty;
+    public string TierThresholdsMale { get; set; } = string.Empty;
+    public string TierThresholdsFemale { get; set; } = string.Empty;
+    public string? TierParentId { get; set; }
+    public double? TierScale { get; set; }
 }

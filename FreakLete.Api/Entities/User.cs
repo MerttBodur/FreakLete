@@ -40,4 +40,5 @@ public class User
     public ICollection<AthleticPerformanceEntry> AthleticPerformanceEntries { get; set; } = [];
     public ICollection<MovementGoal> MovementGoals { get; set; } = [];
     public ICollection<TrainingProgram> TrainingPrograms { get; set; } = [];
+    public ICollection<UserExerciseTier> ExerciseTiers { get; set; } = [];
 }

@@ -22,6 +22,7 @@ public class AppDbContext : DbContext
     public DbSet<AiUsageRecord> AiUsageRecords => Set<AiUsageRecord>();
     public DbSet<AuthLoginAttempt> AuthLoginAttempts => Set<AuthLoginAttempt>();
     public DbSet<GooglePlayRtdnEvent> GooglePlayRtdnEvents => Set<GooglePlayRtdnEvent>();
+    public DbSet<UserExerciseTier> UserExerciseTiers => Set<UserExerciseTier>();
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -160,6 +161,24 @@ public class AppDbContext : DbContext
             e.Property(d => d.Name).HasMaxLength(200);
             e.Property(d => d.Category).HasMaxLength(100);
             e.Property(d => d.TrackingMode).HasMaxLength(20);
+            e.Property(d => d.TierType).HasMaxLength(30);
+            e.Property(d => d.TierThresholdsMale).HasMaxLength(200);
+            e.Property(d => d.TierThresholdsFemale).HasMaxLength(200);
+            e.Property(d => d.TierParentId).HasMaxLength(100);
+        });
+
+        // UserExerciseTier
+        modelBuilder.Entity<UserExerciseTier>(e =>
+        {
+            e.HasKey(t => t.Id);
+            e.HasIndex(t => new { t.UserId, t.CatalogId }).IsUnique();
+            e.HasOne(t => t.User)
+             .WithMany(u => u.ExerciseTiers)
+             .HasForeignKey(t => t.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.Property(t => t.CatalogId).HasMaxLength(100);
+            e.Property(t => t.ExerciseName).HasMaxLength(200);
+            e.Property(t => t.TierLevel).HasMaxLength(30);
         });
 
         // TrainingProgram
