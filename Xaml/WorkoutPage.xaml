@@ -31,6 +31,35 @@
                            Text="Your training plans" />
                 </VerticalStackLayout>
 
+                <!-- Exercise Catalog Card -->
+                <Border StrokeShape="RoundRectangle 18"
+                        Stroke="{StaticResource SurfaceBorder}"
+                        BackgroundColor="{StaticResource Surface}"
+                        Padding="18,14">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnExerciseCatalogTapped" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout Grid.Column="0" Spacing="3">
+                            <Label x:Name="CatalogCardTitle"
+                                   FontSize="15"
+                                   FontFamily="OpenSansSemibold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   Text="Egzersiz Kataloğu" />
+                            <Label x:Name="CatalogCardSubtitle"
+                                   FontSize="12"
+                                   FontFamily="OpenSansRegular"
+                                   TextColor="{StaticResource TextMuted}"
+                                   Text="Hareketleri keşfet, videoları izle" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="1"
+                               Text="›"
+                               FontSize="22"
+                               TextColor="{StaticResource Accent}"
+                               VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
                 <!-- Hero Card: Active Program -->
                 <Border x:Name="HeroProgramCard"
                         StrokeShape="RoundRectangle 22"

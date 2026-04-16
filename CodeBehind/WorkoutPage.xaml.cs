@@ -52,6 +52,8 @@ public partial class WorkoutPage : ContentPage
 		NoProgramsLabel.Text = AppLanguage.WorkoutNoPrograms;
 		QuickAddLabel.Text = AppLanguage.WorkoutQuickAdd;
 		CalendarLabel.Text = AppLanguage.WorkoutCalendar;
+		CatalogCardTitle.Text = AppLanguage.IsTurkish ? "Egzersiz Kataloğu" : "Exercise Catalog";
+		CatalogCardSubtitle.Text = AppLanguage.IsTurkish ? "Hareketleri keşfet, videoları izle" : "Explore movements, watch demos";
 	}
 
 	protected override void OnDisappearing()
@@ -457,5 +459,10 @@ public partial class WorkoutPage : ContentPage
 	private async void OnGoToFreakAiClicked(object? sender, EventArgs e)
 	{
 		await TabNavigationHelper.SwitchToTabAsync(() => new FreakAiPage());
+	}
+
+	private async void OnExerciseCatalogTapped(object? sender, TappedEventArgs e)
+	{
+		await Navigation.PushAsync(new ExerciseCatalogPage(), true);
 	}
 }
