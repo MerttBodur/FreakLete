@@ -6,7 +6,7 @@ namespace FreakLete;
 public partial class ExerciseCatalogPage : ContentPage
 {
 	private IReadOnlyList<ExerciseCatalogItem> _allExercises = [];
-	private string _selectedCategory = "All";
+	private string _selectedCategory = "Recommended";
 	private string _searchText = string.Empty;
 
 	public ExerciseCatalogPage()
@@ -21,13 +21,13 @@ public partial class ExerciseCatalogPage : ContentPage
 
 	private void BuildCategoryChips()
 	{
-		var allLabel = AppLanguage.IsTurkish ? "Tümü" : "All";
+		var recLabel = AppLanguage.IsTurkish ? "Önerilen" : "Recommended";
 
 		ChipContainer.Children.Clear();
-		ChipContainer.Children.Add(MakeChip(allLabel, "All", true));
+		ChipContainer.Children.Add(MakeChip(recLabel, "Recommended", _selectedCategory == "Recommended"));
 
 		foreach (var cat in ExerciseCatalog.Categories)
-			ChipContainer.Children.Add(MakeChip(cat, cat, false));
+			ChipContainer.Children.Add(MakeChip(cat, cat, _selectedCategory == cat));
 	}
 
 	private Border MakeChip(string label, string value, bool selected)
@@ -63,6 +63,8 @@ public partial class ExerciseCatalogPage : ContentPage
 	private void OnChipSelected(Border selected)
 	{
 		_selectedCategory = (string)selected.BindingContext;
+		_searchText = string.Empty;
+		SearchEntry.Text = string.Empty;
 
 		foreach (var child in ChipContainer.Children.OfType<Border>())
 		{
@@ -96,9 +98,20 @@ public partial class ExerciseCatalogPage : ContentPage
 
 	private void ApplyFilters()
 	{
+		if (_selectedCategory == "Recommended" && string.IsNullOrWhiteSpace(_searchText))
+		{
+			var recLabel = AppLanguage.IsTurkish ? "Önerilen" : "Recommended";
+			var recItems = ExerciseCatalog.GetRecommended(25);
+			ExerciseList.ItemsSource = new List<ExerciseGroup>
+			{
+				new(recLabel, recItems)
+			};
+			return;
+		}
+
 		var filtered = _allExercises.AsEnumerable();
 
-		if (_selectedCategory != "All")
+		if (_selectedCategory != "Recommended")
 			filtered = filtered.Where(x => x.Category == _selectedCategory);
 
 		if (!string.IsNullOrWhiteSpace(_searchText))

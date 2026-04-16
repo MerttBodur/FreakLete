@@ -49,6 +49,15 @@ public static class ExerciseCatalog
 			.ToList();
 	}
 
+	public static IReadOnlyList<ExerciseCatalogItem> GetRecommended(int take = 25)
+	{
+		return _payload.Value.Items
+			.OrderBy(item => item.RecommendedRank)
+			.ThenBy(item => item.DisplayName)
+			.Take(take)
+			.ToList();
+	}
+
 	public static IReadOnlyList<ExerciseCatalogItem> GetRecommendedItemsByCategory(string category, int take = 20)
 	{
 		return _payload.Value.Items
