@@ -635,6 +635,7 @@ public partial class CalculationsPage : ContentPage
 		var entry = buildResult.Entry;
 		var data = new
 		{
+			catalogId = _selectedPrExerciseItem?.Id,
 			exerciseName = entry.ExerciseName,
 			exerciseCategory = entry.ExerciseCategory,
 			trackingMode = entry.TrackingMode,
