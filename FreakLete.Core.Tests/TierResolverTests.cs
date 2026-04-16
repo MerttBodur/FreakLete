@@ -22,4 +22,25 @@ public class TierResolverTests
     {
         Assert.Equal(expected, TierResolver.Resolve(value, BenchMale));
     }
+
+    // Sprint 40yd (seconds) — lower is better. Descending thresholds:
+    // Freak boundary 4.4, Elite 4.6, Advanced 4.9, Intermediate 5.3, Beginner 5.8
+    private static readonly double[] SprintMale = [5.8, 5.3, 4.9, 4.6, 4.4];
+
+    [Theory]
+    [InlineData(6.0, TierLevel.NeedImprovement)]
+    [InlineData(5.8, TierLevel.Beginner)]
+    [InlineData(5.7, TierLevel.Beginner)]
+    [InlineData(5.3, TierLevel.Intermediate)]
+    [InlineData(5.2, TierLevel.Intermediate)]
+    [InlineData(4.9, TierLevel.Advanced)]
+    [InlineData(4.8, TierLevel.Advanced)]
+    [InlineData(4.6, TierLevel.Elite)]
+    [InlineData(4.5, TierLevel.Elite)]
+    [InlineData(4.4, TierLevel.Freak)]
+    [InlineData(4.3, TierLevel.Freak)]
+    public void ResolveInverse_ReturnsCorrectTier(double value, TierLevel expected)
+    {
+        Assert.Equal(expected, TierResolver.ResolveInverse(value, SprintMale));
+    }
 }
