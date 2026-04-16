@@ -25,4 +25,5 @@ public interface IApiClient
 	Task<ApiResult<byte[]>> GetProfilePhotoAsync();
 	Task<ApiResult<bool>> DeleteProfilePhotoAsync();
 	Task<ApiResult<List<ExerciseTierResponse>>> GetExerciseTiersAsync();
+	Task<ApiResult<List<ExerciseTierResponse>>> RecalculateTiersAsync();
 }

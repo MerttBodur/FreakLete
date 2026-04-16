@@ -154,6 +154,46 @@ public class ExerciseTierService : IExerciseTierService
             .ToListAsync(ct);
     }
 
+    public async Task BackfillTiersFromPrEntriesAsync(int userId, CancellationToken ct = default)
+    {
+        // Only strength PRs carry weight/reps needed for StrengthRatio calculation.
+        var prs = await _db.PrEntries
+            .Where(p => p.UserId == userId && p.TrackingMode == "Strength" && p.Weight > 0 && p.Reps > 0)
+            .ToListAsync(ct);
+
+        if (prs.Count == 0) return;
+
+        var defs = await _db.ExerciseDefinitions
+            .Where(d => d.TierType == "StrengthRatio")
+            .ToListAsync(ct);
+
+        var defByCatalogId = defs.ToDictionary(d => d.CatalogId, StringComparer.OrdinalIgnoreCase);
+
+        // Best 1RM per exercise name.
+        var bestByExercise = prs
+            .GroupBy(p => p.ExerciseName, StringComparer.OrdinalIgnoreCase)
+            .Select(g => g
+                .OrderByDescending(p => FreakLete.Core.Services.CalculationService.CalculateOneRm(p.Weight, p.Reps, p.RIR ?? 0))
+                .First());
+
+        foreach (var pr in bestByExercise)
+        {
+            // Normalize display name to catalog ID format: "Bench Press" → "benchpress".
+            var normalized = pr.ExerciseName
+                .ToLowerInvariant()
+                .Replace(" ", "")
+                .Replace("-", "")
+                .Replace("'", "");
+
+            if (!defByCatalogId.TryGetValue(normalized, out var def)) continue;
+
+            await RecalculateTierAsync(
+                userId, def.CatalogId, pr.ExerciseName,
+                pr.TrackingMode, pr.Weight, pr.Reps, pr.RIR,
+                athleticRawValue: null, ct);
+        }
+    }
+
     private static ExerciseTierConfig ToConfig(ExerciseDefinition d) => new(
         d.CatalogId,
         d.TierType,

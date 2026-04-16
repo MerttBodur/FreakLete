@@ -1534,6 +1534,12 @@ public partial class ProfilePage : ContentPage
 		PhysicalLimitationsEditor.Text = _coachVm.LimitationsText;
 	}
 
+	private async void OnRefreshTiersTapped(object? sender, TappedEventArgs e)
+	{
+		var result = await _api.RecalculateTiersAsync();
+		RenderTierCards(result.Success ? result.Data : null);
+	}
+
 	private void RenderTierCards(List<ExerciseTierResponse>? tiers)
 	{
 		TierCardsContainer.Children.Clear();
@@ -1657,19 +1663,18 @@ public partial class ProfilePage : ContentPage
 	private async void OnAvatarTapped(object? sender, TappedEventArgs e)
 	{
 		bool hasPhoto = ProfilePhotoImage.IsVisible;
-		string[] buttons = hasPhoto
-			? [AppLanguage.ProfileChoosePhoto, AppLanguage.ProfileRemovePhoto]
-			: [AppLanguage.ProfileChoosePhoto];
 
-		var action = await DisplayActionSheet(
+		var action = await PhotoActionSheetPage.ShowAsync(
+			Navigation,
+			hasPhoto,
 			AppLanguage.ProfileChangePhoto,
-			AppLanguage.SharedCancel,
-			null,
-			buttons);
+			AppLanguage.ProfileChoosePhoto,
+			AppLanguage.ProfileRemovePhoto,
+			AppLanguage.SharedCancel);
 
-		if (action == AppLanguage.ProfileChoosePhoto)
+		if (action == PhotoActionSheetPage.PhotoAction.Choose)
 			await PickAndUploadPhotoAsync();
-		else if (action == AppLanguage.ProfileRemovePhoto)
+		else if (action == PhotoActionSheetPage.PhotoAction.Remove)
 			await RemovePhotoAsync();
 	}
 

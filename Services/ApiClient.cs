@@ -201,6 +201,9 @@ public class ApiClient : IApiClient
 	public Task<ApiResult<List<ExerciseTierResponse>>> GetExerciseTiersAsync()
 		=> GetAsync<List<ExerciseTierResponse>>("api/profile/tiers");
 
+	public Task<ApiResult<List<ExerciseTierResponse>>> RecalculateTiersAsync()
+		=> PostAsync<List<ExerciseTierResponse>>("api/profile/tiers/recalculate", new { });
+
 	public Task<ApiResult<List<MovementGoalResponse>>> GetMovementGoalsAsync()
 	{
 		return GetAsync<List<MovementGoalResponse>>("api/movementgoals");

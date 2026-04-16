@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FreakLete.PhotoActionSheetPage"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="{StaticResource OverlayScrim}">
+
+    <Grid>
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnBackgroundTapped" />
+        </Grid.GestureRecognizers>
+
+        <Border VerticalOptions="End"
+                BackgroundColor="{StaticResource SurfaceRaised}"
+                Stroke="{StaticResource SurfaceBorder}"
+                StrokeShape="RoundRectangle 24,24,0,0"
+                StrokeThickness="1"
+                Padding="0,8,0,0">
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnSheetTapped" />
+            </Border.GestureRecognizers>
+
+            <VerticalStackLayout Spacing="0">
+
+                <!-- Handle pill -->
+                <BoxView WidthRequest="40"
+                         HeightRequest="4"
+                         CornerRadius="2"
+                         Color="{StaticResource SurfaceBorder}"
+                         HorizontalOptions="Center"
+                         Margin="0,8,0,0" />
+
+                <!-- Title -->
+                <Label x:Name="TitleLabel"
+                       FontFamily="OpenSansSemibold"
+                       FontSize="13"
+                       TextColor="{StaticResource TextMuted}"
+                       HorizontalTextAlignment="Center"
+                       CharacterSpacing="0.8"
+                       Margin="24,16,24,0" />
+
+                <BoxView HeightRequest="1"
+                         Color="{StaticResource SurfaceBorder}"
+                         Margin="0,16,0,0" />
+
+                <!-- Choose Photo -->
+                <Border BackgroundColor="Transparent"
+                        StrokeThickness="0"
+                        Padding="24,20">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnChoosePhotoTapped" />
+                    </Border.GestureRecognizers>
+                    <Label x:Name="ChooseLabel"
+                           FontFamily="OpenSansSemibold"
+                           FontSize="16"
+                           TextColor="{StaticResource AccentGlow}"
+                           HorizontalTextAlignment="Center" />
+                </Border>
+
+                <!-- Remove Photo — only visible when photo exists -->
+                <Border x:Name="RemovePhotoRow"
+                        BackgroundColor="Transparent"
+                        StrokeThickness="0"
+                        Padding="24,0,24,20">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRemovePhotoTapped" />
+                    </Border.GestureRecognizers>
+                    <Label x:Name="RemoveLabel"
+                           FontFamily="OpenSansSemibold"
+                           FontSize="16"
+                           TextColor="{StaticResource Danger}"
+                           HorizontalTextAlignment="Center" />
+                </Border>
+
+                <BoxView HeightRequest="1"
+                         Color="{StaticResource SurfaceBorder}" />
+
+                <!-- Cancel -->
+                <Border BackgroundColor="Transparent"
+                        StrokeThickness="0"
+                        Padding="24,20,24,40">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCancelTapped" />
+                    </Border.GestureRecognizers>
+                    <Label x:Name="CancelLabel"
+                           FontFamily="OpenSansSemibold"
+                           FontSize="16"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Center" />
+                </Border>
+
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+
+</ContentPage>

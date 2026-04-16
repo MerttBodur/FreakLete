@@ -16,4 +16,6 @@ public interface IExerciseTierService
         CancellationToken ct = default);
 
     Task<List<ExerciseTierDto>> GetTiersForUserAsync(int userId, CancellationToken ct = default);
+
+    Task BackfillTiersFromPrEntriesAsync(int userId, CancellationToken ct = default);
 }

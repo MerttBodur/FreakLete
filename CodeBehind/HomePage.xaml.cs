@@ -131,7 +131,16 @@ public partial class HomePage : ContentPage
 		}
 
 		if (quickCards.Count > 0)
-			BuildQuickWorkoutCards(quickCards.Take(6).ToList());
+		{
+			// Cap user programs at 3, fill remaining slots with starters that
+			// have a mapped image so the rail always shows some photos.
+			var userCards = quickCards.Where(c => !c.IsStarter).Take(3).ToList();
+			var starterCards = quickCards
+				.Where(c => c.IsStarter && WorkoutImageResolver.GetImageForProgram(c.Program.Name) is not null)
+				.Take(6 - userCards.Count)
+				.ToList();
+			BuildQuickWorkoutCards([.. userCards, .. starterCards]);
+		}
 	}
 
 	private void OnChartRangeChanged(object? sender, ChartDataHelper.ChartRange range)
