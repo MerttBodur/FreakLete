@@ -70,7 +70,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="8.0.1" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.51" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 		<!-- Plugin.InAppBilling 10.0.0 supports .NET 10 + PBL 8; transitively pulls BillingClient 8.x -->
 		<PackageReference Include="Plugin.InAppBilling" Version="10.0.0" />
@@ -78,8 +79,7 @@
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
 		<!-- Explicit PBL 8 binding — ExcludeAssets prevents duplicate AAR downloads via .targets -->
-		<PackageReference Include="Xamarin.Android.Google.BillingClient" Version="8.3.0.2"
-		                  ExcludeAssets="build;buildTransitive" />
+		<PackageReference Include="Xamarin.Android.Google.BillingClient" Version="8.3.0.2" ExcludeAssets="build;buildTransitive" />
 	</ItemGroup>
 
 	<!-- Network security config: debug version permits cleartext to 10.0.2.2 (emulator host).
@@ -91,8 +91,7 @@
 	<ItemGroup Condition="'$(Configuration)' == 'Debug' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
 		<!-- Debug: replace release config with debug version that allows 10.0.2.2 cleartext -->
 		<AndroidResource Remove="Platforms\Android\Resources\xml\network_security_config.xml" />
-		<AndroidResource Include="Platforms\Android\Resources\xml\network_security_config_debug.xml"
-		                 LogicalName="xml\network_security_config.xml" />
+		<AndroidResource Include="Platforms\Android\Resources\xml\network_security_config_debug.xml" LogicalName="xml\network_security_config.xml" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
