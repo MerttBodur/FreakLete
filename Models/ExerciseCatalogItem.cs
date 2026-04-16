@@ -75,6 +75,12 @@ public sealed class ExerciseCatalogItem
 
 	public int RecommendedRank { get; init; }
 
+	public string? MediaUrl { get; init; }
+
+	public string? ThumbnailUrl { get; init; }
+
+	public bool HasMedia => !string.IsNullOrWhiteSpace(MediaUrl);
+
 	public bool HasSecondaryMetric => !string.IsNullOrWhiteSpace(SecondaryLabel);
 
 	public string HintText =>
