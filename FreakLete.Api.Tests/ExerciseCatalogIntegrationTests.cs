@@ -226,6 +226,12 @@ public class ExerciseCatalogIntegrationTests : IAsyncLifetime
         Assert.Equal("Strength", bench.GetProperty("athleticQuality").GetString());
         Assert.Equal("Medium", bench.GetProperty("nervousSystemLoad").GetString());
         Assert.Equal(1, bench.GetProperty("recommendedRank").GetInt32());
+
+        // mediaUrl ve thumbnailUrl nullable — seed data'da null, field JSON'da var olmalı
+        var mediaUrl = bench.GetProperty("mediaUrl");
+        Assert.Equal(JsonValueKind.Null, mediaUrl.ValueKind);
+        var thumbnailUrl = bench.GetProperty("thumbnailUrl");
+        Assert.Equal(JsonValueKind.Null, thumbnailUrl.ValueKind);
     }
 
     // ════════════════════════════════════════════════════════════════
@@ -354,5 +360,27 @@ public class ExerciseCatalogIntegrationTests : IAsyncLifetime
         Assert.True(exercise.GetProperty("supportsGroundContactTime").GetBoolean());
         Assert.False(exercise.GetProperty("supportsConcentricTime").GetBoolean());
         Assert.Equal("cm", exercise.GetProperty("primaryUnit").GetString());
+    }
+
+    [Fact]
+    public async Task GetById_WithMediaUrl_ReturnsMediaUrl()
+    {
+        // Seed bir egzersizi mediaUrl ile güncelle
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var ex = await db.ExerciseDefinitions.FindAsync("bench-press");
+        ex!.MediaUrl = "https://cdn.example.com/bench-press.mp4";
+        ex.ThumbnailUrl = "https://cdn.example.com/bench-press-thumb.jpg";
+        await db.SaveChangesAsync();
+
+        var client = await AuthenticateAsync();
+        var response = await client.GetAsync("/api/ExerciseCatalog/bench-press");
+        response.EnsureSuccessStatusCode();
+
+        var body = await response.Content.ReadAsStringAsync();
+        var exercise = JsonSerializer.Deserialize<JsonElement>(body, JsonOpts);
+
+        Assert.Equal("https://cdn.example.com/bench-press.mp4", exercise.GetProperty("mediaUrl").GetString());
+        Assert.Equal("https://cdn.example.com/bench-press-thumb.jpg", exercise.GetProperty("thumbnailUrl").GetString());
     }
 }
