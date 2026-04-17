@@ -136,7 +136,7 @@ public partial class HomePage : ContentPage
 			// have a mapped image so the rail always shows some photos.
 			var userCards = quickCards.Where(c => !c.IsStarter).Take(3).ToList();
 			var starterCards = quickCards
-				.Where(c => c.IsStarter && WorkoutImageResolver.GetImageForProgram(c.Program.Name) is not null)
+				.Where(c => c.IsStarter && WorkoutImageResolver.GetImageForProgram(c.Program.Name, c.Program.Goal) is not null)
 				.Take(6 - userCards.Count)
 				.ToList();
 			BuildQuickWorkoutCards([.. userCards, .. starterCards]);
@@ -239,7 +239,7 @@ public partial class HomePage : ContentPage
 			imageArea.Clip = new RoundRectangleGeometry(new CornerRadius(18, 18, 0, 0),
 				new Rect(0, 0, 180, 90));
 
-			var imageName = WorkoutImageResolver.GetImageForProgram(program.Name);
+			var imageName = WorkoutImageResolver.GetImageForProgram(program.Name, program.Goal);
 			if (imageName is not null)
 			{
 				imageArea.Children.Add(new Image

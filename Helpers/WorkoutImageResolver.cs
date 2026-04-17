@@ -11,23 +11,55 @@ public static class WorkoutImageResolver
         { "5/3/1 Strength 4-Day",        "workout_531" },
     };
 
-    // Deterministic fallback colors for templates without a specific image.
+    // Keyword-based fallback for user-named programs (e.g. "My 5x5 Push Pull").
+    // Order matters: more specific patterns first.
+    private static readonly (string Keyword, string Image)[] KeywordFallbacks =
+    [
+        ("5/3/1",        "workout_531"),
+        ("5-3-1",        "workout_531"),
+        ("531",          "workout_531"),
+        ("5x5",          "workout_5x5"),
+        ("5×5",          "workout_5x5"),
+        ("upper/lower",  "workout_upperlower"),
+        ("upper lower",  "workout_upperlower"),
+        ("upper-lower",  "workout_upperlower"),
+        ("push pull legs","workout_upperlower"),
+        ("ppl",          "workout_upperlower"),
+        ("in-season",    "workout_maintenance"),
+        ("in season",    "workout_maintenance"),
+        ("maintenance",  "workout_maintenance"),
+        ("deload",       "workout_maintenance"),
+        ("full body",    "workout_fullbody"),
+        ("fullbody",     "workout_fullbody"),
+        ("foundation",   "workout_fullbody"),
+        ("beginner",     "workout_fullbody"),
+        ("strength",     "workout_5x5"),
+        ("hypertrophy",  "workout_upperlower"),
+        ("athletic",     "workout_531"),
+    ];
+
     private static readonly string[] FallbackColors =
     [
         "#2F2346", "#1B3A4B", "#2D1B2E", "#1A2E1A", "#3B2A1A"
     ];
 
     /// <summary>
-    /// Returns the image filename for a program name, or null if no mapping exists.
+    /// Returns an image filename for a program. Tries exact name match first,
+    /// then keyword search across name and optional goal text.
     /// </summary>
-    public static string? GetImageForProgram(string programName)
+    public static string? GetImageForProgram(string programName, string? goal = null)
     {
-        return TemplateImageMap.TryGetValue(programName, out var filename) ? filename : null;
+        if (TemplateImageMap.TryGetValue(programName, out var exact))
+            return exact;
+
+        var haystack = $"{programName} {goal}".ToLowerInvariant();
+        foreach (var (keyword, image) in KeywordFallbacks)
+            if (haystack.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                return image;
+
+        return null;
     }
 
-    /// <summary>
-    /// Returns a deterministic fallback background color hex for programs without an image.
-    /// </summary>
     public static string GetFallbackColor(string programName)
     {
         int hash = Math.Abs(programName.GetHashCode());
