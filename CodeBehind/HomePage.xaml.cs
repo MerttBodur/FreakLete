@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using FreakLete.Helpers;
 using FreakLete.Models;
 using FreakLete.Services;
@@ -242,10 +243,13 @@ public partial class HomePage : ContentPage
 			var imageName = WorkoutImageResolver.GetImageForProgram(program.Name, program.Goal);
 			if (imageName is not null)
 			{
+				Debug.WriteLine($"[QuickWorkout] Resolving image: {imageName}.png");
 				imageArea.Children.Add(new Image
 				{
-					Source = imageName + ".png",
+					Source = ImageSource.FromFile(imageName + ".png"),
 					Aspect = Aspect.AspectFill,
+					WidthRequest = 180,
+					HeightRequest = 90,
 					HorizontalOptions = LayoutOptions.Fill,
 					VerticalOptions = LayoutOptions.Fill
 				});
