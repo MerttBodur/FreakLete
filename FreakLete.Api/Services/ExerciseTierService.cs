@@ -173,7 +173,7 @@ public class ExerciseTierService : IExerciseTierService
         var bestByExercise = prs
             .GroupBy(p => p.ExerciseName, StringComparer.OrdinalIgnoreCase)
             .Select(g => g
-                .OrderByDescending(p => FreakLete.Core.Services.CalculationService.CalculateOneRm(p.Weight, p.Reps, p.RIR ?? 0))
+                .OrderByDescending(p => FreakLete.Services.CalculationService.CalculateOneRm(p.Weight, p.Reps, p.RIR ?? 0))
                 .First());
 
         foreach (var pr in bestByExercise)
