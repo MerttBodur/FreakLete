@@ -34,7 +34,11 @@ public class ExerciseTierService : IExerciseTierService
 
         var def = await _db.ExerciseDefinitions
             .FirstOrDefaultAsync(d => d.CatalogId == catalogId, ct);
+        if (def is null)
+            def = await _db.ExerciseDefinitions
+                .FirstOrDefaultAsync(d => d.CatalogId == NormalizeName(exerciseName), ct);
         if (def is null || string.IsNullOrWhiteSpace(def.TierType)) return null;
+        catalogId = def.CatalogId;
 
         if (string.Equals(def.TierType, "StrengthRatio", StringComparison.OrdinalIgnoreCase) &&
             string.Equals(def.Mechanic, "isolation", StringComparison.OrdinalIgnoreCase))
@@ -179,11 +183,7 @@ public class ExerciseTierService : IExerciseTierService
         foreach (var pr in bestByExercise)
         {
             // Normalize display name to catalog ID format: "Bench Press" → "benchpress".
-            var normalized = pr.ExerciseName
-                .ToLowerInvariant()
-                .Replace(" ", "")
-                .Replace("-", "")
-                .Replace("'", "");
+            var normalized = NormalizeName(pr.ExerciseName);
 
             if (!defByCatalogId.TryGetValue(normalized, out var def)) continue;
 
@@ -193,6 +193,9 @@ public class ExerciseTierService : IExerciseTierService
                 athleticRawValue: null, ct);
         }
     }
+
+    private static string NormalizeName(string name) =>
+        name.ToLowerInvariant().Replace(" ", "").Replace("-", "").Replace("'", "");
 
     private static ExerciseTierConfig ToConfig(ExerciseDefinition d) => new(
         d.CatalogId,

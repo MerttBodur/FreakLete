@@ -157,6 +157,35 @@ public class ExerciseTierIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task RecalculateTier_WithClientFormatCatalogId_ReturnsTierViaFallback()
+    {
+        // Arrange
+        var client = await RegisterAndAuthWithWeightAsync(80.0, "Male");
+        var payload = new
+        {
+            catalogId = "pushbarbellbenchpress",  // client JSON id — DB has "benchpress"
+            exerciseName = "Bench Press",
+            trackingMode = "Strength",
+            weight = 100,
+            reps = 5,
+            rir = 0
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/pr-entries", payload);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var body = await response.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(body);
+        var tierResult = doc.RootElement.GetProperty("tier");
+        Assert.False(
+            tierResult.ValueKind == JsonValueKind.Null,
+            "Expected a tier result but got null — fallback normalization is not working");
+        Assert.Equal("benchpress", tierResult.GetProperty("catalogId").GetString());
+    }
+
+    [Fact]
     public async Task GetProfileTiers_ReturnsSnapshot()
     {
         var c = await RegisterAndAuthWithWeightAsync(80);
