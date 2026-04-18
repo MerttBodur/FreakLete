@@ -140,7 +140,7 @@ public partial class ProgramDetailPage : ContentPage
 				Text = AppLanguage.FormatWeek(week.WeekNumber),
 				FontSize = 20,
 				FontFamily = "OpenSansSemibold",
-				TextColor = GetColor("TextPrimary", "#F7F7FB"),
+				TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB"),
 				VerticalOptions = LayoutOptions.Center
 			});
 
@@ -158,7 +158,7 @@ public partial class ProgramDetailPage : ContentPage
 					Text = week.Focus,
 					FontSize = 13,
 					FontFamily = "OpenSansRegular",
-					TextColor = GetColor("TextSecondary", "#B3B2C5")
+					TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5")
 				});
 			}
 
@@ -177,8 +177,8 @@ public partial class ProgramDetailPage : ContentPage
 		var card = new Border
 		{
 			StrokeShape = new RoundRectangle { CornerRadius = 18 },
-			BackgroundColor = GetColor("SurfaceRaised", "#1D1828"),
-			Stroke = new SolidColorBrush(GetColor("SurfaceBorder", "#342D46")),
+			BackgroundColor = ColorResources.GetColor("SurfaceRaised", "#1D1828"),
+			Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46")),
 			StrokeThickness = 1,
 			Padding = new Thickness(18, 16)
 		};
@@ -195,7 +195,7 @@ public partial class ProgramDetailPage : ContentPage
 			Text = sessionTitle,
 			FontSize = 16,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("TextPrimary", "#F7F7FB")
+			TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB")
 		});
 
 		if (!string.IsNullOrWhiteSpace(session.Focus))
@@ -205,7 +205,7 @@ public partial class ProgramDetailPage : ContentPage
 				Text = session.Focus,
 				FontSize = 12,
 				FontFamily = "OpenSansRegular",
-				TextColor = GetColor("TextSecondary", "#B3B2C5")
+				TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5")
 			});
 		}
 
@@ -237,7 +237,7 @@ public partial class ProgramDetailPage : ContentPage
 			Text = exercise.ExerciseName,
 			FontSize = 14,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("TextPrimary", "#F7F7FB")
+			TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB")
 		});
 
 		var detail = $"{exercise.Sets} x {exercise.RepsOrDuration}";
@@ -249,7 +249,7 @@ public partial class ProgramDetailPage : ContentPage
 			Text = detail,
 			FontSize = 12,
 			FontFamily = "OpenSansRegular",
-			TextColor = GetColor("TextSecondary", "#B3B2C5")
+			TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5")
 		});
 
 		row.Children.Add(left);
@@ -262,7 +262,7 @@ public partial class ProgramDetailPage : ContentPage
 				Text = exercise.IntensityGuidance,
 				FontSize = 11,
 				FontFamily = "OpenSansSemibold",
-				TextColor = GetColor("AccentGlow", "#A78BFA"),
+				TextColor = ColorResources.GetColor("AccentGlow", "#A78BFA"),
 				VerticalOptions = LayoutOptions.Center,
 				HorizontalOptions = LayoutOptions.End
 			};
@@ -278,7 +278,7 @@ public partial class ProgramDetailPage : ContentPage
 		var pill = new Border
 		{
 			StrokeShape = new RoundRectangle { CornerRadius = 10 },
-			BackgroundColor = GetColor(bgColorKey, "#2F2346"),
+			BackgroundColor = ColorResources.GetColor(bgColorKey, "#2F2346"),
 			Stroke = new SolidColorBrush(Colors.Transparent),
 			Padding = new Thickness(10, 4),
 			VerticalOptions = LayoutOptions.Center
@@ -289,17 +289,10 @@ public partial class ProgramDetailPage : ContentPage
 			Text = text,
 			FontSize = 10,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor(textColorKey, "#A78BFA")
+			TextColor = ColorResources.GetColor(textColorKey, "#A78BFA")
 		};
 
 		return pill;
-	}
-
-	private static Color GetColor(string key, string fallback)
-	{
-		if (Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color)
-			return color;
-		return Color.FromArgb(fallback);
 	}
 
 	private async void OnBackClicked(object? sender, TappedEventArgs e)

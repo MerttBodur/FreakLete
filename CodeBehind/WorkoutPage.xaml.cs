@@ -255,8 +255,8 @@ public partial class WorkoutPage : ContentPage
 		var chip = new Border
 		{
 			StrokeShape = new RoundRectangle { CornerRadius = 14 },
-			BackgroundColor = isActive ? GetColor("AccentSoft", "#2F2346") : GetColor("SurfaceRaised", "#1D1828"),
-			Stroke = new SolidColorBrush(isActive ? GetColor("Accent", "#8B5CF6") : GetColor("SurfaceBorder", "#342D46")),
+			BackgroundColor = isActive ? ColorResources.GetColor("AccentSoft", "#2F2346") : ColorResources.GetColor("SurfaceRaised", "#1D1828"),
+			Stroke = new SolidColorBrush(isActive ? ColorResources.GetColor("Accent", "#8B5CF6") : ColorResources.GetColor("SurfaceBorder", "#342D46")),
 			StrokeThickness = 1,
 			Padding = new Thickness(14, 7)
 		};
@@ -266,7 +266,7 @@ public partial class WorkoutPage : ContentPage
 			Text = text,
 			FontSize = 12,
 			FontFamily = "OpenSansSemibold",
-			TextColor = isActive ? GetColor("AccentGlow", "#A78BFA") : GetColor("TextSecondary", "#B3B2C5")
+			TextColor = isActive ? ColorResources.GetColor("AccentGlow", "#A78BFA") : ColorResources.GetColor("TextSecondary", "#B3B2C5")
 		};
 
 		chip.GestureRecognizers.Add(new TapGestureRecognizer
@@ -316,9 +316,9 @@ public partial class WorkoutPage : ContentPage
 		var card = new Border
 		{
 			StrokeShape = new RoundRectangle { CornerRadius = 20 },
-			Stroke = new SolidColorBrush(GetColor("SurfaceBorder", "#342D46")),
+			Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46")),
 			StrokeThickness = 1,
-			BackgroundColor = GetColor("SurfaceRaised", "#1D1828"),
+			BackgroundColor = ColorResources.GetColor("SurfaceRaised", "#1D1828"),
 			Padding = new Thickness(20, 18)
 		};
 
@@ -331,7 +331,7 @@ public partial class WorkoutPage : ContentPage
 			Text = rec.Name,
 			FontSize = 17,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("TextPrimary", "#F7F7FB"),
+			TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB"),
 			LineBreakMode = LineBreakMode.TailTruncation,
 			HorizontalOptions = LayoutOptions.FillAndExpand
 		});
@@ -342,7 +342,7 @@ public partial class WorkoutPage : ContentPage
 			var badge = new Border
 			{
 				StrokeShape = new RoundRectangle { CornerRadius = 10 },
-				BackgroundColor = GetColor("AccentSoft", "#2F2346"),
+				BackgroundColor = ColorResources.GetColor("AccentSoft", "#2F2346"),
 				Stroke = new SolidColorBrush(Colors.Transparent),
 				Padding = new Thickness(10, 4),
 				VerticalOptions = LayoutOptions.Center
@@ -352,7 +352,7 @@ public partial class WorkoutPage : ContentPage
 				Text = badgeText,
 				FontSize = 10,
 				FontFamily = "OpenSansSemibold",
-				TextColor = GetColor("AccentGlow", "#A78BFA")
+				TextColor = ColorResources.GetColor("AccentGlow", "#A78BFA")
 			};
 			titleRow.Children.Add(badge);
 		}
@@ -390,8 +390,8 @@ public partial class WorkoutPage : ContentPage
 		var pill = new Border
 		{
 			StrokeShape = new RoundRectangle { CornerRadius = 10 },
-			BackgroundColor = GetColor("SurfaceRaised", "#1D1828"),
-			Stroke = new SolidColorBrush(GetColor("SurfaceBorder", "#342D46")),
+			BackgroundColor = ColorResources.GetColor("SurfaceRaised", "#1D1828"),
+			Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46")),
 			Padding = new Thickness(8, 4),
 			VerticalOptions = LayoutOptions.Center
 		};
@@ -400,16 +400,9 @@ public partial class WorkoutPage : ContentPage
 			Text = text,
 			FontSize = 11,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("TextSecondary", "#B3B2C5")
+			TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5")
 		};
 		return pill;
-	}
-
-	private static Color GetColor(string key, string fallback)
-	{
-		if (Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color)
-			return color;
-		return Color.FromArgb(fallback);
 	}
 
 	private sealed class RecommendedProgramInfo

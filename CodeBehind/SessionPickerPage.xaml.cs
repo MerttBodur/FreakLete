@@ -58,8 +58,8 @@ public partial class SessionPickerPage : ContentPage
 		var card = new Border
 		{
 			StrokeShape = new RoundRectangle { CornerRadius = 18 },
-			BackgroundColor = GetColor("SurfaceRaised", "#1D1828"),
-			Stroke = new SolidColorBrush(GetColor("SurfaceBorder", "#342D46")),
+			BackgroundColor = ColorResources.GetColor("SurfaceRaised", "#1D1828"),
+			Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46")),
 			StrokeThickness = 1,
 			Padding = new Thickness(18, 16)
 		};
@@ -72,7 +72,7 @@ public partial class SessionPickerPage : ContentPage
 			Text = option.DisplayName,
 			FontSize = 16,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("TextPrimary", "#F7F7FB")
+			TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB")
 		});
 
 		// Focus line if session has focus
@@ -83,7 +83,7 @@ public partial class SessionPickerPage : ContentPage
 				Text = option.Session.Focus,
 				FontSize = 12,
 				FontFamily = "OpenSansRegular",
-				TextColor = GetColor("TextSecondary", "#B3B2C5")
+				TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5")
 			});
 		}
 
@@ -121,7 +121,7 @@ public partial class SessionPickerPage : ContentPage
 		var pill = new Border
 		{
 			StrokeShape = new RoundRectangle { CornerRadius = 10 },
-			BackgroundColor = GetColor("AccentSoft", "#2F2346"),
+			BackgroundColor = ColorResources.GetColor("AccentSoft", "#2F2346"),
 			Stroke = new SolidColorBrush(Colors.Transparent),
 			Padding = new Thickness(10, 4),
 			VerticalOptions = LayoutOptions.Center
@@ -131,7 +131,7 @@ public partial class SessionPickerPage : ContentPage
 			Text = text,
 			FontSize = 11,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("AccentGlow", "#A78BFA")
+			TextColor = ColorResources.GetColor("AccentGlow", "#A78BFA")
 		};
 		return pill;
 	}
@@ -148,10 +148,4 @@ public partial class SessionPickerPage : ContentPage
 		return base.OnBackButtonPressed();
 	}
 
-	private static Color GetColor(string key, string fallback)
-	{
-		if (Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color)
-			return color;
-		return Color.FromArgb(fallback);
-	}
 }

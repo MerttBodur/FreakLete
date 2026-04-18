@@ -145,12 +145,12 @@ public partial class StartWorkoutSessionPage : ContentPage
 		// Deselect previous
 		if (_activeSet is not null)
 		{
-			_activeSet.Row.Stroke = new SolidColorBrush(GetColor("SurfaceBorder", "#342D46"));
+			_activeSet.Row.Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46"));
 			_activeSet.Row.StrokeThickness = 1;
 		}
 
 		_activeSet = set;
-		_activeSet.Row.Stroke = new SolidColorBrush(GetColor("AccentGlow", "#A78BFA"));
+		_activeSet.Row.Stroke = new SolidColorBrush(ColorResources.GetColor("AccentGlow", "#A78BFA"));
 		_activeSet.Row.StrokeThickness = 2;
 	}
 
@@ -255,10 +255,4 @@ public partial class StartWorkoutSessionPage : ContentPage
 		_restTimer?.Stop();
 	}
 
-	private static Color GetColor(string key, string fallback)
-	{
-		if (Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color)
-			return color;
-		return Color.FromArgb(fallback);
-	}
 }

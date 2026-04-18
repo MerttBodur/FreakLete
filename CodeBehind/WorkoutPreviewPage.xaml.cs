@@ -84,8 +84,8 @@ public partial class WorkoutPreviewPage : ContentPage
 			var card = new Border
 			{
 				StrokeShape = new RoundRectangle { CornerRadius = 14 },
-				BackgroundColor = GetColor("SurfaceRaised", "#1D1828"),
-				Stroke = new SolidColorBrush(GetColor("SurfaceBorder", "#342D46")),
+				BackgroundColor = ColorResources.GetColor("SurfaceRaised", "#1D1828"),
+				Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46")),
 				StrokeThickness = 1,
 				Padding = new Thickness(16, 12)
 			};
@@ -97,7 +97,7 @@ public partial class WorkoutPreviewPage : ContentPage
 				Text = entry.ExerciseName,
 				FontSize = 14,
 				FontFamily = "OpenSansSemibold",
-				TextColor = GetColor("TextPrimary", "#F7F7FB")
+				TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB")
 			});
 
 			var details = new List<string> { $"{entry.Sets} x {entry.Reps}" };
@@ -109,7 +109,7 @@ public partial class WorkoutPreviewPage : ContentPage
 				Text = string.Join(" | ", details),
 				FontSize = 12,
 				FontFamily = "OpenSansRegular",
-				TextColor = GetColor("TextSecondary", "#B3B2C5")
+				TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5")
 			});
 
 			card.Content = stack;
@@ -170,10 +170,4 @@ public partial class WorkoutPreviewPage : ContentPage
 		}
 	}
 
-	private static Color GetColor(string key, string fallback)
-	{
-		if (Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color)
-			return color;
-		return Color.FromArgb(fallback);
-	}
 }

@@ -340,8 +340,8 @@ public partial class ProfilePage : ContentPage
 			var emptyCard = new Border
 			{
 				StrokeShape = new RoundRectangle { CornerRadius = 16 },
-				BackgroundColor = GetProfileColor("SurfaceRaised", "#1D1828"),
-				Stroke = new SolidColorBrush(GetProfileColor("SurfaceBorder", "#342D46")),
+				BackgroundColor = ColorResources.GetColor("SurfaceRaised", "#1D1828"),
+				Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46")),
 				StrokeThickness = 1,
 				Padding = new Thickness(20, 16)
 			};
@@ -350,7 +350,7 @@ public partial class ProfilePage : ContentPage
 				Text = AppLanguage.ProfileNoHighlights,
 				FontSize = 13,
 				FontFamily = "OpenSansRegular",
-				TextColor = GetProfileColor("TextSecondary", "#B3B2C5"),
+				TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5"),
 				HorizontalTextAlignment = TextAlignment.Center
 			};
 			HighlightsContainer.Children.Add(emptyCard);
@@ -362,13 +362,13 @@ public partial class ProfilePage : ContentPage
 			var card = new Border
 			{
 				StrokeShape = new RoundRectangle { CornerRadius = 18 },
-				Stroke = new SolidColorBrush(GetProfileColor("AccentSoft", "#2F2346")),
+				Stroke = new SolidColorBrush(ColorResources.GetColor("AccentSoft", "#2F2346")),
 				StrokeThickness = 1,
 				Padding = new Thickness(18, 14),
 				Background = new LinearGradientBrush(
 				[
-					new GradientStop(GetProfileColor("AccentSoft", "#2F2346"), 0.0f),
-					new GradientStop(GetProfileColor("Surface", "#100D1A"), 1.0f)
+					new GradientStop(ColorResources.GetColor("AccentSoft", "#2F2346"), 0.0f),
+					new GradientStop(ColorResources.GetColor("Surface", "#100D1A"), 1.0f)
 				], new Point(0, 0), new Point(1, 1))
 			};
 
@@ -377,8 +377,8 @@ public partial class ProfilePage : ContentPage
 			var checkBorder = new Border
 			{
 				StrokeShape = new RoundRectangle { CornerRadius = 16 },
-				BackgroundColor = GetProfileColor("Accent", "#8B5CF6").WithAlpha(0.2f),
-				Stroke = new SolidColorBrush(GetProfileColor("Accent", "#8B5CF6").WithAlpha(0.4f)),
+				BackgroundColor = ColorResources.GetColor("Accent", "#8B5CF6").WithAlpha(0.2f),
+				Stroke = new SolidColorBrush(ColorResources.GetColor("Accent", "#8B5CF6").WithAlpha(0.4f)),
 				StrokeThickness = 1,
 				WidthRequest = 32,
 				HeightRequest = 32,
@@ -389,7 +389,7 @@ public partial class ProfilePage : ContentPage
 				Text = "\u2713",
 				FontSize = 15,
 				FontFamily = "OpenSansSemibold",
-				TextColor = GetProfileColor("AccentGlow", "#A78BFA"),
+				TextColor = ColorResources.GetColor("AccentGlow", "#A78BFA"),
 				HorizontalOptions = LayoutOptions.Center,
 				VerticalOptions = LayoutOptions.Center
 			};
@@ -400,14 +400,14 @@ public partial class ProfilePage : ContentPage
 				Text = title,
 				FontSize = 15,
 				FontFamily = "OpenSansSemibold",
-				TextColor = GetProfileColor("TextPrimary", "#F7F7FB")
+				TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB")
 			});
 			textStack.Children.Add(new Label
 			{
 				Text = subtitle,
 				FontSize = 12,
 				FontFamily = "OpenSansRegular",
-				TextColor = GetProfileColor("TextSecondary", "#B3B2C5")
+				TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5")
 			});
 
 			row.Children.Add(checkBorder);
@@ -424,13 +424,6 @@ public partial class ProfilePage : ContentPage
 
 		if (_profile is not null)
 			BuildHighlights(_profile.TotalWorkouts, _profile.TotalPrs, _lastAthleticCount, _lastGoalCount);
-	}
-
-	private static Color GetProfileColor(string key, string fallback)
-	{
-		if (Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color)
-			return color;
-		return Color.FromArgb(fallback);
 	}
 
 	private static void SetSelectorValue(Label label, string? value, string placeholder)
@@ -1562,14 +1555,14 @@ public partial class ProfilePage : ContentPage
 			Text = t.ExerciseName,
 			FontFamily = "OpenSansSemibold",
 			FontSize = 15,
-			TextColor = GetProfileColor("TextPrimary", "#F7F7FB")
+			TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB")
 		};
 		var tierLbl = new Label
 		{
 			Text = t.TierLevel,
 			FontFamily = "OpenSansSemibold",
 			FontSize = 13,
-			TextColor = GetProfileColor("AccentGlow", "#A78BFA")
+			TextColor = ColorResources.GetColor("AccentGlow", "#A78BFA")
 		};
 		var metric = new Label
 		{
@@ -1578,7 +1571,7 @@ public partial class ProfilePage : ContentPage
 				: $"{t.RawValue:0.##}",
 			FontFamily = "OpenSansRegular",
 			FontSize = 13,
-			TextColor = GetProfileColor("TextSecondary", "#B3B2C5")
+			TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5")
 		};
 
 		var header = new Grid

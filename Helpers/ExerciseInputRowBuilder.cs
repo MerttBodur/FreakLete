@@ -42,8 +42,8 @@ public static class ExerciseInputRowBuilder
 		var card = new Border
 		{
 			StrokeShape = new RoundRectangle { CornerRadius = 16 },
-			BackgroundColor = GetColor("SurfaceRaised", "#1D1828"),
-			Stroke = new SolidColorBrush(GetColor("SurfaceBorder", "#342D46")),
+			BackgroundColor = ColorResources.GetColor("SurfaceRaised", "#1D1828"),
+			Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46")),
 			StrokeThickness = 1,
 			Padding = new Thickness(16, 14)
 		};
@@ -56,7 +56,7 @@ public static class ExerciseInputRowBuilder
 			Text = templateExercise.ExerciseName,
 			FontSize = 15,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("TextPrimary", "#F7F7FB")
+			TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB")
 		});
 
 		// Template hint
@@ -68,7 +68,7 @@ public static class ExerciseInputRowBuilder
 				Text = hint,
 				FontSize = 11,
 				FontFamily = "OpenSansRegular",
-				TextColor = GetColor("AccentGlow", "#A78BFA")
+				TextColor = ColorResources.GetColor("AccentGlow", "#A78BFA")
 			});
 		}
 
@@ -147,8 +147,8 @@ public static class ExerciseInputRowBuilder
 		var card = new Border
 		{
 			StrokeShape = new RoundRectangle { CornerRadius = 16 },
-			BackgroundColor = GetColor("SurfaceRaised", "#1D1828"),
-			Stroke = new SolidColorBrush(GetColor("SurfaceBorder", "#342D46")),
+			BackgroundColor = ColorResources.GetColor("SurfaceRaised", "#1D1828"),
+			Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46")),
 			StrokeThickness = 1,
 			Padding = new Thickness(16, 14)
 		};
@@ -170,7 +170,7 @@ public static class ExerciseInputRowBuilder
 			Text = templateExercise.ExerciseName,
 			FontSize = 15,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("TextPrimary", "#F7F7FB"),
+			TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB"),
 			VerticalOptions = LayoutOptions.Center
 		});
 
@@ -179,7 +179,7 @@ public static class ExerciseInputRowBuilder
 			Text = "\u25BC",
 			FontSize = 12,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("TextSecondary", "#B3B2C5"),
+			TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5"),
 			VerticalOptions = LayoutOptions.Center,
 			HorizontalOptions = LayoutOptions.End
 		};
@@ -197,7 +197,7 @@ public static class ExerciseInputRowBuilder
 				Text = hint,
 				FontSize = 11,
 				FontFamily = "OpenSansRegular",
-				TextColor = GetColor("AccentGlow", "#A78BFA")
+				TextColor = ColorResources.GetColor("AccentGlow", "#A78BFA")
 			});
 		}
 
@@ -315,8 +315,8 @@ public static class ExerciseInputRowBuilder
 		var row = new Border
 		{
 			StrokeShape = new RoundRectangle { CornerRadius = 10 },
-			BackgroundColor = GetColor("Surface", "#13101C"),
-			Stroke = new SolidColorBrush(GetColor("SurfaceBorder", "#342D46")),
+			BackgroundColor = ColorResources.GetColor("Surface", "#13101C"),
+			Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46")),
 			StrokeThickness = 1,
 			Padding = new Thickness(4, 6)
 		};
@@ -340,7 +340,7 @@ public static class ExerciseInputRowBuilder
 			Text = setNumber.ToString(),
 			FontSize = 13,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("AccentGlow", "#A78BFA"),
+			TextColor = ColorResources.GetColor("AccentGlow", "#A78BFA"),
 			HorizontalTextAlignment = TextAlignment.Center,
 			VerticalOptions = LayoutOptions.Center
 		};
@@ -371,7 +371,7 @@ public static class ExerciseInputRowBuilder
 			Text = "--",
 			FontSize = 13,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("TextSecondary", "#B3B2C5"),
+			TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5"),
 			HorizontalTextAlignment = TextAlignment.Center,
 			VerticalOptions = LayoutOptions.Center
 		};
@@ -412,7 +412,7 @@ public static class ExerciseInputRowBuilder
 			Text = text,
 			FontSize = 10,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("TextSecondary", "#B3B2C5"),
+			TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5"),
 			HorizontalTextAlignment = TextAlignment.Center
 		};
 		grid.Children.Add(label);
@@ -427,7 +427,7 @@ public static class ExerciseInputRowBuilder
 			Text = text,
 			FontSize = 9,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("TextMuted", "#6B6780"),
+			TextColor = ColorResources.GetColor("TextMuted", "#6B6780"),
 			HorizontalTextAlignment = TextAlignment.Center
 		};
 		grid.Children.Add(label);
@@ -443,17 +443,11 @@ public static class ExerciseInputRowBuilder
 			Keyboard = Keyboard.Numeric,
 			FontSize = 14,
 			FontFamily = "OpenSansSemibold",
-			TextColor = GetColor("TextPrimary", "#F7F7FB"),
-			PlaceholderColor = GetColor("TextMuted", "#6B6780"),
-			BackgroundColor = GetColor("Surface", "#13101C"),
+			TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB"),
+			PlaceholderColor = ColorResources.GetColor("TextMuted", "#6B6780"),
+			BackgroundColor = ColorResources.GetColor("Surface", "#13101C"),
 			HorizontalTextAlignment = TextAlignment.Center
 		};
 	}
 
-	private static Color GetColor(string key, string fallback)
-	{
-		if (Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color)
-			return color;
-		return Color.FromArgb(fallback);
-	}
 }
