@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
 using FreakLete.Models;
 using FreakLete.Services;
@@ -123,6 +124,14 @@ public partial class ExerciseDetailPage : ContentPage
 	private void OnTabInstructionsClicked(object? sender, EventArgs e) => SetTab(Tab.Instructions);
 	private void OnTabMistakesClicked(object? sender, EventArgs e) => SetTab(Tab.Mistakes);
 	private void OnTabProgressionClicked(object? sender, EventArgs e) => SetTab(Tab.Progression);
+
+	private void OnVideoMediaFailed(object? sender, MediaFailedEventArgs e)
+	{
+		VideoPlayer.IsVisible = false;
+		NoVideoPlaceholder.IsVisible = true;
+		VideoErrorLabel.Text = $"Error: {e.ErrorMessage}";
+		VideoErrorLabel.IsVisible = true;
+	}
 
 	private async void OnBackClicked(object? sender, EventArgs e)
 	{

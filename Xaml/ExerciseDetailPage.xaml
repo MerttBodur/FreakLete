@@ -47,23 +47,32 @@
                     <VerticalStackLayout>
                         <!-- Video player -->
                         <toolkit:MediaElement x:Name="VideoPlayer"
-                                              ShouldAutoPlay="False"
-                                              ShouldShowPlaybackControls="True"
+                                              ShouldAutoPlay="True"
+                                              ShouldLoopPlayback="True"
+                                              ShouldShowPlaybackControls="False"
                                               BackgroundColor="Black"
                                               HeightRequest="210"
-                                              IsVisible="False" />
+                                              IsVisible="False"
+                                              MediaFailed="OnVideoMediaFailed" />
 
                         <!-- No-video placeholder -->
                         <Border x:Name="NoVideoPlaceholder"
                                 HeightRequest="80"
                                 BackgroundColor="{StaticResource Surface}"
                                 IsVisible="True">
-                            <Label Text="Demo video yakında"
-                                   FontSize="13"
-                                   FontFamily="OpenSansRegular"
-                                   TextColor="{StaticResource TextMuted}"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center" />
+                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
+                                <Label Text="Demo video yakında"
+                                       FontSize="13"
+                                       FontFamily="OpenSansRegular"
+                                       TextColor="{StaticResource TextMuted}"
+                                       HorizontalOptions="Center" />
+                                <Label x:Name="VideoErrorLabel"
+                                       FontSize="11"
+                                       FontFamily="OpenSansRegular"
+                                       TextColor="#FF6B6B"
+                                       HorizontalOptions="Center"
+                                       IsVisible="False" />
+                            </VerticalStackLayout>
                         </Border>
 
                         <!-- Muscle + equipment chips -->
