@@ -209,7 +209,7 @@
                         </Grid>
 
                         <Label x:Name="TierEmptyLabel"
-                               Text="No tier yet — log a PR to see your level."
+                               Text="No tier yet — log a Strength PR and set your body weight in profile to see your level."
                                FontFamily="OpenSansRegular"
                                FontSize="14"
                                TextColor="{StaticResource TextMuted}"

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using FreakLete.Helpers;
 using FreakLete.Models;
 using FreakLete.Services;
@@ -237,18 +236,14 @@ public partial class HomePage : ContentPage
 
 			// Image area with overlay
 			var imageArea = new Grid { HeightRequest = 90, WidthRequest = 180 };
-			imageArea.Clip = new RoundRectangleGeometry(new CornerRadius(18, 18, 0, 0),
-				new Rect(0, 0, 180, 90));
 
 			var imageName = WorkoutImageResolver.GetImageForProgram(program.Name, program.Goal);
 			if (imageName is not null)
 			{
-				Debug.WriteLine($"[QuickWorkout] Resolving image: {imageName}.png");
 				imageArea.Children.Add(new Image
 				{
-					Source = ImageSource.FromFile(imageName + ".png"),
+					Source = imageName + ".png",
 					Aspect = Aspect.AspectFill,
-					WidthRequest = 180,
 					HeightRequest = 90,
 					HorizontalOptions = LayoutOptions.Fill,
 					VerticalOptions = LayoutOptions.Fill

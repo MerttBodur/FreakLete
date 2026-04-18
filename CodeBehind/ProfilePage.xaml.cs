@@ -251,13 +251,13 @@ public partial class ProfilePage : ContentPage
 		_coachVm.HydrateFromProfile(_profile);
 		SyncCoachUI();
 
-		// Load athletic performances, goals and tiers in parallel
+		// Load athletic performances and goals in parallel; recalculate tiers separately
+		// (RecalculateTiersAsync backfills from PR entries then returns current list)
 		var perfResultTask = _api.GetAthleticPerformancesAsync();
 		var goalsResultTask = _api.GetMovementGoalsAsync();
-		var tierResultTask = _api.GetExerciseTiersAsync();
-		await Task.WhenAll(perfResultTask, goalsResultTask, tierResultTask);
+		await Task.WhenAll(perfResultTask, goalsResultTask);
 
-		var tierResult = tierResultTask.Result;
+		var tierResult = await _api.RecalculateTiersAsync();
 		RenderTierCards(tierResult.Success ? tierResult.Data : null);
 
 		var perfResult = perfResultTask.Result;
