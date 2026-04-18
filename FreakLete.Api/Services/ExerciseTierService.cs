@@ -160,20 +160,32 @@ public class ExerciseTierService : IExerciseTierService
 
     public async Task BackfillTiersFromPrEntriesAsync(int userId, CancellationToken ct = default)
     {
-        // Only strength PRs carry weight/reps needed for StrengthRatio calculation.
         var prs = await _db.PrEntries
             .Where(p => p.UserId == userId && p.TrackingMode == "Strength" && p.Weight > 0 && p.Reps > 0)
             .ToListAsync(ct);
 
-        if (prs.Count == 0) return;
+        _log.LogInformation("[Tiers] User {UserId}: found {PrCount} eligible Strength PRs", userId, prs.Count);
+
+        if (prs.Count == 0)
+        {
+            _log.LogWarning("[Tiers] User {UserId}: no eligible PRs — verify TrackingMode=Strength, Weight>0, Reps>0 in PrEntries table", userId);
+            return;
+        }
 
         var defs = await _db.ExerciseDefinitions
             .Where(d => d.TierType == "StrengthRatio")
             .ToListAsync(ct);
 
+        _log.LogInformation("[Tiers] ExerciseDefinitions with TierType=StrengthRatio: {DefCount}", defs.Count);
+
+        if (defs.Count == 0)
+        {
+            _log.LogError("[Tiers] ExerciseDefinitions table has no StrengthRatio rows — migration SeedTierEligibleExerciseDefinitions may not be applied on this database");
+            return;
+        }
+
         var defByCatalogId = defs.ToDictionary(d => d.CatalogId, StringComparer.OrdinalIgnoreCase);
 
-        // Best 1RM per exercise name.
         var bestByExercise = prs
             .GroupBy(p => p.ExerciseName, StringComparer.OrdinalIgnoreCase)
             .Select(g => g
@@ -182,10 +194,16 @@ public class ExerciseTierService : IExerciseTierService
 
         foreach (var pr in bestByExercise)
         {
-            // Normalize display name to catalog ID format: "Bench Press" → "benchpress".
             var normalized = NormalizeName(pr.ExerciseName);
+            if (!defByCatalogId.TryGetValue(normalized, out var def))
+            {
+                _log.LogInformation("[Tiers] '{ExerciseName}' → normalized '{Normalized}': NO match. Known IDs: {KnownIds}",
+                    pr.ExerciseName, normalized, string.Join(", ", defByCatalogId.Keys.Take(8)));
+                continue;
+            }
 
-            if (!defByCatalogId.TryGetValue(normalized, out var def)) continue;
+            _log.LogInformation("[Tiers] '{ExerciseName}' → normalized '{Normalized}': matched '{CatalogId}', computing tier",
+                pr.ExerciseName, normalized, def.CatalogId);
 
             await RecalculateTierAsync(
                 userId, def.CatalogId, pr.ExerciseName,
