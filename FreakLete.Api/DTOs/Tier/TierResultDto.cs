@@ -6,4 +6,14 @@ public class TierResultDto
     public string TierLevel { get; set; } = string.Empty;
     public string? PreviousTierLevel { get; set; }
     public bool LeveledUp { get; set; }
+
+    // New — next-milestone context
+    public string? NextLevel { get; set; }
+    public double? NextTargetRaw { get; set; }
+    public double? NextDelta { get; set; }
+    public double ProgressPercent { get; set; }
+
+    // New — mirrors ExerciseDefinition.TrackingMode:
+    // "Strength" | "AthleticHeight" | "AthleticDistance" | "AthleticIndex" | "AthleticTime"
+    public string TrackingMode { get; set; } = string.Empty;
 }
