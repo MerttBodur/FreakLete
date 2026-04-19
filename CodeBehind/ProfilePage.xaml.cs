@@ -526,145 +526,118 @@ public partial class ProfilePage : ContentPage
 
 	private async void OnGymExperienceTapped(object? sender, TappedEventArgs e)
 	{
-		var current = _athleteVm?.SelectedGymExperience;
-		await Navigation.PushAsync(
-			new OptionPickerPage(AppLanguage.ProfileGymExperienceTitle, ExperienceLevels, current, async val =>
-			{
-				if (_athleteVm is not null)
-					_athleteVm.SelectedGymExperience = val;
-				SetSelectorValue(GymExperienceLabel, val, AppLanguage.ProfileSelectExperience);
-
-				var success = await SaveAthleteFieldAsync();
-
-				// Prevent OnAppearing from reloading only if save succeeded
-				if (success)
-					// Prevent OnAppearing from reloading and overwriting our change
-				_skipNextProfileReload = true;
-			}), true);
+		if (_athleteVm is null) return;
+		await PushOptionPickerAsync(
+			AppLanguage.ProfileGymExperienceTitle,
+			ExperienceLevels,
+			_athleteVm.SelectedGymExperience,
+			GymExperienceLabel,
+			AppLanguage.ProfileSelectExperience,
+			v => { if (_athleteVm is not null) _athleteVm.SelectedGymExperience = v; },
+			SaveAthleteFieldAsync);
 	}
 
 	private async void OnSexSelectorTapped(object? sender, TappedEventArgs e)
 	{
-		var current = _athleteVm?.SelectedSex;
-		await Navigation.PushAsync(
-			new OptionPickerPage(AppLanguage.ProfileSexTitle, SexOptions, current, async val =>
-			{
-				if (_athleteVm is not null)
-					_athleteVm.SelectedSex = val;
-				SetSelectorValue(SexLabel, val, AppLanguage.ProfileSelectSex);
-
-				var success = await SaveAthleteFieldAsync();
-
-				if (success)
-					_skipNextProfileReload = true;
-			}), true);
+		if (_athleteVm is null) return;
+		await PushOptionPickerAsync(
+			AppLanguage.ProfileSexTitle,
+			SexOptions,
+			_athleteVm.SelectedSex,
+			SexLabel,
+			AppLanguage.ProfileSelectSex,
+			v => { if (_athleteVm is not null) _athleteVm.SelectedSex = v; },
+			SaveAthleteFieldAsync);
 	}
 
 	private async void OnTrainingDaysTapped(object? sender, TappedEventArgs e)
 	{
-		await Navigation.PushAsync(
-			new OptionPickerPage(AppLanguage.ProfileTrainingDaysTitle, TrainingDaysOptions, _coachVm?.SelectedTrainingDays, async val =>
-			{
-				if (_coachVm is not null)
-					_coachVm.SelectedTrainingDays = val;
-				SetSelectorValue(TrainingDaysLabel, val, AppLanguage.ProfileSelectDays);
-				
-				// Autosave the change
-				var success = await SaveCoachFieldAsync();
-				
-				// Prevent OnAppearing from reloading only if save succeeded
-				if (success)
-					_skipNextProfileReload = true;
-			}), true);
+		await PushOptionPickerAsync(
+			AppLanguage.ProfileTrainingDaysTitle,
+			TrainingDaysOptions,
+			_coachVm?.SelectedTrainingDays,
+			TrainingDaysLabel,
+			AppLanguage.ProfileSelectDays,
+			v => { if (_coachVm is not null) _coachVm.SelectedTrainingDays = v; },
+			SaveCoachFieldAsync);
 	}
 
 	private async void OnSessionDurationTapped(object? sender, TappedEventArgs e)
 	{
-		await Navigation.PushAsync(
-			new OptionPickerPage(AppLanguage.ProfileSessionDurationTitle, SessionDurationOptions, _coachVm?.SelectedSessionDuration, async val =>
-			{
-				if (_coachVm is not null)
-					_coachVm.SelectedSessionDuration = val;
-				SetSelectorValue(SessionDurationLabel, val, AppLanguage.ProfileSelectDuration);
-				
-				// Autosave the change
-				var success = await SaveCoachFieldAsync();
-				
-				// Prevent OnAppearing from reloading only if save succeeded
-				if (success)
-					_skipNextProfileReload = true;
-			}), true);
+		await PushOptionPickerAsync(
+			AppLanguage.ProfileSessionDurationTitle,
+			SessionDurationOptions,
+			_coachVm?.SelectedSessionDuration,
+			SessionDurationLabel,
+			AppLanguage.ProfileSelectDuration,
+			v => { if (_coachVm is not null) _coachVm.SelectedSessionDuration = v; },
+			SaveCoachFieldAsync);
 	}
 
 	private async void OnPrimaryGoalTapped(object? sender, TappedEventArgs e)
 	{
-		await Navigation.PushAsync(
-			new OptionPickerPage(AppLanguage.ProfilePrimaryGoalTitle, TrainingGoalOptions, _coachVm?.SelectedPrimaryGoal, async val =>
-			{
-				if (_coachVm is not null)
-					_coachVm.SelectedPrimaryGoal = val;
-				SetSelectorValue(PrimaryGoalLabel, val, AppLanguage.ProfileSelectPrimaryGoal);
-				
-				// Autosave the change
-				var success = await SaveCoachFieldAsync();
-				
-				// Prevent OnAppearing from reloading only if save succeeded
-				if (success)
-					_skipNextProfileReload = true;
-			}), true);
+		await PushOptionPickerAsync(
+			AppLanguage.ProfilePrimaryGoalTitle,
+			TrainingGoalOptions,
+			_coachVm?.SelectedPrimaryGoal,
+			PrimaryGoalLabel,
+			AppLanguage.ProfileSelectPrimaryGoal,
+			v => { if (_coachVm is not null) _coachVm.SelectedPrimaryGoal = v; },
+			SaveCoachFieldAsync);
 	}
 
 	private async void OnSecondaryGoalTapped(object? sender, TappedEventArgs e)
 	{
-		await Navigation.PushAsync(
-			new OptionPickerPage(AppLanguage.ProfileSecondaryGoalTitle, TrainingGoalOptions, _coachVm?.SelectedSecondaryGoal, async val =>
-			{
-				if (_coachVm is not null)
-					_coachVm.SelectedSecondaryGoal = val;
-				SetSelectorValue(SecondaryGoalLabel, val, AppLanguage.ProfileSelectSecondaryGoal);
-				
-				// Autosave the change
-				var success = await SaveCoachFieldAsync();
-				
-				// Prevent OnAppearing from reloading only if save succeeded
-				if (success)
-					_skipNextProfileReload = true;
-			}), true);
+		await PushOptionPickerAsync(
+			AppLanguage.ProfileSecondaryGoalTitle,
+			TrainingGoalOptions,
+			_coachVm?.SelectedSecondaryGoal,
+			SecondaryGoalLabel,
+			AppLanguage.ProfileSelectSecondaryGoal,
+			v => { if (_coachVm is not null) _coachVm.SelectedSecondaryGoal = v; },
+			SaveCoachFieldAsync);
 	}
 
 	private async void OnDietaryPreferenceTapped(object? sender, TappedEventArgs e)
 	{
-		await Navigation.PushAsync(
-			new OptionPickerPage(AppLanguage.ProfileDietaryTitle, DietaryPreferenceOptions, _coachVm?.SelectedDietaryPreference, async val =>
-			{
-				if (_coachVm is not null)
-					_coachVm.SelectedDietaryPreference = val;
-				SetSelectorValue(DietaryPreferenceLabel, val, AppLanguage.ProfileSelectDietary);
-				
-				// Autosave the change
-				var success = await SaveCoachFieldAsync();
-				
-				// Prevent OnAppearing from reloading only if save succeeded
-				if (success)
-					_skipNextProfileReload = true;
-			}), true);
+		await PushOptionPickerAsync(
+			AppLanguage.ProfileDietaryTitle,
+			DietaryPreferenceOptions,
+			_coachVm?.SelectedDietaryPreference,
+			DietaryPreferenceLabel,
+			AppLanguage.ProfileSelectDietary,
+			v => { if (_coachVm is not null) _coachVm.SelectedDietaryPreference = v; },
+			SaveCoachFieldAsync);
 	}
 
 	private async void OnEquipmentSelectorTapped(object? sender, TappedEventArgs e)
 	{
+		await PushOptionPickerAsync(
+			AppLanguage.ProfileEquipmentTitle,
+			EquipmentAccessOptions,
+			_coachVm?.EquipmentText,
+			EquipmentLabel,
+			AppLanguage.ProfileSelectEquipment,
+			v => { if (_coachVm is not null) _coachVm.EquipmentText = v; },
+			SaveCoachFieldAsync);
+	}
+
+	private async Task PushOptionPickerAsync(
+		string title,
+		IList<string> options,
+		string? current,
+		Label selectorLabel,
+		string placeholder,
+		Action<string> assignToVm,
+		Func<Task<bool>> saveField)
+	{
 		await Navigation.PushAsync(
-			new OptionPickerPage(AppLanguage.ProfileEquipmentTitle, EquipmentAccessOptions, _coachVm?.EquipmentText, async val =>
+			new OptionPickerPage(title, options, current, async val =>
 			{
-				if (_coachVm is not null)
-					_coachVm.EquipmentText = val;
-				SetSelectorValue(EquipmentLabel, val, AppLanguage.ProfileSelectEquipment);
-				
-				// Autosave the change
-				var success = await SaveCoachFieldAsync();
-				
-				// Prevent OnAppearing from reloading only if save succeeded
-				if (success)
-					_skipNextProfileReload = true;
+				assignToVm(val);
+				SetSelectorValue(selectorLabel, val, placeholder);
+				var success = await saveField();
+				if (success) _skipNextProfileReload = true;
 			}), true);
 	}
 
