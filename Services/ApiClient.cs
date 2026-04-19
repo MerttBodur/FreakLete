@@ -128,23 +128,14 @@ public class ApiClient : IApiClient
 
 	// ── Profile Photo ─────────────────────────────────
 
-	public async Task<ApiResult<UploadProfilePhotoResponse>> UploadProfilePhotoAsync(
+	public Task<ApiResult<UploadProfilePhotoResponse>> UploadProfilePhotoAsync(
 		Stream fileStream, string contentType, string fileName)
 	{
-		try
-		{
-			AttachToken();
-			var streamContent = new StreamContent(fileStream);
-			streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
-			var formData = new MultipartFormDataContent();
-			formData.Add(streamContent, "file", fileName);
-			var response = await _http.PostAsync("api/profilephoto", formData);
-			return await HandleResponse<UploadProfilePhotoResponse>(response);
-		}
-		catch (Exception ex)
-		{
-			return ApiResult<UploadProfilePhotoResponse>.Fail($"Bağlantı hatası: {ex.Message}");
-		}
+		var streamContent = new StreamContent(fileStream);
+		streamContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+		var formData = new MultipartFormDataContent();
+		formData.Add(streamContent, "file", fileName);
+		return ExecuteAsync<UploadProfilePhotoResponse>(() => _http.PostAsync("api/profilephoto", formData));
 	}
 
 	public async Task<ApiResult<byte[]>> GetProfilePhotoAsync()
@@ -351,12 +342,12 @@ public class ApiClient : IApiClient
 		}
 	}
 
-	private async Task<ApiResult<T>> GetAsync<T>(string endpoint)
+	private async Task<ApiResult<T>> ExecuteAsync<T>(Func<Task<HttpResponseMessage>> send)
 	{
 		try
 		{
 			AttachToken();
-			var response = await _http.GetAsync(endpoint);
+			var response = await send();
 			return await HandleResponse<T>(response);
 		}
 		catch (Exception ex)
@@ -365,33 +356,14 @@ public class ApiClient : IApiClient
 		}
 	}
 
-	private async Task<ApiResult<T>> PostAsync<T>(string endpoint, object data)
-	{
-		try
-		{
-			AttachToken();
-			var response = await _http.PostAsJsonAsync(endpoint, data, JsonOptions);
-			return await HandleResponse<T>(response);
-		}
-		catch (Exception ex)
-		{
-			return ApiResult<T>.Fail($"Bağlantı hatası: {ex.Message}");
-		}
-	}
+	private Task<ApiResult<T>> GetAsync<T>(string endpoint) =>
+		ExecuteAsync<T>(() => _http.GetAsync(endpoint));
 
-	private async Task<ApiResult<T>> PutWithResponseAsync<T>(string endpoint, object data)
-	{
-		try
-		{
-			AttachToken();
-			var response = await _http.PutAsJsonAsync(endpoint, data, JsonOptions);
-			return await HandleResponse<T>(response);
-		}
-		catch (Exception ex)
-		{
-			return ApiResult<T>.Fail($"Bağlantı hatası: {ex.Message}");
-		}
-	}
+	private Task<ApiResult<T>> PostAsync<T>(string endpoint, object data) =>
+		ExecuteAsync<T>(() => _http.PostAsJsonAsync(endpoint, data, JsonOptions));
+
+	private Task<ApiResult<T>> PutWithResponseAsync<T>(string endpoint, object data) =>
+		ExecuteAsync<T>(() => _http.PutAsJsonAsync(endpoint, data, JsonOptions));
 
 	private async Task<ApiResult<bool>> PutAsync(string endpoint, object data)
 	{
