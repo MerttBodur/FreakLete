@@ -3,8 +3,6 @@ using FreakLete.Models;
 using FreakLete.Services;
 using FreakLete.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui.Controls.Shapes;
-
 namespace FreakLete;
 
 public record ProfileHighlight(string Title, string Subtitle);
@@ -250,9 +248,6 @@ public partial class ProfilePage : ContentPage
 		_coachVm = new CoachProfileViewModel(_api.SaveCoachProfileAsync);
 		_coachVm.HydrateFromProfile(_profile);
 		SyncCoachUI();
-
-		var tierResult = await _api.RecalculateTiersAsync();
-		RenderTierCards(tierResult.Success ? tierResult.Data : null);
 
 		await LoadAthleticPerformancesAsync();
 		await LoadMovementGoalsAsync();
@@ -1361,77 +1356,6 @@ public partial class ProfilePage : ContentPage
 		InjuryHistoryEditor.Text = _coachVm.InjuryHistoryText;
 		CurrentPainEditor.Text = _coachVm.PainPointsText;
 		PhysicalLimitationsEditor.Text = _coachVm.LimitationsText;
-	}
-
-	private async void OnRefreshTiersTapped(object? sender, TappedEventArgs e)
-	{
-		var result = await _api.RecalculateTiersAsync();
-		RenderTierCards(result.Success ? result.Data : null);
-	}
-
-	private void RenderTierCards(List<ExerciseTierResponse>? tiers)
-	{
-		TierCardsContainer.Children.Clear();
-
-		if (tiers is null || tiers.Count == 0)
-		{
-			TierEmptyLabel.IsVisible = true;
-			return;
-		}
-		TierEmptyLabel.IsVisible = false;
-
-		foreach (var t in tiers)
-			TierCardsContainer.Children.Add(BuildTierCard(t));
-	}
-
-	private static Border BuildTierCard(ExerciseTierResponse t)
-	{
-		var name = new Label
-		{
-			Text = t.ExerciseName,
-			FontFamily = "OpenSansSemibold",
-			FontSize = 15,
-			TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB")
-		};
-		var tierLbl = new Label
-		{
-			Text = t.TierLevel,
-			FontFamily = "OpenSansSemibold",
-			FontSize = 13,
-			TextColor = ColorResources.GetColor("AccentGlow", "#A78BFA")
-		};
-		var metric = new Label
-		{
-			Text = t.Ratio is not null
-				? $"{t.RawValue:0.#} kg · x{t.Ratio:0.00} BW"
-				: $"{t.RawValue:0.##}",
-			FontFamily = "OpenSansRegular",
-			FontSize = 13,
-			TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5")
-		};
-
-		var header = new Grid
-		{
-			ColumnDefinitions =
-			{
-				new ColumnDefinition(GridLength.Star),
-				new ColumnDefinition(GridLength.Auto)
-			}
-		};
-		Grid.SetColumn(name, 0);
-		Grid.SetColumn(tierLbl, 1);
-		header.Children.Add(name);
-		header.Children.Add(tierLbl);
-
-		var stack = new VerticalStackLayout { Spacing = 6 };
-		stack.Children.Add(header);
-		stack.Children.Add(metric);
-
-		return new Border
-		{
-			Style = (Style)Application.Current!.Resources["CardBorder"],
-			Content = stack
-		};
 	}
 
 	// ── Inner model classes ───────────────────────────────────────────

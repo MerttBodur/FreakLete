@@ -241,47 +241,6 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
-                <!-- Exercise Tiers -->
-                <Border Style="{StaticResource CardBorder}">
-                    <VerticalStackLayout Spacing="12">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Grid.Column="0"
-                                   Text="Exercise Tiers"
-                                   Style="{StaticResource SubHeadline}"
-                                   HorizontalTextAlignment="Start"
-                                   VerticalOptions="Center" />
-                            <Border Grid.Column="1"
-                                    StrokeShape="RoundRectangle 14"
-                                    BackgroundColor="{StaticResource SurfaceStrong}"
-                                    Stroke="{StaticResource SurfaceBorder}"
-                                    StrokeThickness="1"
-                                    Padding="10,6">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnRefreshTiersTapped" />
-                                </Border.GestureRecognizers>
-                                <Label Text="↻ Refresh"
-                                       FontFamily="OpenSansSemibold"
-                                       FontSize="12"
-                                       TextColor="{StaticResource AccentGlow}" />
-                            </Border>
-                        </Grid>
-
-                        <Label x:Name="TierEmptyLabel"
-                               Text="No tier yet — log a Strength PR and set your body weight in profile to see your level."
-                               FontFamily="OpenSansRegular"
-                               FontSize="14"
-                               TextColor="{StaticResource TextMuted}"
-                               IsVisible="False" />
-
-                        <VerticalStackLayout x:Name="TierCardsContainer" Spacing="10" />
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Divider -->
-                <BoxView HeightRequest="1"
-                         Color="{StaticResource SurfaceBorder}"
-                         Margin="0,4,0,0" />
-
                 <Border Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
                         <Label x:Name="ProfileDetailsTitle"
