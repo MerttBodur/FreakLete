@@ -581,6 +581,7 @@ public class PrEntryResponse
 	public double? GroundContactTimeMs { get; set; }
 	public double? ConcentricTimeSeconds { get; set; }
 	public DateTime CreatedAt { get; set; }
+	public TierResult? Tier { get; set; }
 }
 
 // ── Sport Catalog DTOs ──────────────────────────────────
