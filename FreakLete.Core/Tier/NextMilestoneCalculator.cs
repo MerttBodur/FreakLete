@@ -32,28 +32,36 @@ public static class NextMilestoneCalculator
         double targetRaw;
         double delta;
 
+        bool isAbsolute = string.Equals(tierType, "AthleticAbsolute", StringComparison.OrdinalIgnoreCase);
+
         if (isStrength)
         {
             if (bodyWeight is null or <= 0)
                 return new NextMilestoneResult(null, null, null, 0);
             targetRaw = boundary * bodyWeight.Value;
-            delta = targetRaw - rawValue;
+            delta = Math.Max(0, targetRaw - rawValue);
         }
         else if (isInverse)
         {
             // Lower is better — delta is seconds still to cut.
             targetRaw = boundary;
-            delta = rawValue - targetRaw;
+            delta = Math.Max(0, rawValue - targetRaw);
         }
-        else
+        else if (isAbsolute)
         {
             // AthleticAbsolute — higher is better.
             targetRaw = boundary;
-            delta = targetRaw - rawValue;
+            delta = Math.Max(0, targetRaw - rawValue);
+        }
+        else
+        {
+            throw new ArgumentException($"Unknown tierType '{tierType}'.", nameof(tierType));
         }
 
         // ProgressPercent: position within [lowerBoundary, nextBoundary] of current tier band.
-        double current = ratio ?? rawValue;
+        double current = isStrength
+            ? (ratio ?? throw new ArgumentException("ratio is required for StrengthRatio", nameof(ratio)))
+            : rawValue;
         double progress;
         if (cur == 0)
         {

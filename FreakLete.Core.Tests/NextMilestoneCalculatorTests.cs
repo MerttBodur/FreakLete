@@ -85,4 +85,28 @@ public class NextMilestoneCalculatorTests
         Assert.Equal(7, r.NextDelta);
         Assert.InRange(r.ProgressPercent, 29.9, 30.1);
     }
+
+    [Fact]
+    public void StrengthRatio_NeedImprovement_ProgressAnchoredAtZero()
+    {
+        // ratio 0.3, threshold[0]=0.5 → progress = 0.3/0.5 = 60%
+        var r = NextMilestoneCalculator.Compute(
+            "StrengthRatio", TierLevel.NeedImprovement, Bench,
+            rawValue: 24, ratio: 0.3, bodyWeight: 80);
+        Assert.Equal(TierLevel.Beginner.ToString(), r.NextLevel);
+        Assert.InRange(r.ProgressPercent, 59.9, 60.1);
+    }
+
+    [Fact]
+    public void StrengthRatio_Elite_ReturnsFreakAndCorrectDelta()
+    {
+        // ratio 1.8, Bench thresholds[4]=1.75 → Elite band entry already passed (ratio > 1.75).
+        // cur=4, boundary=thresholds[4]=1.75. targetRaw=1.75*80=140. rawValue=144. delta clamped to 0.
+        // Progress in [thresholds[3]=1.5, thresholds[4]=1.75]: (1.8-1.5)/0.25 = but clamped to 100.
+        var r = NextMilestoneCalculator.Compute(
+            "StrengthRatio", TierLevel.Elite, Bench,
+            rawValue: 144, ratio: 1.8, bodyWeight: 80);
+        Assert.Equal(TierLevel.Freak.ToString(), r.NextLevel);
+        Assert.Equal(0, r.NextDelta);
+    }
 }
