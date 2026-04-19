@@ -224,15 +224,9 @@ public partial class ProfilePage : ContentPage
 		// Sync UI from ViewModel state
 		SyncDateOfBirthUI();
 
-		WeightEntry.TextChanged -= OnWeightTextChanged;
-		BodyFatEntry.TextChanged -= OnBodyFatTextChanged;
-		HeightEntry.TextChanged -= OnHeightTextChanged;
-		WeightEntry.Text = _athleteVm.WeightText;
-		BodyFatEntry.Text = _athleteVm.BodyFatText;
-		HeightEntry.Text = _athleteVm.HeightText;
-		WeightEntry.TextChanged += OnWeightTextChanged;
-		BodyFatEntry.TextChanged += OnBodyFatTextChanged;
-		HeightEntry.TextChanged += OnHeightTextChanged;
+		SetEntryTextSilently(WeightEntry, _athleteVm.WeightText, OnWeightTextChanged);
+		SetEntryTextSilently(BodyFatEntry, _athleteVm.BodyFatText, OnBodyFatTextChanged);
+		SetEntryTextSilently(HeightEntry, _athleteVm.HeightText, OnHeightTextChanged);
 
 		SetSelectorValue(SportLabel, _athleteVm.SelectedSport?.Name, AppLanguage.ProfileSelectSport);
 		SetSelectorValue(SexLabel, _athleteVm.SelectedSex, AppLanguage.ProfileSelectSex);
@@ -366,6 +360,13 @@ public partial class ProfilePage : ContentPage
 
 		if (_profile is not null)
 			BuildHighlights(_profile.TotalWorkouts, _profile.TotalPrs, _lastAthleticCount, _lastGoalCount);
+	}
+
+	private static void SetEntryTextSilently(Entry entry, string? value, EventHandler<TextChangedEventArgs> handler)
+	{
+		entry.TextChanged -= handler;
+		entry.Text = value ?? "";
+		entry.TextChanged += handler;
 	}
 
 	private static void SetSelectorValue(Label label, string? value, string placeholder)
@@ -758,15 +759,9 @@ public partial class ProfilePage : ContentPage
 		{
 			// Rehydrate UI from the server-confirmed state in the ViewModel
 			SyncDateOfBirthUI();
-			WeightEntry.TextChanged -= OnWeightTextChanged;
-			BodyFatEntry.TextChanged -= OnBodyFatTextChanged;
-			HeightEntry.TextChanged -= OnHeightTextChanged;
-			WeightEntry.Text = _athleteVm.WeightText;
-			BodyFatEntry.Text = _athleteVm.BodyFatText;
-			HeightEntry.Text = _athleteVm.HeightText;
-			WeightEntry.TextChanged += OnWeightTextChanged;
-			BodyFatEntry.TextChanged += OnBodyFatTextChanged;
-			HeightEntry.TextChanged += OnHeightTextChanged;
+			SetEntryTextSilently(WeightEntry, _athleteVm.WeightText, OnWeightTextChanged);
+			SetEntryTextSilently(BodyFatEntry, _athleteVm.BodyFatText, OnBodyFatTextChanged);
+			SetEntryTextSilently(HeightEntry, _athleteVm.HeightText, OnHeightTextChanged);
 			SetSelectorValue(SportLabel, _athleteVm.SelectedSport?.Name, AppLanguage.ProfileSelectSport);
 			SetSelectorValue(SexLabel, _athleteVm.SelectedSex, AppLanguage.ProfileSelectSex);
 			SyncPositionUI();
