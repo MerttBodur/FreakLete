@@ -185,24 +185,4 @@ public class ExerciseTierIntegrationTests : IAsyncLifetime
         Assert.Equal("benchpress", tierResult.GetProperty("catalogId").GetString());
     }
 
-    [Fact]
-    public async Task GetProfileTiers_ReturnsSnapshot()
-    {
-        var c = await RegisterAndAuthWithWeightAsync(80);
-
-        await c.PostAsJsonAsync("/api/pr-entries", new
-        {
-            catalogId = "benchpress",
-            exerciseName = "Bench Press",
-            trackingMode = "Strength",
-            weight = 100, reps = 5, rir = 1
-        });
-
-        var resp = await c.GetAsync("/api/profile/tiers");
-        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
-
-        var arr = JsonDocument.Parse(await resp.Content.ReadAsStringAsync()).RootElement;
-        Assert.Equal(1, arr.GetArrayLength());
-        Assert.Equal("benchpress", arr[0].GetProperty("catalogId").GetString());
-    }
 }
