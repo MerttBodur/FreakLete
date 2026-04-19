@@ -128,14 +128,14 @@ public class ApiClient : IApiClient
 
 	// ── Profile Photo ─────────────────────────────────
 
-	public Task<ApiResult<UploadProfilePhotoResponse>> UploadProfilePhotoAsync(
+	public async Task<ApiResult<UploadProfilePhotoResponse>> UploadProfilePhotoAsync(
 		Stream fileStream, string contentType, string fileName)
 	{
-		var streamContent = new StreamContent(fileStream);
+		using var streamContent = new StreamContent(fileStream);
 		streamContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-		var formData = new MultipartFormDataContent();
+		using var formData = new MultipartFormDataContent();
 		formData.Add(streamContent, "file", fileName);
-		return ExecuteAsync<UploadProfilePhotoResponse>(() => _http.PostAsync("api/profilephoto", formData));
+		return await ExecuteAsync<UploadProfilePhotoResponse>(() => _http.PostAsync("api/profilephoto", formData));
 	}
 
 	public async Task<ApiResult<byte[]>> GetProfilePhotoAsync()
