@@ -300,6 +300,18 @@ public static class AppLanguage
 	public static string FormatProgress(string name) => IsTurkish ? $"{name} İlerlemesi" : $"{name} Progress";
 	public static string FormatMovement(string name) => $"Movement: {name}";
 	public static string CalcPrSaved => IsTurkish ? "PR kaydedildi." : "Saved PR added.";
+
+	// ── Tier Popup ──────────────────────────────────
+	public static string TierCongratsTitle => IsTurkish ? "Tebrikler!" : "Congratulations!";
+	public static string TierFirstTierText(string level) =>
+		IsTurkish ? $"İlk seviyen: {level}!" : $"Your first tier: {level}!";
+	public static string TierLevelUpText(string level) =>
+		IsTurkish ? $"{level} seviyesine ulaştın!" : $"You reached {level}!";
+	public static string TierNextMilestonePrefix(string nextLevel) =>
+		IsTurkish ? $"Sıradaki: {nextLevel}" : $"Next: {nextLevel}";
+	public static string TierMaxTierText =>
+		IsTurkish ? "En yüksek seviyeye ulaşıldı." : "Highest tier achieved.";
+	public static string TierCloseButton => IsTurkish ? "Kapat" : "Close";
 	public static string CalcPrUpdated => IsTurkish ? "PR güncellendi." : "Saved PR updated.";
 	public static string CalcPrDeleted => IsTurkish ? "PR silindi." : "Saved PR deleted.";
 	public static string CalcPrFailedSave => IsTurkish ? "PR kaydedilemedi." : "Failed to save PR.";
