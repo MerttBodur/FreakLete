@@ -132,12 +132,26 @@ public class ExerciseTierService : IExerciseTierService
             Enum.TryParse<TierLevel>(previousLevel, out var prev) &&
             (int)tier > (int)prev;
 
+        var thresholdsForMilestone = TierResolver.GetThresholds(cfg, user.Sex, configs);
+        var milestone = NextMilestoneCalculator.Compute(
+            tierType: cfg.TierType,
+            currentLevel: tier,
+            thresholds: thresholdsForMilestone,
+            rawValue: rawValue,
+            ratio: ratio,
+            bodyWeight: basisValue);
+
         return new TierResultDto
         {
             CatalogId = catalogId,
             TierLevel = newLevel,
             PreviousTierLevel = previousLevel,
-            LeveledUp = leveledUp
+            LeveledUp = leveledUp,
+            TrackingMode = def.TrackingMode,
+            NextLevel = milestone.NextLevel,
+            NextTargetRaw = milestone.NextTargetRaw,
+            NextDelta = milestone.NextDelta,
+            ProgressPercent = milestone.ProgressPercent
         };
     }
 
