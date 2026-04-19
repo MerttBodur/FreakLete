@@ -219,6 +219,7 @@ if (!app.Environment.IsEnvironment("Testing"))
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await db.Database.MigrateAsync();
+        await FreakLete.Api.Data.Seed.TierEligibleDefinitionsSeed.EnsureAppliedAsync(db);
 
         var seeder = scope.ServiceProvider.GetRequiredService<StarterTemplateSeedService>();
         await seeder.SeedAsync();
