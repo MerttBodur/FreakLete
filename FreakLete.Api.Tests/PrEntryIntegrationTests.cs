@@ -1,6 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using FreakLete.Api.Data;
+using FreakLete.Api.Entities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FreakLete.Api.Tests;
 
@@ -272,5 +275,168 @@ public class PrEntryIntegrationTests : IAsyncLifetime
         // Original still exists
         var getResp = await user1.GetAsync($"/api/pr-entries/{id}");
         Assert.Equal(HttpStatusCode.OK, getResp.StatusCode);
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  TIER NEXT-MILESTONE FIELDS
+    // ════════════════════════════════════════════════════════════════
+
+    private async Task SeedBenchPressDefinitionAsync()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        if (!db.ExerciseDefinitions.Any(d => d.CatalogId == "benchpress"))
+        {
+            db.ExerciseDefinitions.Add(new ExerciseDefinition
+            {
+                CatalogId = "benchpress",
+                Name = "Bench Press",
+                DisplayName = "Bench Press",
+                Category = "Push",
+                Mechanic = "compound",
+                TrackingMode = "Strength",
+                TierType = "StrengthRatio",
+                TierThresholdsMale = "[0.5,1.0,1.25,1.5,1.75]",
+                TierThresholdsFemale = "[0.35,0.7,0.9,1.1,1.35]"
+            });
+            await db.SaveChangesAsync();
+        }
+    }
+
+    private async Task<HttpClient> RegisterWithWeightAsync(double weightKg, string sex = "Male", string? email = null)
+    {
+        var auth = await AuthTestHelper.RegisterAsync(_client, email: email);
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var u = db.Users.Single(x => x.Id == auth.UserId);
+            u.WeightKg = weightKg;
+            u.Sex = sex;
+            await db.SaveChangesAsync();
+        }
+        var c = _factory.CreateClient();
+        AuthTestHelper.Authenticate(c, auth.Token);
+        return c;
+    }
+
+    [Fact]
+    public async Task CreatePr_FirstTimeTierEligible_ReturnsPopulatedTierWithNullPrevious()
+    {
+        await SeedBenchPressDefinitionAsync();
+        var c = await RegisterWithWeightAsync(80.0);
+
+        var resp = await c.PostAsJsonAsync("/api/pr-entries", new
+        {
+            catalogId = "benchpress",
+            exerciseName = "Bench Press",
+            exerciseCategory = "Push",
+            trackingMode = "Strength",
+            weight = 80,
+            reps = 5,
+            rir = 1
+        });
+        Assert.Equal(HttpStatusCode.Created, resp.StatusCode);
+
+        var tier = JsonDocument.Parse(await resp.Content.ReadAsStringAsync())
+            .RootElement.GetProperty("tier");
+
+        Assert.Equal(JsonValueKind.Null, tier.GetProperty("previousTierLevel").ValueKind);
+        Assert.False(tier.GetProperty("leveledUp").GetBoolean());
+        Assert.False(string.IsNullOrEmpty(tier.GetProperty("tierLevel").GetString()));
+        Assert.False(string.IsNullOrEmpty(tier.GetProperty("nextLevel").GetString()));
+        Assert.True(tier.GetProperty("nextDelta").GetDouble() >= 0);
+        Assert.Equal("Strength", tier.GetProperty("trackingMode").GetString());
+    }
+
+    [Fact]
+    public async Task CreatePr_CrossesThreshold_ReturnsLeveledUpTrue()
+    {
+        await SeedBenchPressDefinitionAsync();
+        var c = await RegisterWithWeightAsync(80.0);
+
+        // ~60kg x5 @1 → 1RM ≈ 72 → ratio 0.9 → Beginner
+        await c.PostAsJsonAsync("/api/pr-entries", new
+        {
+            catalogId = "benchpress", exerciseName = "Bench Press",
+            exerciseCategory = "Push", trackingMode = "Strength",
+            weight = 60, reps = 5, rir = 1
+        });
+
+        // 100kg x5 @1 → 1RM ≈ 120 → ratio 1.5 → Elite
+        var resp = await c.PostAsJsonAsync("/api/pr-entries", new
+        {
+            catalogId = "benchpress", exerciseName = "Bench Press",
+            exerciseCategory = "Push", trackingMode = "Strength",
+            weight = 100, reps = 5, rir = 1
+        });
+        var tier = JsonDocument.Parse(await resp.Content.ReadAsStringAsync())
+            .RootElement.GetProperty("tier");
+        Assert.True(tier.GetProperty("leveledUp").GetBoolean());
+    }
+
+    [Fact]
+    public async Task CreatePr_SameBand_LeveledUpFalseWithPreviousSet()
+    {
+        await SeedBenchPressDefinitionAsync();
+        var c = await RegisterWithWeightAsync(80.0);
+
+        // 50kg x5 @1 → 1RM ≈ 60 → ratio 0.75 → Beginner
+        await c.PostAsJsonAsync("/api/pr-entries", new
+        {
+            catalogId = "benchpress", exerciseName = "Bench Press",
+            exerciseCategory = "Push", trackingMode = "Strength",
+            weight = 50, reps = 5, rir = 1
+        });
+        // 60kg x5 @1 → 1RM ≈ 72 → ratio 0.9 → still Beginner
+        var resp = await c.PostAsJsonAsync("/api/pr-entries", new
+        {
+            catalogId = "benchpress", exerciseName = "Bench Press",
+            exerciseCategory = "Push", trackingMode = "Strength",
+            weight = 60, reps = 5, rir = 1
+        });
+        var tier = JsonDocument.Parse(await resp.Content.ReadAsStringAsync())
+            .RootElement.GetProperty("tier");
+        Assert.Equal("Beginner", tier.GetProperty("tierLevel").GetString());
+        Assert.False(tier.GetProperty("leveledUp").GetBoolean());
+    }
+
+    [Fact]
+    public async Task CreatePr_AtFreakTier_NullNextLevelAndFullProgress()
+    {
+        await SeedBenchPressDefinitionAsync();
+        var c = await RegisterWithWeightAsync(80.0);
+
+        // 200kg x1 @0 → 1RM = 200 → ratio 2.5 → Freak
+        var resp = await c.PostAsJsonAsync("/api/pr-entries", new
+        {
+            catalogId = "benchpress", exerciseName = "Bench Press",
+            exerciseCategory = "Push", trackingMode = "Strength",
+            weight = 200, reps = 1, rir = 0
+        });
+        var tier = JsonDocument.Parse(await resp.Content.ReadAsStringAsync())
+            .RootElement.GetProperty("tier");
+        Assert.Equal("Freak", tier.GetProperty("tierLevel").GetString());
+        Assert.Equal(JsonValueKind.Null, tier.GetProperty("nextLevel").ValueKind);
+        Assert.Equal(JsonValueKind.Null, tier.GetProperty("nextDelta").ValueKind);
+        Assert.Equal(100, tier.GetProperty("progressPercent").GetDouble());
+    }
+
+    [Fact]
+    public async Task CreatePr_NonEligibleExercise_TierIsNull()
+    {
+        await SeedBenchPressDefinitionAsync();
+        var c = await RegisterWithWeightAsync(80.0);
+
+        // "dumbbellcurl" has no ExerciseDefinition in the test DB → no tier config → null tier
+        var resp = await c.PostAsJsonAsync("/api/pr-entries", new
+        {
+            catalogId = "dumbbellcurl",
+            exerciseName = "Dumbbell Curl",
+            exerciseCategory = "Pull",
+            trackingMode = "Strength",
+            weight = 20, reps = 10, rir = 1
+        });
+        var root = JsonDocument.Parse(await resp.Content.ReadAsStringAsync()).RootElement;
+        Assert.Equal(JsonValueKind.Null, root.GetProperty("tier").ValueKind);
     }
 }
