@@ -251,69 +251,11 @@ public partial class ProfilePage : ContentPage
 		_coachVm.HydrateFromProfile(_profile);
 		SyncCoachUI();
 
-		// Load athletic performances and goals in parallel; recalculate tiers separately
-		// (RecalculateTiersAsync backfills from PR entries then returns current list)
-		var perfResultTask = _api.GetAthleticPerformancesAsync();
-		var goalsResultTask = _api.GetMovementGoalsAsync();
-		await Task.WhenAll(perfResultTask, goalsResultTask);
-
 		var tierResult = await _api.RecalculateTiersAsync();
 		RenderTierCards(tierResult.Success ? tierResult.Data : null);
 
-		var perfResult = perfResultTask.Result;
-		var goalsResult = goalsResultTask.Result;
-
-		// Populate lists
-		if (perfResult.Success && perfResult.Data is not null)
-		{
-			var items = perfResult.Data.Select(entry => new AthleticPerformanceListItem
-			{
-				Id = entry.Id,
-				MovementName = entry.MovementName,
-				MovementCategory = entry.MovementCategory,
-				Value = entry.Value,
-				Unit = entry.Unit,
-				SecondaryValue = entry.SecondaryValue,
-				SecondaryUnit = entry.SecondaryUnit,
-				GroundContactTimeMs = entry.GroundContactTimeMs,
-				ConcentricTimeSeconds = entry.ConcentricTimeSeconds,
-				RecordedAt = entry.RecordedAt,
-				Text = FormatAthleticPerformanceText(entry)
-			}).ToList();
-
-			BindableLayout.SetItemsSource(AthleticPerformanceList, items);
-			AthleticPerformanceEmptyLabel.IsVisible = items.Count == 0;
-		}
-		else
-		{
-			AthleticPerformanceEmptyLabel.IsVisible = true;
-		}
-
-		if (goalsResult.Success && goalsResult.Data is not null)
-		{
-			var items = goalsResult.Data.Select(goal => new MovementGoalListItem
-			{
-				Id = goal.Id,
-				MovementName = goal.MovementName,
-				MovementCategory = goal.MovementCategory,
-				GoalMetricLabel = goal.GoalMetricLabel,
-				TargetValue = goal.TargetValue,
-				Unit = goal.Unit,
-				Text = string.IsNullOrWhiteSpace(goal.GoalMetricLabel)
-					? $"{goal.MovementName}: {goal.TargetValue:0.##} {goal.Unit}"
-					: $"{goal.MovementName}: {goal.GoalMetricLabel} {goal.TargetValue:0.##} {goal.Unit}"
-			}).ToList();
-
-			BindableLayout.SetItemsSource(MovementGoalsList, items);
-			MovementGoalsEmptyLabel.IsVisible = items.Count == 0;
-		}
-		else
-		{
-			MovementGoalsEmptyLabel.IsVisible = true;
-		}
-
-		_lastAthleticCount = perfResult.Success && perfResult.Data is not null ? perfResult.Data.Count : 0;
-		_lastGoalCount = goalsResult.Success && goalsResult.Data is not null ? goalsResult.Data.Count : 0;
+		await LoadAthleticPerformancesAsync();
+		await LoadMovementGoalsAsync();
 
 		AthleticRecordsCountLabel.Text = _lastAthleticCount.ToString();
 
