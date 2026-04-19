@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using FreakLete.Models;
 using FreakLete.Services;
 using FreakLete.ViewModels;
@@ -5,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls.Shapes;
 
 namespace FreakLete;
+
+public record ProfileHighlight(string Title, string Subtitle);
 
 public partial class ProfilePage : ContentPage
 {
@@ -75,11 +78,14 @@ public partial class ProfilePage : ContentPage
 	// skip the next OnAppearing()->LoadProfileAsync() to preserve local selections
 	private bool _skipNextProfileReload;
 
+	public ObservableCollection<ProfileHighlight> Highlights { get; } = new();
+
 	public ProfilePage()
 	{
 		InitializeComponent();
 		_api = MauiProgram.Services.GetRequiredService<ApiClient>();
 		_session = MauiProgram.Services.GetRequiredService<UserSession>();
+		HighlightsEmptyText.Text = AppLanguage.ProfileNoHighlights;
 		ApplyLanguage();
 		UpdatePerformanceSelectionUI();
 		UpdateGoalSelectionUI();
@@ -258,8 +264,6 @@ public partial class ProfilePage : ContentPage
 
 	private void BuildHighlights(int totalWorkouts, int totalPrs, int athleticCount, int goalCount)
 	{
-		HighlightsContainer.Children.Clear();
-
 		var milestones = new List<(string title, string subtitle, bool achieved)>
 		{
 			(AppLanguage.ProfileHighlightFirstWorkout, AppLanguage.ProfileHighlightFirstWorkoutDesc, totalWorkouts >= 1),
@@ -269,89 +273,11 @@ public partial class ProfilePage : ContentPage
 			(AppLanguage.ProfileHighlightGoalSetter, AppLanguage.ProfileHighlightGoalSetterDesc, goalCount >= 1)
 		};
 
-		var achieved = milestones.Where(m => m.achieved).ToList();
+		Highlights.Clear();
+		foreach (var (title, subtitle, _) in milestones.Where(m => m.achieved))
+			Highlights.Add(new ProfileHighlight(title, subtitle));
 
-		if (achieved.Count == 0)
-		{
-			var emptyCard = new Border
-			{
-				StrokeShape = new RoundRectangle { CornerRadius = 16 },
-				BackgroundColor = ColorResources.GetColor("SurfaceRaised", "#1D1828"),
-				Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46")),
-				StrokeThickness = 1,
-				Padding = new Thickness(20, 16)
-			};
-			emptyCard.Content = new Label
-			{
-				Text = AppLanguage.ProfileNoHighlights,
-				FontSize = 13,
-				FontFamily = "OpenSansRegular",
-				TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5"),
-				HorizontalTextAlignment = TextAlignment.Center
-			};
-			HighlightsContainer.Children.Add(emptyCard);
-			return;
-		}
-
-		foreach (var (title, subtitle, _) in achieved)
-		{
-			var card = new Border
-			{
-				StrokeShape = new RoundRectangle { CornerRadius = 18 },
-				Stroke = new SolidColorBrush(ColorResources.GetColor("AccentSoft", "#2F2346")),
-				StrokeThickness = 1,
-				Padding = new Thickness(18, 14),
-				Background = new LinearGradientBrush(
-				[
-					new GradientStop(ColorResources.GetColor("AccentSoft", "#2F2346"), 0.0f),
-					new GradientStop(ColorResources.GetColor("Surface", "#100D1A"), 1.0f)
-				], new Point(0, 0), new Point(1, 1))
-			};
-
-			var row = new HorizontalStackLayout { Spacing = 14 };
-
-			var checkBorder = new Border
-			{
-				StrokeShape = new RoundRectangle { CornerRadius = 16 },
-				BackgroundColor = ColorResources.GetColor("Accent", "#8B5CF6").WithAlpha(0.2f),
-				Stroke = new SolidColorBrush(ColorResources.GetColor("Accent", "#8B5CF6").WithAlpha(0.4f)),
-				StrokeThickness = 1,
-				WidthRequest = 32,
-				HeightRequest = 32,
-				VerticalOptions = LayoutOptions.Center
-			};
-			checkBorder.Content = new Label
-			{
-				Text = "\u2713",
-				FontSize = 15,
-				FontFamily = "OpenSansSemibold",
-				TextColor = ColorResources.GetColor("AccentGlow", "#A78BFA"),
-				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center
-			};
-
-			var textStack = new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center };
-			textStack.Children.Add(new Label
-			{
-				Text = title,
-				FontSize = 15,
-				FontFamily = "OpenSansSemibold",
-				TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB")
-			});
-			textStack.Children.Add(new Label
-			{
-				Text = subtitle,
-				FontSize = 12,
-				FontFamily = "OpenSansRegular",
-				TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5")
-			});
-
-			row.Children.Add(checkBorder);
-			row.Children.Add(textStack);
-			card.Content = row;
-
-			HighlightsContainer.Children.Add(card);
-		}
+		HighlightsEmptyLabel.IsVisible = Highlights.Count == 0;
 	}
 
 	private void RefreshTopSummary()

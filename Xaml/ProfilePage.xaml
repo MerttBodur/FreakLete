@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:FreakLete"
              x:Class="FreakLete.ProfilePage"
+             x:Name="ProfilePageRoot"
              NavigationPage.HasNavigationBar="False"
              Title="Profile">
 
@@ -180,7 +181,64 @@
                            TextColor="{StaticResource TextPrimary}"
                            Text="Highlights"
                            Margin="0,4,0,0" />
-                    <VerticalStackLayout x:Name="HighlightsContainer" Spacing="8" />
+                    <Border x:Name="HighlightsEmptyLabel"
+                            StrokeShape="RoundRectangle 16"
+                            BackgroundColor="{StaticResource SurfaceRaised}"
+                            Stroke="{StaticResource SurfaceBorder}"
+                            StrokeThickness="1"
+                            Padding="20,16"
+                            IsVisible="False">
+                        <Label x:Name="HighlightsEmptyText"
+                               FontSize="13"
+                               FontFamily="OpenSansRegular"
+                               TextColor="{StaticResource TextSecondary}"
+                               HorizontalTextAlignment="Center" />
+                    </Border>
+                    <VerticalStackLayout x:Name="HighlightsContainer"
+                                         BindableLayout.ItemsSource="{Binding Highlights, Source={x:Reference ProfilePageRoot}}"
+                                         Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="local:ProfileHighlight">
+                                <Border StrokeShape="RoundRectangle 18"
+                                        Stroke="{StaticResource AccentSoft}"
+                                        StrokeThickness="1"
+                                        Padding="18,14">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="{StaticResource AccentSoft}" Offset="0.0" />
+                                            <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <HorizontalStackLayout Spacing="14">
+                                        <Border StrokeShape="RoundRectangle 16"
+                                                BackgroundColor="{StaticResource AccentSoft}"
+                                                Stroke="{StaticResource Accent}"
+                                                StrokeThickness="1"
+                                                WidthRequest="32"
+                                                HeightRequest="32"
+                                                VerticalOptions="Center">
+                                            <Label Text="✓"
+                                                   FontSize="15"
+                                                   FontFamily="OpenSansSemibold"
+                                                   TextColor="{StaticResource AccentGlow}"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+                                        <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                            <Label Text="{Binding Title}"
+                                                   FontSize="15"
+                                                   FontFamily="OpenSansSemibold"
+                                                   TextColor="{StaticResource TextPrimary}" />
+                                            <Label Text="{Binding Subtitle}"
+                                                   FontSize="12"
+                                                   FontFamily="OpenSansRegular"
+                                                   TextColor="{StaticResource TextSecondary}" />
+                                        </VerticalStackLayout>
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
 
                 <!-- Exercise Tiers -->
