@@ -220,119 +220,124 @@ public partial class HomePage : ContentPage
 
 		foreach (var (program, isStarter) in cards)
 		{
-			var card = new Border
-			{
-				WidthRequest = 180,
-				StrokeShape = new RoundRectangle { CornerRadius = 18 },
-				Stroke = (Color)Application.Current!.Resources["SurfaceBorder"],
-				StrokeThickness = 1,
-				Padding = 0,
-				Background = new LinearGradientBrush
-				{
-					StartPoint = new Point(0, 0),
-					EndPoint = new Point(1, 1),
-					GradientStops =
-					{
-						new GradientStop { Color = (Color)Application.Current.Resources["SurfaceRaised"], Offset = 0 },
-						new GradientStop { Color = (Color)Application.Current.Resources["Surface"], Offset = 1 }
-					}
-				}
-			};
+			QuickWorkoutsLayout.Children.Add(CreateQuickWorkoutCard(program, isStarter));
+		}
+	}
 
-			var stack = new VerticalStackLayout { Spacing = 0 };
+	private View CreateQuickWorkoutCard(TrainingProgramListResponse program, bool isStarter)
+	{
+		var card = new Border
+		{
+			StrokeShape = new RoundRectangle { CornerRadius = 20 },
+			Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46")),
+			StrokeThickness = 1,
+			BackgroundColor = ColorResources.GetColor("SurfaceRaised", "#1D1828"),
+			Padding = new Thickness(18, 16),
+			HorizontalOptions = LayoutOptions.Fill
+		};
 
-			// Image area with overlay
-			var imageArea = new Grid { HeightRequest = 90, WidthRequest = 180 };
+		var content = new VerticalStackLayout { Spacing = 10 };
+		var titleRow = new Grid
+		{
+			ColumnDefinitions =
+			{
+				new ColumnDefinition(GridLength.Star),
+				new ColumnDefinition(GridLength.Auto)
+			},
+			ColumnSpacing = 10
+		};
 
-			var imageName = WorkoutImageResolver.GetImageForProgram(program.Name, program.Goal);
-			if (imageName is not null)
-			{
-				imageArea.Children.Add(new Image
-				{
-					Source = imageName + ".png",
-					Aspect = Aspect.AspectFill,
-					HeightRequest = 90,
-					HorizontalOptions = LayoutOptions.Fill,
-					VerticalOptions = LayoutOptions.Fill
-				});
-				imageArea.Children.Add(new BoxView
-				{
-					Color = Colors.Black,
-					Opacity = 0.35,
-					HorizontalOptions = LayoutOptions.Fill,
-					VerticalOptions = LayoutOptions.Fill
-				});
-			}
-			else
-			{
-				var fallbackHex = WorkoutImageResolver.GetFallbackColor(program.Name);
-				imageArea.Children.Add(new BoxView
-				{
-					BackgroundColor = Color.FromArgb(fallbackHex),
-					HorizontalOptions = LayoutOptions.Fill,
-					VerticalOptions = LayoutOptions.Fill
-				});
-				imageArea.Children.Add(new Label
-				{
-					Text = program.Name.Length > 0 ? program.Name[..1] : "W",
-					FontSize = 30,
-					FontFamily = "OpenSansSemibold",
-					TextColor = Colors.White,
-					Opacity = 0.6,
-					HorizontalOptions = LayoutOptions.Center,
-					VerticalOptions = LayoutOptions.Center
-				});
-			}
-			stack.Children.Add(imageArea);
+		titleRow.Add(new Label
+		{
+			Text = program.Name,
+			FontSize = 17,
+			FontFamily = "OpenSansSemibold",
+			TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB"),
+			LineBreakMode = LineBreakMode.TailTruncation,
+			MaxLines = 1,
+			VerticalOptions = LayoutOptions.Center
+		}, 0);
 
-			var textStack = new VerticalStackLayout
-			{
-				Padding = new Thickness(14, 10, 14, 14),
-				Spacing = 4
-			};
+		var badgeText = !string.IsNullOrWhiteSpace(program.Goal)
+			? program.Goal
+			: program.Status;
+		if (!string.IsNullOrWhiteSpace(badgeText))
+		{
+			titleRow.Add(CreateQuickWorkoutBadge(badgeText), 1);
+		}
 
-			textStack.Children.Add(new Label
+		content.Children.Add(titleRow);
+
+		var pills = new HorizontalStackLayout { Spacing = 8 };
+		if (program.DaysPerWeek > 0)
+		{
+			pills.Children.Add(CreateQuickWorkoutPill(AppLanguage.FormatXPerWeek(program.DaysPerWeek)));
+		}
+
+		if (isStarter)
+		{
+			pills.Children.Add(CreateQuickWorkoutPill(AppLanguage.ProgramDetailTemplate));
+		}
+		else if (!string.IsNullOrWhiteSpace(program.Status)
+			&& !string.Equals(program.Status, badgeText, StringComparison.OrdinalIgnoreCase))
+		{
+			pills.Children.Add(CreateQuickWorkoutPill(program.Status));
+		}
+
+		if (pills.Children.Count > 0)
+		{
+			content.Children.Add(pills);
+		}
+
+		card.Content = content;
+
+		var programId = program.Id;
+		card.GestureRecognizers.Add(new TapGestureRecognizer
+		{
+			Command = new Command(async () => await OnQuickWorkoutTapped(programId, isStarter))
+		});
+
+		return card;
+	}
+
+	private static Border CreateQuickWorkoutBadge(string text)
+	{
+		return new Border
+		{
+			StrokeShape = new RoundRectangle { CornerRadius = 10 },
+			BackgroundColor = ColorResources.GetColor("AccentSoft", "#2F2346"),
+			Stroke = new SolidColorBrush(Colors.Transparent),
+			Padding = new Thickness(10, 4),
+			VerticalOptions = LayoutOptions.Center,
+			Content = new Label
 			{
-				Text = program.Name,
-				FontSize = 14,
+				Text = text,
+				FontSize = 10,
 				FontFamily = "OpenSansSemibold",
-				TextColor = (Color)Application.Current.Resources["TextPrimary"],
+				TextColor = ColorResources.GetColor("AccentGlow", "#A78BFA"),
 				LineBreakMode = LineBreakMode.TailTruncation,
 				MaxLines = 1
-			});
-
-			textStack.Children.Add(new Label
-			{
-				Text = AppLanguage.FormatDaysPerWeek(program.DaysPerWeek),
-				FontSize = 11,
-				FontFamily = "OpenSansRegular",
-				TextColor = (Color)Application.Current.Resources["TextSecondary"]
-			});
-
-			if (!string.IsNullOrEmpty(program.Goal))
-			{
-				textStack.Children.Add(new Label
-				{
-					Text = program.Goal,
-					FontSize = 11,
-					FontFamily = "OpenSansRegular",
-					TextColor = (Color)Application.Current.Resources["TextMuted"],
-					LineBreakMode = LineBreakMode.TailTruncation,
-					MaxLines = 1
-				});
 			}
+		};
+	}
 
-			stack.Children.Add(textStack);
-			card.Content = stack;
-
-			var tap = new TapGestureRecognizer();
-			int programId = program.Id;
-			bool cardIsStarter = isStarter;
-			tap.Tapped += async (s, e) => await OnQuickWorkoutTapped(programId, cardIsStarter);
-			card.GestureRecognizers.Add(tap);
-
-			QuickWorkoutsLayout.Children.Add(card);
-		}
+	private static Border CreateQuickWorkoutPill(string text)
+	{
+		return new Border
+		{
+			StrokeShape = new RoundRectangle { CornerRadius = 10 },
+			BackgroundColor = ColorResources.GetColor("Surface", "#171321"),
+			Stroke = new SolidColorBrush(ColorResources.GetColor("SurfaceBorder", "#342D46")),
+			Padding = new Thickness(8, 4),
+			VerticalOptions = LayoutOptions.Center,
+			Content = new Label
+			{
+				Text = text,
+				FontSize = 11,
+				FontFamily = "OpenSansSemibold",
+				TextColor = ColorResources.GetColor("TextSecondary", "#B3B2C5")
+			}
+		};
 	}
 
 	private async Task OnQuickWorkoutTapped(int programId, bool isStarterTemplate)

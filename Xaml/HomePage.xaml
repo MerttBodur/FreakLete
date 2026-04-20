@@ -173,11 +173,9 @@
                            FontSize="11"
                            FontFamily="OpenSansRegular"
                            TextColor="{StaticResource TextSecondary}" />
-                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                        <HorizontalStackLayout x:Name="QuickWorkoutsLayout"
-                                               Spacing="12"
-                                               Padding="0,4" />
-                    </ScrollView>
+                    <VerticalStackLayout x:Name="QuickWorkoutsLayout"
+                                         Spacing="10"
+                                         Padding="0,4" />
                 </VerticalStackLayout>
 
             </VerticalStackLayout>
