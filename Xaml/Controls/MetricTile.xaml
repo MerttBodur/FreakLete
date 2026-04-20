@@ -3,24 +3,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FreakLete.MetricTile">
 
-    <Border Style="{StaticResource CardBorder}">
+    <Border BackgroundColor="{StaticResource SurfaceRaised}"
+            Stroke="{StaticResource SurfaceBorder}"
+            StrokeThickness="1"
+            StrokeShape="RoundRectangle 14"
+            Padding="12,10">
         <VerticalStackLayout Spacing="4">
             <Label x:Name="MetricLabel"
-                   Style="{StaticResource BodyMuted}"
-                   FontSize="12" />
-            <HorizontalStackLayout Spacing="4"
-                                   VerticalOptions="Center">
-                <Label x:Name="ValueLabel"
-                       FontSize="32"
-                       FontFamily="OpenSansSemibold"
-                       TextColor="{StaticResource TextPrimary}" />
-                <Label x:Name="UnitLabel"
-                       FontSize="14"
-                       FontFamily="OpenSansRegular"
-                       TextColor="{StaticResource TextSecondary}"
-                       VerticalTextAlignment="End"
-                       Margin="0,0,0,5" />
-            </HorizontalStackLayout>
+                   FontFamily="OpenSansSemibold"
+                   FontSize="10"
+                   TextColor="{StaticResource TextMuted}"
+                   CharacterSpacing="0.8"
+                   TextTransform="Uppercase" />
+            <Label x:Name="ValueLabel"
+                   Style="{StaticResource MetricValueLabel}" />
+            <Label x:Name="UnitLabel"
+                   FontFamily="OpenSansRegular"
+                   FontSize="11"
+                   TextColor="{StaticResource TextMuted}" />
         </VerticalStackLayout>
     </Border>
 

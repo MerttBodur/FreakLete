@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body { background: #100D1A; margin: 0; padding: 24px 20px; font-family: 'Open Sans', sans-serif; display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+  .divider { width: 1px; height: 64px; background: #342D46; }
+  .wordmark { display: flex; flex-direction: column; gap: 4px; }
+  .brand-name { font-size: 28px; font-weight: 700; color: #F7F7FB; letter-spacing: -0.02em; }
+  .brand-name span { color: #A78BFA; }
+  .brand-tagline { font-size: 12px; color: #8A889B; font-weight: 400; }
+</style>
+</head><body>
+
+<!-- App Icon: composited inline SVG -->
+<svg width="96" height="96" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="border-radius:22px">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1B1230"/>
+      <stop offset="1" stop-color="#120B22"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="60%">
+      <stop offset="0" stop-color="#8B5CF6" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Background -->
+  <rect x="0" y="0" width="512" height="512" rx="118" fill="url(#bg)"/>
+  <rect x="0" y="0" width="512" height="512" rx="118" fill="url(#glow)"/>
+  <rect x="10" y="10" width="492" height="492" rx="108" fill="none" stroke="#A78BFA" stroke-opacity="0.28" stroke-width="4"/>
+  <!-- Foreground: athlete figure + bolt -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M120 315 C170 306 224 274 268 228" stroke="#8B5CF6" stroke-opacity="0.28" stroke-width="22"/>
+    <path d="M105 350 C165 340 232 300 286 248" stroke="#C084FC" stroke-opacity="0.18" stroke-width="18"/>
+    <circle cx="305" cy="132" r="34" fill="#F5F3FF" opacity="0.98"/>
+    <path d="M230 214 C250 182 286 165 325 166 L366 168 C392 169 414 191 410 217 L402 262 C398 283 380 298 358 298 L314 298 C294 298 274 287 264 270 L230 214 Z" fill="#F5F3FF" opacity="0.98"/>
+    <path d="M282 213 L208 263" stroke="#F5F3FF" stroke-width="26"/>
+    <path d="M300 282 L196 376" stroke="#F5F3FF" stroke-width="30"/>
+    <path d="M360 214 L439 229" stroke="#F5F3FF" stroke-width="24"/>
+    <path d="M344 286 L414 352" stroke="#F5F3FF" stroke-width="20"/>
+    <path d="M420 98 L384 174 L424 174 L360 304 L378 204 L333 204 Z" fill="#A78BFA" stroke="#FFFFFF" stroke-width="8"/>
+  </g>
+</svg>
+
+<div class="divider"></div>
+
+<!-- Wordmark -->
+<div class="wordmark">
+  <div class="brand-name">Freak<span>Lete</span></div>
+  <div class="brand-tagline">Athletic Performance Tracker</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Splash variant (smaller) -->
+<svg width="72" height="72" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="border-radius:18px">
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="45%" r="58%">
+      <stop offset="0" stop-color="#A78BFA" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#A78BFA" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="#1A102D"/>
+  <rect width="512" height="512" fill="url(#halo)"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M116 320 C170 308 228 274 274 228" stroke="#8B5CF6" stroke-opacity="0.28" stroke-width="22"/>
+    <path d="M96 352 C164 340 236 298 292 242" stroke="#C084FC" stroke-opacity="0.18" stroke-width="18"/>
+    <circle cx="305" cy="132" r="34" fill="#F5F3FF"/>
+    <path d="M230 214 C250 182 286 165 325 166 L366 168 C392 169 414 191 410 217 L402 262 C398 283 380 298 358 298 L314 298 C294 298 274 287 264 270 L230 214 Z" fill="#F5F3FF"/>
+    <path d="M282 213 L208 263" stroke="#F5F3FF" stroke-width="26"/>
+    <path d="M300 282 L196 376" stroke="#F5F3FF" stroke-width="30"/>
+    <path d="M360 214 L439 229" stroke="#F5F3FF" stroke-width="24"/>
+    <path d="M344 286 L414 352" stroke="#F5F3FF" stroke-width="20"/>
+    <path d="M420 98 L384 174 L424 174 L360 304 L378 204 L333 204 Z" fill="#A78BFA" stroke="#FFFFFF" stroke-width="8"/>
+  </g>
+</svg>
+
+</body></html>

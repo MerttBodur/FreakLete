@@ -8,100 +8,171 @@
              BackgroundColor="{StaticResource Background}">
 
     <Grid RowDefinitions="*,Auto">
-        <ScrollView Grid.Row="0">
-            <VerticalStackLayout Padding="20,16,20,24" Spacing="20">
 
-                <!-- Section 1: Header -->
-                <VerticalStackLayout Spacing="2" Padding="0,4,0,0">
-                    <Label x:Name="WelcomeLabel"
-                           FontSize="12"
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20,16,20,24" Spacing="16">
+
+                <local:ElevatedCard>
+                    <VerticalStackLayout Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label x:Name="WelcomeLabel"
+                                       Text="WELCOME"
+                                       FontFamily="OpenSansSemibold"
+                                       FontSize="10"
+                                       TextColor="{StaticResource TextMuted}"
+                                       CharacterSpacing="0.8"
+                                       TextTransform="Uppercase" />
+                                <HorizontalStackLayout Spacing="4">
+                                    <Label x:Name="StartWorkoutLabel"
+                                           Text="Ready to train,"
+                                           FontFamily="OpenSansSemibold"
+                                           FontSize="18"
+                                           TextColor="{StaticResource TextPrimary}" />
+                                    <Label x:Name="UserNameLabel"
+                                           Text="Athlete"
+                                           FontFamily="OpenSansSemibold"
+                                           FontSize="18"
+                                           TextColor="{StaticResource AccentGlow}" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1"
+                                    x:Name="PlanBadge"
+                                    BackgroundColor="{StaticResource AccentSoft}"
+                                    Stroke="{StaticResource Accent}"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 12"
+                                    Padding="10,5"
+                                    VerticalOptions="Start">
+                                <Label x:Name="PlanBadgeLabel"
+                                       Text="Free"
+                                       FontFamily="OpenSansSemibold"
+                                       FontSize="11"
+                                       TextColor="{StaticResource AccentGlow}" />
+                            </Border>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                            <local:MetricTile Grid.Column="0"
+                                              x:Name="WeekSessionsTile"
+                                              Label="This Week"
+                                              Value="0"
+                                              Unit="sessions" />
+                            <Border Grid.Column="1"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Stroke="{StaticResource SurfaceBorder}"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 14"
+                                    Padding="12,10">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label x:Name="WorkoutsBadgeLabel"
+                                           FontFamily="OpenSansSemibold"
+                                           FontSize="10"
+                                           TextColor="{StaticResource TextMuted}"
+                                           CharacterSpacing="0.8"
+                                           TextTransform="Uppercase"
+                                           Text="Workouts" />
+                                    <Label x:Name="WorkoutCountLabel"
+                                           Style="{StaticResource MetricValueLabel}"
+                                           Text="0" />
+                                    <Label Text="total"
+                                           FontFamily="OpenSansRegular"
+                                           FontSize="11"
+                                           TextColor="{StaticResource TextMuted}" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <local:MetricTile Grid.Column="2"
+                                              x:Name="LastOnermTile"
+                                              Label="Last 1RM"
+                                              Value="-"
+                                              Unit="kg" />
+                        </Grid>
+
+                        <Button x:Name="StartButton"
+                                Text="Start Workout"
+                                Clicked="OnStartWorkoutClicked"
+                                HorizontalOptions="Fill" />
+                    </VerticalStackLayout>
+                </local:ElevatedCard>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Quick Access"
                            FontFamily="OpenSansSemibold"
-                           TextColor="{StaticResource TextSecondary}"
-                           Text="WELCOME"
-                           CharacterSpacing="1" />
-                    <HorizontalStackLayout Spacing="0">
-                        <Label FontSize="12"
-                               FontFamily="OpenSansSemibold"
-                               TextColor="{StaticResource TextSecondary}"
-                               Text=", "
-                               CharacterSpacing="1" />
-                        <Label x:Name="UserNameLabel"
-                               FontSize="24"
-                               FontFamily="OpenSansSemibold"
-                               TextColor="{StaticResource TextPrimary}"
-                               Text="User" />
-                    </HorizontalStackLayout>
+                           FontSize="15"
+                           TextColor="{StaticResource TextPrimary}" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <local:QuickAccessTile Grid.Column="0"
+                                               x:Name="CalcTile"
+                                               Title="Calculations"
+                                               Subtitle="1RM - RSI - FFMI"
+                                               IconSource="nav_plates.svg" />
+                        <local:QuickAccessTile Grid.Column="1"
+                                               x:Name="CalendarTile"
+                                               Title="Calendar"
+                                               Subtitle="Workout history"
+                                               IconSource="calendar_icon.svg" />
+                    </Grid>
                 </VerticalStackLayout>
 
-                <!-- Section 2: Start Workout Card -->
-                <Border StrokeShape="RoundRectangle 20"
-                        Stroke="{StaticResource SurfaceBorder}"
-                        StrokeThickness="1"
-                        Padding="0">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="{StaticResource SurfaceRaised}" Offset="0.0" />
-                            <GradientStop Color="{StaticResource Surface}" Offset="1.0" />
-                        </LinearGradientBrush>
-                    </Border.Background>
-                    <Grid ColumnDefinitions="*,Auto" Padding="20,18">
-                        <VerticalStackLayout Spacing="10" VerticalOptions="Center">
-                            <Label x:Name="StartWorkoutLabel"
-                                   Text="Start Workout"
-                                   FontSize="20"
-                                   FontFamily="OpenSansSemibold"
-                                   TextColor="{StaticResource TextPrimary}" />
-                            <Button x:Name="StartButton"
-                                    Text="Start"
-                                    BackgroundColor="{StaticResource Accent}"
-                                    TextColor="White"
-                                    CornerRadius="14"
-                                    Padding="20,12"
-                                    FontSize="14"
-                                    FontFamily="OpenSansSemibold"
-                                    Clicked="OnStartWorkoutClicked"
-                                    HorizontalOptions="Start" />
-                        </VerticalStackLayout>
-                        <!-- Workout count badge -->
-                        <Border Grid.Column="1"
-                                StrokeShape="RoundRectangle 14"
-                                BackgroundColor="{StaticResource AccentSoft}"
-                                Stroke="Transparent"
-                                Padding="14,10"
-                                VerticalOptions="Center">
-                            <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
-                                <Label x:Name="WorkoutCountLabel"
-                                       Text="0"
-                                       FontSize="22"
-                                       FontFamily="OpenSansSemibold"
-                                       TextColor="{StaticResource AccentGlow}"
-                                       HorizontalTextAlignment="Center" />
-                                <Label x:Name="WorkoutsBadgeLabel"
-                                       Text="WORKOUTS"
-                                       FontSize="9"
-                                       FontFamily="OpenSansSemibold"
-                                       TextColor="{StaticResource TextSecondary}"
-                                       CharacterSpacing="0.5"
-                                       HorizontalTextAlignment="Center" />
-                            </VerticalStackLayout>
-                        </Border>
-                    </Grid>
-                </Border>
-
-                <!-- Section 3: Exercise Comparison Chart -->
                 <local:ExerciseComparisonChart x:Name="ComparisonChart"
                                                Exercise1Name="Bench Press"
                                                Exercise2Name="Squat"
                                                ChangeExercisesClicked="OnChangeComparisonExercisesClicked" />
 
-                <!-- Section 4: Quick Workouts -->
+                <local:AccentCard>
+                    <VerticalStackLayout Spacing="12">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="FreakAI"
+                                   FontFamily="OpenSansSemibold"
+                                   FontSize="15"
+                                   TextColor="{StaticResource TextPrimary}" />
+                            <Label x:Name="AiQuotaLabel"
+                                   Text="Ask for your next training move"
+                                   FontFamily="OpenSansRegular"
+                                   FontSize="11"
+                                   TextColor="{StaticResource TextMuted}" />
+                        </VerticalStackLayout>
+                        <Grid ColumnDefinitions="*,44" ColumnSpacing="8">
+                            <Border Grid.Column="0"
+                                    BackgroundColor="{StaticResource SurfaceRaised}"
+                                    Stroke="{StaticResource SurfaceBorder}"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 18"
+                                    Padding="14,0">
+                                <Entry x:Name="AiEntry"
+                                       Placeholder="Ask your coach..."
+                                       PlaceholderColor="{StaticResource TextMuted}"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       FontFamily="OpenSansRegular"
+                                       FontSize="14"
+                                       BackgroundColor="Transparent"
+                                       MinimumHeightRequest="44" />
+                            </Border>
+                            <Border Grid.Column="1"
+                                    BackgroundColor="{StaticResource Accent}"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 18"
+                                    WidthRequest="44"
+                                    HeightRequest="44">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer x:Name="AiSendTap" />
+                                </Border.GestureRecognizers>
+                                <Image Source="icon_send.svg"
+                                       WidthRequest="20"
+                                       HeightRequest="20"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+                </local:AccentCard>
+
                 <VerticalStackLayout Spacing="10">
                     <Label x:Name="QuickWorkoutsTitle"
                            Text="Quick Workouts"
                            FontSize="18"
                            FontFamily="OpenSansSemibold"
-                           TextColor="{StaticResource TextPrimary}"
-                           Padding="0,0,0,0" />
+                           TextColor="{StaticResource TextPrimary}" />
                     <Label x:Name="QuickWorkoutsDesc"
                            Text="Ready-made workout templates to get started quickly"
                            FontSize="11"

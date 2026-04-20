@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--background); margin: 0; padding: 24px 20px; font-family: var(--font-family); display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+  .card { background: var(--surface); border: 1px solid var(--border); padding: 18px 20px; min-width: 110px; }
+  .label { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+  .sub   { font-size: 10px; color: var(--text-muted); }
+  .section { width: 100%; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 4px; }
+</style>
+</head><body>
+<div class="section" style="width:100%">Border Radius</div>
+<div class="card" style="border-radius:10px"><div class="label">10px</div><div class="sub">radius-sm<br>Interactive</div></div>
+<div class="card" style="border-radius:14px"><div class="label">14px</div><div class="sub">radius-md<br>Compact buttons</div></div>
+<div class="card" style="border-radius:18px"><div class="label">18px</div><div class="sub">radius-base<br>Buttons / inputs</div></div>
+<div class="card" style="border-radius:24px"><div class="label">24px</div><div class="sub">radius-card<br>Cards</div></div>
+<div class="card" style="border-radius:26px"><div class="label">26px</div><div class="sub">radius-shell<br>Bottom nav</div></div>
+
+<div class="section" style="width:100%;margin-top:12px">Elevation Levels</div>
+<div class="card" style="border-radius:16px;background:#100D1A;border-color:#342D46"><div class="label">L0 · Flat</div><div class="sub">Background canvas</div></div>
+<div class="card" style="border-radius:16px;background:#171321;border-color:#342D46"><div class="label">L1 · Surface</div><div class="sub">Cards, forms</div></div>
+<div class="card" style="border-radius:16px;background:linear-gradient(160deg,#1D1828,#171321);border-color:#342D46"><div class="label">L2 · Raised</div><div class="sub">Hero cards</div></div>
+<div class="card" style="border-radius:16px;background:linear-gradient(160deg,#2F2346,#171321);border-color:#8B5CF6"><div class="label">L3 · Accent</div><div class="sub">Branded highlight</div></div>
+<div class="card" style="border-radius:16px;background:linear-gradient(160deg,#1D1828,#171321);box-shadow:0 4px 20px rgba(0,0,0,0.35);border-color:#342D46"><div class="label">L4 · Shadow</div><div class="sub">Bottom nav float</div></div>
+</body></html>

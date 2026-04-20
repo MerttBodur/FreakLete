@@ -31,6 +31,28 @@
                            Text="Your training plans" />
                 </VerticalStackLayout>
 
+                <local:ElevatedCard>
+                    <VerticalStackLayout Spacing="16">
+                        <Label Text="Start a Session"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="20"
+                               TextColor="{StaticResource TextPrimary}" />
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Button Grid.Column="0"
+                                    x:Name="QuickStartButton"
+                                    Text="Quick Start"
+                                    Clicked="OnHeroStartWorkoutClicked"
+                                    HorizontalOptions="Fill" />
+                            <Button Grid.Column="1"
+                                    x:Name="FromProgramButton"
+                                    Text="From Program"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Clicked="OnFromProgramClicked"
+                                    HorizontalOptions="Fill" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </local:ElevatedCard>
+
                 <!-- Exercise Catalog Card -->
                 <Border StrokeShape="RoundRectangle 18"
                         Stroke="{StaticResource SurfaceBorder}"

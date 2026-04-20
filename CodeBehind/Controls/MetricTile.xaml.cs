@@ -6,10 +6,13 @@ public partial class MetricTile : ContentView
 		BindableProperty.Create(nameof(Label), typeof(string), typeof(MetricTile), string.Empty, propertyChanged: OnPropertyChanged);
 
 	public static readonly BindableProperty ValueProperty =
-		BindableProperty.Create(nameof(Value), typeof(string), typeof(MetricTile), "0", propertyChanged: OnPropertyChanged);
+		BindableProperty.Create(nameof(Value), typeof(string), typeof(MetricTile), "-", propertyChanged: OnPropertyChanged);
 
 	public static readonly BindableProperty UnitProperty =
 		BindableProperty.Create(nameof(Unit), typeof(string), typeof(MetricTile), string.Empty, propertyChanged: OnPropertyChanged);
+
+	public static readonly BindableProperty ValueColorProperty =
+		BindableProperty.Create(nameof(ValueColor), typeof(Color), typeof(MetricTile), null, propertyChanged: OnPropertyChanged);
 
 	public string Label
 	{
@@ -27,6 +30,12 @@ public partial class MetricTile : ContentView
 	{
 		get => (string)GetValue(UnitProperty);
 		set => SetValue(UnitProperty, value);
+	}
+
+	public Color? ValueColor
+	{
+		get => (Color?)GetValue(ValueColorProperty);
+		set => SetValue(ValueColorProperty, value);
 	}
 
 	public MetricTile()
@@ -47,5 +56,6 @@ public partial class MetricTile : ContentView
 		ValueLabel.Text = Value;
 		UnitLabel.Text = Unit;
 		UnitLabel.IsVisible = !string.IsNullOrWhiteSpace(Unit);
+		ValueLabel.TextColor = ValueColor ?? (Color)Application.Current!.Resources["AccentGlow"];
 	}
 }

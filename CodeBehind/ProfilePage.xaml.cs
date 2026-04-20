@@ -9,6 +9,8 @@ public record ProfileHighlight(string Title, string Subtitle);
 
 public partial class ProfilePage : ContentPage
 {
+	public static readonly IList<string> SectionTabItems = ["Overview", "Performance", "Goals"];
+
 	private static readonly string[] ExperienceLevels =
 	[
 		"< 1 year",
@@ -87,6 +89,7 @@ public partial class ProfilePage : ContentPage
 		ApplyLanguage();
 		UpdatePerformanceSelectionUI();
 		UpdateGoalSelectionUI();
+		WireSectionTabs();
 	}
 
 	private void ApplyLanguage()
@@ -192,6 +195,7 @@ public partial class ProfilePage : ContentPage
 		}
 
 		_profile = result.Data;
+		UpdateHeroMetricTiles(_profile);
 
 		FullNameLabel.Text = $"{_profile.FirstName} {_profile.LastName}";
 		EmailLabel.Text = _profile.Email;
@@ -255,6 +259,44 @@ public partial class ProfilePage : ContentPage
 		AthleticRecordsCountLabel.Text = _lastAthleticCount.ToString();
 
 		BuildHighlights(_profile.TotalWorkouts, _profile.TotalPrs, _lastAthleticCount, _lastGoalCount);
+	}
+
+	private void WireSectionTabs()
+	{
+		ProfileSectionTabs.TabSelected += (_, idx) => ShowSection(idx);
+	}
+
+	private void ShowSection(int idx)
+	{
+		OverviewPanel.IsVisible = idx == 0;
+		PerformancePanel.IsVisible = idx == 1;
+		GoalsPanel.IsVisible = idx == 2;
+	}
+
+	private void UpdateHeroMetricTiles(UserProfileResponse profile)
+	{
+		WeightTile.Value = profile.WeightKg.HasValue
+			? profile.WeightKg.Value.ToString("0.#")
+			: "-";
+
+		BodyFatTile.Value = profile.BodyFatPercentage.HasValue
+			? profile.BodyFatPercentage.Value.ToString("0.#")
+			: "-";
+
+		if (profile.WeightKg.HasValue
+			&& profile.HeightCm.HasValue
+			&& profile.BodyFatPercentage is > 0 and < 100)
+		{
+			var (_, _, normalizedFfmi) = CalculationService.CalculateFfmi(
+				profile.WeightKg.Value,
+				profile.HeightCm.Value,
+				profile.BodyFatPercentage.Value);
+			FfmiTile.Value = normalizedFfmi.ToString("0.#");
+		}
+		else
+		{
+			FfmiTile.Value = "-";
+		}
 	}
 
 	private void BuildHighlights(int totalWorkouts, int totalPrs, int athleticCount, int goalCount)

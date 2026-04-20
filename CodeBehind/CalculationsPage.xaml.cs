@@ -9,6 +9,8 @@ namespace FreakLete;
 
 public partial class CalculationsPage : ContentPage
 {
+	public static readonly IList<string> CalcTabItems = ["1RM", "RSI", "FFMI"];
+
 	private static readonly string[] StrengthCategories =
 	[
 		ExerciseCatalog.Push,
@@ -41,6 +43,7 @@ public partial class CalculationsPage : ContentPage
 		ApplyLanguage();
 		UpdateOneRmSelectionUI();
 		UpdatePrSelectionUI();
+		WireTabSwitcher();
 		UpdateCalculationTabUI(CalcTab.OneRm);
 	}
 
@@ -452,6 +455,28 @@ public partial class CalculationsPage : ContentPage
 
 	private enum CalcTab { OneRm, Rsi, Ffmi }
 
+	private void WireTabSwitcher()
+	{
+		CalcTabSwitcher.TabSelected += OnCalcTabSelected;
+	}
+
+	private void OnCalcTabSelected(object? sender, int index)
+	{
+		switch (index)
+		{
+			case 0:
+				UpdateCalculationTabUI(CalcTab.OneRm);
+				break;
+			case 1:
+				UpdateCalculationTabUI(CalcTab.Rsi);
+				break;
+			case 2:
+				UpdateCalculationTabUI(CalcTab.Ffmi);
+				_ = LoadFfmiProfileDataAsync();
+				break;
+		}
+	}
+
 	private void OnOneRmTabClicked(object? sender, EventArgs e)
 	{
 		UpdateCalculationTabUI(CalcTab.OneRm);
@@ -470,6 +495,8 @@ public partial class CalculationsPage : ContentPage
 
 	private void UpdateCalculationTabUI(CalcTab activeTab)
 	{
+		CalcTabSwitcher.SelectedIndex = (int)activeTab;
+
 		OneRmSection.IsVisible = activeTab == CalcTab.OneRm;
 		RsiSection.IsVisible = activeTab == CalcTab.Rsi;
 		FfmiSection.IsVisible = activeTab == CalcTab.Ffmi;

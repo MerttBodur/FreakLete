@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--background); margin: 0; padding: 20px; font-family: var(--font-family); display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
+  .card { border-radius: 24px; padding: 18px; width: 160px; }
+  .card-standard { background: var(--surface); border: 1px solid var(--border); }
+  .card-elevated { background: linear-gradient(160deg,#1D1828,#171321); border: 1px solid var(--border); }
+  .card-accent   { background: linear-gradient(160deg,#2F2346,#171321); border: 1px solid var(--accent); }
+  .eyebrow { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .title { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+  .value { font-size: 24px; font-weight: 600; color: var(--accent-glow); margin-bottom: 4px; }
+  .sub { font-size: 12px; color: var(--text-muted); }
+</style>
+</head><body>
+
+<div class="card card-standard">
+  <div class="eyebrow">Standard</div>
+  <div class="title">Workout Log</div>
+  <div class="sub">BorderCard — L1 surface</div>
+</div>
+
+<div class="card card-elevated">
+  <div class="eyebrow">Elevated</div>
+  <div class="title">1RM Estimate</div>
+  <div class="value">145 kg</div>
+  <div class="sub">Gradient card — L2</div>
+</div>
+
+<div class="card card-accent">
+  <div class="eyebrow">FreakAI</div>
+  <div class="title">Coach Insight</div>
+  <div class="sub">Accent card — L3</div>
+</div>
+
+<div class="card card-elevated" style="width:auto; display:flex; gap:16px; align-items:center; padding:14px 18px">
+  <div><div class="eyebrow">RSI</div><div class="value" style="font-size:20px;margin:0">2.84</div></div>
+  <div><div class="eyebrow">FFMI</div><div class="value" style="font-size:20px;margin:0">21.3</div></div>
+  <div><div class="eyebrow">1RM</div><div class="value" style="font-size:20px;margin:0">180 kg</div></div>
+</div>
+
+</body></html>

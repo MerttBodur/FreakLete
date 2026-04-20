@@ -5,7 +5,8 @@
              x:Class="FreakLete.ProfilePage"
              x:Name="ProfilePageRoot"
              NavigationPage.HasNavigationBar="False"
-             Title="Profile">
+             Title="Profile"
+             BackgroundColor="{StaticResource Background}">
 
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
@@ -13,7 +14,8 @@
                                  Spacing="18">
 
                 <!-- Centered Hero Identity -->
-                <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,14,0,4">
+                <local:AccentCard>
+                <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,2,0,2">
                     <!-- Avatar Ring — tap to change photo -->
                     <Border x:Name="AvatarRing"
                             StrokeShape="RoundRectangle 44"
@@ -89,6 +91,7 @@
                                CharacterSpacing="1" />
                     </Border>
                 </VerticalStackLayout>
+                </local:AccentCard>
 
                 <!-- Stats Row -->
                 <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" Margin="0,4,0,0">
@@ -173,6 +176,27 @@
                     </Border>
                 </Grid>
 
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                    <local:MetricTile Grid.Column="0"
+                                      x:Name="WeightTile"
+                                      Label="Weight"
+                                      Value="-"
+                                      Unit="kg" />
+                    <local:MetricTile Grid.Column="1"
+                                      x:Name="BodyFatTile"
+                                      Label="Body Fat"
+                                      Value="-"
+                                      Unit="%" />
+                    <local:MetricTile Grid.Column="2"
+                                      x:Name="FfmiTile"
+                                      Label="FFMI"
+                                      Value="-"
+                                      Unit="" />
+                </Grid>
+
+                <local:SectionTabs x:Name="ProfileSectionTabs"
+                                   Items="{x:Static local:ProfilePage.SectionTabItems}" />
+
                 <!-- Highlights Section (hidden until feature is ready) -->
                 <VerticalStackLayout x:Name="HighlightsSection" Spacing="10" IsVisible="False">
                     <Label x:Name="HighlightsLabel"
@@ -241,6 +265,7 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
+                <VerticalStackLayout x:Name="OverviewPanel" Spacing="12">
                 <Border Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
                         <Label x:Name="ProfileDetailsTitle"
@@ -496,9 +521,11 @@
 
                     </VerticalStackLayout>
                 </Border>
+                </VerticalStackLayout>
 
                 <!-- Athlete Profile Section Header -->
 
+                <VerticalStackLayout x:Name="PerformancePanel" Spacing="12" IsVisible="False">
                 <Border Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
                         <Label x:Name="AthleticPerfTitle"
@@ -616,7 +643,9 @@
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
+                </VerticalStackLayout>
 
+                <VerticalStackLayout x:Name="GoalsPanel" Spacing="12" IsVisible="False">
                 <Border Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
                         <Label x:Name="MovementGoalsTitle"
@@ -719,6 +748,7 @@
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
+                </VerticalStackLayout>
 
                 <!-- Settings -->
                 <Button x:Name="SettingsBtn"

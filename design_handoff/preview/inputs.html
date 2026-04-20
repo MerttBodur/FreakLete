@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--background); margin: 0; padding: 24px 20px; font-family: var(--font-family); display: flex; flex-direction: column; gap: 14px; max-width: 340px; }
+  .fl-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  input, textarea {
+    background: var(--surface-raised); color: var(--text-primary);
+    font-family: var(--font-family); font-size: 15px; font-weight: 600;
+    border: 1px solid var(--border); border-radius: 18px;
+    padding: 13px 16px; min-height: 48px; outline: none; width: 100%; box-sizing: border-box;
+  }
+  input::placeholder, textarea::placeholder { color: var(--text-muted); font-weight: 400; }
+  .focused { border-color: var(--accent) !important; }
+  .error-input { border-color: var(--danger) !important; }
+  .error-msg { font-size: 12px; color: var(--danger); margin-top: 4px; }
+  .disabled { opacity: 0.45; }
+</style>
+</head><body>
+<div>
+  <div class="fl-label">Default</div>
+  <input type="text" placeholder="Enter weight (kg)">
+</div>
+<div>
+  <div class="fl-label">Active / Focus</div>
+  <input type="text" class="focused" value="Back Squat">
+</div>
+<div>
+  <div class="fl-label">Error</div>
+  <input type="text" class="error-input" value="abc">
+  <div class="error-msg">Must be a number</div>
+</div>
+<div class="disabled">
+  <div class="fl-label">Disabled</div>
+  <input type="text" disabled placeholder="Not available">
+</div>
+</body></html>

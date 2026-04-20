@@ -125,8 +125,12 @@
                        Text="Strength &amp; Athletic Tools"
                        Margin="0,4,0,0" />
 
+                <local:TabSwitcher x:Name="CalcTabSwitcher"
+                                   Items="{x:Static local:CalculationsPage.CalcTabItems}" />
+
                 <Border Style="{StaticResource CardBorder}"
-                        Padding="8">
+                        Padding="8"
+                        IsVisible="False">
                     <Grid ColumnDefinitions="*,*,*"
                           ColumnSpacing="8">
                         <Button Grid.Column="0"

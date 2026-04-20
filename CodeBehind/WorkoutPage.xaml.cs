@@ -421,6 +421,17 @@ public partial class WorkoutPage : ContentPage
 		await Navigation.PushAsync(new NewWorkoutPage(), true);
 	}
 
+	private async void OnFromProgramClicked(object? sender, EventArgs e)
+	{
+		if (_activeProgram is not null)
+		{
+			await Navigation.PushAsync(new ProgramDetailPage(_activeProgram.Id), true);
+			return;
+		}
+
+		await TabNavigationHelper.SwitchToTabAsync(() => new FreakAiPage());
+	}
+
 	private async void OnHeroCardTapped(object? sender, TappedEventArgs e)
 	{
 		if (_activeProgram is not null)

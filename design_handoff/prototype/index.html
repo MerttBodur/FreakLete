@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FreakLete — Mobile App UI Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0A0714;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Open Sans', sans-serif;
+  }
+  /* Phone frame */
+  .phone-frame {
+    width: 390px;
+    height: 844px;
+    background: #100D1A;
+    border-radius: 44px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 0 0 1px #342D46, 0 32px 80px rgba(0,0,0,0.7), 0 0 60px rgba(139,92,246,0.08);
+  }
+  /* Status bar */
+  .status-bar {
+    background: #161125;
+    padding: 14px 24px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .status-bar .time { font-size: 15px; font-weight: 600; color: #F7F7FB; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+  .screen-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #342D46; border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame" id="root-frame">
+  <div class="status-bar">
+    <span class="time" id="status-time">9:41</span>
+    <div class="icons">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="#F7F7FB"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y="1" width="3" height="11" rx="1"/><rect x="13.5" y="0" width="2.5" height="12" rx="1"/></svg>
+      <svg width="16" height="12" viewBox="0 0 24 12" fill="none" stroke="#F7F7FB" strokeWidth="1.5"><path d="M12 3C8 3 4.5 4.8 2 7.5"/><path d="M12 3C16 3 19.5 4.8 22 7.5"/><path d="M12 3C10 3 8.5 4.5 7 6.5"/><path d="M12 3C14 3 15.5 4.5 17 6.5"/><circle cx="12" cy="10" r="1.5" fill="#F7F7FB" stroke="none"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#F7F7FB" strokeOpacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#F7F7FB"/><path d="M23 4.5v3a1.5 1.5 0 0 1 0-3z" fill="#F7F7FB" fillOpacity="0.4"/></svg>
+    </div>
+  </div>
+  <div class="screen-area" id="app-root"></div>
+</div>
+
+<script type="text/babel" src="Tokens.jsx"></script>
+<script type="text/babel" src="Components.jsx"></script>
+<script type="text/babel" src="HomeScreen.jsx"></script>
+<script type="text/babel" src="WorkoutScreen.jsx"></script>
+<script type="text/babel" src="CalculationsScreen.jsx"></script>
+<script type="text/babel" src="ProfileScreen.jsx"></script>
+
+<script type="text/babel">
+const SCREEN_LABELS = {
+  home: 'Home',
+  workout: 'Workout',
+  calc: 'Calculations',
+  profile: 'Profile',
+};
+
+const SCREEN_TITLES = {
+  home: 'FreakLete',
+  workout: 'Workout',
+  calc: 'Calculations',
+  profile: 'Profile',
+};
+
+const App = () => {
+  const [screen, setScreen] = React.useState(
+    () => localStorage.getItem('fl_screen') || 'home'
+  );
+
+  const navigate = (s) => {
+    setScreen(s);
+    localStorage.setItem('fl_screen', s);
+  };
+
+  // Update status bar time
+  React.useEffect(() => {
+    const update = () => {
+      const d = new Date();
+      const h = d.getHours().toString().padStart(2,'0');
+      const m = d.getMinutes().toString().padStart(2,'0');
+      const el = document.getElementById('status-time');
+      if (el) el.textContent = `${h}:${m}`;
+    };
+    update();
+    const t = setInterval(update, 10000);
+    return () => clearInterval(t);
+  }, []);
+
+  const renderScreen = () => {
+    switch(screen) {
+      case 'home':    return <HomeScreen />;
+      case 'workout': return <WorkoutScreen />;
+      case 'calc':    return <CalculationsScreen />;
+      case 'profile': return <ProfileScreen />;
+      default:        return <HomeScreen />;
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <TopBar
+        title={SCREEN_TITLES[screen]}
+        right={screen === 'home' ? (
+          <div style={{
+            background: T.accentSoft, border: `1px solid ${T.border}`,
+            borderRadius: 20, padding: '5px 12px',
+            display: 'flex', alignItems: 'center', gap: 6,
+          }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: T.accentGlow, fontFamily: T.font }}>EN</span>
+            <span style={{ fontSize: 11, color: T.textMuted, fontFamily: T.font }}>/ TR</span>
+          </div>
+        ) : null}
+      />
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        {renderScreen()}
+      </div>
+      <BottomNav active={screen} onNav={navigate} />
+    </div>
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById('app-root'));
+root.render(<App />);
+</script>
+</body>
+</html>

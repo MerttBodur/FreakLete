@@ -1,12 +1,12 @@
-# Video Fix & Production Migration Plan
+# Video Fix & Migration Plan (Revised)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Fix Power Clean and Power Snatch video errors (HTTP bad status from R2), and apply the SeedTierEligibleExerciseDefinitions migration on the Railway production database so exercise tiers populate.
+**Goal:** (1) Upload Power Clean and Power Snatch MP4s to R2 so videos play in-app. (2) Add exercise name aliases ("clean"→"powerclean", "snatch"→"powersnatch") to tier service so short names match. (3) Apply SeedTierEligibleExerciseDefinitions migration on local DB.
 
-**Architecture:** Two independent root causes confirmed by diagnostics. (1) `powerclean.mp4` and `powersnatch.mp4` are referenced in `exercise_catalog.json` but do not exist in the R2 bucket → remove their `mediaUrl` fields until videos are ready. (2) The `SeedTierEligibleExerciseDefinitions` EF Core migration is compiled but not applied on the Railway PostgreSQL database → apply it via `dotnet ef database update`.
+**Architecture:** Three independent root causes confirmed by diagnostics. Videos fail because R2 files are missing (not because catalog is wrong — `mediaUrl` stays). Tiers may miss exercises logged with short names ("Clean", "Snatch") because NormalizeName produces "clean"/"snatch" but CatalogIds are "powerclean"/"powersnatch" — fix with an alias map. Migration is pending on local PostgreSQL, not Railway.
 
-**Tech Stack:** .NET MAUI (C#, XAML), ASP.NET Core, EF Core, Cloudflare R2, Railway PostgreSQL
+**Tech Stack:** .NET MAUI (C#, XAML), ASP.NET Core, EF Core, Cloudflare R2, local PostgreSQL
 
 ---
 
@@ -14,8 +14,9 @@
 
 | Symptom | Root Cause | Fix |
 |---------|-----------|-----|
-| Power Snatch / Power Clean: `ERROR_CODE_IO_BAD_HTTP_STATUS` (2004) | `mediaUrl` in catalog points to R2 objects that don't exist | Task 1: remove `mediaUrl` from those two entries |
-| `[Tiers] ExerciseDefinitions table has no StrengthRatio rows` | Migration `SeedTierEligibleExerciseDefinitions` not applied on prod DB | Task 2: apply migration on Railway |
+| Power Snatch / Power Clean: `ERROR_CODE_IO_BAD_HTTP_STATUS` (2004) | MP4 files not uploaded to R2 bucket | Task 1: upload videos to R2 |
+| Tier names "Clean"/"Snatch" may not match CatalogId | `NormalizeName("Clean")` = "clean" ≠ "powerclean" | Task 2: add alias map in ExerciseTierService |
+| `ExerciseDefinitions table has no StrengthRatio rows` | Migration not applied on local DB | Task 3: run `dotnet ef database update` locally |
 
 ---
 
@@ -23,117 +24,164 @@
 
 | File | Change |
 |------|--------|
-| `Resources/Raw/exercise_catalog.json` | Remove `mediaUrl` from Power Clean and Power Snatch entries |
-| Railway PostgreSQL | Apply pending EF Core migration |
+| `FreakLete.Api/Services/ExerciseTierService.cs` | Add `_nameAliases` static dict, use it in BackfillTiersFromPrEntriesAsync |
+| Local PostgreSQL | Apply `SeedTierEligibleExerciseDefinitions` migration |
+| Cloudflare R2 bucket | Upload `powerclean.mp4` and `powersnatch.mp4` |
 
 ---
 
-## Task 1: Remove mediaUrl from Power Clean and Power Snatch
+## Task 1: Upload Power Clean and Power Snatch videos to R2
 
-**Files:**
-- Modify: `Resources/Raw/exercise_catalog.json` (lines ~2121–2270)
+The `mediaUrl` fields in `exercise_catalog.json` are correct — do NOT remove them. The files just need to be uploaded.
 
-- [ ] **Step 1: Remove mediaUrl from Power Clean (line 2122)**
-
-Find the entry with `"id": "olympicliftspowerclean"` and remove its `"mediaUrl"` line:
-
-Before:
-```json
-{
-  "id": "olympicliftspowerclean",
-  "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/powerclean.mp4",
-  "name": "Power Clean",
-```
-
-After:
-```json
-{
-  "id": "olympicliftspowerclean",
-  "name": "Power Clean",
-```
-
-- [ ] **Step 2: Remove mediaUrl from Power Snatch (line 2269)**
-
-Find `"id": "olympicliftspowersnatch"` and remove its `"mediaUrl"` line:
-
-Before:
-```json
-{
-  "id": "olympicliftspowersnatch",
-  "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/powersnatch.mp4",
-  "name": "Power Snatch",
-```
-
-After:
-```json
-{
-  "id": "olympicliftspowersnatch",
-  "name": "Power Snatch",
-```
-
-- [ ] **Step 3: Build**
+- [ ] **Step 1: Verify which files are missing**
 
 ```bash
-dotnet build FreakLete.csproj -f net10.0-android
+curl -I https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/powerclean.mp4
+curl -I https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/powersnatch.mp4
+```
+
+Expected (missing): `HTTP/2 404` or `HTTP/2 403`
+Expected (present): `HTTP/2 200` with `Content-Type: video/mp4`
+
+- [ ] **Step 2: Upload via Cloudflare R2 dashboard**
+
+Go to: Cloudflare dashboard → R2 → your bucket → Upload
+
+Upload:
+- `powerclean.mp4` → key must be exactly `powerclean.mp4`
+- `powersnatch.mp4` → key must be exactly `powersnatch.mp4`
+
+Or via wrangler CLI:
+```bash
+wrangler r2 object put <bucket-name>/powerclean.mp4 --file ./videos/powerclean.mp4
+wrangler r2 object put <bucket-name>/powersnatch.mp4 --file ./videos/powersnatch.mp4
+```
+
+- [ ] **Step 3: Verify public access**
+
+```bash
+curl -I https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/powerclean.mp4
+curl -I https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/powersnatch.mp4
+```
+
+Expected: `HTTP/2 200` with `Content-Type: video/mp4`.
+
+- [ ] **Step 4: Test in app**
+
+Navigate to Power Clean and Power Snatch detail pages. Videos should auto-play. No error label should appear.
+
+---
+
+## Task 2: Add exercise name aliases to ExerciseTierService
+
+**Files:**
+- Modify: `FreakLete.Api/Services/ExerciseTierService.cs`
+
+`NormalizeName("Clean")` produces `"clean"` which has no match in ExerciseDefinitions (CatalogId is `"powerclean"`). Add an alias map.
+
+- [ ] **Step 1: Add _nameAliases static field**
+
+In `FreakLete.Api/Services/ExerciseTierService.cs`, add after the class opening brace (before the constructor):
+
+```csharp
+private static readonly Dictionary<string, string> _nameAliases = new(StringComparer.OrdinalIgnoreCase)
+{
+    { "clean",             "powerclean" },
+    { "snatch",            "powersnatch" },
+    { "squat",             "backsquat" },
+    { "barbell squat",     "backsquat" },
+    { "deadlift",          "conventionaldeadlift" },
+    { "rdl",               "romaniandeadlift" },
+    { "ohp",               "overheadpress" },
+    { "bench",             "benchpress" },
+    { "row",               "barbellrow" },
+    { "barbell row",       "barbellrow" },
+    { "pull-up",           "pullup" },
+    { "pull up",           "pullup" },
+    { "hip thrust",        "hipthrust" },
+    { "trap bar deadlift", "trapbardeadlift" },
+    { "push press",        "pushpress" },
+    { "front squat",       "frontsquat" },
+};
+```
+
+- [ ] **Step 2: Use alias map in BackfillTiersFromPrEntriesAsync**
+
+Find the `foreach (var pr in bestByExercise)` loop in `BackfillTiersFromPrEntriesAsync`. Replace the lookup block:
+
+Before:
+```csharp
+var normalized = NormalizeName(pr.ExerciseName);
+if (!defByCatalogId.TryGetValue(normalized, out var def))
+{
+    _log.LogInformation("[Tiers] '{ExerciseName}' → normalized '{Normalized}': NO match. Known IDs: {KnownIds}",
+        pr.ExerciseName, normalized, string.Join(", ", defByCatalogId.Keys.Take(8)));
+    continue;
+}
+```
+
+After:
+```csharp
+var normalized = NormalizeName(pr.ExerciseName);
+if (!defByCatalogId.ContainsKey(normalized) &&
+    _nameAliases.TryGetValue(pr.ExerciseName.Trim(), out var aliased))
+    normalized = aliased;
+
+if (!defByCatalogId.TryGetValue(normalized, out var def))
+{
+    _log.LogInformation("[Tiers] '{ExerciseName}' → '{Normalized}': NO match after alias check. Known IDs: {KnownIds}",
+        pr.ExerciseName, normalized, string.Join(", ", defByCatalogId.Keys.Take(8)));
+    continue;
+}
+```
+
+- [ ] **Step 3: Build API**
+
+```bash
+dotnet build FreakLete.Api
 ```
 
 Expected: 0 errors.
 
-- [ ] **Step 4: Verify in app**
-
-Navigate to Power Clean and Power Snatch detail pages. Each should show "Demo video yakında" placeholder cleanly with no error text underneath.
-
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add Resources/Raw/exercise_catalog.json
-git commit -m "fix: remove missing R2 mediaUrl for Power Clean and Power Snatch"
+git add FreakLete.Api/Services/ExerciseTierService.cs
+git commit -m "fix: add exercise name alias map for clean/snatch and common short names in tier backfill"
 ```
 
 ---
 
-## Task 2: Apply SeedTierEligibleExerciseDefinitions migration on Railway
+## Task 3: Apply migration on local DB
 
-- [ ] **Step 1: Get Railway connection string**
-
-Railway dashboard → PostgreSQL service → Connect tab → copy connection string.
-
-Format: `Host=<host>;Port=<port>;Database=<db>;Username=<user>;Password=<pass>`
-
-- [ ] **Step 2: Verify migration is pending**
+- [ ] **Step 1: Apply all pending migrations**
 
 ```bash
 cd FreakLete.Api
-dotnet ef migrations list --connection "Host=...;Port=...;Database=...;Username=...;Password=..."
+dotnet ef database update
 ```
 
-Expected: `SeedTierEligibleExerciseDefinitions` listed without `[Applied]`.
+Expected output includes: `Applying migration '20260417120000_SeedTierEligibleExerciseDefinitions'` then `Done.`
 
-- [ ] **Step 3: Apply migration**
+- [ ] **Step 2: Verify row count**
 
-```bash
-dotnet ef database update --connection "Host=...;Port=...;Database=...;Username=...;Password=..."
-```
-
-Expected: `Done.` with no errors.
-
-- [ ] **Step 4: Verify row count in DB**
+Connect to local PostgreSQL and run:
 
 ```sql
 SELECT COUNT(*) FROM "ExerciseDefinitions" WHERE "TierType" = 'StrengthRatio';
 ```
 
-Expected: `14` (benchpress, backsquat, conventionaldeadlift, sumodeadlift, overheadpress, powerclean, powersnatch, frontsquat, romaniandeadlift, barbellrow, pullup, trapbardeadlift, hipthrust, pushpress).
+Expected: `14`.
 
-- [ ] **Step 5: Trigger recalculate from app**
+- [ ] **Step 3: Trigger recalculate from app**
 
-Open app → Profile page → tiers should populate for logged Strength PRs.
+Run API locally → open app → Profile page → check logs:
 
-Check Railway logs for:
 ```
 [Tiers] User X: found N eligible Strength PRs
 [Tiers] ExerciseDefinitions with TierType=StrengthRatio: 14
-[Tiers] 'Bench Press' → normalized 'benchpress': matched 'benchpress', computing tier
+[Tiers] 'Power Clean' → normalized 'powerclean': matched 'powerclean', computing tier
 ```
 
 ---
@@ -141,9 +189,10 @@ Check Railway logs for:
 ## Self-Review
 
 **Spec coverage:**
-- [x] Power Clean / Power Snatch video error → Task 1 removes broken mediaUrl
-- [x] ExerciseDefinitions migration → Task 2 applies it on production
+- [x] Power Clean / Power Snatch videos → Task 1 uploads to R2 (mediaUrl NOT removed)
+- [x] Short name aliases "clean"/"snatch" → Task 2 alias map in ExerciseTierService
+- [x] Local DB migration → Task 3 applies locally
 
 **No placeholders** — all steps show exact commands and expected output.
 
-**Type consistency** — no code changes to typed APIs; JSON data removal only for Task 1.
+**Type consistency** — `_nameAliases` keys match user-typed exercise names; alias values match CatalogIds seeded by the migration.

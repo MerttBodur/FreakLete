@@ -31,6 +31,9 @@ public partial class HomePage : ContentPage
 		ApplyLanguage();
 
 		ComparisonChart.RangeChanged += OnChartRangeChanged;
+		CalcTile.Command = new Command(async () => await TabNavigationHelper.SwitchToTabAsync(() => new CalculationsPage()));
+		CalendarTile.Command = new Command(async () => await Navigation.PushAsync(new CalendarPage(), true));
+		AiSendTap.Tapped += OnAiSendTapped;
 	}
 
 	private void ApplyLanguage()
@@ -108,6 +111,10 @@ public partial class HomePage : ContentPage
 		_allWorkouts       = workoutResult.Success  && workoutResult.Data  is not null ? workoutResult.Data  : [];
 		_allPrEntries      = prResult.Success        && prResult.Data       is not null ? prResult.Data       : [];
 		_allAthleticEntries = athleticResult.Success && athleticResult.Data is not null ? athleticResult.Data : [];
+
+		var weekStart = DateTime.Now.Date.AddDays(-6);
+		WeekSessionsTile.Value = _allWorkouts.Count(w => w.WorkoutDate.Date >= weekStart).ToString();
+		LastOnermTile.Value = ResolveLatestOneRm(_allPrEntries);
 
 		UpdateComparisonChart();
 
@@ -331,6 +338,29 @@ public partial class HomePage : ContentPage
 	private async Task OnQuickWorkoutTapped(int programId, bool isStarterTemplate)
 	{
 		await Navigation.PushAsync(new ProgramDetailPage(programId, isStarterTemplate), true);
+	}
+
+	private static string ResolveLatestOneRm(List<PrEntryResponse> entries)
+	{
+		var latestStrength = entries
+			.Where(e => e.Weight > 0 && e.Reps > 0)
+			.OrderByDescending(e => e.CreatedAt)
+			.FirstOrDefault();
+
+		if (latestStrength is null)
+			return "-";
+
+		var oneRm = CalculationService.CalculateOneRm(
+			latestStrength.Weight,
+			latestStrength.Reps,
+			latestStrength.RIR ?? 0);
+
+		return oneRm.ToString("0.#");
+	}
+
+	private async void OnAiSendTapped(object? sender, TappedEventArgs e)
+	{
+		await TabNavigationHelper.SwitchToTabAsync(() => new FreakAiPage());
 	}
 
 	private async void OnStartWorkoutClicked(object? sender, EventArgs e)

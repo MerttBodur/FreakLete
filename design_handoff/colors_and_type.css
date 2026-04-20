@@ -1,0 +1,244 @@
+/* ============================================================
+   FreakLete Design System — Colors & Typography Tokens
+   Source: Resources/Styles/Colors.xaml + DESIGN.md
+   ============================================================ */
+
+/* ── Google Fonts: Open Sans ──────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+
+:root {
+
+  /* ── Brand Accent ──────────────────────────────────────── */
+  --accent:           #8B5CF6;
+  --accent-glow:      #A78BFA;
+  --accent-soft:      #2F2346;
+  --accent-subtle:    #3D2F5A;
+
+  /* ── Core Surfaces ─────────────────────────────────────── */
+  --background:       #100D1A;
+  --surface:          #171321;
+  --surface-raised:   #1D1828;
+  --surface-strong:   #251F33;
+  --top-bar:          #161125;
+
+  /* ── Borders & Structure ───────────────────────────────── */
+  --border:           #342D46;
+  --border-subtle:    #2A2437;
+  --overlay-scrim:    rgba(16, 13, 26, 0.70);
+
+  /* ── Text ──────────────────────────────────────────────── */
+  --text-primary:     #F7F7FB;
+  --text-secondary:   #B3B2C5;
+  --text-muted:       #8A889B;
+
+  /* ── Semantic Colors ───────────────────────────────────── */
+  --success:          #22C55E;
+  --success-soft:     #0D2818;
+  --warning:          #F59E0B;
+  --warning-soft:     #2A1F06;
+  --danger:           #DC2626;
+  --danger-soft:      #3A1623;
+  --error:            #EF4444;
+  --info:             #3B82F6;
+  --info-soft:        #0D1B2A;
+
+  /* ── Gradients ─────────────────────────────────────────── */
+  --gradient-card:    linear-gradient(160deg, #1D1828 0%, #171321 100%);
+  --gradient-accent:  linear-gradient(160deg, #2F2346 0%, #171321 100%);
+  --gradient-bar:     linear-gradient(180deg, #1D1828 0%, #171321 100%);
+
+  /* ── Typography ─────────────────────────────────────────── */
+  --font-family:      'Open Sans', sans-serif;
+
+  /* Font sizes */
+  --text-headline:    34px;   /* Hero headline — login/register */
+  --text-subheadline: 24px;   /* Section title */
+  --text-header:      21px;   /* Top header bar */
+  --text-card-title:  18px;   /* Card titles */
+  --text-label:       15px;   /* Standard label / inputs */
+  --text-body:        14px;   /* Body / helper text */
+  --text-caption:     12px;   /* Captions / eyebrow */
+  --text-micro:       10px;   /* Bottom nav labels */
+
+  /* Font weights */
+  --weight-semibold:  600;
+  --weight-regular:   400;
+
+  /* ── Spacing Scale ─────────────────────────────────────── */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  18px;
+  --sp-6:  20px;
+  --sp-7:  24px;
+  --sp-8:  32px;
+
+  /* ── Border Radius Scale ───────────────────────────────── */
+  --radius-sm:    10px;
+  --radius-md:    14px;
+  --radius-base:  18px;
+  --radius-card:  24px;
+  --radius-shell: 26px;
+
+  /* ── Shadows ───────────────────────────────────────────── */
+  --shadow-nav:   0 4px 20px rgba(0,0,0,0.35);
+  --shadow-card:  0 2px 12px rgba(0,0,0,0.25);
+
+  /* ── Touch Targets ─────────────────────────────────────── */
+  --touch-min:    44px;
+}
+
+/* ── Semantic Typography Styles ──────────────────────────── */
+
+.fl-headline {
+  font-family: var(--font-family);
+  font-size: var(--text-headline);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  line-height: 1.15;
+}
+
+.fl-subheadline {
+  font-family: var(--font-family);
+  font-size: var(--text-subheadline);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.fl-header {
+  font-family: var(--font-family);
+  font-size: var(--text-header);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.fl-card-title {
+  font-family: var(--font-family);
+  font-size: var(--text-card-title);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.fl-label {
+  font-family: var(--font-family);
+  font-size: var(--text-label);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.fl-body {
+  font-family: var(--font-family);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.fl-caption {
+  font-family: var(--font-family);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-regular);
+  color: var(--text-muted);
+}
+
+.fl-eyebrow {
+  font-family: var(--font-family);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.fl-micro {
+  font-family: var(--font-family);
+  font-size: var(--text-micro);
+  font-weight: var(--weight-semibold);
+  color: var(--text-muted);
+}
+
+.fl-accent-value {
+  font-family: var(--font-family);
+  font-size: var(--text-subheadline);
+  font-weight: var(--weight-semibold);
+  color: var(--accent-glow);
+}
+
+/* ── Component Tokens ─────────────────────────────────────── */
+
+/* Primary CTA Button */
+.fl-btn-primary {
+  background: var(--accent);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--text-label);
+  font-weight: var(--weight-semibold);
+  border-radius: var(--radius-base);
+  padding: 14px 20px;
+  border: none;
+  cursor: pointer;
+  min-height: var(--touch-min);
+  transition: opacity 0.15s ease;
+}
+.fl-btn-primary:hover { opacity: 0.88; }
+.fl-btn-primary:active { opacity: 0.75; transform: scale(0.98); }
+
+/* Secondary Button */
+.fl-btn-secondary {
+  background: var(--surface-strong);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--text-label);
+  font-weight: var(--weight-semibold);
+  border-radius: var(--radius-base);
+  padding: 14px 20px;
+  border: none;
+  cursor: pointer;
+  min-height: var(--touch-min);
+  transition: opacity 0.15s ease;
+}
+.fl-btn-secondary:hover { opacity: 0.85; }
+
+/* Card — Standard */
+.fl-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--sp-5);
+}
+
+/* Card — Elevated gradient */
+.fl-card-elevated {
+  background: var(--gradient-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--sp-5);
+}
+
+/* Card — Accent hero */
+.fl-card-accent {
+  background: var(--gradient-accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-card);
+  padding: var(--sp-5);
+}
+
+/* Input */
+.fl-input {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--text-label);
+  font-weight: var(--weight-semibold);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-base);
+  padding: 14px 16px;
+  min-height: 52px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+.fl-input::placeholder { color: var(--text-muted); }
+.fl-input:focus { border-color: var(--accent); }

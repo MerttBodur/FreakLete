@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FreakLete.QuickAccessTile"
+             x:Name="self">
+
+    <Border BackgroundColor="{StaticResource SurfaceRaised}"
+            Stroke="{StaticResource SurfaceBorder}"
+            StrokeThickness="1"
+            StrokeShape="RoundRectangle 24"
+            Padding="14">
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding Command, Source={x:Reference self}}" />
+        </Border.GestureRecognizers>
+        <VerticalStackLayout Spacing="8">
+            <Image x:Name="TileIcon"
+                   WidthRequest="24"
+                   HeightRequest="24"
+                   HorizontalOptions="Start" />
+            <VerticalStackLayout Spacing="2">
+                <Label x:Name="TitleLabel"
+                       FontFamily="OpenSansSemibold"
+                       FontSize="13"
+                       TextColor="{StaticResource TextPrimary}" />
+                <Label x:Name="SubtitleLabel"
+                       FontFamily="OpenSansRegular"
+                       FontSize="11"
+                       TextColor="{StaticResource TextMuted}" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </Border>
+
+</ContentView>

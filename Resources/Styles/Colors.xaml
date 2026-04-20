@@ -18,6 +18,7 @@
     <Color x:Key="BorderSubtle">#2A2437</Color>
     <Color x:Key="Accent">#8B5CF6</Color>
     <Color x:Key="AccentSoft">#2F2346</Color>
+    <Color x:Key="AccentSubtle">#3D2F5A</Color>
     <Color x:Key="AccentGlow">#A78BFA</Color>
     <Color x:Key="TextPrimary">#F7F7FB</Color>
     <Color x:Key="TextSecondary">#B3B2C5</Color>
@@ -59,6 +60,7 @@
     <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource Surface}" />
     <SolidColorBrush x:Key="SurfaceRaisedBrush" Color="{StaticResource SurfaceRaised}" />
     <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource Accent}" />
+    <SolidColorBrush x:Key="AccentSubtleBrush" Color="{StaticResource AccentSubtle}" />
     <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}" />
     <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}" />
     <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource Danger}" />

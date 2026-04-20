@@ -214,6 +214,20 @@
         <Setter Property="VerticalTextAlignment" Value="Center" />
     </Style>
 
+    <Style TargetType="Label" x:Key="MetricValueLabel">
+        <Setter Property="TextColor" Value="{StaticResource AccentGlow}" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="LineHeight" Value="1" />
+    </Style>
+
+    <Style TargetType="Label" x:Key="NavLabel">
+        <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+    </Style>
+
     <Style TargetType="Border" x:Key="CardBorder">
         <Setter Property="BackgroundColor" Value="{StaticResource Surface}" />
         <Setter Property="Stroke" Value="{StaticResource SurfaceBorder}" />
@@ -221,6 +235,14 @@
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="Padding" Value="18" />
         <Setter Property="Margin" Value="0,0,0,0" />
+    </Style>
+
+    <Style TargetType="Border" x:Key="CardElevated">
+        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceRaised}" />
+        <Setter Property="Stroke" Value="{StaticResource SurfaceBorder}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 24" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Padding" Value="18" />
     </Style>
 
     <Style TargetType="Border" x:Key="AccentCardBorder">
