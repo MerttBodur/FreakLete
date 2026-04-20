@@ -408,8 +408,8 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Style="{StaticResource CardBorder}">
-                    <VerticalStackLayout Spacing="12">
+                <Border Style="{StaticResource AccentCardBorder}">
+                    <VerticalStackLayout Spacing="10">
                         <Label x:Name="CoachProfileTitle"
                                Text="Coach Profile"
                                Style="{StaticResource SubHeadline}"
@@ -418,78 +418,77 @@
                         <Label x:Name="TrainingDaysTitleLabel"
                                Text="Training Days / Week"
                                Style="{StaticResource BodyMuted}" />
-                        <Border Style="{StaticResource CardBorder}"
-                                BackgroundColor="{StaticResource SurfaceRaised}"
-                                Padding="14,12">
-                            <Border.GestureRecognizers>
+                        <local:InputShell>
+                            <local:InputShell.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnTrainingDaysTapped" />
-                            </Border.GestureRecognizers>
+                            </local:InputShell.GestureRecognizers>
                             <Label x:Name="TrainingDaysLabel"
                                    Text="Select days per week"
                                    TextColor="{StaticResource TextSecondary}"
-                                   FontSize="15" />
-                        </Border>
+                                   FontSize="15"
+                                   VerticalTextAlignment="Center"
+                                   VerticalOptions="Center" />
+                        </local:InputShell>
 
                         <Label x:Name="SessionDurationTitleLabel"
                                Text="Session Duration (minutes)"
                                Style="{StaticResource BodyMuted}" />
-                        <Border Style="{StaticResource CardBorder}"
-                                BackgroundColor="{StaticResource SurfaceRaised}"
-                                Padding="14,12">
-                            <Border.GestureRecognizers>
+                        <local:InputShell>
+                            <local:InputShell.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnSessionDurationTapped" />
-                            </Border.GestureRecognizers>
+                            </local:InputShell.GestureRecognizers>
                             <Label x:Name="SessionDurationLabel"
                                    Text="Select session duration"
                                    TextColor="{StaticResource TextSecondary}"
-                                   FontSize="15" />
-                        </Border>
+                                   FontSize="15"
+                                   VerticalTextAlignment="Center"
+                                   VerticalOptions="Center" />
+                        </local:InputShell>
 
                         <Label x:Name="PrimaryGoalTitleLabel"
                                Text="Primary Training Goal"
                                Style="{StaticResource BodyMuted}" />
-                        <Border Style="{StaticResource CardBorder}"
-                                BackgroundColor="{StaticResource SurfaceRaised}"
-                                Padding="14,12">
-                            <Border.GestureRecognizers>
+                        <local:InputShell>
+                            <local:InputShell.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnPrimaryGoalTapped" />
-                            </Border.GestureRecognizers>
+                            </local:InputShell.GestureRecognizers>
                             <Label x:Name="PrimaryGoalLabel"
                                    Text="Select your primary goal"
                                    TextColor="{StaticResource TextSecondary}"
-                                   FontSize="15" />
-                        </Border>
+                                   FontSize="15"
+                                   VerticalTextAlignment="Center"
+                                   VerticalOptions="Center" />
+                        </local:InputShell>
 
                         <Label x:Name="SecondaryGoalTitleLabel"
                                Text="Secondary Goal (optional)"
                                Style="{StaticResource BodyMuted}" />
-                        <Border Style="{StaticResource CardBorder}"
-                                BackgroundColor="{StaticResource SurfaceRaised}"
-                                Padding="14,12">
-                            <Border.GestureRecognizers>
+                        <local:InputShell>
+                            <local:InputShell.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnSecondaryGoalTapped" />
-                            </Border.GestureRecognizers>
+                            </local:InputShell.GestureRecognizers>
                             <Label x:Name="SecondaryGoalLabel"
                                    Text="Select secondary goal"
                                    TextColor="{StaticResource TextSecondary}"
-                                   FontSize="15" />
-                        </Border>
+                                   FontSize="15"
+                                   VerticalTextAlignment="Center"
+                                   VerticalOptions="Center" />
+                        </local:InputShell>
 
                         <Label x:Name="EquipmentTitleLabel"
                                Text="Available Equipment"
                                Style="{StaticResource BodyMuted}" />
-                        <Border x:Name="EquipmentSelector"
-                                Style="{StaticResource CardBorder}"
-                                BackgroundColor="{StaticResource Surface}"
-                                Padding="16">
-                            <Border.GestureRecognizers>
+                        <local:InputShell x:Name="EquipmentSelector">
+                            <local:InputShell.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnEquipmentSelectorTapped" />
-                            </Border.GestureRecognizers>
+                            </local:InputShell.GestureRecognizers>
                             <Label x:Name="EquipmentLabel"
                                    Text="Select equipment access"
                                    TextColor="{StaticResource TextSecondary}"
-                                   FontSize="15" />
-                        </Border>
+                                   FontSize="15"
+                                   VerticalTextAlignment="Center"
+                                   VerticalOptions="Center" />
+                        </local:InputShell>
 
                         <Label x:Name="InjuryHistoryTitleLabel"
                                Text="Injury History"
@@ -530,17 +529,17 @@
                         <Label x:Name="DietaryPrefTitleLabel"
                                Text="Dietary Preference (optional)"
                                Style="{StaticResource BodyMuted}" />
-                        <Border Style="{StaticResource CardBorder}"
-                                BackgroundColor="{StaticResource SurfaceRaised}"
-                                Padding="14,12">
-                            <Border.GestureRecognizers>
+                        <local:InputShell>
+                            <local:InputShell.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnDietaryPreferenceTapped" />
-                            </Border.GestureRecognizers>
+                            </local:InputShell.GestureRecognizers>
                             <Label x:Name="DietaryPreferenceLabel"
                                    Text="Select dietary preference"
                                    TextColor="{StaticResource TextSecondary}"
-                                   FontSize="15" />
-                        </Border>
+                                   FontSize="15"
+                                   VerticalTextAlignment="Center"
+                                   VerticalOptions="Center" />
+                        </local:InputShell>
 
                     </VerticalStackLayout>
                 </Border>
