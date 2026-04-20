@@ -10,19 +10,19 @@
 
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
-            <VerticalStackLayout Padding="24,18,24,24"
-                                 Spacing="18">
+            <VerticalStackLayout Padding="20,16,20,24"
+                                 Spacing="16">
 
                 <!-- Centered Hero Identity -->
                 <local:AccentCard>
-                <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,2,0,2">
+                <VerticalStackLayout Spacing="12" HorizontalOptions="Fill" Margin="0">
                     <!-- Avatar Ring — tap to change photo -->
                     <Border x:Name="AvatarRing"
-                            StrokeShape="RoundRectangle 44"
-                            StrokeThickness="3"
-                            WidthRequest="88"
-                            HeightRequest="88"
-                            HorizontalOptions="Center">
+                            StrokeShape="RoundRectangle 36"
+                            StrokeThickness="2"
+                            WidthRequest="72"
+                            HeightRequest="72"
+                            HorizontalOptions="Start">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnAvatarTapped" />
                         </Border.GestureRecognizers>
@@ -41,7 +41,7 @@
                         <Grid>
                             <Label x:Name="InitialsLabel"
                                    Text="?"
-                                   FontSize="30"
+                                   FontSize="28"
                                    FontFamily="OpenSansSemibold"
                                    TextColor="{StaticResource AccentGlow}"
                                    HorizontalOptions="Center"
@@ -56,45 +56,51 @@
                     <Label x:Name="ChangePhotoLabel"
                            FontSize="11"
                            FontFamily="OpenSansSemibold"
-                           TextColor="{StaticResource AccentGlow}"
-                           HorizontalTextAlignment="Center">
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Start">
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnAvatarTapped" />
                         </Label.GestureRecognizers>
                     </Label>
                     <Label x:Name="FullNameLabel"
                            Text="Your Name"
-                           FontSize="26"
+                           FontSize="24"
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextPrimary}"
-                           HorizontalTextAlignment="Center"
+                           HorizontalTextAlignment="Start"
                            Margin="0,4,0,0" />
-                    <Label x:Name="EmailLabel"
+                    <Label x:Name="SportPositionLabel"
                            FontSize="13"
                            FontFamily="OpenSansRegular"
                            TextColor="{StaticResource TextSecondary}"
-                           HorizontalTextAlignment="Center" />
-                    <!-- Status chip — derived from real context -->
-                    <Border x:Name="StatusChip"
+                           HorizontalTextAlignment="Start" />
+                    <!-- Plan badge — derived from real context -->
+                    <Border x:Name="PlanBadgeContainer"
                             StrokeShape="RoundRectangle 12"
                             BackgroundColor="{StaticResource AccentSoft}"
                             Stroke="{StaticResource Accent}"
                             StrokeThickness="1"
-                            Padding="14,5"
-                            HorizontalOptions="Center"
+                            Padding="12,5"
+                            HorizontalOptions="Start"
                             Margin="0,4,0,0"
                             IsVisible="False">
-                        <Label x:Name="StatusLabel"
+                        <Label x:Name="PlanBadgeLabel"
                                FontSize="10"
                                FontFamily="OpenSansSemibold"
                                TextColor="{StaticResource AccentGlow}"
                                CharacterSpacing="1" />
                     </Border>
+                    <Label x:Name="ProfileFeedbackLabel"
+                           FontSize="11"
+                           FontFamily="OpenSansRegular"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Start"
+                           IsVisible="False" />
                 </VerticalStackLayout>
                 </local:AccentCard>
 
                 <!-- Stats Row -->
-                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" Margin="0,4,0,0">
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" Margin="0,4,0,0" IsVisible="False">
                     <Border Grid.Column="0"
                             StrokeShape="RoundRectangle 18"
                             Stroke="{StaticResource SurfaceBorder}"
@@ -266,7 +272,7 @@
                 </VerticalStackLayout>
 
                 <VerticalStackLayout x:Name="OverviewPanel" Spacing="12">
-                <Border Style="{StaticResource CardBorder}">
+                <Border Style="{StaticResource AccentCardBorder}">
                     <VerticalStackLayout Spacing="12">
                         <Label x:Name="ProfileDetailsTitle"
                                Text="Profile Details"
@@ -291,6 +297,11 @@
                         <Label x:Name="AgeLabel"
                                Text="Age: -" />
 
+                        <Label x:Name="BodyMetricsTitle"
+                               Text="Body Metrics"
+                               Style="{StaticResource SubHeadline}"
+                               HorizontalTextAlignment="Start" />
+
                         <Grid ColumnDefinitions="*,*"
                               ColumnSpacing="12">
                             <VerticalStackLayout Grid.Column="0"
@@ -298,20 +309,24 @@
                                 <Label x:Name="WeightKgLabel"
                                        Text="Weight (kg)"
                                        Style="{StaticResource BodyMuted}" />
-                                <Entry x:Name="WeightEntry"
-                                       Placeholder="Example: 82.5"
-                                       Keyboard="Numeric"
-                                       Unfocused="OnWeightUnfocused" />
+                                <local:InputShell>
+                                    <Entry x:Name="WeightEntry"
+                                           Placeholder="Example: 82.5"
+                                           Keyboard="Numeric"
+                                           Unfocused="OnWeightUnfocused" />
+                                </local:InputShell>
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1"
                                                  Spacing="8">
                                 <Label x:Name="BodyFatLabel"
                                        Text="Body Fat (%)"
                                        Style="{StaticResource BodyMuted}" />
-                                <Entry x:Name="BodyFatEntry"
-                                       Placeholder="Example: 12.5"
-                                       Keyboard="Numeric"
-                                       Unfocused="OnBodyFatUnfocused" />
+                                <local:InputShell>
+                                    <Entry x:Name="BodyFatEntry"
+                                           Placeholder="Example: 12.5"
+                                           Keyboard="Numeric"
+                                           Unfocused="OnBodyFatUnfocused" />
+                                </local:InputShell>
                             </VerticalStackLayout>
                         </Grid>
 
@@ -319,10 +334,12 @@
                             <Label x:Name="HeightCmLabel"
                                    Text="Height (cm)"
                                    Style="{StaticResource BodyMuted}" />
-                            <Entry x:Name="HeightEntry"
-                                   Placeholder="Example: 178"
-                                   Keyboard="Numeric"
-                                   Unfocused="OnHeightUnfocused" />
+                            <local:InputShell>
+                                <Entry x:Name="HeightEntry"
+                                       Placeholder="Example: 178"
+                                       Keyboard="Numeric"
+                                       Unfocused="OnHeightUnfocused" />
+                            </local:InputShell>
                         </VerticalStackLayout>
 
                         <Label x:Name="SexTitleLabel"
@@ -477,32 +494,38 @@
                         <Label x:Name="InjuryHistoryTitleLabel"
                                Text="Injury History"
                                Style="{StaticResource BodyMuted}" />
-                        <Editor x:Name="InjuryHistoryEditor"
-                                Placeholder="e.g. ACL reconstruction 2023 left knee, chronic shoulder impingement..."
-                                AutoSize="TextChanges"
-                                MaxLength="1000"
-                                HeightRequest="60"
-                                Unfocused="OnInjuryHistoryEditorUnfocused" />
+                        <local:InputShell>
+                            <Editor x:Name="InjuryHistoryEditor"
+                                    Placeholder="e.g. ACL reconstruction 2023 left knee, chronic shoulder impingement..."
+                                    AutoSize="TextChanges"
+                                    MaxLength="1000"
+                                    HeightRequest="60"
+                                    Unfocused="OnInjuryHistoryEditorUnfocused" />
+                        </local:InputShell>
 
                         <Label x:Name="CurrentPainTitleLabel"
                                Text="Current Pain Points"
                                Style="{StaticResource BodyMuted}" />
-                        <Editor x:Name="CurrentPainEditor"
-                                Placeholder="e.g. Mild right knee discomfort during deep squats..."
-                                AutoSize="TextChanges"
-                                MaxLength="1000"
-                                HeightRequest="60"
-                                Unfocused="OnCurrentPainEditorUnfocused" />
+                        <local:InputShell>
+                            <Editor x:Name="CurrentPainEditor"
+                                    Placeholder="e.g. Mild right knee discomfort during deep squats..."
+                                    AutoSize="TextChanges"
+                                    MaxLength="1000"
+                                    HeightRequest="60"
+                                    Unfocused="OnCurrentPainEditorUnfocused" />
+                        </local:InputShell>
 
                         <Label x:Name="PhysicalLimitsTitleLabel"
                                Text="Physical Limitations"
                                Style="{StaticResource BodyMuted}" />
-                        <Editor x:Name="PhysicalLimitationsEditor"
-                                Placeholder="e.g. Limited overhead mobility, can't do behind-neck movements..."
-                                AutoSize="TextChanges"
-                                MaxLength="1000"
-                                HeightRequest="60"
-                                Unfocused="OnPhysicalLimitationsEditorUnfocused" />
+                        <local:InputShell>
+                            <Editor x:Name="PhysicalLimitationsEditor"
+                                    Placeholder="e.g. Limited overhead mobility, can't do behind-neck movements..."
+                                    AutoSize="TextChanges"
+                                    MaxLength="1000"
+                                    HeightRequest="60"
+                                    Unfocused="OnPhysicalLimitationsEditorUnfocused" />
+                        </local:InputShell>
 
                         <Label x:Name="DietaryPrefTitleLabel"
                                Text="Dietary Preference (optional)"
@@ -526,7 +549,7 @@
                 <!-- Athlete Profile Section Header -->
 
                 <VerticalStackLayout x:Name="PerformancePanel" Spacing="12" IsVisible="False">
-                <Border Style="{StaticResource CardBorder}">
+                <Border Style="{StaticResource AccentCardBorder}">
                     <VerticalStackLayout Spacing="12">
                         <Label x:Name="AthleticPerfTitle"
                                Text="Athletic Performance"
@@ -564,9 +587,11 @@
                             <Label x:Name="PerformanceMetric1Label"
                                    Text="Result"
                                    Style="{StaticResource BodyMuted}" />
-                            <Entry x:Name="PerformanceValueEntry"
-                                   Placeholder="Enter result"
-                                   Keyboard="Numeric" />
+                            <local:InputShell>
+                                <Entry x:Name="PerformanceValueEntry"
+                                       Placeholder="Enter result"
+                                       Keyboard="Numeric" />
+                            </local:InputShell>
                         </VerticalStackLayout>
 
                         <VerticalStackLayout x:Name="PerformanceMetric2Container"
@@ -575,9 +600,11 @@
                             <Label x:Name="PerformanceMetric2Label"
                                    Text="Second Result"
                                    Style="{StaticResource BodyMuted}" />
-                            <Entry x:Name="PerformanceSecondaryValueEntry"
-                                   Placeholder="Enter second result"
-                                   Keyboard="Numeric" />
+                            <local:InputShell>
+                                <Entry x:Name="PerformanceSecondaryValueEntry"
+                                       Placeholder="Enter second result"
+                                       Keyboard="Numeric" />
+                            </local:InputShell>
                         </VerticalStackLayout>
 
                         <VerticalStackLayout x:Name="PerformanceTimingContainer"
@@ -586,9 +613,11 @@
                             <Label x:Name="PerformanceTimingLabel"
                                    Text="Timing"
                                    Style="{StaticResource BodyMuted}" />
-                            <Entry x:Name="PerformanceTimingEntry"
-                                   Placeholder="Optional (e.g. 1.96)"
-                                   Keyboard="Numeric" />
+                            <local:InputShell>
+                                <Entry x:Name="PerformanceTimingEntry"
+                                       Placeholder="Optional (e.g. 1.96)"
+                                       Keyboard="Numeric" />
+                            </local:InputShell>
                         </VerticalStackLayout>
 
                         <Button x:Name="PerformanceActionButton"
@@ -646,7 +675,7 @@
                 </VerticalStackLayout>
 
                 <VerticalStackLayout x:Name="GoalsPanel" Spacing="12" IsVisible="False">
-                <Border Style="{StaticResource CardBorder}">
+                <Border Style="{StaticResource AccentCardBorder}">
                     <VerticalStackLayout Spacing="12">
                         <Label x:Name="MovementGoalsTitle"
                                Text="Movement Goals"
@@ -682,10 +711,11 @@
 
                         <Grid ColumnDefinitions="*,Auto"
                               ColumnSpacing="12">
-                            <Entry Grid.Column="0"
-                                   x:Name="GoalTargetValueEntry"
-                                   Placeholder="Target value"
-                                   Keyboard="Numeric" />
+                            <local:InputShell Grid.Column="0">
+                                <Entry x:Name="GoalTargetValueEntry"
+                                       Placeholder="Target value"
+                                       Keyboard="Numeric" />
+                            </local:InputShell>
                             <Border Grid.Column="1"
                                     Style="{StaticResource CardBorder}"
                                     BackgroundColor="{StaticResource SurfaceRaised}"

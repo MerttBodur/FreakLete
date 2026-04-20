@@ -98,10 +98,11 @@ public partial class ProfilePage : ContentPage
 		SavedPrsSubLabel.Text = AppLanguage.ProfileSavedPrs;
 		RecordsSubLabel.Text = AppLanguage.ProfileRecords;
 		HighlightsLabel.Text = AppLanguage.ProfileHighlights;
-		ProfileDetailsTitle.Text = AppLanguage.ProfileDetails;
+		ProfileDetailsTitle.Text = AppLanguage.IsTurkish ? "Spor Profili" : "Sport Profile";
 		DobLabel.Text = AppLanguage.ProfileDateOfBirth;
 		DateOfBirthLabel.Text = AppLanguage.ProfileSelectDob;
 		AgeLabel.Text = AppLanguage.ProfileAge;
+		BodyMetricsTitle.Text = AppLanguage.IsTurkish ? "Vücut Ölçüleri" : "Body Metrics";
 		WeightKgLabel.Text = AppLanguage.ProfileWeightKg;
 		BodyFatLabel.Text = AppLanguage.ProfileBodyFat;
 		HeightCmLabel.Text = AppLanguage.ProfileHeightCm;
@@ -198,29 +199,20 @@ public partial class ProfilePage : ContentPage
 		UpdateHeroMetricTiles(_profile);
 
 		FullNameLabel.Text = $"{_profile.FirstName} {_profile.LastName}";
-		EmailLabel.Text = _profile.Email;
+		SportPositionLabel.Text = BuildSportPositionText(_profile);
 
 		// Initials avatar
 		var fi = string.IsNullOrWhiteSpace(_profile.FirstName) ? "" : _profile.FirstName[..1];
 		var li = string.IsNullOrWhiteSpace(_profile.LastName) ? "" : _profile.LastName[..1];
 		InitialsLabel.Text = $"{fi}{li}".ToUpperInvariant();
 
-		// Status chip — derived from real gym experience or sport context
-		string? chipText = !string.IsNullOrWhiteSpace(_profile.GymExperienceLevel)
-			? _profile.GymExperienceLevel.ToUpperInvariant()
-			: !string.IsNullOrWhiteSpace(_profile.SportName)
-				? _profile.SportName.ToUpperInvariant()
-				: null;
-
-		if (chipText is not null)
+		PlanBadgeContainer.IsVisible = false;
+		ProfileFeedbackLabel.IsVisible = false;
+		var planBadgeText = BuildPlanBadgeText(_profile);
+		if (!string.IsNullOrWhiteSpace(planBadgeText))
 		{
-			StatusChip.IsVisible = true;
-			StatusLabel.Text = chipText;
-			StatusLabel.IsVisible = true;
-		}
-		else
-		{
-			StatusChip.IsVisible = false;
+			PlanBadgeContainer.IsVisible = true;
+			PlanBadgeLabel.Text = planBadgeText;
 		}
 
 		await LoadSportCatalogAsync();
@@ -297,6 +289,39 @@ public partial class ProfilePage : ContentPage
 		{
 			FfmiTile.Value = "-";
 		}
+	}
+
+	private static string BuildSportPositionText(UserProfileResponse profile)
+	{
+		var sport = string.IsNullOrWhiteSpace(profile.SportName) ? null : profile.SportName.Trim();
+		var position = string.IsNullOrWhiteSpace(profile.Position) ? null : profile.Position.Trim();
+
+		if (sport is null && position is null)
+		{
+			return AppLanguage.ProfileSelectSport;
+		}
+
+		if (sport is not null && position is not null)
+		{
+			return $"{sport} / {position}";
+		}
+
+		return sport ?? position ?? string.Empty;
+	}
+
+	private static string? BuildPlanBadgeText(UserProfileResponse profile)
+	{
+		if (!string.IsNullOrWhiteSpace(profile.GymExperienceLevel))
+		{
+			return profile.GymExperienceLevel.Trim().ToUpperInvariant();
+		}
+
+		if (!string.IsNullOrWhiteSpace(profile.SportName))
+		{
+			return profile.SportName.Trim().ToUpperInvariant();
+		}
+
+		return null;
 	}
 
 	private void BuildHighlights(int totalWorkouts, int totalPrs, int athleticCount, int goalCount)
@@ -1176,22 +1201,22 @@ public partial class ProfilePage : ContentPage
 
 	private void ShowError(string message)
 	{
-		StatusLabel.TextColor = Colors.Red;
-		StatusLabel.Text = message;
-		StatusLabel.IsVisible = true;
+		ProfileFeedbackLabel.TextColor = Colors.Red;
+		ProfileFeedbackLabel.Text = message;
+		ProfileFeedbackLabel.IsVisible = true;
 	}
 
 	private void ShowSuccess(string message)
 	{
-		StatusLabel.TextColor = Colors.LightGreen;
-		StatusLabel.Text = message;
-		StatusLabel.IsVisible = true;
+		ProfileFeedbackLabel.TextColor = Colors.LightGreen;
+		ProfileFeedbackLabel.Text = message;
+		ProfileFeedbackLabel.IsVisible = true;
 	}
 
 	private void ClearStatus()
 	{
-		StatusLabel.Text = string.Empty;
-		StatusLabel.IsVisible = false;
+		ProfileFeedbackLabel.Text = string.Empty;
+		ProfileFeedbackLabel.IsVisible = false;
 	}
 
 	private void ResetPerformanceForm()
