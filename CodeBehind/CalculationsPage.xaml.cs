@@ -761,6 +761,10 @@ public partial class CalculationsPage : ContentPage
 			ExerciseName = entry.ExerciseName,
 			ExerciseCategory = entry.ExerciseCategory,
 			TrackingMode = entry.TrackingMode,
+			TierBadgeText = FormatTierBadgeText(entry.Tier),
+			TierBadgeBackgroundColor = GetTierBadgeBackgroundColor(entry.Tier?.TierLevel),
+			TierBadgeTextColor = GetTierBadgeTextColor(entry.Tier?.TierLevel),
+			HasTierBadge = entry.Tier is not null && !string.IsNullOrWhiteSpace(entry.Tier.TierLevel),
 			Weight = entry.Weight,
 			Reps = entry.Reps,
 			Rir = entry.RIR,
@@ -810,6 +814,48 @@ public partial class CalculationsPage : ContentPage
 		}
 
 		return strengthText;
+	}
+
+	private static string FormatTierBadgeText(TierResult? tier)
+	{
+		if (tier is null || string.IsNullOrWhiteSpace(tier.TierLevel))
+		{
+			return string.Empty;
+		}
+
+		return tier.TierLevel switch
+		{
+			"NeedImprovement" => "NI",
+			"Beginner" => "B",
+			"Intermediate" => "INT",
+			"Advanced" => "ADV",
+			"Elite" => "ELT",
+			"Freak" => "FRK",
+			_ => tier.TierLevel.ToUpperInvariant()
+		};
+	}
+
+	private static Color GetTierBadgeBackgroundColor(string? tierLevel)
+	{
+		return tierLevel switch
+		{
+			"NeedImprovement" => GetDashColor("SurfaceStrong", "#3A334C"),
+			"Beginner" => GetDashColor("Info", "#3B82F6"),
+			"Intermediate" => GetDashColor("Success", "#22C55E"),
+			"Advanced" => GetDashColor("AccentGlow", "#A78BFA"),
+			"Elite" => GetDashColor("Accent", "#8B5CF6"),
+			"Freak" => GetDashColor("Accent", "#8B5CF6"),
+			_ => GetDashColor("SurfaceStrong", "#3A334C")
+		};
+	}
+
+	private static Color GetTierBadgeTextColor(string? tierLevel)
+	{
+		return tierLevel switch
+		{
+			"NeedImprovement" => GetDashColor("TextSecondary", "#B3B2C5"),
+			_ => Colors.White
+		};
 	}
 
 	private async void OnDeleteSavedPrInvoked(object? sender, EventArgs e)
@@ -1064,6 +1110,10 @@ public partial class CalculationsPage : ContentPage
 		public string ExerciseName { get; set; } = string.Empty;
 		public string ExerciseCategory { get; set; } = string.Empty;
 		public string TrackingMode { get; set; } = nameof(ExerciseTrackingMode.Strength);
+		public bool HasTierBadge { get; set; }
+		public string TierBadgeText { get; set; } = string.Empty;
+		public Color TierBadgeBackgroundColor { get; set; } = Colors.Transparent;
+		public Color TierBadgeTextColor { get; set; } = Colors.White;
 		public int Weight { get; set; }
 		public int Reps { get; set; }
 		public int? Rir { get; set; }
