@@ -193,9 +193,11 @@
                                     <Label x:Name="WeightRangeLabel"
                                            Text="Weight (kg): 40 - 250"
                                            Style="{StaticResource BodyMuted}" />
-                                    <Entry x:Name="WeightEntry"
-                                           Keyboard="Numeric"
-                                           Placeholder="Example: 100" />
+                                    <local:InputShell>
+                                        <Entry x:Name="WeightEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Example: 100" />
+                                    </local:InputShell>
                                 </VerticalStackLayout>
 
                                 <VerticalStackLayout Grid.Column="1"
@@ -203,9 +205,11 @@
                                     <Label x:Name="RepsRangeLabel"
                                            Text="Reps: 1 - 8"
                                            Style="{StaticResource BodyMuted}" />
-                                    <Entry x:Name="RepsEntry"
-                                           Keyboard="Numeric"
-                                           Placeholder="Example: 5" />
+                                    <local:InputShell>
+                                        <Entry x:Name="RepsEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Example: 5" />
+                                    </local:InputShell>
                                 </VerticalStackLayout>
                             </Grid>
 
@@ -216,9 +220,11 @@
                                     <Label x:Name="RirRangeLabel"
                                            Text="RIR: 0 - 5"
                                            Style="{StaticResource BodyMuted}" />
-                                    <Entry x:Name="RirEntry"
-                                           Keyboard="Numeric"
-                                           Placeholder="Example: 1" />
+                                    <local:InputShell>
+                                        <Entry x:Name="RirEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Example: 1" />
+                                    </local:InputShell>
                                 </VerticalStackLayout>
 
                                 <VerticalStackLayout Grid.Column="1"
@@ -226,9 +232,11 @@
                                     <Label x:Name="ConcentricTimeLbl"
                                            Text="Concentric Time (s)"
                                            Style="{StaticResource BodyMuted}" />
-                                    <Entry x:Name="ConcentricTimeEntry"
-                                           Keyboard="Numeric"
-                                           Placeholder="Optional" />
+                                    <local:InputShell>
+                                        <Entry x:Name="ConcentricTimeEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Optional" />
+                                    </local:InputShell>
                                 </VerticalStackLayout>
                             </Grid>
 
@@ -347,9 +355,11 @@
                                         <Label x:Name="PrWeightLabel"
                                                Text="Weight (kg)"
                                                Style="{StaticResource BodyMuted}" />
-                                        <Entry x:Name="PrWeightEntry"
-                                               Keyboard="Numeric"
-                                               Placeholder="Example: 100" />
+                                        <local:InputShell>
+                                            <Entry x:Name="PrWeightEntry"
+                                                   Keyboard="Numeric"
+                                                   Placeholder="Example: 100" />
+                                        </local:InputShell>
                                     </VerticalStackLayout>
 
                                     <VerticalStackLayout Grid.Column="1"
@@ -357,9 +367,11 @@
                                         <Label x:Name="PrRepsLabel"
                                                Text="Reps"
                                                Style="{StaticResource BodyMuted}" />
-                                        <Entry x:Name="PrRepsEntry"
-                                               Keyboard="Numeric"
-                                               Placeholder="Example: 5" />
+                                        <local:InputShell>
+                                            <Entry x:Name="PrRepsEntry"
+                                                   Keyboard="Numeric"
+                                                   Placeholder="Example: 5" />
+                                        </local:InputShell>
                                     </VerticalStackLayout>
                                 </Grid>
 
@@ -370,9 +382,11 @@
                                         <Label x:Name="PrRirLabel"
                                                Text="RIR"
                                                Style="{StaticResource BodyMuted}" />
-                                        <Entry x:Name="PrRirEntry"
-                                               Keyboard="Numeric"
-                                               Placeholder="Optional" />
+                                        <local:InputShell>
+                                            <Entry x:Name="PrRirEntry"
+                                                   Keyboard="Numeric"
+                                                   Placeholder="Optional" />
+                                        </local:InputShell>
                                     </VerticalStackLayout>
 
                                     <VerticalStackLayout Grid.Column="1"
@@ -380,9 +394,11 @@
                                         <Label x:Name="PrConcentricTimeLbl"
                                                Text="Concentric Time (s)"
                                                Style="{StaticResource BodyMuted}" />
-                                        <Entry x:Name="PrConcentricTimeEntry"
-                                               Keyboard="Numeric"
-                                               Placeholder="Optional" />
+                                        <local:InputShell>
+                                            <Entry x:Name="PrConcentricTimeEntry"
+                                                   Keyboard="Numeric"
+                                                   Placeholder="Optional" />
+                                        </local:InputShell>
                                     </VerticalStackLayout>
                                 </Grid>
                             </VerticalStackLayout>
@@ -394,9 +410,11 @@
                                     <Label x:Name="PrMetric1Label"
                                            Text="Metric 1"
                                            Style="{StaticResource BodyMuted}" />
-                                    <Entry x:Name="PrMetric1Entry"
-                                           Keyboard="Numeric"
-                                           Placeholder="Enter value" />
+                                    <local:InputShell>
+                                        <Entry x:Name="PrMetric1Entry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Enter value" />
+                                    </local:InputShell>
                                 </VerticalStackLayout>
 
                                 <VerticalStackLayout x:Name="PrMetric2Container"
@@ -405,9 +423,11 @@
                                     <Label x:Name="PrMetric2Label"
                                            Text="Metric 2"
                                            Style="{StaticResource BodyMuted}" />
-                                    <Entry x:Name="PrMetric2Entry"
-                                           Keyboard="Numeric"
-                                           Placeholder="Enter value" />
+                                    <local:InputShell>
+                                        <Entry x:Name="PrMetric2Entry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Enter value" />
+                                    </local:InputShell>
                                 </VerticalStackLayout>
 
                                 <VerticalStackLayout x:Name="PrGctContainer"
@@ -416,9 +436,11 @@
                                     <Label x:Name="PrGctLabel"
                                            Text="Ground Contact Time (s)"
                                            Style="{StaticResource BodyMuted}" />
-                                    <Entry x:Name="PrGroundContactTimeEntry"
-                                           Keyboard="Numeric"
-                                           Placeholder="Optional (e.g. 1.96)" />
+                                    <local:InputShell>
+                                        <Entry x:Name="PrGroundContactTimeEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Optional (e.g. 1.96)" />
+                                    </local:InputShell>
                                 </VerticalStackLayout>
                             </VerticalStackLayout>
 
@@ -533,9 +555,11 @@
                                     <Label x:Name="JumpHeightLabel"
                                            Text="Jump Height (cm)"
                                            Style="{StaticResource BodyMuted}" />
-                                    <Entry x:Name="RsiJumpHeightEntry"
-                                           Keyboard="Numeric"
-                                           Placeholder="Example: 42.5" />
+                                    <local:InputShell>
+                                        <Entry x:Name="RsiJumpHeightEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Example: 42.5" />
+                                    </local:InputShell>
                                 </VerticalStackLayout>
 
                                 <VerticalStackLayout Grid.Column="1"
@@ -543,9 +567,11 @@
                                     <Label x:Name="GctLabel"
                                            Text="GCT (s)"
                                            Style="{StaticResource BodyMuted}" />
-                                    <Entry x:Name="RsiGroundContactTimeEntry"
-                                           Keyboard="Numeric"
-                                           Placeholder="Example: 0.21" />
+                                    <local:InputShell>
+                                        <Entry x:Name="RsiGroundContactTimeEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="Example: 0.21" />
+                                    </local:InputShell>
                                 </VerticalStackLayout>
                             </Grid>
 
@@ -659,9 +685,11 @@
                                     <Label x:Name="FfmiWeightLabel"
                                            Text="Weight (kg)"
                                            Style="{StaticResource BodyMuted}" />
-                                    <Entry x:Name="FfmiWeightEntry"
-                                           Keyboard="Numeric"
-                                           Placeholder="80" />
+                                    <local:InputShell>
+                                        <Entry x:Name="FfmiWeightEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="80" />
+                                    </local:InputShell>
                                 </VerticalStackLayout>
 
                                 <VerticalStackLayout Grid.Column="1"
@@ -669,9 +697,11 @@
                                     <Label x:Name="FfmiHeightLabel"
                                            Text="Height (cm)"
                                            Style="{StaticResource BodyMuted}" />
-                                    <Entry x:Name="FfmiHeightEntry"
-                                           Keyboard="Numeric"
-                                           Placeholder="178" />
+                                    <local:InputShell>
+                                        <Entry x:Name="FfmiHeightEntry"
+                                               Keyboard="Numeric"
+                                               Placeholder="178" />
+                                    </local:InputShell>
                                 </VerticalStackLayout>
                             </Grid>
 
@@ -679,9 +709,11 @@
                                 <Label x:Name="FfmiBodyFatLabel"
                                        Text="Body Fat (%)"
                                        Style="{StaticResource BodyMuted}" />
-                                <Entry x:Name="FfmiBodyFatEntry"
-                                       Keyboard="Numeric"
-                                       Placeholder="15" />
+                                <local:InputShell>
+                                    <Entry x:Name="FfmiBodyFatEntry"
+                                           Keyboard="Numeric"
+                                           Placeholder="15" />
+                                </local:InputShell>
                             </VerticalStackLayout>
 
                             <Button x:Name="CalculateFfmiBtn"
