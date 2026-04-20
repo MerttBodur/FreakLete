@@ -8,10 +8,11 @@ namespace FreakLete.Xaml.Controls;
 
 public partial class TierCongratsPopup : ContentView
 {
-    private Page? _page;
+    private readonly Page _page;
 
-    private TierCongratsPopup(TierResult tier)
+    private TierCongratsPopup(Page page, TierResult tier)
     {
+        _page = page;
         InitializeComponent();
         ApplyLanguage();
         Bind(tier);
@@ -21,16 +22,17 @@ public partial class TierCongratsPopup : ContentView
     {
         try
         {
-            var popup = new TierCongratsPopup(tier);
-            popup._page = page;
+            var popup = new TierCongratsPopup(page, tier);
             return page.ShowPopupAsync(popup, new PopupOptions
             {
                 CanBeDismissedByTappingOutsideOfPopup = true
             });
         }
-        catch
+        catch (Exception ex)
         {
-            // Popup display failure must not break the save flow.
+#if DEBUG
+            System.Diagnostics.Debug.WriteLine($"[TierCongratsPopup] Display failed: {ex}");
+#endif
             return Task.CompletedTask;
         }
     }
@@ -62,18 +64,24 @@ public partial class TierCongratsPopup : ContentView
             NextMilestoneLabel.Text =
                 $"{AppLanguage.TierNextMilestonePrefix(tier.NextLevel)} — {TierDisplayFormatter.FormatDelta(tier.TrackingMode, tier.NextDelta.Value)}";
 
-            NextMilestoneStack.SizeChanged += (_, _) =>
+            EventHandler? sizeHandler = null;
+            sizeHandler = (_, _) =>
             {
                 var container = NextMilestoneStack.Width;
                 if (container > 0)
+                {
                     ProgressBar.WidthRequest = container * Math.Clamp(tier.ProgressPercent, 0, 100) / 100;
+                    NextMilestoneStack.SizeChanged -= sizeHandler;
+                }
             };
+            NextMilestoneStack.SizeChanged += sizeHandler;
         }
     }
 
     private static Color GetTierBadgeColor(string tierLevel)
     {
-        var res = Application.Current!.Resources;
+        var res = Application.Current?.Resources;
+        if (res is null) return Colors.Transparent;
         string key = tierLevel switch
         {
             "NeedImprovement" => "SurfaceStrong",
@@ -89,7 +97,7 @@ public partial class TierCongratsPopup : ContentView
 
     private async void OnCloseClicked(object? sender, EventArgs e)
     {
-        if (_page is not null)
-            await _page.ClosePopupAsync();
+        try { await _page.ClosePopupAsync(); }
+        catch { /* already dismissed */ }
     }
 }
