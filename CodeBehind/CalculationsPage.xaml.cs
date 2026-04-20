@@ -1,5 +1,7 @@
+using FreakLete.Helpers;
 using FreakLete.Models;
 using FreakLete.Services;
+using FreakLete.Xaml.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls.Shapes;
 
@@ -659,6 +661,7 @@ public partial class CalculationsPage : ContentPage
 				return;
 			}
 			ShowSuccess(PrStatusLabel, AppLanguage.CalcPrUpdated);
+			UpdateNextMilestoneLabel(null);
 		}
 		else
 		{
@@ -669,6 +672,10 @@ public partial class CalculationsPage : ContentPage
 				return;
 			}
 			ShowSuccess(PrStatusLabel, AppLanguage.CalcPrSaved);
+			var tier = result.Data?.Tier;
+			UpdateNextMilestoneLabel(tier);
+			if (tier is not null && (tier.LeveledUp || tier.PreviousTierLevel is null))
+				await TierCongratsPopup.ShowAsync(this, tier);
 		}
 
 		ResetPrSaveMode();
@@ -980,6 +987,19 @@ public partial class CalculationsPage : ContentPage
 		FfmiInsightSportLabel.Text = insight.SportContext;
 		FfmiInsightGlobalLabel.Text = insight.GlobalContext;
 		FfmiInsightCard.IsVisible = true;
+	}
+
+	private void UpdateNextMilestoneLabel(TierResult? tier)
+	{
+		if (tier is null || string.IsNullOrEmpty(tier.NextLevel) || tier.NextDelta is null)
+		{
+			NextMilestoneLabel.Text = string.Empty;
+			NextMilestoneLabel.IsVisible = false;
+			return;
+		}
+		NextMilestoneLabel.Text =
+			$"{AppLanguage.TierNextMilestonePrefix(tier.NextLevel)} — {TierDisplayFormatter.FormatDelta(tier.TrackingMode, tier.NextDelta.Value)}";
+		NextMilestoneLabel.IsVisible = true;
 	}
 
 	private static void ShowError(Label label, string message)
