@@ -28,7 +28,7 @@
                     HorizontalOptions="Center">
                 <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
                     <Image x:Name="HomeIcon"
-                           Source="nav_home.svg"
+                           Source="nav_home_inactive.svg"
                            WidthRequest="28"
                            HeightRequest="28"
                            HorizontalOptions="Center" />
@@ -36,7 +36,7 @@
                            Text="Home"
                            FontSize="10"
                            FontFamily="OpenSansSemibold"
-                           TextColor="{StaticResource TextSecondary}"
+                           TextColor="{StaticResource TextMuted}"
                            HorizontalTextAlignment="Center"
                            IsVisible="False" />
                 </VerticalStackLayout>
@@ -56,7 +56,7 @@
                     HorizontalOptions="Center">
                 <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
                     <Image x:Name="WorkoutIcon"
-                           Source="nav_dumbbell.svg"
+                           Source="nav_dumbbell_inactive.svg"
                            WidthRequest="28"
                            HeightRequest="28"
                            HorizontalOptions="Center" />
@@ -64,7 +64,7 @@
                            Text="Workout"
                            FontSize="10"
                            FontFamily="OpenSansSemibold"
-                           TextColor="{StaticResource TextSecondary}"
+                           TextColor="{StaticResource TextMuted}"
                            HorizontalTextAlignment="Center"
                            IsVisible="False" />
                 </VerticalStackLayout>
@@ -84,7 +84,7 @@
                     HorizontalOptions="Center">
                 <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
                     <Image x:Name="FreakAiIcon"
-                           Source="nav_notebook.svg"
+                           Source="nav_notebook_inactive.svg"
                            WidthRequest="28"
                            HeightRequest="28"
                            HorizontalOptions="Center" />
@@ -92,7 +92,7 @@
                            Text="FreakAI"
                            FontSize="10"
                            FontFamily="OpenSansSemibold"
-                           TextColor="{StaticResource TextSecondary}"
+                           TextColor="{StaticResource TextMuted}"
                            HorizontalTextAlignment="Center"
                            IsVisible="False" />
                 </VerticalStackLayout>
@@ -112,7 +112,7 @@
                     HorizontalOptions="Center">
                 <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
                     <Image x:Name="CalculationsIcon"
-                           Source="nav_plates.svg"
+                           Source="nav_plates_inactive.svg"
                            WidthRequest="28"
                            HeightRequest="28"
                            HorizontalOptions="Center" />
@@ -120,7 +120,7 @@
                            Text="Calc"
                            FontSize="10"
                            FontFamily="OpenSansSemibold"
-                           TextColor="{StaticResource TextSecondary}"
+                           TextColor="{StaticResource TextMuted}"
                            HorizontalTextAlignment="Center"
                            IsVisible="False" />
                 </VerticalStackLayout>
@@ -140,7 +140,7 @@
                     HorizontalOptions="Center">
                 <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
                     <Image x:Name="ProfileIcon"
-                           Source="nav_profile.svg"
+                           Source="nav_profile_inactive.svg"
                            WidthRequest="28"
                            HeightRequest="28"
                            HorizontalOptions="Center" />
@@ -148,7 +148,7 @@
                            Text="Profile"
                            FontSize="10"
                            FontFamily="OpenSansSemibold"
-                           TextColor="{StaticResource TextSecondary}"
+                           TextColor="{StaticResource TextMuted}"
                            HorizontalTextAlignment="Center"
                            IsVisible="False" />
                 </VerticalStackLayout>

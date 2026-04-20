@@ -3,17 +3,23 @@ using CommunityToolkit.Maui.Extensions;
 using FreakLete.Helpers;
 using FreakLete.Models;
 using FreakLete.Services;
+using Microsoft.Maui.Controls.Shapes;
 
 namespace FreakLete.Xaml.Controls;
 
 public partial class TierCongratsPopup : ContentView
 {
     private readonly Page _page;
+    private bool _hasAnimatedIn;
+    private bool _isClosing;
 
     private TierCongratsPopup(Page page, TierResult tier)
     {
         _page = page;
         InitializeComponent();
+        Opacity = 0;
+        Scale = 0.92;
+        Loaded += OnLoaded;
         ApplyLanguage();
         Bind(tier);
     }
@@ -25,7 +31,22 @@ public partial class TierCongratsPopup : ContentView
             var popup = new TierCongratsPopup(page, tier);
             return page.ShowPopupAsync(popup, new PopupOptions
             {
-                CanBeDismissedByTappingOutsideOfPopup = true
+                CanBeDismissedByTappingOutsideOfPopup = true,
+                PageOverlayColor = Colors.Transparent,
+                Shape = new RoundRectangle
+                {
+                    CornerRadius = new CornerRadius(24),
+                    Fill = new SolidColorBrush(Colors.Transparent),
+                    Stroke = new SolidColorBrush(Colors.Transparent),
+                    StrokeThickness = 0
+                },
+                Shadow = new Shadow
+                {
+                    Brush = new SolidColorBrush(Colors.Transparent),
+                    Opacity = 0,
+                    Radius = 0,
+                    Offset = new Point(0, 0)
+                }
             });
         }
         catch (Exception ex)
@@ -62,7 +83,7 @@ public partial class TierCongratsPopup : ContentView
             NextMilestoneStack.IsVisible = true;
             MaxTierLabel.IsVisible = false;
             NextMilestoneLabel.Text =
-                $"{AppLanguage.TierNextMilestonePrefix(tier.NextLevel)} — {TierDisplayFormatter.FormatDelta(tier.TrackingMode, tier.NextDelta.Value)}";
+                $"{AppLanguage.TierNextMilestonePrefix(tier.NextLevel)} - {TierDisplayFormatter.FormatDelta(tier.TrackingMode, tier.NextDelta.Value)}";
 
             EventHandler? sizeHandler = null;
             sizeHandler = (_, _) =>
@@ -77,6 +98,34 @@ public partial class TierCongratsPopup : ContentView
             NextMilestoneStack.SizeChanged += sizeHandler;
         }
     }
+
+    private async void OnLoaded(object? sender, EventArgs e)
+    {
+        if (_hasAnimatedIn)
+        {
+            return;
+        }
+
+        _hasAnimatedIn = true;
+
+        try
+        {
+            await AnimateOpenAsync();
+        }
+        catch
+        {
+            // The popup may already be closing or gone.
+        }
+    }
+
+    private Task AnimateOpenAsync()
+        => AnimatePopupAsync(1, 1, 200, Easing.CubicOut);
+
+    private Task AnimateCloseAsync()
+        => AnimatePopupAsync(0, 0.92, 180, Easing.CubicIn);
+
+    private Task AnimatePopupAsync(double opacity, double scale, uint duration, Easing easing)
+        => Task.WhenAll(this.FadeToAsync(opacity, duration, easing), this.ScaleToAsync(scale, duration, easing));
 
     private static Color GetTierBadgeColor(string tierLevel)
     {
@@ -97,7 +146,21 @@ public partial class TierCongratsPopup : ContentView
 
     private async void OnCloseClicked(object? sender, EventArgs e)
     {
-        try { await _page.ClosePopupAsync(); }
-        catch { /* already dismissed */ }
+        if (_isClosing)
+        {
+            return;
+        }
+
+        _isClosing = true;
+
+        try
+        {
+            await AnimateCloseAsync();
+            await _page.ClosePopupAsync();
+        }
+        catch
+        {
+            // already dismissed
+        }
     }
 }

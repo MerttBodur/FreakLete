@@ -56,21 +56,22 @@ public partial class BottomNavBar : ContentView
 	{
 		var accentSoft = (Application.Current?.Resources["AccentSoft"] as Color) ?? Color.FromArgb("#2F2346");
 		var accentGlow = (Application.Current?.Resources["AccentGlow"] as Color) ?? Color.FromArgb("#A78BFA");
-		var textSecondary = (Application.Current?.Resources["TextSecondary"] as Color) ?? Color.FromArgb("#B3B2C5");
+		var textMuted = (Application.Current?.Resources["TextMuted"] as Color) ?? Color.FromArgb("#8A889B");
 
-		UpdateTab(HomePill, HomeIcon, HomeLabel, ActiveTab == HomeTab, accentSoft, accentGlow, textSecondary);
-		UpdateTab(WorkoutPill, WorkoutIcon, WorkoutLabel, ActiveTab == WorkoutTab, accentSoft, accentGlow, textSecondary);
-		UpdateTab(FreakAiPill, FreakAiIcon, FreakAiLabel, ActiveTab == FreakAiTab, accentSoft, accentGlow, textSecondary);
-		UpdateTab(CalculationsPill, CalculationsIcon, CalculationsLabel, ActiveTab == CalculationsTab, accentSoft, accentGlow, textSecondary);
-		UpdateTab(ProfilePill, ProfileIcon, ProfileLabel, ActiveTab == ProfileTab, accentSoft, accentGlow, textSecondary);
+		UpdateTab(HomePill, HomeIcon, HomeLabel, ActiveTab == HomeTab, "nav_home_active.svg", "nav_home_inactive.svg", accentSoft, accentGlow, textMuted);
+		UpdateTab(WorkoutPill, WorkoutIcon, WorkoutLabel, ActiveTab == WorkoutTab, "nav_dumbbell_active.svg", "nav_dumbbell_inactive.svg", accentSoft, accentGlow, textMuted);
+		UpdateTab(FreakAiPill, FreakAiIcon, FreakAiLabel, ActiveTab == FreakAiTab, "nav_notebook_active.svg", "nav_notebook_inactive.svg", accentSoft, accentGlow, textMuted);
+		UpdateTab(CalculationsPill, CalculationsIcon, CalculationsLabel, ActiveTab == CalculationsTab, "nav_plates_active.svg", "nav_plates_inactive.svg", accentSoft, accentGlow, textMuted);
+		UpdateTab(ProfilePill, ProfileIcon, ProfileLabel, ActiveTab == ProfileTab, "nav_profile_active.svg", "nav_profile_inactive.svg", accentSoft, accentGlow, textMuted);
 	}
 
-	private static void UpdateTab(Border pill, Image icon, Label label, bool isActive, Color accentSoft, Color accentGlow, Color textSecondary)
+	private static void UpdateTab(Border pill, Image icon, Label label, bool isActive, string activeIcon, string inactiveIcon, Color accentSoft, Color accentGlow, Color textMuted)
 	{
 		pill.BackgroundColor = isActive ? accentSoft : Colors.Transparent;
-		icon.Opacity = isActive ? 1 : 0.5;
+		icon.Source = isActive ? activeIcon : inactiveIcon;
+		icon.Opacity = 1;
 		label.IsVisible = isActive;
-		label.TextColor = isActive ? accentGlow : textSecondary;
+		label.TextColor = isActive ? accentGlow : textMuted;
 	}
 
 	private async void OnHomeClicked(object? sender, TappedEventArgs e)
