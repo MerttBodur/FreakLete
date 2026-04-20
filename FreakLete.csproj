@@ -75,11 +75,6 @@
 		<PackageReference Include="Plugin.InAppBilling" Version="10.0.0" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
-		<!-- Explicit PBL 8 binding — ExcludeAssets prevents duplicate AAR downloads via .targets -->
-		<PackageReference Include="Xamarin.Android.Google.BillingClient" Version="8.3.0.2" ExcludeAssets="build;buildTransitive" />
-	</ItemGroup>
-
 	<!-- Network security config: debug version permits cleartext to 10.0.2.2 (emulator host).
 	     Release version has no cleartext exceptions — HTTPS only. -->
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">

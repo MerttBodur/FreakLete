@@ -4,6 +4,8 @@ namespace FreakLete.Core.Tests;
 
 public class ExerciseCatalogTests
 {
+	private const string MediaBaseUrl = "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/";
+
 	[Fact]
 	public void Categories_ContainsExpectedSections()
 	{
@@ -106,5 +108,53 @@ public class ExerciseCatalogTests
 		Assert.All(items, item => Assert.Contains(item.Category, allowed));
 		Assert.Contains(items, item => item.Category == ExerciseCatalog.Sprint);
 		Assert.Contains(items, item => item.Category == ExerciseCatalog.Jumps);
+	}
+
+	[Fact]
+	public void MediaItems_UseR2BaseUrl()
+	{
+		IReadOnlyList<Models.ExerciseCatalogItem> mediaItems = ExerciseCatalog
+			.GetAllItems()
+			.Where(item => item.HasMedia)
+			.ToList();
+
+		Assert.NotEmpty(mediaItems);
+		Assert.All(mediaItems, item =>
+		{
+			Assert.NotNull(item.MediaUrl);
+			Assert.True(
+				item.MediaUrl!.StartsWith(MediaBaseUrl, StringComparison.OrdinalIgnoreCase),
+				$"Expected media URL for '{item.Name}' to start with '{MediaBaseUrl}', but found '{item.MediaUrl}'.");
+		});
+	}
+
+	[Fact]
+	public void MediaItems_DoNotContainLegacyOrIncorrectPaths()
+	{
+		IReadOnlyList<string> mediaUrls = ExerciseCatalog
+			.GetAllItems()
+			.Where(item => item.HasMedia)
+			.Select(item => item.MediaUrl!)
+			.ToList();
+
+		Assert.DoesNotContain(mediaUrls, url => url.Contains("/powerclean.mp4", StringComparison.OrdinalIgnoreCase));
+		Assert.DoesNotContain(mediaUrls, url => url.Contains("/powersnatch.mp4", StringComparison.OrdinalIgnoreCase));
+		Assert.DoesNotContain(mediaUrls, url => url.Contains("/rsi.mp4", StringComparison.OrdinalIgnoreCase));
+	}
+
+	[Fact]
+	public void CanonicalMediaUrls_AreSetForPowerCleanPowerSnatchAndPushPress()
+	{
+		Models.ExerciseCatalogItem? powerClean = ExerciseCatalog.GetByNameAndCategory("Power Clean", ExerciseCatalog.OlympicLifts);
+		Models.ExerciseCatalogItem? powerSnatch = ExerciseCatalog.GetByNameAndCategory("Power Snatch", ExerciseCatalog.OlympicLifts);
+		Models.ExerciseCatalogItem? pushPress = ExerciseCatalog.GetByNameAndCategory("Push Press", ExerciseCatalog.Push);
+
+		Assert.NotNull(powerClean);
+		Assert.NotNull(powerSnatch);
+		Assert.NotNull(pushPress);
+
+		Assert.Equal($"{MediaBaseUrl}Clean.mp4", powerClean!.MediaUrl);
+		Assert.Equal($"{MediaBaseUrl}Snatch.mp4", powerSnatch!.MediaUrl);
+		Assert.Equal($"{MediaBaseUrl}pushpress.mp4", pushPress!.MediaUrl);
 	}
 }

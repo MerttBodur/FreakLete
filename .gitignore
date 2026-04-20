@@ -22,6 +22,8 @@ Release/
 .dotnet/
 .nuget/
 .templateengine/
+.remember/
+.superpowers/
 
 # Visual Studio
 
