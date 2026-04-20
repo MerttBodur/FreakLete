@@ -205,17 +205,11 @@
         </HorizontalStackLayout>
 
         <!-- Input area -->
-        <Border Grid.Row="5"
-                Style="{StaticResource CardBorder}"
-                BackgroundColor="{StaticResource SurfaceRaised}"
-                Stroke="{StaticResource SurfaceBorder}"
-                Padding="12"
-                Margin="12,4,12,12"
-                StrokeShape="RoundRectangle 20">
+        <local:InputShell Grid.Row="5"
+                          Margin="12,4,12,12">
             <Grid ColumnDefinitions="*,Auto"
                   ColumnSpacing="8">
                 <Editor x:Name="MessageEditor"
-                        Grid.Column="0"
                         Placeholder="Ask FreakAI…"
                         AutoSize="TextChanges"
                         MaxLength="2000"
@@ -233,7 +227,7 @@
                              Clicked="OnSendClicked"
                              VerticalOptions="End" />
             </Grid>
-        </Border>
+        </local:InputShell>
 
         <local:BottomNavBar Grid.Row="6"
                             ActiveTab="freakai" />

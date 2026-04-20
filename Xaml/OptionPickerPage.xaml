@@ -27,17 +27,15 @@
             </Border>
 
             <!-- Search bar (hidden for small lists) -->
-            <Border x:Name="SearchContainer"
-                    Style="{StaticResource CardBorder}"
-                    BackgroundColor="{StaticResource SurfaceRaised}"
-                    IsVisible="False">
+            <local:InputShell x:Name="SearchContainer"
+                              IsVisible="False">
                 <Entry x:Name="SearchEntry"
                        Placeholder=""
                        PlaceholderColor="{StaticResource TextMuted}"
                        TextColor="{StaticResource TextPrimary}"
                        BackgroundColor="Transparent"
                        TextChanged="OnSearchTextChanged" />
-            </Border>
+            </local:InputShell>
 
             <!-- Category chips (hidden when no categories) -->
             <ScrollView x:Name="CategoryScrollView"

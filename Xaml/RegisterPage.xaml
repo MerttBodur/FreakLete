@@ -39,8 +39,10 @@
                             <Label x:Name="FirstNameLabel"
                                    Text="First Name"
                                    Style="{StaticResource BodyMuted}" />
-                            <Entry x:Name="FirstNameEntry"
-                                   Placeholder="Enter your first name" />
+                            <local:InputShell>
+                                <Entry x:Name="FirstNameEntry"
+                                       Placeholder="Enter your first name" />
+                            </local:InputShell>
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Column="1"
@@ -48,31 +50,39 @@
                             <Label x:Name="LastNameLabel"
                                    Text="Last Name"
                                    Style="{StaticResource BodyMuted}" />
-                            <Entry x:Name="LastNameEntry"
-                                   Placeholder="Enter your last name" />
+                            <local:InputShell>
+                                <Entry x:Name="LastNameEntry"
+                                       Placeholder="Enter your last name" />
+                            </local:InputShell>
                         </VerticalStackLayout>
                     </Grid>
 
                     <Label x:Name="RegEmailLabel"
                            Text="Email"
                            Style="{StaticResource BodyMuted}" />
-                    <Entry x:Name="EmailEntry"
-                           Placeholder="Enter your email"
-                           Keyboard="Email" />
+                    <local:InputShell>
+                        <Entry x:Name="EmailEntry"
+                               Placeholder="Enter your email"
+                               Keyboard="Email" />
+                    </local:InputShell>
 
                     <Label x:Name="RegPasswordLabel"
                            Text="Password"
                            Style="{StaticResource BodyMuted}" />
-                    <Entry x:Name="PasswordEntry"
-                           Placeholder="Create a password"
-                           IsPassword="True" />
+                    <local:InputShell>
+                        <Entry x:Name="PasswordEntry"
+                               Placeholder="Create a password"
+                               IsPassword="True" />
+                    </local:InputShell>
 
                     <Label x:Name="ConfirmPasswordLabel"
                            Text="Confirm Password"
                            Style="{StaticResource BodyMuted}" />
-                    <Entry x:Name="ConfirmPasswordEntry"
-                           Placeholder="Confirm your password"
-                           IsPassword="True" />
+                    <local:InputShell>
+                        <Entry x:Name="ConfirmPasswordEntry"
+                               Placeholder="Confirm your password"
+                               IsPassword="True" />
+                    </local:InputShell>
 
                     <Border Style="{StaticResource CardBorder}"
                             BackgroundColor="{StaticResource SurfaceRaised}"

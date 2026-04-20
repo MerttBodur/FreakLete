@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:FreakLete"
              xmlns:models="clr-namespace:FreakLete.Models"
              x:Class="FreakLete.ExerciseCatalogPage"
              NavigationPage.HasNavigationBar="False"
@@ -36,12 +37,8 @@
         </Grid>
 
         <!-- Search -->
-        <Border Grid.Row="1"
-                Margin="16,10,16,0"
-                StrokeShape="RoundRectangle 14"
-                Stroke="{StaticResource SurfaceBorder}"
-                BackgroundColor="{StaticResource SurfaceRaised}"
-                Padding="12,0">
+        <local:InputShell Grid.Row="1"
+                          Margin="16,10,16,0">
             <Entry x:Name="SearchEntry"
                    FontSize="14"
                    FontFamily="OpenSansSemibold"
@@ -50,7 +47,7 @@
                    BackgroundColor="Transparent"
                    HeightRequest="48"
                    TextChanged="OnSearchTextChanged" />
-        </Border>
+        </local:InputShell>
 
         <!-- Category chips -->
         <ScrollView Grid.Row="2"

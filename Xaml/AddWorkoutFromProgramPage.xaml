@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:FreakLete"
              x:Class="FreakLete.AddWorkoutFromProgramPage"
              NavigationPage.HasNavigationBar="False"
              Title="Add Workout"
@@ -56,9 +57,11 @@
                            FontFamily="OpenSansSemibold"
                            TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center" />
-                    <DatePicker x:Name="WorkoutDatePicker"
-                                TextColor="{StaticResource TextPrimary}"
-                                BackgroundColor="{StaticResource SurfaceRaised}" />
+                    <local:InputShell>
+                        <DatePicker x:Name="WorkoutDatePicker"
+                                    TextColor="{StaticResource TextPrimary}"
+                                    BackgroundColor="{StaticResource SurfaceRaised}" />
+                    </local:InputShell>
                 </HorizontalStackLayout>
 
                 <!-- Error label -->

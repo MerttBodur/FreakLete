@@ -21,7 +21,7 @@ public sealed class InputShell : ContentView
 			propertyChanged: OnStateChanged);
 
 	private readonly Border _border;
-	private View? _attachedView;
+	private readonly List<View> _attachedViews = [];
 	private bool _isFocused;
 
 	public InputShell()
@@ -54,9 +54,9 @@ public sealed class InputShell : ContentView
 	private static void OnInputContentChanged(BindableObject bindable, object oldValue, object newValue)
 	{
 		var shell = (InputShell)bindable;
-		if (oldValue is View oldView)
+		if (oldValue is View)
 		{
-			shell.Detach(oldView);
+			shell.DetachAll();
 		}
 
 		if (newValue is View newView)
@@ -79,22 +79,44 @@ public sealed class InputShell : ContentView
 
 	private void Attach(View view)
 	{
-		_attachedView = view;
+		AttachTree(view);
+	}
+
+	private void AttachTree(View view)
+	{
+		_attachedViews.Add(view);
 		view.Focused += OnFocused;
 		view.Unfocused += OnUnfocused;
 		view.PropertyChanged += OnInputPropertyChanged;
 		NormalizeInputChrome(view);
+
+		switch (view)
+		{
+			case Layout layout:
+				foreach (var child in layout.Children.OfType<View>())
+				{
+					AttachTree(child);
+				}
+				break;
+			case ContentView { Content: View childContent }:
+				AttachTree(childContent);
+				break;
+			case Border { Content: View borderContent }:
+				AttachTree(borderContent);
+				break;
+		}
 	}
 
-	private void Detach(View view)
+	private void DetachAll()
 	{
-		view.Focused -= OnFocused;
-		view.Unfocused -= OnUnfocused;
-		view.PropertyChanged -= OnInputPropertyChanged;
-		if (ReferenceEquals(_attachedView, view))
+		foreach (var view in _attachedViews)
 		{
-			_attachedView = null;
+			view.Focused -= OnFocused;
+			view.Unfocused -= OnUnfocused;
+			view.PropertyChanged -= OnInputPropertyChanged;
 		}
+
+		_attachedViews.Clear();
 	}
 
 	private void OnFocused(object? sender, FocusEventArgs e)
@@ -160,7 +182,8 @@ public sealed class InputShell : ContentView
 
 	private void UpdateVisualState()
 	{
-		var isDisabled = _attachedView is { IsEnabled: false } || !IsEnabled;
+		var inputViews = _attachedViews.Where(IsInputView).ToList();
+		var isDisabled = !IsEnabled || inputViews.Any(view => !view.IsEnabled);
 		var state = isDisabled ? InputShellState.Disabled : State;
 
 		Color stroke = state switch
@@ -193,6 +216,9 @@ public sealed class InputShell : ContentView
 			_ => Color.FromArgb("#F7F7FB")
 		};
 	}
+
+	private static bool IsInputView(View view)
+		=> view is Entry or Editor or SearchBar or Picker or DatePicker;
 }
 
 public enum InputShellState

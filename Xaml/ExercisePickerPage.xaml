@@ -15,14 +15,13 @@
                              ShowBackButton="True"
                              BackClicked="OnHeaderBackClicked" />
 
-            <Border Style="{StaticResource CardBorder}"
-                    BackgroundColor="{StaticResource SurfaceRaised}">
+            <local:InputShell>
                 <Entry x:Name="SearchEntry"
                        Placeholder=""
                        PlaceholderColor="{StaticResource TextMuted}"
                        TextColor="{StaticResource TextPrimary}"
                        TextChanged="OnSearchTextChanged" />
-            </Border>
+            </local:InputShell>
 
             <ScrollView Orientation="Horizontal">
                 <HorizontalStackLayout x:Name="CategoriesLayout"
@@ -89,4 +88,3 @@
     </Grid>
 
 </ContentPage>
-

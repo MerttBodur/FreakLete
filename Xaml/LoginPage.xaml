@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:FreakLete"
              NavigationPage.HasNavigationBar="False"
              x:Class="FreakLete.LoginPage">
 
@@ -27,16 +28,20 @@
                     <Label x:Name="EmailLabel"
                            Text="Email"
                            Style="{StaticResource BodyMuted}" />
-                    <Entry x:Name="EmailEntry"
-                           Placeholder="Enter your email"
-                           Keyboard="Email" />
+                    <local:InputShell>
+                        <Entry x:Name="EmailEntry"
+                               Placeholder="Enter your email"
+                               Keyboard="Email" />
+                    </local:InputShell>
 
                     <Label x:Name="PasswordLabel"
                            Text="Password"
                            Style="{StaticResource BodyMuted}" />
-                    <Entry x:Name="PasswordEntry"
-                           Placeholder="Enter your password"
-                           IsPassword="True" />
+                    <local:InputShell>
+                        <Entry x:Name="PasswordEntry"
+                               Placeholder="Enter your password"
+                               IsPassword="True" />
+                    </local:InputShell>
 
                     <Label x:Name="ErrorLabel"
                            TextColor="{StaticResource Danger}"

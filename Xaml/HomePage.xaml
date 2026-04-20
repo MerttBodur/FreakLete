@@ -133,12 +133,7 @@
                                    TextColor="{StaticResource TextMuted}" />
                         </VerticalStackLayout>
                         <Grid ColumnDefinitions="*,44" ColumnSpacing="8">
-                            <Border Grid.Column="0"
-                                    BackgroundColor="{StaticResource SurfaceRaised}"
-                                    Stroke="{StaticResource SurfaceBorder}"
-                                    StrokeThickness="1"
-                                    StrokeShape="RoundRectangle 18"
-                                    Padding="14,0">
+                            <local:InputShell Grid.Column="0">
                                 <Entry x:Name="AiEntry"
                                        Placeholder="Ask your coach..."
                                        PlaceholderColor="{StaticResource TextMuted}"
@@ -147,7 +142,7 @@
                                        FontSize="14"
                                        BackgroundColor="Transparent"
                                        MinimumHeightRequest="44" />
-                            </Border>
+                            </local:InputShell>
                             <Border Grid.Column="1"
                                     BackgroundColor="{StaticResource Accent}"
                                     StrokeThickness="0"
