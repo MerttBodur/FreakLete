@@ -101,10 +101,8 @@ Use a concise completion format like this:
 - do not silently broaden scope
 
 ## Response Style (Strict)
-- Use short, 3-6 word sentences.
-- No filler, preamble, or pleasantries.
-- Run tools first, show result, then stop. Do not narrate.
-- Drop articles ("Me fix code" not "I will fix the code").
+
+Short sentences, no filler. Run tool → show result → stop. Drop articles.
 
 ## Project Structure
 ```
@@ -154,9 +152,38 @@ dotnet test FreakLete.Api.Tests
 # Build backend
 dotnet build FreakLete.Api
 
+# Run API locally (see memory/reference_api_startup.md for env vars)
+dotnet run --project FreakLete.Api
+
+# Add EF Core migration
+dotnet ef migrations add <Name> -p FreakLete.Api -s FreakLete.Api
+dotnet ef database update -p FreakLete.Api -s FreakLete.Api
+
 # Build Android (release)
 dotnet publish FreakLete.csproj -f net10.0-android -c Release
 ```
+
+## Gotchas
+
+### FreakLete.Core.Tests — File Linking
+
+Test project targets `net10.0`; MAUI project targets `net10.0-android`. ProjectReference is not possible.
+Each class under test is linked via `<Compile Include>` in `FreakLete.Core.Tests.csproj`.
+When adding a new test, link both the test file and its source file in the csproj.
+
+### Localization — AppLanguage
+
+All UI strings flow through static properties in `Services/AppLanguage.cs` (`IsTurkish` branches TR/EN).
+Never hard-code strings. Add new strings to `AppLanguage` in both languages, then read from there.
+
+### Popup Pattern (CommunityToolkit.Maui)
+
+Popup controls under `Xaml/Controls/*Popup`: private ctor, static `ShowAsync(Page, ...)`, return result via `TaskCompletionSource<T?>`.
+Use `page.ShowPopupAsync(popup, new PopupOptions { ... })` + `page.ClosePopupAsync()`. Examples: `SetDetailsPopup`, `TierCongratsPopup`.
+
+### Runtime Colors
+
+Use `ColorResources.GetColor("Key", "#fallback")` when building controls in code-behind — StaticResource binding is not available for dynamically created elements.
 
 ## Key Documents
 - `PRD.md` — product roadmap, shipped features, phase plan
