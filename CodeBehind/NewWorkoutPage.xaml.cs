@@ -493,9 +493,14 @@ public partial class NewWorkoutPage : ContentPage
 			}
 		}
 
-		return entry.RIR.HasValue
+		string core = entry.RIR.HasValue
 			? $"Sets x Reps: {entry.Sets} x {entry.Reps} (RIR{entry.RIR.Value})"
 			: $"Sets x Reps: {entry.Sets} x {entry.Reps}";
+
+		if (entry.Metric1Value is > 0 && !string.IsNullOrEmpty(entry.Metric1Unit))
+			core += $" @ {entry.Metric1Value:0.#} {entry.Metric1Unit}";
+
+		return core;
 	}
 
 	private static string FormatSecondarySummary(ExerciseEntry entry)
