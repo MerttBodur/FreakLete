@@ -98,7 +98,7 @@ public static class ExerciseInputRowBuilder
 		AddHeader(grid, "Rest(s)", 3);
 
 		// Entries
-		var setsEntry = CreateEntry(prefilled.Sets > 0 ? prefilled.Sets.ToString() : "", "0");
+		var setsEntry = CreateEntry(prefilled.SetsCount > 0 ? prefilled.SetsCount.ToString() : "", "0");
 		var repsEntry = CreateEntry(prefilled.Reps > 0 ? prefilled.Reps.ToString() : "", "0");
 		var rirEntry = CreateEntry(prefilled.RIR?.ToString() ?? "", "—");
 		var restEntry = CreateEntry(prefilled.RestSeconds?.ToString() ?? "", "60");
@@ -226,7 +226,7 @@ public static class ExerciseInputRowBuilder
 		setsContainer.Children.Add(headersGrid);
 
 		var setRows = new List<SetData>();
-		int setCount = prefilled.Sets > 0 ? prefilled.Sets : 3;
+		int setCount = prefilled.SetsCount > 0 ? prefilled.SetsCount : 3;
 		for (int i = 1; i <= setCount; i++)
 		{
 			var setData = BuildSetRow(i, prefilled, onSetTapped);
@@ -270,11 +270,17 @@ public static class ExerciseInputRowBuilder
 		if (data.SetRows.Count > 0)
 		{
 			// Live mode — aggregate from per-set data
-			entry.Sets = data.SetRows.Count;
+			entry.SetsCount = data.SetRows.Count;
+			entry.Sets = data.SetRows.Select(s => new SetDetail
+			{
+				SetNumber = s.SetNumber,
+				Reps = int.TryParse(s.RepsEntry.Text, out int reps) ? reps : 0,
+				Weight = double.TryParse(s.WeightEntry.Text, out double weight) ? weight : null
+			}).ToList();
 
-			var lastSet = data.SetRows[^1];
-			entry.Reps = int.TryParse(lastSet.RepsEntry.Text, out int r) ? r : 0;
-			entry.RIR = int.TryParse(lastSet.RirEntry.Text, out int rir) ? rir : null;
+			var lastSet = entry.Sets[^1];
+			entry.Reps = lastSet.Reps;
+			entry.RIR = int.TryParse(data.SetRows[^1].RirEntry.Text, out int rir) ? rir : null;
 
 			var restValues = data.SetRows
 				.Where(s => s.RestSeconds > 0)
@@ -282,23 +288,29 @@ public static class ExerciseInputRowBuilder
 				.ToList();
 			entry.RestSeconds = restValues.Count > 0 ? (int)restValues.Average() : null;
 
-			double maxWeight = 0;
-			foreach (var set in data.SetRows)
-			{
-				if (double.TryParse(set.WeightEntry.Text, out double w) && w > maxWeight)
-					maxWeight = w;
-			}
+			double maxWeight = entry.Sets
+				.Where(s => s.Weight.HasValue)
+				.Select(s => s.Weight!.Value)
+				.DefaultIfEmpty(0)
+				.Max();
 			if (maxWeight > 0)
 			{
 				entry.Metric1Value = maxWeight;
 				if (string.IsNullOrEmpty(entry.Metric1Unit))
 					entry.Metric1Unit = "kg";
 			}
+			else
+			{
+				entry.Metric1Value = null;
+				if (entry.TrackingMode == nameof(ExerciseTrackingMode.Strength))
+					entry.Metric1Unit = string.Empty;
+			}
 		}
 		else
 		{
 			// Legacy mode
-			entry.Sets = int.TryParse(data.SetsEntry?.Text, out int s) ? s : 0;
+			entry.SetsCount = int.TryParse(data.SetsEntry?.Text, out int s) ? s : 0;
+			entry.Sets = [];
 			entry.Reps = int.TryParse(data.RepsEntry?.Text, out int r) ? r : 0;
 			entry.RIR = int.TryParse(data.RirEntry?.Text, out int rir) ? rir : null;
 			entry.RestSeconds = int.TryParse(data.RestEntry?.Text, out int rest) ? rest : null;

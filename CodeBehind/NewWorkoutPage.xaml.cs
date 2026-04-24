@@ -1,3 +1,4 @@
+using FreakLete.Helpers;
 using FreakLete.Models;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -106,7 +107,13 @@ public partial class NewWorkoutPage : ContentPage
 				ExerciseName = ex.ExerciseName,
 				ExerciseCategory = ex.ExerciseCategory,
 				TrackingMode = ex.TrackingMode,
-				Sets = ex.Sets,
+				SetsCount = ex.SetsCount,
+				Sets = ex.Sets.Select(s => new SetDetail
+				{
+					SetNumber = s.SetNumber,
+					Reps = s.Reps,
+					Weight = s.Weight
+				}).ToList(),
 				Reps = ex.Reps,
 				RIR = ex.RIR,
 				RestSeconds = ex.RestSeconds,
@@ -199,7 +206,13 @@ public partial class NewWorkoutPage : ContentPage
 			exerciseName = ex.ExerciseName,
 			exerciseCategory = ex.ExerciseCategory,
 			trackingMode = ex.TrackingMode,
-			sets = ex.Sets,
+			setsCount = ex.SetsCount,
+			sets = ex.Sets.Select(s => new
+			{
+				setNumber = s.SetNumber,
+				reps = s.Reps,
+				weight = s.Weight
+			}).ToList(),
 			reps = ex.Reps,
 			rir = ex.RIR,
 			restSeconds = ex.RestSeconds,
@@ -422,20 +435,33 @@ public partial class NewWorkoutPage : ContentPage
 				concentricTime = parsedTime;
 			}
 
-			var agg = SetDetailsAggregator.Aggregate(setDetails);
+			var sets = setDetails.Select((s, i) => new SetDetail
+			{
+				SetNumber = i + 1,
+				Reps = s.Reps,
+				Weight = s.Weight
+			}).ToList();
+
+			double maxWeight = sets
+				.Where(s => s.Weight.HasValue)
+				.Select(s => s.Weight!.Value)
+				.DefaultIfEmpty(0)
+				.Max();
+			double? maxWeightOrNull = maxWeight > 0 ? maxWeight : null;
 
 			return new ExerciseEntry
 			{
 				ExerciseName = _selectedExerciseItem.Name,
 				ExerciseCategory = _selectedExerciseItem.Category,
 				TrackingMode = nameof(ExerciseTrackingMode.Strength),
-				Sets = agg.Sets,
-				Reps = agg.Reps,
+				SetsCount = sets.Count,
+				Sets = sets,
+				Reps = sets[^1].Reps,
 				RIR = rir,
 				RestSeconds = restSeconds,
 				ConcentricTimeSeconds = concentricTime,
-				Metric1Value = agg.MaxWeight,
-				Metric1Unit = agg.MaxWeight is null ? string.Empty : "kg"
+				Metric1Value = maxWeightOrNull,
+				Metric1Unit = maxWeightOrNull is null ? string.Empty : "kg"
 			};
 		}
 
@@ -493,14 +519,7 @@ public partial class NewWorkoutPage : ContentPage
 			}
 		}
 
-		string core = entry.RIR.HasValue
-			? $"Sets x Reps: {entry.Sets} x {entry.Reps} (RIR{entry.RIR.Value})"
-			: $"Sets x Reps: {entry.Sets} x {entry.Reps}";
-
-		if (entry.Metric1Value is > 0 && !string.IsNullOrEmpty(entry.Metric1Unit))
-			core += $" @ {entry.Metric1Value:0.#} {entry.Metric1Unit}";
-
-		return core;
+		return ExerciseSummaryFormatter.FormatStrength(entry);
 	}
 
 	private static string FormatSecondarySummary(ExerciseEntry entry)

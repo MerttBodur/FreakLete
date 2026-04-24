@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using FreakLete.Helpers;
 using FreakLete.Models;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -249,9 +250,24 @@ public partial class CalendarPage : ContentPage
 				}
 			}
 
-			string baseText = x.RIR.HasValue
-				? $"{x.ExerciseName} ({x.Sets}x{x.Reps}, RIR{x.RIR.Value})"
-				: $"{x.ExerciseName} ({x.Sets}x{x.Reps})";
+			var mapped = new ExerciseEntry
+			{
+				ExerciseName = x.ExerciseName,
+				ExerciseCategory = x.ExerciseCategory,
+				TrackingMode = x.TrackingMode,
+				SetsCount = x.SetsCount,
+				Reps = x.Reps,
+				RIR = x.RIR,
+				Metric1Value = x.Metric1Value,
+				Metric1Unit = x.Metric1Unit,
+				Sets = x.Sets.Select(s => new SetDetail
+				{
+					SetNumber = s.SetNumber,
+					Reps = s.Reps,
+					Weight = s.Weight
+				}).ToList()
+			};
+			string baseText = $"{x.ExerciseName} ({ExerciseSummaryFormatter.FormatStrength(mapped)})";
 
 			List<string> details = [];
 			if (x.RestSeconds.HasValue)

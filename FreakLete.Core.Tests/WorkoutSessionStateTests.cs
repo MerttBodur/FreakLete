@@ -55,7 +55,7 @@ public class WorkoutSessionStateTests
 	{
 		var exercises = new List<ExerciseEntry>
 		{
-			new() { ExerciseName = "Bench Press", Sets = 3, Reps = 10 }
+			new() { ExerciseName = "Bench Press", SetsCount = 3, Reps = 10 }
 		};
 
 		var state = WorkoutSessionState.FromTemplate("Push Day - Week 1", exercises);
@@ -67,8 +67,8 @@ public class WorkoutSessionStateTests
 	{
 		var exercises = new List<ExerciseEntry>
 		{
-			new() { ExerciseName = "Squat", Sets = 5, Reps = 5 },
-			new() { ExerciseName = "Deadlift", Sets = 3, Reps = 3 }
+			new() { ExerciseName = "Squat", SetsCount = 5, Reps = 5 },
+			new() { ExerciseName = "Deadlift", SetsCount = 3, Reps = 3 }
 		};
 
 		var state = WorkoutSessionState.FromTemplate("Strength", exercises);
@@ -149,7 +149,7 @@ public class WorkoutSessionStateTests
 		var state = WorkoutSessionState.Empty();
 		Assert.Empty(state.Exercises);
 
-		state.Exercises.Add(new ExerciseEntry { ExerciseName = "Pull-up", Sets = 3, Reps = 8 });
+		state.Exercises.Add(new ExerciseEntry { ExerciseName = "Pull-up", SetsCount = 3, Reps = 8 });
 		Assert.Single(state.Exercises);
 		Assert.Equal("Pull-up", state.Exercises[0].ExerciseName);
 	}
@@ -158,12 +158,12 @@ public class WorkoutSessionStateTests
 	public void Exercises_CanReplaceList()
 	{
 		var state = WorkoutSessionState.FromTemplate("Test", [
-			new() { ExerciseName = "A", Sets = 1, Reps = 1 }
+			new() { ExerciseName = "A", SetsCount = 1, Reps = 1 }
 		]);
 
 		state.Exercises = [
-			new() { ExerciseName = "B", Sets = 2, Reps = 2 },
-			new() { ExerciseName = "C", Sets = 3, Reps = 3 }
+			new() { ExerciseName = "B", SetsCount = 2, Reps = 2 },
+			new() { ExerciseName = "C", SetsCount = 3, Reps = 3 }
 		];
 
 		Assert.Equal(2, state.Exercises.Count);

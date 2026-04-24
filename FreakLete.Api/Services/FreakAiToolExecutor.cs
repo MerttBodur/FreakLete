@@ -248,7 +248,7 @@ public class FreakAiToolExecutor
                 {
                     e.ExerciseName,
                     e.ExerciseCategory,
-                    e.Sets,
+                    Sets = e.SetsCount,
                     e.Reps,
                     e.RIR,
                     e.Metric1Value,

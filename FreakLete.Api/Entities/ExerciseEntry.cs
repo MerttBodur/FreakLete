@@ -7,7 +7,7 @@ public class ExerciseEntry
     public string ExerciseName { get; set; } = string.Empty;
     public string ExerciseCategory { get; set; } = string.Empty;
     public string TrackingMode { get; set; } = "Strength";
-    public int Sets { get; set; }
+    public int SetsCount { get; set; }
     public int Reps { get; set; }
     public int? RIR { get; set; }
     public int? RestSeconds { get; set; }
@@ -20,4 +20,5 @@ public class ExerciseEntry
 
     // Navigation
     public Workout Workout { get; set; } = null!;
+    public List<ExerciseSet> Sets { get; set; } = [];
 }

@@ -27,6 +27,7 @@ public class WorkoutsController : ControllerBase
         var workouts = await _db.Workouts
             .Where(w => w.UserId == userId)
             .Include(w => w.ExerciseEntries)
+                .ThenInclude(e => e.Sets)
             .OrderByDescending(w => w.WorkoutDate)
             .ToListAsync();
 
@@ -39,6 +40,7 @@ public class WorkoutsController : ControllerBase
         var userId = User.GetUserId();
         var workout = await _db.Workouts
             .Include(w => w.ExerciseEntries)
+                .ThenInclude(e => e.Sets)
             .FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId);
 
         if (workout is null) return NotFound();
@@ -52,6 +54,7 @@ public class WorkoutsController : ControllerBase
         var workouts = await _db.Workouts
             .Where(w => w.UserId == userId && w.WorkoutDate.Date == DateTime.SpecifyKind(date, DateTimeKind.Utc).Date)
             .Include(w => w.ExerciseEntries)
+                .ThenInclude(e => e.Sets)
             .ToListAsync();
 
         return Ok(workouts.Select(MapToResponse).ToList());
@@ -66,22 +69,7 @@ public class WorkoutsController : ControllerBase
             UserId = userId,
             WorkoutName = request.WorkoutName,
             WorkoutDate = DateTime.SpecifyKind(request.WorkoutDate, DateTimeKind.Utc),
-            ExerciseEntries = request.Exercises.Select(e => new ExerciseEntry
-            {
-                ExerciseName = e.ExerciseName,
-                ExerciseCategory = e.ExerciseCategory,
-                TrackingMode = e.TrackingMode,
-                Sets = e.Sets,
-                Reps = e.Reps,
-                RIR = e.RIR,
-                RestSeconds = e.RestSeconds,
-                GroundContactTimeMs = e.GroundContactTimeMs,
-                ConcentricTimeSeconds = e.ConcentricTimeSeconds,
-                Metric1Value = e.Metric1Value,
-                Metric1Unit = e.Metric1Unit,
-                Metric2Value = e.Metric2Value,
-                Metric2Unit = e.Metric2Unit
-            }).ToList()
+            ExerciseEntries = request.Exercises.Select(e => MapToExerciseEntry(e)).ToList()
         };
 
         _db.Workouts.Add(workout);
@@ -96,6 +84,7 @@ public class WorkoutsController : ControllerBase
         var userId = User.GetUserId();
         var workout = await _db.Workouts
             .Include(w => w.ExerciseEntries)
+                .ThenInclude(e => e.Sets)
             .FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId);
 
         if (workout is null) return NotFound();
@@ -105,23 +94,7 @@ public class WorkoutsController : ControllerBase
 
         // Remove old exercises and add new ones
         _db.ExerciseEntries.RemoveRange(workout.ExerciseEntries);
-        workout.ExerciseEntries = request.Exercises.Select(e => new ExerciseEntry
-        {
-            WorkoutId = workout.Id,
-            ExerciseName = e.ExerciseName,
-            ExerciseCategory = e.ExerciseCategory,
-            TrackingMode = e.TrackingMode,
-            Sets = e.Sets,
-            Reps = e.Reps,
-            RIR = e.RIR,
-            RestSeconds = e.RestSeconds,
-            GroundContactTimeMs = e.GroundContactTimeMs,
-            ConcentricTimeSeconds = e.ConcentricTimeSeconds,
-            Metric1Value = e.Metric1Value,
-            Metric1Unit = e.Metric1Unit,
-            Metric2Value = e.Metric2Value,
-            Metric2Unit = e.Metric2Unit
-        }).ToList();
+        workout.ExerciseEntries = request.Exercises.Select(e => MapToExerciseEntry(e, workout.Id)).ToList();
 
         await _db.SaveChangesAsync();
         return NoContent();
@@ -149,7 +122,7 @@ public class WorkoutsController : ControllerBase
             ExerciseName = e.ExerciseName,
             ExerciseCategory = e.ExerciseCategory,
             TrackingMode = e.TrackingMode,
-            Sets = e.Sets,
+            SetsCount = e.SetsCount,
             Reps = e.Reps,
             RIR = e.RIR,
             RestSeconds = e.RestSeconds,
@@ -158,7 +131,63 @@ public class WorkoutsController : ControllerBase
             Metric1Value = e.Metric1Value,
             Metric1Unit = e.Metric1Unit,
             Metric2Value = e.Metric2Value,
-            Metric2Unit = e.Metric2Unit
+            Metric2Unit = e.Metric2Unit,
+            Sets = e.Sets
+                .OrderBy(s => s.SetNumber)
+                .Select(s => new ExerciseSetDto
+                {
+                    SetNumber = s.SetNumber,
+                    Reps = s.Reps,
+                    Weight = s.Weight
+                })
+                .ToList()
         }).ToList()
     };
+
+    private static ExerciseEntry MapToExerciseEntry(ExerciseEntryDto dto, int? workoutId = null)
+    {
+        var sets = dto.Sets
+            .Select((s, i) => new ExerciseSet
+            {
+                SetNumber = s.SetNumber > 0 ? s.SetNumber : i + 1,
+                Reps = s.Reps,
+                Weight = s.Weight
+            })
+            .OrderBy(s => s.SetNumber)
+            .ToList();
+
+        var entry = new ExerciseEntry
+        {
+            ExerciseName = dto.ExerciseName,
+            ExerciseCategory = dto.ExerciseCategory,
+            TrackingMode = dto.TrackingMode,
+            Sets = sets,
+            SetsCount = sets.Count > 0 ? sets.Count : dto.SetsCount,
+            Reps = sets.Count > 0 ? sets[^1].Reps : dto.Reps,
+            RIR = dto.RIR,
+            RestSeconds = dto.RestSeconds,
+            GroundContactTimeMs = dto.GroundContactTimeMs,
+            ConcentricTimeSeconds = dto.ConcentricTimeSeconds,
+            Metric1Value = sets.Count > 0 ? MaxWeightOrNull(sets) : dto.Metric1Value,
+            Metric1Unit = dto.Metric1Unit,
+            Metric2Value = dto.Metric2Value,
+            Metric2Unit = dto.Metric2Unit
+        };
+
+        if (workoutId.HasValue)
+            entry.WorkoutId = workoutId.Value;
+
+        return entry;
+    }
+
+    private static double? MaxWeightOrNull(List<ExerciseSet> sets)
+    {
+        double maxWeight = sets
+            .Where(s => s.Weight.HasValue)
+            .Select(s => s.Weight!.Value)
+            .DefaultIfEmpty(0)
+            .Max();
+
+        return maxWeight > 0 ? maxWeight : null;
+    }
 }

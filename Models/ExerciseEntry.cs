@@ -12,7 +12,9 @@ public class ExerciseEntry
 
 	public string TrackingMode { get; set; } = nameof(ExerciseTrackingMode.Strength);
 
-	public int Sets { get; set; }
+	public int SetsCount { get; set; }
+
+	public List<SetDetail> Sets { get; set; } = [];
 
 	public int Reps { get; set; }
 

@@ -67,7 +67,7 @@ public partial class AddWorkoutFromProgramPage : ContentPage
 		foreach (var row in _rowData)
 		{
 			var entry = ExerciseInputRowBuilder.ReadValues(row);
-			if (entry.Sets <= 0)
+			if (entry.SetsCount <= 0)
 			{
 				ErrorLabel.Text = $"{entry.ExerciseName}: {AppLanguage.AddFromProgramSetRequired}";
 				ErrorLabel.IsVisible = true;
@@ -79,7 +79,13 @@ public partial class AddWorkoutFromProgramPage : ContentPage
 				exerciseName = entry.ExerciseName,
 				exerciseCategory = entry.ExerciseCategory,
 				trackingMode = entry.TrackingMode,
-				sets = entry.Sets,
+				setsCount = entry.SetsCount,
+				sets = entry.Sets.Select(s => new
+				{
+					setNumber = s.SetNumber,
+					reps = s.Reps,
+					weight = s.Weight
+				}).ToList(),
 				reps = entry.Reps,
 				rir = entry.RIR,
 				restSeconds = entry.RestSeconds,

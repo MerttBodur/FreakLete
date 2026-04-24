@@ -1,3 +1,4 @@
+using FreakLete.Helpers;
 using FreakLete.Models;
 using FreakLete.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -100,8 +101,7 @@ public partial class WorkoutPreviewPage : ContentPage
 				TextColor = ColorResources.GetColor("TextPrimary", "#F7F7FB")
 			});
 
-			var details = new List<string> { $"{entry.Sets} x {entry.Reps}" };
-			if (entry.RIR.HasValue) details.Add($"RIR: {entry.RIR.Value}");
+			var details = new List<string> { ExerciseSummaryFormatter.FormatStrength(entry) };
 			if (entry.RestSeconds.HasValue) details.Add($"Rest: {entry.RestSeconds.Value}s");
 
 			stack.Children.Add(new Label
@@ -133,7 +133,13 @@ public partial class WorkoutPreviewPage : ContentPage
 			exerciseName = entry.ExerciseName,
 			exerciseCategory = entry.ExerciseCategory,
 			trackingMode = entry.TrackingMode,
-			sets = entry.Sets,
+			setsCount = entry.SetsCount,
+			sets = entry.Sets.Select(s => new
+			{
+				setNumber = s.SetNumber,
+				reps = s.Reps,
+				weight = s.Weight
+			}).ToList(),
 			reps = entry.Reps,
 			rir = entry.RIR,
 			restSeconds = entry.RestSeconds,

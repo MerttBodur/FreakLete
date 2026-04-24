@@ -24,7 +24,7 @@ public class ExerciseEntryDto
     [MaxLength(20)]
     public string TrackingMode { get; set; } = "Strength";
 
-    public int Sets { get; set; }
+    public int SetsCount { get; set; }
     public int Reps { get; set; }
     public int? RIR { get; set; }
     public int? RestSeconds { get; set; }
@@ -34,4 +34,5 @@ public class ExerciseEntryDto
     public string? Metric1Unit { get; set; }
     public double? Metric2Value { get; set; }
     public string? Metric2Unit { get; set; }
+    public List<ExerciseSetDto> Sets { get; set; } = [];
 }

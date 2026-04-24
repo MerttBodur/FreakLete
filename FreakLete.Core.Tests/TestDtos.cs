@@ -113,7 +113,8 @@ public class ExerciseEntryDto
     public string ExerciseName { get; set; } = "";
     public string ExerciseCategory { get; set; } = "";
     public string TrackingMode { get; set; } = "Strength";
-    public int Sets { get; set; }
+    public int SetsCount { get; set; }
+    public List<ApiExerciseSetDto> Sets { get; set; } = [];
     public int Reps { get; set; }
     public int? RIR { get; set; }
     public int? RestSeconds { get; set; }
@@ -123,6 +124,13 @@ public class ExerciseEntryDto
     public string Metric1Unit { get; set; } = "";
     public double? Metric2Value { get; set; }
     public string Metric2Unit { get; set; } = "";
+}
+
+public class ApiExerciseSetDto
+{
+    public int SetNumber { get; set; }
+    public int Reps { get; set; }
+    public double? Weight { get; set; }
 }
 
 public class PrEntryResponse

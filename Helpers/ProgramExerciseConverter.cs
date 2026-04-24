@@ -23,7 +23,7 @@ public static class ProgramExerciseConverter
 			ExerciseName = pe.ExerciseName,
 			ExerciseCategory = category,
 			TrackingMode = trackingMode,
-			Sets = pe.Sets,
+			SetsCount = pe.Sets,
 			Reps = reps,
 			RestSeconds = pe.RestSeconds,
 			RIR = null

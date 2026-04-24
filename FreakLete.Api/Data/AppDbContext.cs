@@ -10,6 +10,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Workout> Workouts => Set<Workout>();
     public DbSet<ExerciseEntry> ExerciseEntries => Set<ExerciseEntry>();
+    public DbSet<ExerciseSet> ExerciseSets => Set<ExerciseSet>();
     public DbSet<PrEntry> PrEntries => Set<PrEntry>();
     public DbSet<AthleticPerformanceEntry> AthleticPerformanceEntries => Set<AthleticPerformanceEntry>();
     public DbSet<MovementGoal> MovementGoals => Set<MovementGoal>();
@@ -101,8 +102,20 @@ public class AppDbContext : DbContext
             e.Property(x => x.ExerciseName).HasMaxLength(200);
             e.Property(x => x.ExerciseCategory).HasMaxLength(100);
             e.Property(x => x.TrackingMode).HasMaxLength(20);
+            e.Property(x => x.SetsCount).HasColumnName("Sets");
             e.Property(x => x.Metric1Unit).HasMaxLength(50);
             e.Property(x => x.Metric2Unit).HasMaxLength(50);
+        });
+
+        // ExerciseSet
+        modelBuilder.Entity<ExerciseSet>(e =>
+        {
+            e.HasKey(s => s.Id);
+            e.HasIndex(s => s.ExerciseEntryId);
+            e.HasOne(s => s.ExerciseEntry)
+             .WithMany(x => x.Sets)
+             .HasForeignKey(s => s.ExerciseEntryId)
+             .OnDelete(DeleteBehavior.Cascade);
         });
 
         // PrEntry

@@ -214,7 +214,7 @@ public partial class StartWorkoutSessionPage : ContentPage
 		foreach (var row in _rowData)
 		{
 			var entry = ExerciseInputRowBuilder.ReadValues(row);
-			if (entry.Sets <= 0)
+			if (entry.SetsCount <= 0)
 			{
 				ErrorLabel.Text = $"{entry.ExerciseName}: {AppLanguage.LiveWorkoutSetRequired}";
 				ErrorLabel.IsVisible = true;
