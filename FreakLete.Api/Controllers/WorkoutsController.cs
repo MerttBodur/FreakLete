@@ -138,7 +138,10 @@ public class WorkoutsController : ControllerBase
                 {
                     SetNumber = s.SetNumber,
                     Reps = s.Reps,
-                    Weight = s.Weight
+                    Weight = s.Weight,
+                    RIR = s.RIR,
+                    RestSeconds = s.RestSeconds,
+                    ConcentricTimeSeconds = s.ConcentricTimeSeconds
                 })
                 .ToList()
         }).ToList()
@@ -151,7 +154,10 @@ public class WorkoutsController : ControllerBase
             {
                 SetNumber = s.SetNumber > 0 ? s.SetNumber : i + 1,
                 Reps = s.Reps,
-                Weight = s.Weight
+                Weight = s.Weight,
+                RIR = s.RIR,
+                RestSeconds = s.RestSeconds,
+                ConcentricTimeSeconds = s.ConcentricTimeSeconds
             })
             .OrderBy(s => s.SetNumber)
             .ToList();
@@ -164,10 +170,10 @@ public class WorkoutsController : ControllerBase
             Sets = sets,
             SetsCount = sets.Count > 0 ? sets.Count : dto.SetsCount,
             Reps = sets.Count > 0 ? sets[^1].Reps : dto.Reps,
-            RIR = dto.RIR,
-            RestSeconds = dto.RestSeconds,
+            RIR = sets.Count > 0 ? sets[^1].RIR : dto.RIR,
+            RestSeconds = sets.Count > 0 ? sets[^1].RestSeconds : dto.RestSeconds,
             GroundContactTimeMs = dto.GroundContactTimeMs,
-            ConcentricTimeSeconds = dto.ConcentricTimeSeconds,
+            ConcentricTimeSeconds = sets.Count > 0 ? sets[^1].ConcentricTimeSeconds : dto.ConcentricTimeSeconds,
             Metric1Value = sets.Count > 0 ? MaxWeightOrNull(sets) : dto.Metric1Value,
             Metric1Unit = dto.Metric1Unit,
             Metric2Value = dto.Metric2Value,
