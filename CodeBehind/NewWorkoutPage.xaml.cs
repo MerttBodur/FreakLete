@@ -135,7 +135,7 @@ public partial class NewWorkoutPage : ContentPage
 		ExercisesSection.IsVisible = true;
 	}
 
-	private void OnAddExerciseClicked(object? sender, EventArgs e)
+	private async void OnAddExerciseClicked(object? sender, EventArgs e)
 	{
 		ClearError();
 
@@ -145,11 +145,25 @@ public partial class NewWorkoutPage : ContentPage
 			return;
 		}
 
-		ExerciseEntry? entry = BuildExerciseEntryFromInputs();
-		if (entry is null)
+		List<SetDetail>? setDetails = null;
+
+		if (_selectedExerciseItem.TrackingMode == ExerciseTrackingMode.Strength)
 		{
-			return;
+			if (!int.TryParse(SetCountEntry.Text, out int setCount) || setCount <= 0)
+			{
+				ShowError(AppLanguage.NewWorkoutSetError);
+				return;
+			}
+
+			int? defaultReps = int.TryParse(RepCountEntry.Text, out int r) && r > 0 ? r : null;
+			setDetails = await Xaml.Controls.SetDetailsPopup.ShowAsync(this, setCount, defaultReps);
+			if (setDetails is null)
+				return;
 		}
+
+		ExerciseEntry? entry = BuildExerciseEntryFromInputs(setDetails);
+		if (entry is null)
+			return;
 
 		_exercises.Add(entry);
 
@@ -355,7 +369,7 @@ public partial class NewWorkoutPage : ContentPage
 		}
 	}
 
-	private ExerciseEntry? BuildExerciseEntryFromInputs()
+	private ExerciseEntry? BuildExerciseEntryFromInputs(List<SetDetail>? setDetails = null)
 	{
 		if (_selectedExerciseItem is null)
 		{
@@ -365,15 +379,9 @@ public partial class NewWorkoutPage : ContentPage
 
 		if (_selectedExerciseItem.TrackingMode == ExerciseTrackingMode.Strength)
 		{
-			if (!int.TryParse(SetCountEntry.Text, out int setCount) || setCount <= 0)
+			if (setDetails is null || setDetails.Count == 0)
 			{
 				ShowError(AppLanguage.NewWorkoutSetError);
-				return null;
-			}
-
-			if (!int.TryParse(RepCountEntry.Text, out int repCount) || repCount <= 0)
-			{
-				ShowError(AppLanguage.NewWorkoutRepError);
 				return null;
 			}
 
@@ -414,16 +422,20 @@ public partial class NewWorkoutPage : ContentPage
 				concentricTime = parsedTime;
 			}
 
+			var agg = SetDetailsAggregator.Aggregate(setDetails);
+
 			return new ExerciseEntry
 			{
 				ExerciseName = _selectedExerciseItem.Name,
 				ExerciseCategory = _selectedExerciseItem.Category,
 				TrackingMode = nameof(ExerciseTrackingMode.Strength),
-				Sets = setCount,
-				Reps = repCount,
+				Sets = agg.Sets,
+				Reps = agg.Reps,
 				RIR = rir,
 				RestSeconds = restSeconds,
-				ConcentricTimeSeconds = concentricTime
+				ConcentricTimeSeconds = concentricTime,
+				Metric1Value = agg.MaxWeight,
+				Metric1Unit = agg.MaxWeight is null ? string.Empty : "kg"
 			};
 		}
 
