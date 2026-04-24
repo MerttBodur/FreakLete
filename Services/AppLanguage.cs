@@ -604,6 +604,18 @@ public static class AppLanguage
 		? "Hareket kütüphanenizi açmak için gözata dokunun."
 		: "Tap browse to open your recommended movement library.";
 	public static string NewWorkoutSetCount => IsTurkish ? "Set Sayısı" : "Set Count";
+	public static string NewWorkoutSetDetailsTitle => IsTurkish ? "Set Detayları" : "Set Details";
+	public static string NewWorkoutSetDetailsSubtitle => IsTurkish
+		? "Her set için ağırlık ve tekrar sayısını gir."
+		: "Enter weight and reps for each set.";
+	public static string NewWorkoutSetColumnSet => IsTurkish ? "Set" : "Set";
+	public static string NewWorkoutSetColumnWeight => IsTurkish ? "Ağırlık (kg)" : "Weight (kg)";
+	public static string NewWorkoutSetColumnReps => IsTurkish ? "Tekrar" : "Reps";
+	public static string NewWorkoutSetDetailsSave => IsTurkish ? "Kaydet" : "Save";
+	public static string NewWorkoutSetDetailsCancel => IsTurkish ? "İptal" : "Cancel";
+	public static string NewWorkoutSetDetailsRepsRequired => IsTurkish
+		? "Her set için tekrar sayısı girilmelidir."
+		: "Reps must be entered for every set.";
 	public static string NewWorkoutRepCount => IsTurkish ? "Tekrar Sayısı" : "Rep Count";
 	public static string NewWorkoutRir => IsTurkish ? "RIR" : "RIR";
 	public static string NewWorkoutRestSeconds => IsTurkish ? "Dinlenme (saniye)" : "Rest Seconds";
