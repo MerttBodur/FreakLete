@@ -44,7 +44,7 @@ public class WorkoutIntegrationTests : IAsyncLifetime
                 exerciseName = "Bench Press",
                 exerciseCategory = "Chest",
                 trackingMode = "Strength",
-                sets = 4,
+                setsCount = 4,
                 reps = 8,
                 rir = 2,
                 restSeconds = 90,
@@ -75,7 +75,7 @@ public class WorkoutIntegrationTests : IAsyncLifetime
         var exercises = json.GetProperty("exercises");
         Assert.Equal(1, exercises.GetArrayLength());
         Assert.Equal("Bench Press", exercises[0].GetProperty("exerciseName").GetString());
-        Assert.Equal(4, exercises[0].GetProperty("sets").GetInt32());
+        Assert.Equal(4, exercises[0].GetProperty("setsCount").GetInt32());
         Assert.Equal(80.0, exercises[0].GetProperty("metric1Value").GetDouble());
     }
 
@@ -86,9 +86,9 @@ public class WorkoutIntegrationTests : IAsyncLifetime
 
         var exercises = new List<object>
         {
-            new { exerciseName = "Squat", exerciseCategory = "Legs", sets = 5, reps = 5, metric1Value = 120.0, metric1Unit = "kg" },
-            new { exerciseName = "Leg Press", exerciseCategory = "Legs", sets = 3, reps = 12, metric1Value = 200.0, metric1Unit = "kg" },
-            new { exerciseName = "Leg Curl", exerciseCategory = "Legs", sets = 3, reps = 15 }
+            new { exerciseName = "Squat", exerciseCategory = "Legs", setsCount = 5, reps = 5, metric1Value = 120.0, metric1Unit = "kg" },
+            new { exerciseName = "Leg Press", exerciseCategory = "Legs", setsCount = 3, reps = 12, metric1Value = 200.0, metric1Unit = "kg" },
+            new { exerciseName = "Leg Curl", exerciseCategory = "Legs", setsCount = 3, reps = 15 }
         };
 
         var resp = await c.PostAsJsonAsync("/api/workouts", MakeWorkoutRequest("Leg Day", exercises: exercises));
@@ -181,7 +181,7 @@ public class WorkoutIntegrationTests : IAsyncLifetime
 
         var newExercises = new List<object>
         {
-            new { exerciseName = "Incline Press", exerciseCategory = "Chest", sets = 3, reps = 10, metric1Value = 60.0, metric1Unit = "kg" }
+            new { exerciseName = "Incline Press", exerciseCategory = "Chest", setsCount = 3, reps = 10, metric1Value = 60.0, metric1Unit = "kg" }
         };
 
         var updateResp = await c.PutAsJsonAsync($"/api/workouts/{id}",
@@ -204,15 +204,15 @@ public class WorkoutIntegrationTests : IAsyncLifetime
 
         var original = new List<object>
         {
-            new { exerciseName = "A", exerciseCategory = "Cat", sets = 1, reps = 1 },
-            new { exerciseName = "B", exerciseCategory = "Cat", sets = 1, reps = 1 }
+            new { exerciseName = "A", exerciseCategory = "Cat", setsCount = 1, reps = 1 },
+            new { exerciseName = "B", exerciseCategory = "Cat", setsCount = 1, reps = 1 }
         };
         var createResp = await c.PostAsJsonAsync("/api/workouts", MakeWorkoutRequest(exercises: original));
         var id = JsonDocument.Parse(await createResp.Content.ReadAsStringAsync()).RootElement.GetProperty("id").GetInt32();
 
         var replacement = new List<object>
         {
-            new { exerciseName = "C", exerciseCategory = "Cat", sets = 2, reps = 2 }
+            new { exerciseName = "C", exerciseCategory = "Cat", setsCount = 2, reps = 2 }
         };
         await c.PutAsJsonAsync($"/api/workouts/{id}", MakeWorkoutRequest(exercises: replacement));
 
@@ -327,7 +327,7 @@ public class WorkoutIntegrationTests : IAsyncLifetime
                 exerciseName = "Box Jump",
                 exerciseCategory = "Plyometric",
                 trackingMode = "Athletic",
-                sets = 3,
+                setsCount = 3,
                 reps = 5,
                 rir = 1,
                 restSeconds = 120,
@@ -350,7 +350,7 @@ public class WorkoutIntegrationTests : IAsyncLifetime
         Assert.Equal("Box Jump", ex.GetProperty("exerciseName").GetString());
         Assert.Equal("Plyometric", ex.GetProperty("exerciseCategory").GetString());
         Assert.Equal("Athletic", ex.GetProperty("trackingMode").GetString());
-        Assert.Equal(3, ex.GetProperty("sets").GetInt32());
+        Assert.Equal(3, ex.GetProperty("setsCount").GetInt32());
         Assert.Equal(5, ex.GetProperty("reps").GetInt32());
         Assert.Equal(1, ex.GetProperty("rir").GetInt32());
         Assert.Equal(120, ex.GetProperty("restSeconds").GetInt32());
@@ -379,7 +379,7 @@ public class WorkoutIntegrationTests : IAsyncLifetime
                 exerciseName = "Bench Press",
                 exerciseCategory = "Push",
                 trackingMode = "Strength",
-                sets = 4,
+                setsCount = 4,
                 reps = 8,
                 rir = 2,
                 restSeconds = 90,
@@ -391,7 +391,7 @@ public class WorkoutIntegrationTests : IAsyncLifetime
                 exerciseName = "Incline Dumbbell Press",
                 exerciseCategory = "Push",
                 trackingMode = "Strength",
-                sets = 3,
+                setsCount = 3,
                 reps = 10,
                 restSeconds = 60
             }
@@ -438,7 +438,7 @@ public class WorkoutIntegrationTests : IAsyncLifetime
                 exerciseName = "Pull-up",
                 exerciseCategory = "Pull",
                 trackingMode = "Strength",
-                sets = 3,
+                setsCount = 3,
                 reps = 8
             }
         };
