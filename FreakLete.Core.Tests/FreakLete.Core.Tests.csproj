@@ -24,10 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\\Models\\SetDetail.cs" Link="Linked\\SetDetail.cs" />
     <Compile Include="..\\Models\\ExerciseEntry.cs" Link="Linked\\ExerciseEntry.cs" />
     <Compile Include="..\\Models\\PrEntry.cs" Link="Linked\\PrEntry.cs" />
     <Compile Include="..\\Models\\ExerciseCatalogItem.cs" Link="Linked\\ExerciseCatalogItem.cs" />
     <Compile Include="..\\Models\\WorkoutSessionState.cs" Link="Linked\\WorkoutSessionState.cs" />
+    <Compile Include="..\\Services\\SetDetailsAggregator.cs" Link="Linked\\SetDetailsAggregator.cs" />
     <Compile Include="..\\Services\\ExerciseCatalog.cs" Link="Linked\\ExerciseCatalog.cs" />
     <Compile Include="..\\Services\\CalculationsPageLogic.cs" Link="Linked\\CalculationsPageLogic.cs" />
     <Compile Include="..\\Services\\ProfileStateManager.cs" Link="Linked\\ProfileStateManager.cs" />
