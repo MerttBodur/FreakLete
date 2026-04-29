@@ -8,6 +8,7 @@ public class GeminiOptions
 {
     public string ApiKey { get; set; } = string.Empty;
     public string Model { get; set; } = "gemini-2.5-flash-lite";
+    public string EmbeddingModel { get; set; } = "text-embedding-004";
 }
 
 public class GeminiClient
@@ -52,6 +53,59 @@ public class GeminiClient
 
         return JsonSerializer.Deserialize<GeminiResponse>(responseBody, JsonOpts)
             ?? throw new InvalidOperationException("Failed to deserialize Gemini response");
+    }
+
+    public async Task<float[]?> EmbedAsync(string text, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            _logger.LogWarning("Gemini embedding skipped: empty text payload");
+            return null;
+        }
+
+        var url = $"https://generativelanguage.googleapis.com/v1beta/models/{_options.EmbeddingModel}:embedContent?key={_options.ApiKey}";
+        var request = new GeminiEmbeddingRequest
+        {
+            Content = new GeminiEmbeddingContent
+            {
+                Parts = [new GeminiEmbeddingPart { Text = text }]
+            }
+        };
+
+        var json = JsonSerializer.Serialize(request, JsonOpts);
+
+        try
+        {
+            using var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _http.PostAsync(url, content, cancellationToken);
+            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("Gemini embed API error {Status} from model {Model}", response.StatusCode, _options.EmbeddingModel);
+                return null;
+            }
+
+            var payload = JsonSerializer.Deserialize<GeminiEmbeddingResponse>(responseBody, JsonOpts);
+            var values = payload?.Embedding?.Values;
+
+            if (values is null || values.Length == 0)
+            {
+                _logger.LogWarning("Gemini embed response malformed or empty for model {Model}", _options.EmbeddingModel);
+                return null;
+            }
+
+            return values;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Gemini embed request failed for model {Model}", _options.EmbeddingModel);
+            return null;
+        }
     }
 }
 
@@ -138,4 +192,29 @@ public class GeminiCandidate
 {
     public GeminiContent? Content { get; set; }
     public string? FinishReason { get; set; }
+}
+
+public class GeminiEmbeddingRequest
+{
+    public GeminiEmbeddingContent Content { get; set; } = new();
+}
+
+public class GeminiEmbeddingContent
+{
+    public List<GeminiEmbeddingPart> Parts { get; set; } = [];
+}
+
+public class GeminiEmbeddingPart
+{
+    public string Text { get; set; } = string.Empty;
+}
+
+public class GeminiEmbeddingResponse
+{
+    public GeminiEmbeddingVector? Embedding { get; set; }
+}
+
+public class GeminiEmbeddingVector
+{
+    public float[]? Values { get; set; }
 }
