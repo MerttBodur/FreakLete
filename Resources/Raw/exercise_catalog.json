@@ -495,6 +495,7 @@
     },
     {
       "id": "deadliftvariationcleanpull",
+      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/cleanpull.mp4",
       "name": "Clean Pull",
       "displayName": "Clean Pull",
       "turkishName": "Clean Pull",
@@ -898,7 +899,6 @@
     },
     {
       "id": "deadliftvariationbarbellhipthrust",
-      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/hipthrust.mp4",
       "name": "Barbell Hip Thrust",
       "displayName": "Barbell Hip Thrust",
       "turkishName": "Barbell Hip Thrust",
@@ -1148,7 +1148,6 @@
     },
     {
       "id": "jumpsverticaljump",
-      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/verticaljump.mp4",
       "name": "Vertical Jump",
       "displayName": "Vertical Jump",
       "turkishName": "Vertical Jump",
@@ -1287,7 +1286,6 @@
     },
     {
       "id": "jumpsstandingbroadjump",
-      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/standingbroadjump.mp4",
       "name": "Standing Broad Jump",
       "displayName": "Standing Broad Jump",
       "turkishName": "Standing Broad Jump",
@@ -2373,6 +2371,7 @@
     },
     {
       "id": "olympicliftscleanpull",
+      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/cleanpull.mp4",
       "name": "Clean Pull",
       "displayName": "Clean Pull",
       "turkishName": "Clean Pull",
@@ -2513,6 +2512,7 @@
     },
     {
       "id": "olympicliftspushjerk",
+      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/pushjerk.mp4",
       "name": "Push Jerk",
       "displayName": "Push Jerk",
       "turkishName": "Push Jerk",
@@ -4197,7 +4197,7 @@
     },
     {
       "id": "pullbarbellrow",
-      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/barbellrow.mp4",
+      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/bbrow.mp4",
       "name": "Barbell Row",
       "displayName": "Barbell Row",
       "turkishName": "Barbell Row",
@@ -5654,7 +5654,6 @@
     },
     {
       "id": "pushoverheadpress",
-      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/overheadpress.mp4",
       "name": "Overhead Press",
       "displayName": "Overhead Press",
       "turkishName": "Overhead Press",
@@ -6974,7 +6973,6 @@
     },
     {
       "id": "sprint40ydash",
-      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/fortyyarddash.mp4",
       "name": "40y Dash",
       "displayName": "40y Dash",
       "turkishName": "40y Dash",
@@ -7041,7 +7039,6 @@
     },
     {
       "id": "sprintflying10m",
-      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/tenmetersprint.mp4",
       "name": "Flying 10m",
       "displayName": "Flying 10m",
       "turkishName": "Flying 10m",
@@ -8282,6 +8279,7 @@
     },
     {
       "id": "squatvariationbulgariansplitsquat",
+      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/bulgariansplitsquat.mp4",
       "name": "Bulgarian Split Squat",
       "displayName": "Bulgarian Split Squat",
       "turkishName": "Bulgarian Split Squat",
@@ -8399,6 +8397,7 @@
     },
     {
       "id": "squatvariationoverheadsquat",
+      "mediaUrl": "https://pub-e77340f896224d2a83b6c37ccdd6aabe.r2.dev/overheadsquat.mp4",
       "name": "Overhead Squat",
       "displayName": "Overhead Squat",
       "turkishName": "Overhead Squat",

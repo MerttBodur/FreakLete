@@ -106,16 +106,17 @@ Short sentences, no filler. Run tool → show result → stop. Drop articles.
 
 ## Project Structure
 ```
-FreakLete/                    # MAUI mobile app root
-├── Xaml/                     # XAML pages and controls
+# MAUI app — files live at the repo root (FreakLete.csproj is at root)
+Xaml/                         # XAML pages and controls
 │   ├── Controls/             # Shared UI components
 │   └── ViewModels/           # Page ViewModels
-├── CodeBehind/               # Page code-behind files
-├── Models/                   # Client-side models
-├── Services/                 # Mobile service layer
-├── Helpers/                  # Utility helpers
-├── Resources/Styles/         # Colors.xaml, Styles.xaml
-└── Platforms/Android/        # Android-specific config
+CodeBehind/                   # Page code-behind files
+Models/                       # Client-side models
+Services/                     # Mobile service layer (ApiClient, AppLanguage, ColorResources…)
+Helpers/                      # View-level builders and formatters
+Resources/Styles/             # Colors.xaml, Styles.xaml
+Security/                     # Android signing keystore (freaklete-release.jks)
+Platforms/Android/            # Android-specific config
 
 FreakLete.Api/                # ASP.NET Core backend
 ├── Controllers/              # API endpoints
@@ -126,7 +127,9 @@ FreakLete.Api/                # ASP.NET Core backend
 └── Migrations/               # EF Core migrations
 
 FreakLete.Core/               # Shared calculation logic
-└── Services/                 # 1RM, RSI, FFMI calculators
+├── Services/                 # 1RM, RSI, FFMI calculators
+├── Security/                 # Tier-related security/validation logic
+└── Tier/                     # Tier computation models
 
 FreakLete.Api.Tests/          # Backend integration tests
 FreakLete.Core.Tests/         # Core logic unit tests
@@ -170,6 +173,9 @@ dotnet publish FreakLete.csproj -f net10.0-android -c Release
 Test project targets `net10.0`; MAUI project targets `net10.0-android`. ProjectReference is not possible.
 Each class under test is linked via `<Compile Include>` in `FreakLete.Core.Tests.csproj`.
 When adding a new test, link both the test file and its source file in the csproj.
+
+This also applies to ViewModels in `Xaml/ViewModels/` — they are tested via Core.Tests,
+not via a separate MAUI test project. Link ViewModel source files the same way.
 
 ### Localization — AppLanguage
 
