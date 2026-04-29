@@ -24,6 +24,8 @@ public class AppDbContext : DbContext
     public DbSet<AuthLoginAttempt> AuthLoginAttempts => Set<AuthLoginAttempt>();
     public DbSet<GooglePlayRtdnEvent> GooglePlayRtdnEvents => Set<GooglePlayRtdnEvent>();
     public DbSet<UserExerciseTier> UserExerciseTiers => Set<UserExerciseTier>();
+    public DbSet<WorkoutEmbedding> WorkoutEmbeddings => Set<WorkoutEmbedding>();
+    public DbSet<UserSnapshotEmbedding> UserSnapshotEmbeddings => Set<UserSnapshotEmbedding>();
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -310,6 +312,37 @@ public class AppDbContext : DbContext
             e.Property(a => a.Intent).HasMaxLength(30);
             e.Property(a => a.PlanAtTime).HasMaxLength(10);
             e.Property(a => a.Notes).HasMaxLength(500);
+        });
+
+        // WorkoutEmbedding (pgvector)
+        modelBuilder.Entity<WorkoutEmbedding>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.UserId);
+            e.HasIndex(x => x.WorkoutId).IsUnique();
+            e.Property(x => x.Embedding).HasColumnType("vector(768)");
+            e.Property(x => x.TextSnapshot).HasMaxLength(4000);
+            e.HasOne(x => x.Workout)
+             .WithMany()
+             .HasForeignKey(x => x.WorkoutId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.User)
+             .WithMany()
+             .HasForeignKey(x => x.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // UserSnapshotEmbedding (pgvector)
+        modelBuilder.Entity<UserSnapshotEmbedding>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.UserId).IsUnique();
+            e.Property(x => x.Embedding).HasColumnType("vector(768)");
+            e.Property(x => x.TextSnapshot).HasMaxLength(4000);
+            e.HasOne(x => x.User)
+             .WithMany()
+             .HasForeignKey(x => x.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
