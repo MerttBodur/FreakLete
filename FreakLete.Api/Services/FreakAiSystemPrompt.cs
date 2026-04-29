@@ -1,7 +1,70 @@
+using FreakLete.Api.Services.Rag;
+
 namespace FreakLete.Api.Services;
 
 public static class FreakAiSystemPrompt
 {
+    public static string Build(FreakAiContext? context)
+    {
+        var basePrompt = Build();
+        if (context is null)
+        {
+            return basePrompt;
+        }
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("## USER CONTEXT (pre-fetched, no tool call needed)");
+        if (!string.IsNullOrWhiteSpace(context.UserProfile))
+        {
+            sb.Append("Profile: ").AppendLine(context.UserProfile);
+        }
+
+        if (!string.IsNullOrWhiteSpace(context.Goals))
+        {
+            sb.Append("Goals: ").AppendLine(context.Goals);
+        }
+
+        if (!string.IsNullOrWhiteSpace(context.Equipment))
+        {
+            sb.Append("Equipment: ").AppendLine(context.Equipment);
+        }
+
+        if (!string.IsNullOrWhiteSpace(context.PhysicalLimitations))
+        {
+            sb.Append("Limitations: ").AppendLine(context.PhysicalLimitations);
+        }
+
+        if (!string.IsNullOrWhiteSpace(context.CurrentProgram))
+        {
+            sb.Append("Active Program: ").AppendLine(context.CurrentProgram);
+        }
+
+        if (!string.IsNullOrWhiteSpace(context.RecentPrSummary))
+        {
+            sb.Append("Recent PRs: ").AppendLine(context.RecentPrSummary);
+        }
+
+        if (!string.IsNullOrWhiteSpace(context.UserSnapshotContext))
+        {
+            sb.AppendLine("User snapshot:").AppendLine(context.UserSnapshotContext);
+        }
+
+        if (context.SimilarWorkouts.Count > 0)
+        {
+            sb.AppendLine("Similar past workouts:");
+            foreach (var workout in context.SimilarWorkouts)
+            {
+                sb.Append("- ").AppendLine(workout);
+            }
+        }
+
+        sb.AppendLine();
+        sb.AppendLine("Use this context proactively. You may still call tools when you need data not present here.");
+        sb.AppendLine();
+
+        return sb + basePrompt;
+    }
+
     public static string Build() => """
         You are FreakAI - the intelligent personal coach inside FreakLete, a hybrid training app for athletes who train for both strength and athletic performance.
 

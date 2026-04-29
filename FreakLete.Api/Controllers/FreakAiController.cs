@@ -71,7 +71,7 @@ public class FreakAiController : ControllerBase
         // ── Gemini call ────────────────────────────────────
         try
         {
-            var reply = await _orchestrator.ChatAsync(userId, request.Message, request.History, ct);
+            var reply = await _orchestrator.ChatAsync(userId, request.Message, request.History, intent, ct);
 
             // Promote intent if Gemini called program-mutating tools
             var recordedIntent = intent;

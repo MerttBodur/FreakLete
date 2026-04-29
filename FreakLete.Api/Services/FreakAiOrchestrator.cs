@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using FreakLete.Api.Services.Rag;
 
 namespace FreakLete.Api.Services;
 
@@ -7,6 +8,7 @@ public class FreakAiOrchestrator
 {
     private readonly GeminiClient _gemini;
     private readonly FreakAiToolExecutor _toolExecutor;
+    private readonly IContextBuilder _contextBuilder;
     private readonly ILogger<FreakAiOrchestrator> _logger;
 
     private const int MaxToolRounds = 5;
@@ -16,10 +18,12 @@ public class FreakAiOrchestrator
     public FreakAiOrchestrator(
         GeminiClient gemini,
         FreakAiToolExecutor toolExecutor,
+        IContextBuilder contextBuilder,
         ILogger<FreakAiOrchestrator> logger)
     {
         _gemini = gemini;
         _toolExecutor = toolExecutor;
+        _contextBuilder = contextBuilder;
         _logger = logger;
     }
 
@@ -27,6 +31,7 @@ public class FreakAiOrchestrator
         int userId,
         string userMessage,
         List<ChatMessage>? history,
+        string? intent = null,
         CancellationToken cancellationToken = default)
     {
         var totalSw = Stopwatch.StartNew();
@@ -44,7 +49,9 @@ public class FreakAiOrchestrator
         // ── Build request with language-aware system prompt ─────
         var contents = BuildContents(userMessage, history);
         var tools = BuildToolDeclarations();
-        var systemPrompt = BuildLanguageAwarePrompt(detectedLang, langName);
+        var resolvedIntent = intent ?? FreakAiUsageIntent.GeneralChat;
+        var ragContext = await _contextBuilder.BuildAsync(userId, resolvedIntent, userMessage, timeoutCts.Token);
+        var systemPrompt = BuildLanguageAwarePrompt(detectedLang, langName, ragContext);
 
         var request = new GeminiRequest
         {
@@ -170,9 +177,9 @@ public class FreakAiOrchestrator
 
     // ── Language-aware system prompt ────────────────────────────
 
-    private static string BuildLanguageAwarePrompt(string langCode, string langName)
+    private static string BuildLanguageAwarePrompt(string langCode, string langName, FreakAiContext? context)
     {
-        var basePrompt = FreakAiSystemPrompt.Build();
+        var basePrompt = FreakAiSystemPrompt.Build(context);
 
         // Prepend a hard language directive that the model sees first
         string langDirective = $"""
