@@ -5,6 +5,7 @@ using FreakLete.Api;
 using FreakLete.Api.Data;
 using FreakLete.Api.Services;
 using FreakLete.Api.Services.Embeddings;
+using FreakLete.Api.Services.Rag;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -120,6 +121,7 @@ builder.Services.AddSingleton<IUserSnapshotEventSink>(sp => sp.GetRequiredServic
 builder.Services.AddSingleton<IWorkoutEmbeddingEnqueuer>(sp => sp.GetRequiredService<EmbeddingEventSink>());
 if (!builder.Environment.IsEnvironment("Testing"))
     builder.Services.AddHostedService<EmbeddingBackgroundService>();
+builder.Services.AddScoped<IContextBuilder, ContextBuilder>();
 builder.Services.AddHttpClient<GooglePlayVerificationService>();
 
 // Gemini AI — key from user-secrets (local) or env var Gemini__ApiKey (Railway)
