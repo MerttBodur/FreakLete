@@ -2,6 +2,7 @@ using FreakLete.Api.Data;
 using FreakLete.Api.DTOs.Auth;
 using FreakLete.Api.Entities;
 using FreakLete.Api.Services;
+using FreakLete.Api.Services.Embeddings;
 using FreakLete.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +19,17 @@ public class AuthController : ControllerBase
     private readonly TokenService _tokenService;
     private readonly AthleteProfileService _athleteProfileService;
     private readonly CoachProfileService _coachProfileService;
+    private readonly IUserSnapshotEventSink _snapshotSink;
 
     public AuthController(AppDbContext db, TokenService tokenService,
-        AthleteProfileService athleteProfileService, CoachProfileService coachProfileService)
+        AthleteProfileService athleteProfileService, CoachProfileService coachProfileService,
+        IUserSnapshotEventSink snapshotSink)
     {
         _db = db;
         _tokenService = tokenService;
         _athleteProfileService = athleteProfileService;
         _coachProfileService = coachProfileService;
+        _snapshotSink = snapshotSink;
     }
 
     [HttpPost("register")]
@@ -200,6 +204,7 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = result.Error });
 
         var response = await _athleteProfileService.BuildProfileResponseAsync(userId, result.User);
+        _snapshotSink.OnUserUpdated(userId);
         return Ok(response);
     }
 
@@ -217,6 +222,7 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = result.Error });
 
         var response = await _coachProfileService.BuildProfileResponseAsync(userId, result.User);
+        _snapshotSink.OnUserUpdated(userId);
         return Ok(response);
     }
 

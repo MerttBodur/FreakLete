@@ -2,6 +2,7 @@ using FreakLete.Api.Data;
 using FreakLete.Api.DTOs.Performance;
 using FreakLete.Api.Entities;
 using FreakLete.Api.Services;
+using FreakLete.Api.Services.Embeddings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,16 @@ public class PrEntriesController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly IExerciseTierService _tierService;
+    private readonly IUserSnapshotEventSink _snapshotSink;
 
-    public PrEntriesController(AppDbContext db, IExerciseTierService tierService)
+    public PrEntriesController(
+        AppDbContext db,
+        IExerciseTierService tierService,
+        IUserSnapshotEventSink snapshotSink)
     {
         _db = db;
         _tierService = tierService;
+        _snapshotSink = snapshotSink;
     }
 
     [HttpGet]
@@ -67,6 +73,7 @@ public class PrEntriesController : ControllerBase
 
         _db.PrEntries.Add(entry);
         await _db.SaveChangesAsync();
+        _snapshotSink.OnUserUpdated(userId);
 
         var tier = await _tierService.RecalculateTierAsync(
             userId,

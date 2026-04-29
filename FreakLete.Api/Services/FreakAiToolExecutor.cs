@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FreakLete.Api.Data;
 using FreakLete.Api.Entities;
+using FreakLete.Api.Services.Embeddings;
 using FreakLete.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ public class FreakAiToolExecutor
 {
     private readonly AppDbContext _db;
     private readonly TrainingSummaryService _summaryService;
+    private readonly IUserSnapshotEventSink _snapshotSink;
     private readonly ILogger<FreakAiToolExecutor> _logger;
 
     private static readonly JsonSerializerOptions JsonOpts = new()
@@ -32,10 +34,15 @@ public class FreakAiToolExecutor
     /// </summary>
     public bool DidMutateProgramGenerate => ExecutedTools.Overlaps(ProgramMutatingTools);
 
-    public FreakAiToolExecutor(AppDbContext db, TrainingSummaryService summaryService, ILogger<FreakAiToolExecutor> logger)
+    public FreakAiToolExecutor(
+        AppDbContext db,
+        TrainingSummaryService summaryService,
+        IUserSnapshotEventSink snapshotSink,
+        ILogger<FreakAiToolExecutor> logger)
     {
         _db = db;
         _summaryService = summaryService;
+        _snapshotSink = snapshotSink;
         _logger = logger;
     }
 
@@ -601,6 +608,7 @@ public class FreakAiToolExecutor
 
         _db.TrainingPrograms.Add(program);
         await _db.SaveChangesAsync();
+        _snapshotSink.OnUserUpdated(userId);
 
         _logger.LogInformation("Created training program {ProgramId} for user {UserId}", program.Id, userId);
 
@@ -710,6 +718,7 @@ public class FreakAiToolExecutor
         }
 
         await _db.SaveChangesAsync();
+        _snapshotSink.OnUserUpdated(userId);
 
         _logger.LogInformation("Adjusted program {ProgramId} for user {UserId}: {Type}", program.Id, userId, adjustmentType);
 
@@ -827,6 +836,7 @@ public class FreakAiToolExecutor
         program.Status = newStatus;
         program.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
+        _snapshotSink.OnUserUpdated(userId);
 
         return Json(new
         {

@@ -2,6 +2,7 @@ using FreakLete.Api.Data;
 using FreakLete.Api.DTOs.Workout;
 using FreakLete.Api.Entities;
 using FreakLete.Api.Services;
+using FreakLete.Api.Services.Embeddings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +15,17 @@ namespace FreakLete.Api.Controllers;
 public class WorkoutsController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly IUserSnapshotEventSink _snapshotSink;
+    private readonly IWorkoutEmbeddingEnqueuer _workoutSink;
 
-    public WorkoutsController(AppDbContext db)
+    public WorkoutsController(
+        AppDbContext db,
+        IUserSnapshotEventSink snapshotSink,
+        IWorkoutEmbeddingEnqueuer workoutSink)
     {
         _db = db;
+        _snapshotSink = snapshotSink;
+        _workoutSink = workoutSink;
     }
 
     [HttpGet]
@@ -74,6 +82,8 @@ public class WorkoutsController : ControllerBase
 
         _db.Workouts.Add(workout);
         await _db.SaveChangesAsync();
+        _workoutSink.EnqueueWorkout(userId, workout.Id);
+        _snapshotSink.OnUserUpdated(userId);
 
         return CreatedAtAction(nameof(GetById), new { id = workout.Id }, MapToResponse(workout));
     }
@@ -97,6 +107,9 @@ public class WorkoutsController : ControllerBase
         workout.ExerciseEntries = request.Exercises.Select(e => MapToExerciseEntry(e, workout.Id)).ToList();
 
         await _db.SaveChangesAsync();
+        _workoutSink.EnqueueWorkout(userId, workout.Id);
+        _snapshotSink.OnUserUpdated(userId);
+
         return NoContent();
     }
 

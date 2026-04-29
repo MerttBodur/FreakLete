@@ -1,6 +1,7 @@
 using FreakLete.Api.Data;
 using FreakLete.Api.DTOs.FreakAi;
 using FreakLete.Api.Services;
+using FreakLete.Api.Services.Embeddings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace FreakLete.Api.Controllers;
 public class TrainingProgramController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly IUserSnapshotEventSink _snapshotSink;
 
-    public TrainingProgramController(AppDbContext db)
+    public TrainingProgramController(AppDbContext db, IUserSnapshotEventSink snapshotSink)
     {
         _db = db;
+        _snapshotSink = snapshotSink;
     }
 
     [HttpGet]
@@ -162,6 +165,7 @@ public class TrainingProgramController : ControllerBase
 
         _db.TrainingPrograms.Add(template);
         await _db.SaveChangesAsync();
+        _snapshotSink.OnUserUpdated(userId);
 
         return Ok(MapToResponse(template));
     }
