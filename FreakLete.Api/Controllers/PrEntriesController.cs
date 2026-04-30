@@ -16,12 +16,12 @@ public class PrEntriesController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly IExerciseTierService _tierService;
-    private readonly IUserSnapshotEventSink _snapshotSink;
+    private readonly EmbeddingEventSink _snapshotSink;
 
     public PrEntriesController(
         AppDbContext db,
         IExerciseTierService tierService,
-        IUserSnapshotEventSink snapshotSink)
+        EmbeddingEventSink snapshotSink)
     {
         _db = db;
         _tierService = tierService;

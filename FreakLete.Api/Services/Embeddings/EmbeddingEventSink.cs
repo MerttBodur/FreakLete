@@ -1,6 +1,6 @@
 namespace FreakLete.Api.Services.Embeddings;
 
-public sealed class EmbeddingEventSink : IUserSnapshotEventSink, IWorkoutEmbeddingEnqueuer
+public sealed class EmbeddingEventSink
 {
     private readonly EmbeddingChannel _channel;
     private readonly ILogger<EmbeddingEventSink> _logger;

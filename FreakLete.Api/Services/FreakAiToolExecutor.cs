@@ -11,7 +11,7 @@ public class FreakAiToolExecutor
 {
     private readonly AppDbContext _db;
     private readonly TrainingSummaryService _summaryService;
-    private readonly IUserSnapshotEventSink _snapshotSink;
+    private readonly EmbeddingEventSink _snapshotSink;
     private readonly ILogger<FreakAiToolExecutor> _logger;
 
     private static readonly JsonSerializerOptions JsonOpts = new()
@@ -37,7 +37,7 @@ public class FreakAiToolExecutor
     public FreakAiToolExecutor(
         AppDbContext db,
         TrainingSummaryService summaryService,
-        IUserSnapshotEventSink snapshotSink,
+        EmbeddingEventSink snapshotSink,
         ILogger<FreakAiToolExecutor> logger)
     {
         _db = db;

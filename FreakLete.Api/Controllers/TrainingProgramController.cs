@@ -14,9 +14,9 @@ namespace FreakLete.Api.Controllers;
 public class TrainingProgramController : ControllerBase
 {
     private readonly AppDbContext _db;
-    private readonly IUserSnapshotEventSink _snapshotSink;
+    private readonly EmbeddingEventSink _snapshotSink;
 
-    public TrainingProgramController(AppDbContext db, IUserSnapshotEventSink snapshotSink)
+    public TrainingProgramController(AppDbContext db, EmbeddingEventSink snapshotSink)
     {
         _db = db;
         _snapshotSink = snapshotSink;

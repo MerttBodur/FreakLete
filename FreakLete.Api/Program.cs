@@ -117,8 +117,6 @@ builder.Services.AddScoped<IExerciseTierService, ExerciseTierService>();
 // RAG embedding pipeline
 builder.Services.AddSingleton<EmbeddingChannel>();
 builder.Services.AddSingleton<EmbeddingEventSink>();
-builder.Services.AddSingleton<IUserSnapshotEventSink>(sp => sp.GetRequiredService<EmbeddingEventSink>());
-builder.Services.AddSingleton<IWorkoutEmbeddingEnqueuer>(sp => sp.GetRequiredService<EmbeddingEventSink>());
 if (!builder.Environment.IsEnvironment("Testing"))
     builder.Services.AddHostedService<EmbeddingBackgroundService>();
 builder.Services.AddScoped<IContextBuilder, ContextBuilder>();

@@ -15,13 +15,13 @@ namespace FreakLete.Api.Controllers;
 public class WorkoutsController : ControllerBase
 {
     private readonly AppDbContext _db;
-    private readonly IUserSnapshotEventSink _snapshotSink;
-    private readonly IWorkoutEmbeddingEnqueuer _workoutSink;
+    private readonly EmbeddingEventSink _snapshotSink;
+    private readonly EmbeddingEventSink _workoutSink;
 
     public WorkoutsController(
         AppDbContext db,
-        IUserSnapshotEventSink snapshotSink,
-        IWorkoutEmbeddingEnqueuer workoutSink)
+        EmbeddingEventSink snapshotSink,
+        EmbeddingEventSink workoutSink)
     {
         _db = db;
         _snapshotSink = snapshotSink;

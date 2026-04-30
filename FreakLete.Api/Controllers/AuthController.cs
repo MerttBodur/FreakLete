@@ -19,11 +19,11 @@ public class AuthController : ControllerBase
     private readonly TokenService _tokenService;
     private readonly AthleteProfileService _athleteProfileService;
     private readonly CoachProfileService _coachProfileService;
-    private readonly IUserSnapshotEventSink _snapshotSink;
+    private readonly EmbeddingEventSink _snapshotSink;
 
     public AuthController(AppDbContext db, TokenService tokenService,
         AthleteProfileService athleteProfileService, CoachProfileService coachProfileService,
-        IUserSnapshotEventSink snapshotSink)
+        EmbeddingEventSink snapshotSink)
     {
         _db = db;
         _tokenService = tokenService;
