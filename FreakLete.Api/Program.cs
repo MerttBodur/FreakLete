@@ -113,7 +113,7 @@ builder.Services.AddScoped<CoachProfileService>();
 builder.Services.AddScoped<StarterTemplateSeedService>();
 builder.Services.AddScoped<EntitlementService>();
 builder.Services.AddScoped<QuotaService>();
-builder.Services.AddScoped<IExerciseTierService, ExerciseTierService>();
+builder.Services.AddScoped<ExerciseTierService>();
 // RAG embedding pipeline
 builder.Services.AddSingleton<EmbeddingChannel>();
 builder.Services.AddSingleton<EmbeddingEventSink>();

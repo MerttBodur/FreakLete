@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FreakLete.Api.Services;
 
-public class ExerciseTierService : IExerciseTierService
+public class ExerciseTierService
 {
     private readonly AppDbContext _db;
     private readonly ILogger<ExerciseTierService> _log;

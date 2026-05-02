@@ -15,12 +15,12 @@ namespace FreakLete.Api.Controllers;
 public class PrEntriesController : ControllerBase
 {
     private readonly AppDbContext _db;
-    private readonly IExerciseTierService _tierService;
+    private readonly ExerciseTierService _tierService;
     private readonly EmbeddingEventSink _snapshotSink;
 
     public PrEntriesController(
         AppDbContext db,
-        IExerciseTierService tierService,
+        ExerciseTierService tierService,
         EmbeddingEventSink snapshotSink)
     {
         _db = db;
