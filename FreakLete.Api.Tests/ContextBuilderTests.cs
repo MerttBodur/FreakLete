@@ -52,7 +52,7 @@ public class ContextBuilderTests : IAsyncLifetime
     public async Task ProgramGenerate_IncludesProfileGoalsEquipment()
     {
         using var scope = _factory.Services.CreateScope();
-        var sut = scope.ServiceProvider.GetRequiredService<IContextBuilder>();
+        var sut = scope.ServiceProvider.GetRequiredService<ContextBuilder>();
 
         var ctx = await sut.BuildAsync(_userId, FreakAiUsageIntent.ProgramGenerate, "Build me a 4-day plan");
 
@@ -66,7 +66,7 @@ public class ContextBuilderTests : IAsyncLifetime
     public async Task NutritionGuidance_IncludesBodyAndDiet_NotEquipment()
     {
         using var scope = _factory.Services.CreateScope();
-        var sut = scope.ServiceProvider.GetRequiredService<IContextBuilder>();
+        var sut = scope.ServiceProvider.GetRequiredService<ContextBuilder>();
 
         var ctx = await sut.BuildAsync(_userId, FreakAiUsageIntent.NutritionGuidance, "What should I eat?");
 
@@ -80,7 +80,7 @@ public class ContextBuilderTests : IAsyncLifetime
     public async Task GeneralChat_IsMinimal()
     {
         using var scope = _factory.Services.CreateScope();
-        var sut = scope.ServiceProvider.GetRequiredService<IContextBuilder>();
+        var sut = scope.ServiceProvider.GetRequiredService<ContextBuilder>();
 
         var ctx = await sut.BuildAsync(_userId, FreakAiUsageIntent.GeneralChat, "Hi");
 
@@ -94,7 +94,7 @@ public class ContextBuilderTests : IAsyncLifetime
     public async Task UnknownUser_ReturnsNull()
     {
         using var scope = _factory.Services.CreateScope();
-        var sut = scope.ServiceProvider.GetRequiredService<IContextBuilder>();
+        var sut = scope.ServiceProvider.GetRequiredService<ContextBuilder>();
 
         var ctx = await sut.BuildAsync(int.MaxValue, FreakAiUsageIntent.GeneralChat, "Hi");
 

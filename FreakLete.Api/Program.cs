@@ -119,7 +119,7 @@ builder.Services.AddSingleton<EmbeddingChannel>();
 builder.Services.AddSingleton<EmbeddingEventSink>();
 if (!builder.Environment.IsEnvironment("Testing"))
     builder.Services.AddHostedService<EmbeddingBackgroundService>();
-builder.Services.AddScoped<IContextBuilder, ContextBuilder>();
+builder.Services.AddScoped<ContextBuilder>();
 builder.Services.AddHttpClient<GooglePlayVerificationService>();
 
 // Gemini AI — key from user-secrets (local) or env var Gemini__ApiKey (Railway)

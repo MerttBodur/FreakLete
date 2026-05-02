@@ -9,7 +9,7 @@ using Pgvector.EntityFrameworkCore;
 
 namespace FreakLete.Api.Services.Rag;
 
-public sealed class ContextBuilder : IContextBuilder
+public sealed class ContextBuilder
 {
     private readonly AppDbContext _db;
     private readonly GeminiClient _gemini;

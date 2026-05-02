@@ -8,7 +8,7 @@ public class FreakAiOrchestrator
 {
     private readonly GeminiClient _gemini;
     private readonly FreakAiToolExecutor _toolExecutor;
-    private readonly IContextBuilder _contextBuilder;
+    private readonly ContextBuilder _contextBuilder;
     private readonly ILogger<FreakAiOrchestrator> _logger;
 
     private const int MaxToolRounds = 5;
@@ -18,7 +18,7 @@ public class FreakAiOrchestrator
     public FreakAiOrchestrator(
         GeminiClient gemini,
         FreakAiToolExecutor toolExecutor,
-        IContextBuilder contextBuilder,
+        ContextBuilder contextBuilder,
         ILogger<FreakAiOrchestrator> logger)
     {
         _gemini = gemini;
