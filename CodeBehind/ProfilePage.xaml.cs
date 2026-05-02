@@ -53,7 +53,7 @@ public partial class ProfilePage : ContentPage
 		ExerciseCatalog.OlympicLifts
 	];
 
-	private readonly IApiClient _api;
+	private readonly ApiClient _api;
 	private readonly UserSession _session;
 	private UserProfileResponse? _profile;
 	private int? _editingPerformanceId;

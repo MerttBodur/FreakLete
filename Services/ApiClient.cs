@@ -5,7 +5,7 @@ using FreakLete.Models;
 
 namespace FreakLete.Services;
 
-public class ApiClient : IApiClient
+public class ApiClient
 {
 	private readonly HttpClient _http;
 	private readonly UserSession _session;
