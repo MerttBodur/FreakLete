@@ -10,7 +10,7 @@ Bu dokumanin amaci:
 - bundan sonraki roadmap'i mantikli fazlara bolmek
 
 ## 1.1 Guncel Durum Ozeti
-7 Nisan 2026 itibariyla FreakLete artik sadece local-first bir MVP degildir.
+22 Mayis 2026 itibariyla FreakLete artik sadece local-first bir MVP degildir.
 
 Bugunku durum:
 - mobile app production backend'e baglidir
@@ -29,6 +29,13 @@ Bugunku durum:
 - initial FreakAI MVP uygulama icinde erisilebilir durumdadir ve kullanicinin dilinde cevap verebilir
 - production backend smoke test'i gecmistir
 - Android signed AAB uretilmistir
+- backend RAG katmani aktiftir; FreakAI istekleri Gemini cagrisindan once `ContextBuilder` ile kullanici context'i (pgvector embedding'leri dahil) kullanilarak zenginlestirilir
+- exercise tier sistemi shipped; PR kaydedildiginde lift tier'i hesaplanir, kaydedilen PR satirlarinda tier rozeti ve milestone congrats popup gosterilir
+- per-set workout detay persistence aktiftir; her set icin weight/reps/RIR/rest/concentric backend'de saklanir
+- profile photo upload / goruntuleme / silme akisi mevcuttur
+- auth hardening eklenmistir: login attempt tracking, token versioning ve security retention cleanup
+- Google Play real-time developer notifications (RTDN) webhook'u shipped
+- UI V2 shared design system bilesenleri (`HeroPanel`, `MetricTile`, `StatTile`, `ActionTile`, chart kartlari) repo'da mevcuttur ve ana yuzeylerde kullanilir
 
 Bu nedenle urun durumu:
 - cloud-backed mobile product foundation tamamlanmistir
@@ -98,6 +105,12 @@ Asagidaki basliklar artik roadmap maddesi degil, mevcut urunun parcasidir.
 - FreakAI usage/plan card: free kullanicilara kalan kota gosterimi, premium kullanicilara "Unlimited" gosterimi
 - Settings current-plan card: aktif plan ve yenileme tarihi gosterimi
 - FreakAI 429 exhausted UX: backend'den gelen spesifik mesaj + reset zamani; free kullanicilara upgrade CTA
+- Profile photo upload / goruntuleme / silme
+- Exercise tier sistemi: PR kaydinda tier hesaplama, kaydedilen PR satirlarinda tier rozeti, milestone congrats popup
+- Per-set workout detay persistence (her set icin weight/reps/RIR/rest/concentric)
+- FreakAI RAG context injection: her istek Gemini cagrisindan once kullanici context'i ile zenginlestirilir
+- Google Play RTDN webhook ile subscription lifecycle bildirimlerinin server-side islenmesi
+- Auth hardening: login attempt tracking, token versioning, security retention cleanup
 - CRUD for key records
 
 ### 5.2 Product and UX
@@ -108,6 +121,8 @@ Asagidaki basliklar artik roadmap maddesi degil, mevcut urunun parcasidir.
 - Profile tarafinda native picker / date dialog'lari yerine custom selector akisi kullanilmaya baslandi
 - Workout surface'lerinde starter template ve kullanici programlari ayni akis icinde gorulebilir hale geldi
 - Canli workout baslatma ve aktif seans tutma davranisi shipped v1 olarak mevcuttur
+- UI V2 shared design system bilesenleri shipped: `HeroPanel`, `MetricTile`, `StatTile`, `ActionTile`, `QuickAccessTile`, `BarChartCard`, `ExerciseComparisonChart`, `ProfileHeroCard`, `SectionTabs`, `BottomNavBar`
+- design handoff MAUI adaptasyonu ana yuzeylere uygulanmaya baslandi (ortak input shell, restyle, ikon ve bottom-nav iyilestirmeleri)
 
 Not:
 - bu iyilestirmeler ilk gecis adimidir
@@ -120,14 +135,15 @@ Not:
 - SecureStorage tabanli token saklama
 - Automated tests
 - `FreakLete.Core.Tests` ile core logic / calculations / parsing / rules coverage
-- `FreakLete.Api.Tests` ile auth, profile, workouts, PRs, athletic performance, movement goals, exercise catalog, sport catalog, calculations, training programs ve FreakAI controller coverage
+- `FreakLete.Api.Tests` ile auth, profile, workouts, PRs, athletic performance, movement goals, exercise catalog, sport catalog, calculations, training programs, FreakAI controller, exercise tier ve RAG `ContextBuilder` coverage
 - Typed athlete/coach profile endpoint'leri, roundtrip persistence, invalid input rejection, cross-section isolation ve `DateOfBirth` date-only behavior dogrulanmis durumda
+- Per-set workout detay persistence (RIR/Rest/Concentric) controller seviyesinde test ediliyor
 - API regression coverage backend persistence guveni sagliyor; real UI flows manual Android smoke testing ile dogrulanir
 - Mevcut test stratejisi: `FreakLete.Api.Tests` ve `FreakLete.Core.Tests` (blocking), plus manual Android emulator smoke testing (real verification)
 
-Bu dokuman guncellemesi icin mevcut verification note:
-- `FreakLete.Core.Tests` calisti ve `167/167` gecti
-- `FreakLete.Api.Tests` calisti ve `293/293` gecti
+Verification note:
+- Bu PRD guncellemesi documentation-only'dir; test suite bu update icin tekrar calistirilmamistir
+- Guncel test sayilari icin suite calistirilmali; son kod-degisikligi verification snapshot'i icin commit history referans alinmalidir
 
 ### 5.4 Production Validation
 - Railway production backend canli
@@ -203,6 +219,12 @@ Submission oncesi hala gerekli olanlar (manuel):
 - ProgramExercise
 - BillingPurchase
 - AiUsageRecord
+- ExerciseSet
+- UserExerciseTier
+- WorkoutEmbedding
+- UserSnapshotEmbedding
+- AuthLoginAttempt
+- GooglePlayRtdnEvent
 
 ### 6.4 Current State
 Bugunku uygulama cloud-backed mobile product foundation'ina ulasmistir.
@@ -221,6 +243,11 @@ Bu ne demek:
 - server-side purchase verification, acknowledge ve consume mantigi mevcuttur
 - restore purchases ve manage subscription akislari Android'de mevcuttur
 - billing status endpoint kullanici planini ve kota durumunu raporlar
+- Google Play RTDN webhook'u subscription lifecycle olaylarini server-side isler
+- exercise tier sistemi backend'de mevcuttur; PR kaydinda `ExerciseTierService` kullanicinin lift tier'ini yeniden hesaplar
+- FreakAI RAG katmani backend'de mevcuttur; pgvector embedding'leri workout/PR/profile/program mutasyonlarindan tetiklenen background pipeline ile uretilir
+- per-set workout detaylari `ExerciseSet` tablosunda saklanir; legacy `ExerciseEntry` alanlari geri uyum icin per-set degerlerden turetilir
+- profile photo backend'de byte olarak saklanir (max 2 MB; jpeg/png/webp)
 
 ## 7. Backend Durumu
 Backend tarafi artik "direction" seviyesinde degil, aktif production katmanidir.
@@ -233,6 +260,10 @@ Mevcut backend durumu:
 - Training program starter template endpoint'leri ve seeding mantigi mevcuttur
 - Auth tarafinda secure change-password endpoint'i mevcuttur
 - FreakAI tarafinda language detection + response guard mantigi mevcuttur
+- FreakAI RAG katmani: `ContextBuilder`, pgvector embedding store, `EmbeddingBackgroundService` ve embedding event sink mevcuttur
+- Exercise tier hesaplama ve milestone resolver mantigi (`ExerciseTierService`, `NextMilestoneCalculator`) mevcuttur
+- Google Play RTDN webhook'u ve `SecurityRetentionCleanupService` mevcuttur
+- Profile photo upload / serve / delete endpoint'leri mevcuttur
 
 Bu katmanin mevcut rolu:
 - gercek account system
@@ -297,7 +328,7 @@ Not:
 - sport / position selection ve coach profile selector alanlari shipped durumdadir
 - training days, session duration, goal ve dietary selector akislarinin ilk versiyonu da shipped durumdadir
 - bu faz artik tamamen sifirdan baslama degil, kalan profile genislemesidir
-- `FFMI` ve benchmark norm gating icin profile `HeightCm` ve `Sex` alanlari eklenmelidir
+- `FFMI` ve benchmark norm gating icin profile `HeightCm` ve `Sex` alanlari eklenmistir (migration `AddHeightCmAndSex`)
 
 ### Hedef
 Ileride benchmark-driven calculations ve guidance icin gerekli temel profile alanlarini tamamlamak.
@@ -318,6 +349,8 @@ Bu faz, shipped live workout v1'in ustune daha zengin tracking ve analytics katm
 
 Not:
 - live workout v1 start / active session flow zaten mevcuttur
+- per-set workout detay persistence (her set icin weight/reps/RIR/rest/concentric) backend tarafinda shipped durumdadir
+- inline per-set giris UI'si (`SetCardView`) tasarlanmistir (`docs/superpowers/specs/2026-04-24-inline-per-set-design.md`) ama mobile tarafinda henuz shipped degildir; set girisi halen mevcut popup akisi uzerinden yapilir
 - bu faz basic "start workout"u degil, daha derin instrumentation ve analytics kapsamini ifade eder
 
 ### Hedef
@@ -351,6 +384,10 @@ Not:
 
 ## Phase 2B - Dashboard-First UI V2
 Bu faz, mevcut visual refresh'i daha ileri tasiyip urunu text-heavy utility app gorunumunden scan-based performance dashboard deneyimine donusturur.
+
+Not:
+- UI V2 shared design system bilesenlerinin ilk seti shipped durumdadir (`HeroPanel`, `MetricTile`, `StatTile`, `ActionTile`, `QuickAccessTile`, `BarChartCard`, `ExerciseComparisonChart`, `ProfileHeroCard`, `SectionTabs`, `BottomNavBar`)
+- bu faz, bu bilesenlerin tum dashboard yuzeylerine tam yayilmasini ve chart altyapisinin tamamlanmasini ifade eder
 
 ### Hedef
 - ana ekranlari daha gorsel, daha taranabilir ve daha az yorucu hale getirmek
@@ -444,7 +481,9 @@ Bu faz, bugunku `1RM + RSI` calculations surface'ini daha akilli ama halen deter
 
 Onemli not:
 - `FFMI` hesaplama shipped durumdadir (normalized, raw, lean body mass); profilde `WeightKg + HeightCm + BodyFatPercentage` varsa hesaplanir, yoksa empty-state gosterilir
-- lift seviyeleri, kompozit atlet lakaplari ve egzersiz demo medyasi bugunku shipped urunde mevcut degildir
+- exercise tier sistemi (lift seviyeleri) shipped durumdadir; PR kaydinda tier hesaplanir ve kaydedilen PR satirlarinda tier rozeti + milestone congrats popup gosterilir
+- kompozit atlet lakaplari henuz shipped degildir
+- egzersiz demo medya alanlari (`MediaUrl`, `ThumbnailUrl`) catalog'da mevcut ve ilk media seed'i uygulanmistir; tum hareketler icin medya kapsamasi devam etmektedir
 - benchmark dili `public benchmark tables / competition-derived percentiles` olarak yazilmalidir; evrensel tek tablo varsayimi yapilmamalidir
 
 ### Column 1 - Calculations Intelligence
@@ -463,6 +502,8 @@ Kapsam:
 ### Column 2 - Profile Level System
 Bu sutun, profile yuzeyinde seviye etiketleri ve aciklayici guidance dilini tanimlar.
 
+Durum: tier hesaplama ve tier etiketleri shipped (`NeedImprovement / Beginner / Intermediate / Advanced / Elite / Freak`). Etiketler su an profile yuzeyi yerine kaydedilen PR satirlarinda ve milestone congrats popup'ta gosteriliyor (`ProfileTiersController` ve ProfilePage tier section kaldirildi). Kompozit atlet lakaplari henuz shipped degil.
+
 Kapsam:
 - v1 benchmarked movement scope: `Bench Press`, `Back Squat`, `Deadlift`, `Military/Overhead Press`, `Power Clean`, `Vertical Jump`, `Single/Standing Broad Jump`
 - v1 seviye etiketleri: `Beginner`, `Intermediate`, `Advanced`, `Freak`
@@ -475,6 +516,8 @@ Kapsam:
 
 ### Column 3 - Exercise Demo Media
 Bu sutun, metin tabanli egzersiz rehberligini medya ile zenginlestirir ama kapsami kontrollu tutar.
+
+Durum: catalog'da `MediaUrl` / `ThumbnailUrl` alanlari ve ilk media seed'i shipped. Medya kapsamasinin Tier-1 disina genisletilmesi devam ediyor.
 
 Kapsam:
 - v1'de yalnizca Tier-1 hareketler icin demo medya hedefleme
@@ -526,6 +569,7 @@ FreakAI bu urunde tek basina bir "chat feature" degil, uzun vadede urunun intell
 
 Not:
 - initial FreakAI MVP, language-aware behavior, training-program-aware coach flow ve ilk program generation akisi baslatilmistir
+- FreakAI RAG katmani shipped: her istek Gemini cagrisindan once `ContextBuilder` ile structured profil + pgvector benzerlik sonuclariyla zenginlestirilir; embedding'ler workout/PR/profile/program mutasyonlarindan tetiklenir
 - bu faz, mevcut MVP'nin ustune daha derin reasoning, recommendation ve orchestration katmanini ifade eder
 
 ### Hedef
@@ -591,6 +635,13 @@ Asagidaki basliklar artik "gelecek is" degil:
 - Android Google Play Billing (subscription + donation)
 - server-side purchase verification + acknowledge + consume
 - restore purchases + manage subscription (Android)
+- Google Play RTDN webhook (subscription lifecycle notifications)
+- exercise tier sistemi (tier hesaplama + PR-row tier rozeti + milestone congrats popup)
+- per-set workout detay persistence
+- FreakAI RAG context injection
+- profile photo upload
+- auth hardening (login attempt tracking, token versioning, security retention cleanup)
+- UI V2 shared design system bilesenleri
 
 ## 11. Product Risks
 - cloud migration sirasinda local SQLite ile backend verisinin cakisabilmesi
@@ -608,7 +659,6 @@ Su an bir sonraki faz icin odak disi sayilabilecek basliklar:
 - friends system
 - iOS/Mac/Windows billing (Android-first shipped)
 - custom donation amounts (sabit SKU'lar shipped)
-- RTDN / PubSub real-time billing notifications
 - coaching marketplace
 - AI recommendation implementation
 - iOS release execution
