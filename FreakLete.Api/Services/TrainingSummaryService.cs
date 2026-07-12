@@ -17,24 +17,23 @@ public class TrainingSummaryService
         var cutoff = DateTime.UtcNow.AddDays(-recentDays);
 
         var recentWorkouts = await _db.Workouts
+            .AsNoTracking()
             .Where(w => w.UserId == userId && w.WorkoutDate >= cutoff)
             .Include(w => w.ExerciseEntries)
             .OrderByDescending(w => w.WorkoutDate)
             .ToListAsync();
 
-        var allPrs = await _db.PrEntries
-            .Where(p => p.UserId == userId)
-            .OrderByDescending(p => p.CreatedAt)
-            .ToListAsync();
+        var totalPrCount = await _db.PrEntries
+            .CountAsync(p => p.UserId == userId);
 
-        var recentPerformances = await _db.AthleticPerformanceEntries
-            .Where(a => a.UserId == userId && a.RecordedAt >= cutoff)
-            .OrderByDescending(a => a.RecordedAt)
-            .ToListAsync();
+        var recentPrCount = await _db.PrEntries
+            .CountAsync(p => p.UserId == userId && p.CreatedAt >= cutoff);
 
-        var goals = await _db.MovementGoals
-            .Where(g => g.UserId == userId)
-            .ToListAsync();
+        var recentPerformanceCount = await _db.AthleticPerformanceEntries
+            .CountAsync(a => a.UserId == userId && a.RecordedAt >= cutoff);
+
+        var goalCount = await _db.MovementGoals
+            .CountAsync(g => g.UserId == userId);
 
         // Workout frequency
         var workoutDays = recentWorkouts.Select(w => w.WorkoutDate.Date).Distinct().Count();
@@ -52,9 +51,6 @@ public class TrainingSummaryService
             ? allExercises.Count / (double)recentWorkouts.Count
             : 0;
 
-        // Recent PRs
-        var recentPrs = allPrs.Where(p => p.CreatedAt >= cutoff).ToList();
-
         return new TrainingSummary
         {
             PeriodDays = recentDays,
@@ -63,10 +59,10 @@ public class TrainingSummaryService
             WeeklyFrequency = Math.Round(weeklyFrequency, 1),
             AverageExercisesPerWorkout = Math.Round(avgExercisesPerWorkout, 1),
             CategoryDistribution = categoryDistribution,
-            TotalPrs = allPrs.Count,
-            RecentPrCount = recentPrs.Count,
-            RecentAthleticPerformanceCount = recentPerformances.Count,
-            ActiveGoalCount = goals.Count
+            TotalPrs = totalPrCount,
+            RecentPrCount = recentPrCount,
+            RecentAthleticPerformanceCount = recentPerformanceCount,
+            ActiveGoalCount = goalCount
         };
     }
 }

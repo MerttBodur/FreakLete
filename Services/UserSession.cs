@@ -8,6 +8,7 @@ public class UserSession
 	private const string UserFirstNameKey = "user_first_name";
 
 	private string? _cachedToken;
+	private Task<string?>? _tokenLoadTask;
 	private bool _migrated;
 
 	public int? GetCurrentUserId()
@@ -26,6 +27,7 @@ public class UserSession
 		Preferences.Default.Set(CurrentUserIdKey, userId);
 
 		_cachedToken = token;
+		_tokenLoadTask = null;
 		SecureStorage.Default.SetAsync(TokenKey, token).ConfigureAwait(false);
 
 		if (!string.IsNullOrEmpty(email))
@@ -40,12 +42,12 @@ public class UserSession
 			return _cachedToken;
 
 		MigrateTokenFromPreferences();
+		if (_cachedToken is not null)
+			return _cachedToken;
 
 		try
 		{
-			var task = SecureStorage.Default.GetAsync(TokenKey);
-			task.ConfigureAwait(false);
-			string? token = task.GetAwaiter().GetResult();
+			string? token = LoadTokenAsync().GetAwaiter().GetResult();
 			if (!string.IsNullOrEmpty(token))
 			{
 				_cachedToken = token;
@@ -55,9 +57,43 @@ public class UserSession
 		catch
 		{
 			// SecureStorage can throw on some platforms; fall back gracefully
+			_tokenLoadTask = null;
 		}
 
 		return null;
+	}
+
+	/// <summary>
+	/// Warms the token cache without blocking. SecureStorage (Android Keystore)
+	/// can take hundreds of ms on first access — call this at startup so later
+	/// synchronous GetToken() calls hit the cache instead of blocking the UI thread.
+	/// </summary>
+	public async Task PreloadTokenAsync()
+	{
+		if (_cachedToken is not null)
+			return;
+
+		MigrateTokenFromPreferences();
+		if (_cachedToken is not null)
+			return;
+
+		try
+		{
+			string? token = await LoadTokenAsync().ConfigureAwait(false);
+			if (!string.IsNullOrEmpty(token))
+				_cachedToken = token;
+		}
+		catch
+		{
+			// Best-effort warm-up; GetToken() retries synchronously if needed
+			_tokenLoadTask = null;
+		}
+	}
+
+	private Task<string?> LoadTokenAsync()
+	{
+		_tokenLoadTask ??= SecureStorage.Default.GetAsync(TokenKey);
+		return _tokenLoadTask;
 	}
 
 	private void MigrateTokenFromPreferences()
@@ -90,6 +126,7 @@ public class UserSession
 	public void SignOut()
 	{
 		_cachedToken = null;
+		_tokenLoadTask = null;
 		Preferences.Default.Remove(CurrentUserIdKey);
 		SecureStorage.Default.Remove(TokenKey);
 		Preferences.Default.Remove(UserEmailKey);

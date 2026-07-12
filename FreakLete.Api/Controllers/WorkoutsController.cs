@@ -33,6 +33,7 @@ public class WorkoutsController : ControllerBase
     {
         var userId = User.GetUserId();
         var workouts = await _db.Workouts
+            .AsNoTracking()
             .Where(w => w.UserId == userId)
             .Include(w => w.ExerciseEntries)
                 .ThenInclude(e => e.Sets)
@@ -47,6 +48,7 @@ public class WorkoutsController : ControllerBase
     {
         var userId = User.GetUserId();
         var workout = await _db.Workouts
+            .AsNoTracking()
             .Include(w => w.ExerciseEntries)
                 .ThenInclude(e => e.Sets)
             .FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId);
@@ -60,9 +62,33 @@ public class WorkoutsController : ControllerBase
     {
         var userId = User.GetUserId();
         var workouts = await _db.Workouts
+            .AsNoTracking()
             .Where(w => w.UserId == userId && w.WorkoutDate.Date == DateTime.SpecifyKind(date, DateTimeKind.Utc).Date)
             .Include(w => w.ExerciseEntries)
                 .ThenInclude(e => e.Sets)
+            .ToListAsync();
+
+        return Ok(workouts.Select(MapToResponse).ToList());
+    }
+
+    [HttpGet("range")]
+    public async Task<ActionResult<List<WorkoutResponse>>> GetByRange(
+        [FromQuery] DateTime from,
+        [FromQuery] DateTime to)
+    {
+        if (to < from)
+            return BadRequest(new { message = "'to' must not be earlier than 'from'." });
+
+        var userId = User.GetUserId();
+        var fromUtc = DateTime.SpecifyKind(from.Date, DateTimeKind.Utc);
+        var toExclusiveUtc = DateTime.SpecifyKind(to.Date, DateTimeKind.Utc).AddDays(1);
+
+        var workouts = await _db.Workouts
+            .AsNoTracking()
+            .Where(w => w.UserId == userId && w.WorkoutDate >= fromUtc && w.WorkoutDate < toExclusiveUtc)
+            .Include(w => w.ExerciseEntries)
+                .ThenInclude(e => e.Sets)
+            .OrderByDescending(w => w.WorkoutDate)
             .ToListAsync();
 
         return Ok(workouts.Select(MapToResponse).ToList());

@@ -5,17 +5,23 @@ using FreakLete.Api.Entities;
 using FreakLete.Core.Tier;
 using FreakLete.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace FreakLete.Api.Services;
 
 public class ExerciseTierService
 {
+    private const string ConfigCacheKey = "exercise-tier-configs";
+    private static readonly TimeSpan ConfigCacheTtl = TimeSpan.FromMinutes(30);
+
     private readonly AppDbContext _db;
+    private readonly IMemoryCache _cache;
     private readonly ILogger<ExerciseTierService> _log;
 
-    public ExerciseTierService(AppDbContext db, ILogger<ExerciseTierService> log)
+    public ExerciseTierService(AppDbContext db, IMemoryCache cache, ILogger<ExerciseTierService> log)
     {
         _db = db;
+        _cache = cache;
         _log = log;
     }
 
@@ -47,13 +53,7 @@ public class ExerciseTierService
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId, ct);
         if (user is null) return null;
 
-        var allDefs = await _db.ExerciseDefinitions
-            .Where(d => d.TierType != "")
-            .ToListAsync(ct);
-        var configs = allDefs.ToDictionary(
-            d => d.CatalogId,
-            d => ToConfig(d),
-            StringComparer.OrdinalIgnoreCase);
+        var configs = await GetConfigsAsync(ct);
 
         if (!configs.TryGetValue(catalogId, out var cfg)) return null;
 
@@ -224,6 +224,28 @@ public class ExerciseTierService
                 pr.TrackingMode, pr.Weight, pr.Reps, pr.RIR,
                 athleticRawValue: null, ct);
         }
+    }
+
+    // Tier definitions are migration-seeded reference data; cache to avoid
+    // reloading and re-parsing the whole table on every recalculation.
+    private async Task<Dictionary<string, ExerciseTierConfig>> GetConfigsAsync(CancellationToken ct)
+    {
+        var configs = await _cache.GetOrCreateAsync(ConfigCacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = ConfigCacheTtl;
+
+            var allDefs = await _db.ExerciseDefinitions
+                .AsNoTracking()
+                .Where(d => d.TierType != "")
+                .ToListAsync(ct);
+
+            return allDefs.ToDictionary(
+                d => d.CatalogId,
+                d => ToConfig(d),
+                StringComparer.OrdinalIgnoreCase);
+        });
+
+        return configs ?? new Dictionary<string, ExerciseTierConfig>(StringComparer.OrdinalIgnoreCase);
     }
 
     private static string NormalizeName(string name) =>

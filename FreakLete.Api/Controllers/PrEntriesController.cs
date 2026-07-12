@@ -33,6 +33,7 @@ public class PrEntriesController : ControllerBase
     {
         var userId = User.GetUserId();
         var entries = await _db.PrEntries
+            .AsNoTracking()
             .Where(p => p.UserId == userId)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
@@ -44,7 +45,9 @@ public class PrEntriesController : ControllerBase
     public async Task<ActionResult<PrEntryResponse>> GetById(int id)
     {
         var userId = User.GetUserId();
-        var entry = await _db.PrEntries.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+        var entry = await _db.PrEntries
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
         if (entry is null) return NotFound();
         return Ok(MapToResponse(entry));
     }

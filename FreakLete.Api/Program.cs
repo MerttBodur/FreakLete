@@ -104,6 +104,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // Services
+builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<TokenService>();
 builder.Services.AddScoped<TrainingSummaryService>();
 builder.Services.AddScoped<FreakAiToolExecutor>();

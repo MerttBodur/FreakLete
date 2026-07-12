@@ -9,17 +9,22 @@ public partial class App : Application
 	{
 		InitializeComponent();
 		AppLanguage.Initialize();
-		MainPage = new NavigationPage(BuildStartPage());
-	}
 
-	private static Page BuildStartPage()
-	{
 		UserSession session = MauiProgram.Services.GetRequiredService<UserSession>();
 
-		if (session.IsLoggedIn())
+		// SecureStorage (Android Keystore) ilk erişimde yavaş olabilir;
+		// UI thread'i bloklamadan token cache'ini önceden ısıt.
+		_ = session.PreloadTokenAsync();
+
+		MainPage = new NavigationPage(BuildStartPage(session));
+	}
+
+	private static Page BuildStartPage(UserSession session)
+	{
+		if (session.GetCurrentUserId().HasValue)
 		{
-			// Token var, kullanıcıyı direkt HomePage'e yönlendir
-			// Token expired ise profile çağrısında 401 alır, o zaman login'e yönlendiririz
+			// UserId var, kullanıcıyı direkt HomePage'e yönlendir
+			// Token eksik/expired ise profile çağrısında 401 alır, o zaman login'e yönlendiririz
 			return new HomePage();
 		}
 

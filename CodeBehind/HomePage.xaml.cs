@@ -76,6 +76,7 @@ public partial class HomePage : ContentPage
 		if (!_session.IsLoggedIn())
 		{
 			_session.SignOut();
+			await TabNavigationHelper.ResetToRootAsync(Navigation, () => new LoginPage(), false);
 			return;
 		}
 

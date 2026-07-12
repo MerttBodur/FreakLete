@@ -50,6 +50,7 @@ public class TrainingProgramController : ControllerBase
         var userId = User.GetUserId();
 
         var program = await _db.TrainingPrograms
+            .AsNoTracking()
             .Where(p => p.UserId == userId && p.Status == "active" && !p.IsStarterTemplate)
             .Include(p => p.Weeks)
                 .ThenInclude(w => w.Sessions)
@@ -69,6 +70,7 @@ public class TrainingProgramController : ControllerBase
         var userId = User.GetUserId();
 
         var program = await _db.TrainingPrograms
+            .AsNoTracking()
             .Where(p => p.Id == id && p.UserId == userId && !p.IsStarterTemplate)
             .Include(p => p.Weeks)
                 .ThenInclude(w => w.Sessions)
@@ -110,6 +112,7 @@ public class TrainingProgramController : ControllerBase
     public async Task<ActionResult<TrainingProgramResponse>> GetStarterTemplateById(int id)
     {
         var program = await _db.TrainingPrograms
+            .AsNoTracking()
             .Where(p => p.Id == id && p.IsStarterTemplate)
             .Include(p => p.Weeks)
                 .ThenInclude(w => w.Sessions)

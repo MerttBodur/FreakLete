@@ -226,6 +226,11 @@ public class ApiClient
 		return GetAsync<List<WorkoutResponse>>($"api/workouts/by-date/{date:yyyy-MM-dd}");
 	}
 
+	public Task<ApiResult<List<WorkoutResponse>>> GetWorkoutsByRangeAsync(DateTime from, DateTime to)
+	{
+		return GetAsync<List<WorkoutResponse>>($"api/workouts/range?from={from:yyyy-MM-dd}&to={to:yyyy-MM-dd}");
+	}
+
 	public Task<ApiResult<WorkoutResponse>> CreateWorkoutAsync(object data)
 	{
 		return PostAsync<WorkoutResponse>("api/workouts", data);

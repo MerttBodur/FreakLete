@@ -79,14 +79,12 @@ public partial class WorkoutPage : ContentPage
 			var programsTask = _api.GetTrainingProgramsAsync();
 			var activeTask = _api.GetActiveProgramAsync();
 
-			// Load weekly workout count in parallel
+			// Load weekly workout count in parallel — single ranged request
 			var today = DateTime.Now;
 			var weekStart = today.AddDays(-(int)today.DayOfWeek);
-			var weeklyTasks = Enumerable.Range(0, 7)
-				.Select(i => _api.GetWorkoutsByDateAsync(weekStart.AddDays(i)))
-				.ToArray();
+			var weeklyTask = _api.GetWorkoutsByRangeAsync(weekStart, weekStart.AddDays(6));
 
-			await Task.WhenAll(programsTask, activeTask, Task.WhenAll(weeklyTasks));
+			await Task.WhenAll(programsTask, activeTask, weeklyTask);
 
 			// Process program list — merge user programs + starter templates
 			var userProgramsResult = programsTask.Result;
@@ -148,10 +146,10 @@ public partial class WorkoutPage : ContentPage
 			}
 
 			// Process weekly count
-			int workoutsThisWeek = weeklyTasks
-				.Select(t => t.Result)
-				.Where(r => r.Success && r.Data is not null)
-				.Sum(r => r.Data!.Count);
+			var weeklyResult = weeklyTask.Result;
+			int workoutsThisWeek = weeklyResult.Success && weeklyResult.Data is not null
+				? weeklyResult.Data.Count
+				: 0;
 
 			SessionsCountLabel.Text = workoutsThisWeek.ToString();
 			HeroWeeklyLabel.Text = AppLanguage.FormatThisWeek(workoutsThisWeek);

@@ -22,6 +22,7 @@ public class ExerciseCatalogController : ControllerBase
     public async Task<ActionResult<List<ExerciseDefinitionResponse>>> GetAll()
     {
         var exercises = await _db.ExerciseDefinitions
+            .AsNoTracking()
             .OrderBy(e => e.Category)
             .ThenBy(e => e.RecommendedRank)
             .ToListAsync();
@@ -33,6 +34,7 @@ public class ExerciseCatalogController : ControllerBase
     public async Task<ActionResult<List<ExerciseDefinitionResponse>>> GetByCategory(string category)
     {
         var exercises = await _db.ExerciseDefinitions
+            .AsNoTracking()
             .Where(e => e.Category == category)
             .OrderBy(e => e.RecommendedRank)
             .ToListAsync();
@@ -45,7 +47,7 @@ public class ExerciseCatalogController : ControllerBase
         [FromQuery] string q,
         [FromQuery] string? category = null)
     {
-        var query = _db.ExerciseDefinitions.AsQueryable();
+        var query = _db.ExerciseDefinitions.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(category))
             query = query.Where(e => e.Category == category);
